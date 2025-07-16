@@ -82,17 +82,17 @@
 
 
 \ Safe f" implementation with rotating buffers
-100 constant #format-buffers
-256 constant /format-buffer
-create format-buffers #format-buffers /format-buffer * allot&erase
-variable format-buffer-index
+|| 100 constant #format-buffers
+|| 256 constant /format-buffer
+|| create format-buffers #format-buffers /format-buffer * allot&erase
+|| variable format-buffer-index
 
-: fbuf+ ( - a )
+|| : fbuf+ ( - a )
     format-buffer-index @ 1 + #format-buffers mod 
     dup format-buffer-index !
         /format-buffer * format-buffers + ;
 
-: safer-format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
+|| : safer-format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
     fbuf+ format ;
 
 : f"

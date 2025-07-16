@@ -66,7 +66,7 @@ aka cd cwd
     r> file-position abort" Get file position error" drop
     - ;
 : file, ( a n - )
-    expand cr 2dup type
+    expand
     r/o open-file drop | #1 |
     here 
     #1 bytes-left allot

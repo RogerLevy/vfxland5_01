@@ -121,14 +121,14 @@ stage.vfx:
     : sprites ( - ) \ Draw all sprites with priority <>0 (in front of background)
   Actor Creation and Destruction
     actor default \ Default actor template with standard field values
-    xt floating \ Default physics behavior (no special physics)
+    : floating ( - ) \ Set default physics behavior (no special physics)
     : priority ( n - ) \ Set drawing priority for next actor allocation
     : unload ( - ) \ Free current actor slot
     : just ( - ) \ Clear all actors (mark all as free)
     : one ( class - actor ) \ Allocate one actor of specified class
     : *actor ( - actor ) \ Create generic actor without class
   Actor Collision Detection
-    : hitbox1 ( - x1 y1 x2 y2 ) \ Get current actor's hitbox coordinates
+    : hitbox@ ( - x1 y1 x2 y2 ) \ Get current actor's hitbox coordinates
     : hit? ( actor1 actor2 - f ) \ Check collision between two actors using their hitboxes
   Actor Scripting Tools
     : att ( col row - ) \ Position current actor at tile coordinates
@@ -145,7 +145,7 @@ stage.vfx:
     : appear ( - ) \ Show previously hidden actor
     : copy ( src dest - dest ) \ Copy actor data from source to destination
     : expanded ( actor n - temp ) \ Create temporary actor copy with expanded hitbox
-    : hb1! ( x y w h - ) \ Set current actor's hitbox parameters
+    : hitbox! ( x y w h - ) \ Set current actor's hitbox parameters
   Timer System
     class timer% \ Timer actor class for delayed execution
     : clear-timers ( - ) \ Clear all timer actors from the system
@@ -204,6 +204,7 @@ waveplay.vfx:
   Sample Playback
     : play ( smp - ) \ Play audio sample once without blocking
     : playing? ( smp - f ) \ Check if sample is currently playing
+    : voice? ( smp - f ) \ User-definable check if sample can play
   Sample Management
     : load-samples ( - ) \ Load all audio samples from smp/ directory
     : reload-samples ( - ) \ Reload all audio samples from disk

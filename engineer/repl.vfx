@@ -13,7 +13,7 @@ variable repl  repl on
 : ints  0 stackmode ! ;
 : fixeds  1 stackmode ! ;
 : hexints  2 stackmode ! ;
-: ?type ?dup 0= if drop else type then ;
+|| : ?type ?dup 0= if drop else type then ;
 || : .prompt
     context @ ['] forth >body @ <> if context @ .name then 
     ." >"  tib #tib @ ?type

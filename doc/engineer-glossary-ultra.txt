@@ -22,10 +22,12 @@ engineer.vfx
     : >vfx ( - ) \ Bring VFX console to front
   Graphics System
     : at ( x y - ) \ Set pen position
+    : at@ ( - x y ) \ Get pen position
     : +at ( x y - ) \ Add to pen position
     : put ( bitmap - ) \ Draw bitmap at current pen position
     : bmpwh ( bitmap - w h ) \ Get bitmap dimensions
   Input System
+    : kdelta ( key - n ) \ Key state change value
     : held? ( key - f ) \ Check if key is currently held
     : pressed? ( key - f ) \ Check if key was just pressed
     : letgo? ( key - f ) \ Check if key was just released
@@ -41,6 +43,7 @@ engineer.vfx
     : each-file ( a:path xt - ) \ Execute xt for each file in directory
   Development Tools
     : try ( - <filename> ) \ Load and execute VFX file
+    : >try ( a len - ) \ Load and execute VFX file
     : retry ( - ) \ Retry loading the last file
     : func ( a:cmd len:cmd key - ) \ Assign function key command
     : ?func ( key - ) \ Execute function key command
@@ -55,35 +58,37 @@ engineer.vfx
     : save-release ( - <path> ) \ Save release executable
     : save-debug ( - <path> ) \ Save debug executable
     : turnkey ( - ) \ Complete turnkey build process
-
-al-utils.vfx
-  Configuration
-    640 value appw ( - w ) \ Application width in pixels
-    480 value apph ( - h ) \ Application height in pixels
-    0 value winw ( - w ) \ Current window width
-    0 value winh ( - h ) \ Current window height
-    0 value monw ( - w ) \ Monitor width in pixels
-    0 value monh ( - h ) \ Monitor height in pixels
-    0 value fullscreen? ( - f ) \ Fullscreen mode flag
-    0 value display ( - a ) \ Allegro display handle
-    ALLEGRO_OPENGL ALLEGRO_PROGRAMMABLE_PIPELINE or value display-flags ( - n ) \ Display creation flags
-    0 value builtin-font ( - font ) \ Built-in font handle
-  State Arrays
-    array kbs0 \ Current keyboard state buffer
-    array kbs1 \ Previous keyboard state buffer
-    array ms0 \ Current mouse state buffer
-    array ms1 \ Previous mouse state buffer
+  Event System
+    : event? ( - f ) \ Check for pending events
+    : happened? ( n - f ) \ Check if event type occurred
+    : the-char ( - n ) \ Get character from keyboard event
+    : the-key ( - n ) \ Get keycode from keyboard event
+    : the-mouse ( - x y ) \ Get mouse position
+    : the-mbutton ( - n ) \ Get mouse button
+    : the-wheel ( - n ) \ Get mouse wheel delta
+    : the-walt ( - n ) \ Get mouse movement delta
+  System Hooks
+    defer desktop ( - ) \ Default behavior of 'show
+    defer boot ( - ) \ Application startup code
+    defer onSwitchIn ( - ) \ Window focus handler
+  System Variables
+    variable bye-chain ( - a ) \ Exit handler chain
+    variable fullscreen? ( - a ) \ Fullscreen mode flag
+    variable honing ( - a ) \ Forced reloading control
+    0 value usdelta ( - n ) \ Microsecond delta since last frame
+    0 value next-bmp# ( - n ) \ Next bitmap allocation index
+    constant #bitmaps ( - n ) \ Maximum bitmap count
+    create pen ( - a ) \ Pen position structure
   System Functions
-    : reset-keyboard ( - ) \ Reset keyboard system state
-    : init-allegro ( - ) \ Initialize Allegro subsystems
-    : create-display ( - ) \ Create game display window
-    : poll-keyboard ( - ) \ Update keyboard state buffers
-    : poll-mouse ( - ) \ Update mouse state buffers
-    : reset-mouse ( - ) \ Reset mouse state
-    : file-dialog ( z$:init z$:ptrn z$:mode - a:fn len:fn ) \ Show file selection dialog
-  Aliases
-    alias alqueue \ Event queue handle alias
-    alias almixer \ Audio mixer handle alias
+    : refresh ( - ) \ Flip display and handle input
+    : save-kb ( - ) \ Save keyboard state
+    : restore-kb ( - ) \ Restore keyboard state
+    : .loading ( - ) \ Loading message display
+    : .adding ( - ) \ Adding message display
+    : show> ( - ) \ Set continuation as 'show function
+    : alt? ( - f ) \ Alt key state
+    : at@f ( - f:x f:y ) \ Get pen position as floats
+    : load-bitmap ( a n - allegro-bitmap ) \ Load single bitmap
 
 oop.vfx
   Context Management
@@ -95,17 +100,29 @@ oop.vfx
     : ]] ( - ) \ Exit object context
     : unsafe-[[ ( obj - ) \ Enter object context without safety checks
   Field Definition
+    : field ( ofs size - <name> n ) \ Define field with offset and size
+    : ofield ( size - <name> n ) \ Define object field
     : var ( - <name> ) ( - a ) \ Define instance variable field, me = base
+    : private-var ( - <name> ) \ Define private instance variable
     : static ( - <name> ) ( - a ) \ Define class-level static field, me -> class = base
   Property Access
     : 's ( obj - <name> a ) \ Property access operator
   Classes
-    : create-class ( c$ - class ) ( - class ) \ Create new class
-    : :: ( - <message> <code> ; ) \ Define method implementation
+    var cla ( - a ) \ Current object's class field
+    constant /class ( - n ) \ Class size constant
+    create class% ( - class ) \ Base class object
+    : create-class ( $ - ) \ Create class with name
+    : statics: ( class - ) \ Enter static scope for class
+    : :: ( class - <msg> <code> ; ) \ Define class response for message
   Messages
     : m: ( - <name> <code> ; ) ( ... obj - ... ) \ Define message with default behavior
+    : init ( - ) \ Standard initialization message
+    : destruct ( - ) \ Standard destruction message
   Object Creation
     : >object ( obj class - class:obj ) \ Initialize object at memory location
+  Error Handling
+    static oexec-error-handler ( - a ) \ Error handler for object execution
+    : oexec ( ... xt - ... ) \ Execute with error handling
   Built-in Classes
     class object% \ Base object class
 
@@ -189,6 +206,11 @@ misc.vfx
     : >zpad ( a:str len:str - z$ ) \ Copy to zero-terminated pad
     : >pad ( a:str len:str - c$ ) \ Copy to counted string pad
     : $+ ( c$ a:str len:str - c$ ) \ Append to counted string
+    : >lowercase ( a c - a c ) \ Convert to lowercase
+    : lpc ( n - n ) \ Lowercase character
+    : preparse ( - a len ) \ Parse without consuming
+    : preword ( - a ) \ Get next word
+    : se" ( - a n ) \ String literal alias
   Path Manipulation
     : -path ( a:path len:path - a:fn len:fn ) \ Remove directory path from filepath
     : -ext ( a:path len:path - a:name len:name ) \ Remove extension from filepath
@@ -199,6 +221,13 @@ misc.vfx
     : bytes-left ( id - n ) \ Get bytes remaining in file
     : write ( a:src len:src a:fn len:fn - ) \ Write data to file (replace)
     : read ( a:buf len:buf a:fn len:fn - ) \ Read data from file (all)
+    : file-exists? ( a n - f ) \ Check if file exists
+    : fileexists? ( a n - f ) \ Alias for file-exists?
+    : file[ ( - ) \ Start file creation
+    : data, ( - ) \ Write data to file
+    : line, ( - ) \ Write line to file
+    : nl, ( - ) \ Write newline to file
+    : file] ( - ) \ Close file
   Debug/Development
     : .s ( - ) \ Smart stack display
     : f.s ( - ) \ Float stack display
@@ -213,21 +242,28 @@ misc.vfx
   Control Structures
     : for ( limit - ) \ Counted loop alias
     : :now ( - <name> ) \ Immediate colon definition and execution
-    : link, ( a - ) \ Link address into chain
-    : do-chain ( a - ) \ Execute chain of linked words
+    : link ( list - ) \ Link to list
+    : do-chain ( list - ) \ Execute chain of linked words
+    : | ( - ) \ Locals alias
+    : cd ( - ) \ Current working directory alias
+    : 2- ( a b c - a-c b-c ) \ Subtract from pair
+    : aka ( - ) \ Synonym alias
   Data Structures
-    : jumptable ( len - <name> ) ( ... - ... ) \ Create named jump table
-    : cstring ( len - <name> ) ( - $ ) \ Create counted string buffer
+    : jumptable ( a - <name> ) \ Create jump table
+    : cstring ( - <name> ) ( - $ ) \ Create counted string buffer
   Math
-    : clamp ( val min max - val ) \ Clamp value to range
-    : umod ( u1 u2 - rem ) \ Unsigned modulo
+    : clamp ( n min max - n ) \ Clamp value to range
+    : umod ( a b - n ) \ Unsigned modulo
     : h. ( n - ) \ Print in hexadecimal
+    : f>ds ( f - n ) \ Float to data stack
   Advanced
     : d[ ( a - ) \ Save dictionary pointer and set it
     : d] ( - ) \ Restore dictionary pointer
 
 scope.vfx
   Scope Control
+    variable public-xt ( - a ) \ Public execution token
+    : $private ( a n - ) \ Enter private scope by name
     : private ( - ) \ Create / switch to private wordlist
     : public ( - ) \ Switch to public wordlist
     : || ( - <code> ) \ Interpret code in private context
@@ -342,14 +378,16 @@ repl.vfx
 
 debug/oversight.vfx
   Validation Levels
-    : crucial ( - ) \ Essential safety level
-    : charmful ( - ) \ Non-critical level
-    : else-warn ( - ) \ Convert failure to warning
+    constant crucial ( - n ) \ Essential safety level
+    constant charmful ( - n ) \ Non-critical level
+    : else-warn ( n - n ) \ Convert failure to warning
   Control Variables
     variable safety ( - a ) \ Master validation enable/disable flag
     variable validations ( - a ) \ Compilation-time validation control
+    variable current-validation ( - a ) \ Current validation context
+    variable #contracts ( - a ) \ Number of active contracts
   Validator Definition
-    : test: ( - <name> ) \ Define validator with cached source
+    : test: ( n:type - <name> ) \ Define validator with cached source
   Contract Attachment
     : before ( - <target> <validator> validation ) \ Attach pre-condition validator
     : after ( - <target> <validator> validation ) \ Attach post-condition validator
@@ -362,11 +400,19 @@ debug/oversight.vfx
     : wrap-word ( - <name> ) \ Add validations to existing word
   Inspection
     : csee ( - <word> ) \ Display contract information
-    : xt>contract ( xt - a ) \ Get contract record
+    : >contract ( xt - contract ) \ Get contract from execution token
+    : .validation ( validation - ) \ Print validation info
   Control
     : init-oversight ( - ) \ Initialize oversight system
+    : shutdown-oversight ( - ) \ Shut down oversight system
     : disable-validator ( xt - ) \ Disable specific validator
     : enable-validator ( xt - ) \ Enable validator
+    : fix? ( n - n f ) \ Check if should self-fix
+  Logging
+    : log-warning ( a n - ) \ Log warning message
+    : log-error ( a n - ) \ Log error message
+    : log-debug ( a n - ) \ Log debug message
+    : log-info ( a n - ) \ Log info message
 
 keys.vfx
   Letter Keys

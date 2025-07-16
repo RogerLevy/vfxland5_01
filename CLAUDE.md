@@ -144,6 +144,16 @@ Standard pattern: `think` → `render` → `animate` → repeat
 
 When creating status.txt files, follow the format established in doc/engineer/status.txt
 
+## Version Control
+
+- Git repository initialized with main branch
+- All VFX Forth source files (`.vfx`) are tracked
+- Binary assets in `dat/` directories are tracked
+- Build artifacts and temporary files excluded via `.gitignore`
+- Git credentials configured:
+  - user.name: "Roger"
+  - user.email: "roger@example.com"
+
 ## Codebase Backups
 
 Location: ../01_backups

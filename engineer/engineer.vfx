@@ -152,7 +152,7 @@ public
 public
 
 65536 ?constant #bitmaps
-create bitmaps #bitmaps cells allot&erase
+|| create bitmaps #bitmaps cells allot&erase
 
 variable next-bmp# 1 next-bmp# !
 
@@ -196,7 +196,7 @@ create pen 0 , 0 , \ int
 : $global-create
     current @ >r also forth definitions $create previous r> current ! ;
 
-: add-bitmap-asset ( a n - ) \ path
+|| : add-bitmap-asset ( a n - ) \ path
     .adding 
     2dup load-bitmap +bitmap ( n ) 
     >r -path >pad
@@ -407,7 +407,7 @@ defer pump
 : show> ( - ) ( - )
     r> dup 'show ! cls execute ; 
 
-: poll ( - )
+|| : poll ( - )
     poll-keyboard  <alt> held? <altgr> held? or to alt? ;
 
 : refresh ( - )
