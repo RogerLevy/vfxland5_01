@@ -1,0 +1,18 @@
+require title.vfx
+\ require death.vfx
+\ require subscreen.vfx
+\ require savegame.vfx
+\ require %idir%\..\supershow\ui\ui.vfx
+require starfield.vfx
+
+\ Game
+: backdrop  0 0 at backdrop.png put ;
+: scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
+: render  backdrop .75 .75 scale> starfield hud sprites animate ;
+: think  step ;
+: game  show> think render ;
+: boot-darkblue  init-supershow title ;
+
+\ Integrate
+' boot-darkblue is boot
+init-supershow 

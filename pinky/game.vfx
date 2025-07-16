@@ -1,0 +1,6 @@
+: render  bg  sprites ;
+: think  animate  step ;
+: (game)  show>  crt>  think  render  1 gamelife +! ;
+: game  (game) ;
+: pinky-boot init-supershow 0 gamelife ! 1 level game ;
+' pinky-boot is boot

@@ -1,0 +1,31 @@
+tris = life and ammunition
+slight repulsion
+when you get hit, 1~? tris come out
+
+
+
+dark blue (normal mode, and also the demo?)
+    impervious
+    background doesn't change
+    no barriers
+    no leaderboard
+    demo: when you reach the boss, you get a screen that says "END OF DEMO"    
+    
+    solo ending in monochrome
+    
+    
+break thru (resilient mode, the real game)
+    death + auto respawn for 100 tris
+    game over when out of tris
+    background changes color in certain situations
+    3 barriers to break thru
+    online ending in color, steal tris from each other
+        or work together to get more tris
+    leaderboard
+
+
+after beating break thru for the first time, you unlock normal +,
+    which is the normal mode but with color and maybe some new secrets
+
+the emergence of color should feel exciting
+as should the encounter with the boss after purchasing the game

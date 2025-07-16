@@ -1,0 +1,5 @@
+actor-class wintext%
+
+wintext :: init
+    win.png bmp !
+;

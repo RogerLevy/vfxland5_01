@@ -1,0 +1,69 @@
+\ ------------------------------------------------------------------------------
+\ Debug Intercept System
+\  Transparently wraps word definitions with debug code during compilation
+\ ------------------------------------------------------------------------------
+
+|| variable intercepter
+|| create buf 65536 allot&erase
+|| variable intercepts-loaded?
+
+\ Parse intercept definitions from file
+|| : find-intercept ( a n - a' n' true | false )
+    | n a |
+    buf begin
+        dup c@ while  \ Not at end
+        dup zcount 2dup s" :" compare 0= if  \ Found "name:"
+            2drop drop
+            over n compare 0= if  \ Name matches
+                2drop
+                \ Skip to next line, find code
+                begin dup c@ $0A <> while 1+ repeat 1+  \ Skip line
+                dup zcount true exit
+            then
+            \ Skip this line
+            begin dup c@ $0A <> while 1+ repeat 1+
+        else
+            \ Skip this line  
+            begin dup c@ $0A <> while 1+ repeat 1+
+        then
+    repeat
+    3drop false ;
+
+|| : load-intercepts ( - )
+    intercepts-loaded? @ ?exit
+    s" debug-intercepts.vfx" fileexist? -exit
+    buf 65536 s" debug-intercepts.vfx" read
+    intercepts-loaded? on ;
+
+\ Override semicolon to inject debug code
+: ;
+    intercepter @ if
+        last @ >name count find-intercept if
+            evaluate  \ Compile intercept code inline
+        then
+    then
+    postpone ;
+; immediate
+
+\ Control words
+|| : debug-intercepts-on ( - )
+    load-intercepts
+    intercepter on ;
+
+|| : debug-intercepts-off ( - )
+    intercepter off ;
+
+\ Example intercepts file format (debug-intercepts.vfx):
+\ bitmap: dup 0 65536 within 0= if cr ." Bitmap out of range: " . 0 exit then
+\ +bitmap: cr ." Adding bitmap " dup .
+\ bmp!: cr ." Setting bitmap to " dup .
+\ put: dup 0= if cr ." WARNING: Drawing null bitmap!" then
+\ eyedrop: cr ." Eyedropping at " at@ 2.
+\ dot: cr ." Painting pixel at " at@ 2.
+
+\ Integration with existing debug system
+: debug-cold ( - )
+    debug @ if debug-intercepts-on then
+    [ ' EntryPoint >body @ compile, ] ;
+
+' debug-cold is EntryPoint

@@ -1,0 +1,86 @@
+\ ------------------------------------------------------------------------------
+\ Caverns of Kevin Savegame
+\
+\ Auto-save system for Caverns of Kevin
+\ The idea is you can't just rage quit and start a new game - the only way to
+\ start a new game is to die (or delete the save file because you're a lameoid).
+\ Why is this important to me?  I really want the player to feel like Kevin's
+\ life is real, and their journeys together - long or short - are real.  
+\ In this game you can "mess up" only to discover an alternate way, as in real
+\ life. I want the player to learn this early on and never give up. (Though, 
+\ there are deadly traps, but there are no softlocks.)
+\ When you quit, the game automatically saves the entire game state,
+\ which is the inventory, some variables, the world map, and each screen's
+\ actors.  The actor's scripts are responsible for saving any specific 
+\ actor state via the PEEKED message, because only class, position and priority
+\ are automatically saved.
+\ If the save file exists, it is automatically resumed instead of the title
+\ screen appearing.
+\ ------------------------------------------------------------------------------
+
+\ Chunks
+|| 0 value #1
+|| : fn  s" kevin.sav" ;
+|| : read  #1 read-file throw drop ;
+|| : write  #1 write-file throw ;
+|| : write-chunk  >r rp@ 4 write r> write ;
+|| : read-int  0 >r rp@ 4 read r> ;
+|| : read-chunk  ( - a n ) read-int dup allocate throw swap 2dup read ;
+|| : cr's  2dup  over + swap do  i c@ $a = if $20 i c! then  loop ; 
+|| : eval-chunk  read-chunk over >r 2dup type cr's evaluate r> free drop ;
+|| : done?  #1 file-position throw #1 file-size throw 1 0 d- d> ;
+|| : c"type"  ( $ - ) .\" c\" " count type .\" \"" space ;
+
+\ Serializing the game state
+|| : write-inventory
+    s[ ." divest" cr s] write-chunk 
+    inventory walk> s[ ? c"type" ." get" cr s] write-chunk ;
+|| : write-variables
+    s[ #deaths ? ." #deaths !" cr s] write-chunk 
+    s[ item$ c"type" ." select" cr s] write-chunk ;
+|| : write-actors
+    actives>
+        cla @ object% = ?exit
+        r# @ 0< ?exit
+        s[
+            me actor# . ." priority " 
+            x 2@ 2p>s swap . . ." at " 
+            cla @ .name ."  *[[ "
+            me peeked
+            ." ]] " cr
+        s] write-chunk ;
+|| : write-persisters ;
+: read-world ( - )
+    clear-temps
+    read-chunk over >r mram swap move
+    r> free drop ;
+|| : write-world
+    stow
+    s" read-world " write-chunk
+    mram  /screen #rooms *  write-chunk
+    #rooms for
+        i room takeout
+        s[ i . ." room clear " cr s] write-chunk
+        write-actors
+        s[ ." stow" cr s] write-chunk
+        stow
+    loop
+    write-persisters ;
+|| : read-savefile
+    begin eval-chunk done? until ;
+: save ( - )
+    fn w/o create-file throw to #1
+    write-variables
+    write-inventory
+    p1 's x 2@ room# @
+        write-world
+    s[ . ." warp " 2p. ." ?kevin 's x 2!" s] 2dup write-chunk evaluate
+    #1 close-file throw ;
+
+\ Resuming the game
+: resume ( - )
+    fn r/o open-file throw to #1
+    read-savefile
+    #1 close-file throw ;
+: save-exists? ( - f )
+    fn file-exists? ;

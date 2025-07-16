@@ -1,0 +1,42 @@
+\ ------------------------------------------------------------------------------
+\ Caverns of Kevin Subscreen
+\
+\ ═║╔╗╚╝
+\ ------------------------------------------------------------------------------
+
+variable item#
+4 constant #items
+create subscreen.txt  s" subscreen.txt" file, 0 c,
+    \ A bit of conversion
+    -- : clean
+        begin dup c@ ?dup while
+            $d = if $20 over c! then
+            1 +
+        repeat drop ;
+    subscreen.txt clean
+
+|| : $=  >r count r> count compare 0= ;
+|| : ?cursor
+    dup item$ $= -exit  cursor.png cput ;
+|| : ?item+ | $ |
+    $ have if $ ?cursor itembmp cput then 
+    40 0 +at ;
+|| : !item#  #items for i item item$ $= if i item# ! unloop exit then loop ;
+|| : items  #items for i item ?item+ loop ;
+|| : +curs | n |
+    #items for
+        item# @ n + #items umod item# !
+        item# @ item dup have if select unloop exit else drop then
+    loop ;
+: subscreen
+    `subscreen
+    blank
+    show>
+        ?select
+        <subscreen> pressed? if blank s" game" evaluate then
+        <left> pressed? if -1 +curs then
+        <right> pressed? if 1 +curs then
+        crt>
+            subscreen.txt zcount print
+            60 60 at items 
+            29 8 * 24 8 * at  s[ c" money" have 4 .r s] print ;

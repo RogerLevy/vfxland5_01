@@ -1,0 +1,3 @@
+include %idir%\fx.vfx
+include %idir%\..\supershow\ui\ui.vfx
+include %idir%\dialog.vfx

@@ -1,0 +1,28 @@
+2D shoot'em ups use several common patterns for enemy movement:
+
+Path-based movement: Enemies follow predefined curves or waypoints. Classic
+patterns include sine waves, spirals, and zigzags. Games often use spline
+curves or mathematical functions to create smooth, predictable paths.
+
+Formation flying: Groups of enemies maintain relative positions while moving
+together, like the iconic Galaga enemy swarms or R-Type's snake-like chains.
+
+Homing/tracking: Enemies adjust their movement to pursue the player. This
+ranges from simple direction changes toward the player's position to more
+sophisticated prediction algorithms.
+
+State-based behavior: Enemies switch between movement modes - entering from
+screen edges, attacking in formation, then breaking off into individual
+patterns.
+
+Scripted sequences: Timed movement commands that create dramatic moments, like
+enemies swooping in specific patterns or bosses with multi-phase movement
+routines.
+
+Physics-based: Some enemies use momentum, acceleration, and collision responses
+rather than pure positional updates.
+
+Most games combine these approaches - enemies might enter via formation flying,
+break into individual sine wave patterns, then switch to homing behavior when
+players get close. The key is balancing predictability (so players can learn
+patterns) with enough variation to stay engaging.

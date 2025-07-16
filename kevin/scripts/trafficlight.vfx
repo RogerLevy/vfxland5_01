@@ -1,0 +1,11 @@
+actor-class trafficlight%
+trafficlight.png 20 40 tileset ts
+: bottom  y @ bmp @ bmpwh nip 2 / s>p + ;
+: stand   bottom y @ - gap 2 / s>p - negate y +! ;
+: it who> me trafficlight% is? ;
+
+public
+: redlight  it ?dup -exit as> ts 1 + bmp ! ;
+: greenlight  it ?dup -exit as> ts bmp ! ;
+trafficlight :: init redlight stand ;
+

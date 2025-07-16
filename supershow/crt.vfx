@@ -1,0 +1,52 @@
+\ ------------------------------------------------------------------------------
+\ CRT shader (640x240)
+\ ------------------------------------------------------------------------------
+
+|| create crtea.fs    s" %idir%\glsl\crtea.fs" file,
+|| create default.fs  s" %idir%\glsl\default.fs" file,
+|| create default.vs  s" %idir%\glsl\default.vs" file,
+|| 0 value crtea:s
+|| 0 value buf:bmp
+|| 0 value tv:bmp
+|| : filter
+    tv:bmp al_set_target_bitmap
+    crtea:s shade
+    0.025e z" curve" float!
+    0.8e z" tcurve" float!
+    2e z" sharpness" float!
+    640e 240e  1e 640e f/  1e 240e f/  z" sourceSize" vec4!
+    1280e 960e  1e 1280e f/  1e 960e f/  z" targetSize" vec4!
+    0.5e z" scanstr" float!
+    buf:bmp 0e 0e 0e 0e 2e 4e 0e 0 al_draw_scaled_rotated_bitmap
+;
+|| : (tv)
+    +m
+    buf:bmp al_set_target_bitmap
+    0e 0e 0e 1e al_clear_to_color  0 0 at 
+    identity
+    0e 0e 2e 1e 0e transform
+    \ 0 0 640 240 al_set_clipping_rectangle
+    r> execute
+    ['] filter catch
+    0 shade
+    display al_get_backbuffer al_set_target_bitmap
+    throw
+    -m
+    tv:bmp 0e 0e 0e 0e 0.25e 0.25e 0e 0 al_draw_scaled_rotated_bitmap
+;
+: init-crt ( - )
+    default.vs crtea.fs load-shader to crtea:s
+    640 240 al_create_bitmap to buf:bmp
+    ALLEGRO_MIN_LINEAR ALLEGRO_MAG_LINEAR or al_set_new_bitmap_flags
+    1280 960 al_create_bitmap to tv:bmp
+    $1000 al_set_new_bitmap_flags ;
+: crt> ( - <code;> )
+    postpone (tv) discard-sinline ; immediate
+
+\ Kickoff
+prune:  cr ." Destroying CRT objects"
+    buf:bmp al_destroy_bitmap
+    tv:bmp al_destroy_bitmap
+    crtea:s al_destroy_shader ;
+   
+init-crt

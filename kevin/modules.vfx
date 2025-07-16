@@ -1,0 +1,2 @@
+include fx.vfx              \ common effects for the game
+include savegame.vfx        \ save and load the game state

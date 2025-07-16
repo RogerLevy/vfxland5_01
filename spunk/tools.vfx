@@ -1,0 +1,19 @@
+\ Load tools
+path cwd ..\spunk
+    \ Tile Editor
+    cwd te
+        include te.vfx
+    cwd ..
+    \ Level Editor
+    cwd le
+        include le.vfx
+    cwd ..
+    \ Bitmap Editor
+    cwd be
+        include be.vfx
+    cwd ..
+$cwd
+s" game" <f1> func
+s" te" <f2> func
+s" le" <f3> func
+s" be" <f4> func

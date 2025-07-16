@@ -1,0 +1,28 @@
+\ ------------------------------------------------------------------------------
+\ Blocks (simple)
+\ ------------------------------------------------------------------------------
+private
+
+65536 constant #blocks
+0 value buf
+
+: write ( a n path n - )
+    w/o create-file if cr ." Error creating file" then >r
+    r@ write-file if cr ." Error writing to file" then
+    r> close-file if cr ." Error closing file" then  ;
+
+: read ( a n path n - )
+    r/o open-file 0= if >r
+        ( a n ) r@ read-file throw drop 
+        r> close-file drop
+    else 2drop drop then ;
+
+public
+: blocks  1024 * ;
+: block  [ #blocks 1 - ] literal and blocks buf + ;
+: flush  buf #blocks blocks s" blocks.blk" write ;
+: init-blocks
+    #blocks blocks allocate drop to buf
+    buf #blocks blocks s" blocks.blk" read ;
+
+init-blocks

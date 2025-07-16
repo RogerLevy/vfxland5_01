@@ -1,0 +1,105 @@
+\ ------------------------------------------------------------------------------
+\ Dark Blue Title Screen
+\ ------------------------------------------------------------------------------
+require starfield.vfx
+require tween.vfx
+
+title-sheet.png 291 41 tileset title-ts
+
+private
+variable gamemode
+
+: halt-all
+    actives>  halt ;
+
+\ Logo
+: *title
+    *actor as>
+        title-ts 0 tile bmp !
+        me ;
+
+\ Movie
+
+: part4
+    *snd-02*
+    just
+    1.0 timer>
+    s" start" evaluate ;
+
+: *selector
+    title-arrow% one as> act>
+        <left> pressed? if *snd-01* 0 gamemode ! then
+        <right> pressed? if *snd-01* 1 gamemode ! then
+        gamemode @ 0 = if 128. 150. x 2! bmp @ h| bmp ! then
+        gamemode @ 1 = if 180. 150. x 2! bmp @ $ffff and bmp ! then ;        
+
+: part3
+    160 100 at *title drop
+    90 150 at text-normal% one [[ ]]
+    230 150 at text-resilient% one [[ ]]
+    *selector
+    0.1 timer>  *actor as>  act>
+        <start> pressed? if unload  part4 then ;
+
+: part2
+    1.0 timer>  part3 ;
+
+\ : ease-out
+\     1. n1 @ - 1. min p>f 2.2e f** f>p bmp @ bmph 1 - p* ;
+
+: logoh title-ts 0 tile bmph ;
+
+cell array: ntable
+    0 ,
+    1 ,
+    1 ,
+    1 ,
+    1 ,
+    2 ,
+    2 ,
+    3 ,
+    4 ,
+    7 ,
+    12 ,
+    20 ,
+    28 ,
+    34 ,
+    38 ,
+    39 ,
+    39 ,
+    40 ,
+array;
+
+: revealing n1 @ ntable n[] @ ;
+
+: part1
+    just
+    1.0 timer>
+    160 100 at *title as>
+        1. n1 !
+        linear ease-in n1 0 0.3 tween
+        act&>
+            title-ts revealing tile bmp !
+            n1 @ 0 = if halt part2 then ;
+
+: movie
+    part1 ;
+
+variable skipped
+: ?skip
+    skipped @ ?exit
+    <start> pressed? if
+        cr ." SKIP"
+        skipped on part3
+    then ;
+: skippable
+    skipped off ;
+
+: backdrop
+    0 0 at backdrop.png put ;
+
+public
+
+: title
+    title` ( skippable ) movie 
+    show> ?skip step backdrop starfield sprites ;

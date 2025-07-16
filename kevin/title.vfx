@@ -1,0 +1,94 @@
+\ ------------------------------------------------------------------------------
+\ Caverns of Kevin Title Screen
+\ ------------------------------------------------------------------------------
+
+require scripts\kevin.vfx
+caverns-of-kevin-crop.png 10 10 tileset title.ts
+caverns-of-kevin-crop.png value b
+|| : ?flip  4 rnd 24 << or ;
+|| : randoms,  for  32 rnd ( ?flip ) ,  loop ;
+|| create bgt /screen cell/ randoms,
+
+\ Scrolling
+|| : row 0 swap bgt spot ;
+|| : (scroll)  1 row  0 row  tmh 1 - tmw * cells move ;
+|| : d[ dp @ here ;
+|| : ]d swap dp ! ;
+|| : scroll
+    (scroll) d[ tmw randoms, ]d tmh 1 - row  tmw cells  move ;
+|| : *scroller  *actor dup as> act> 0.06 passed? -exit scroll ;
+    
+\ Crumble effect
+|| variable c
+|| : scroll0
+    scroll
+    tmw for 100 rnd over < if 0 i tmh 1 - bgt spot ! then loop drop ;
+|| : *crumbler  0 c ! *actor dup as> act> 0.06 passed? -exit c @ scroll0 2 c +! ;
+
+\ Kevin
+|| : *kevin  *actor dup as>  kevin.ts 39 tile bmp !
+    act> 1. y +! y @ 120. < ?exit
+    act&> 2.0 passed? -exit
+    act> 2. y +! ;
+\ : *title  *actor dup as>  caverns-of-kevin.png bmp ! ; 
+|| synonym startx n1
+|| synonym starty n2
+
+\ Piece of the logo
+|| : *piece ( n - ) 
+    *actor swap over as> bmp !
+        x 2@ startx 2!
+        act>
+            12. rnd 6. - 12. rnd 6. -
+            time @ 2. min 2. p/ 1. 0. lerp dup 2p*
+            startx 2@ 2+ x 2! ;    
+
+\ Logo
+|| : middle  bmpwh 2 / swap 2 / swap ;
+|| : *title
+    *actor dup as>
+    0
+    b bmpwh nip 10 / for
+        b bmpwh drop 10 / for
+            me  b middle 2negate i 10 * j 10 * 2+  from
+            dup title.ts swap tile *piece drop
+            1 + 
+        loop 
+    loop drop ;
+|| : explode
+    actives>
+        halt
+        x 2@ 155. 120. 2- ang 15. rnd + .25 vec
+            x 2@ 155. 120. dist 15 / dup 2p*
+            vx 2!
+        act> vx 2@ ang vx 2@ hypot 1.05 p* vec vx 2! ;
+
+\ Movie
+|| 0 value s
+|| 0 value k
+|| : haltall  actives>  halt ;
+|| : part4
+    explode
+    1.5 timer> s" restart" evaluate ;
+|| : part3 ( n - )
+    cr ." part3 "
+    bgt /screen erase
+    160 120 at if
+        just *title drop haltall
+    else
+        *title drop
+        s out
+    then 
+    0.1 timer>  *actor as>  act>  <start> pressed? -exit  unload  part4 ;
+|| : part2
+    160 -20 at  *kevin to k
+    s out *crumbler to s
+    5.0 timer>  0 part3 ;
+|| : part1
+    clear  *scroller to s  2.0 timer>  part2 ;
+|| : movie  part1 ;
+|| : skippable  *actor as> act> <start> pressed? -exit unload 1 part3 ;
+|| : title-bg  0 0 at  bgt lay ;
+
+: title
+    `title movie skippable show> step crt> title-bg sprites ;

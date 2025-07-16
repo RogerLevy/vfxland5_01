@@ -1,0 +1,336 @@
+\ ------------------------------------------------------------------------------
+\ Stage - Actor System
+\ ------------------------------------------------------------------------------
+
+variable gamelife
+1024 ?constant #actors
+#actors 8 * ?constant #temps
+512 ?constant /actor
+
+#actors /actor array actors 
+#temps /actor array temps
+
+var en
+var x var y
+var vx var vy
+var bmp
+var x1 var y1 var w1 var h1 \ hitbox 1 (objects)
+var beha
+var time  \ ms
+var n1 var n2
+var phys
+var prio  \ 0 = behind BG, <>0 = in front of BG
+var disabled  \ controls behavior and physics
+
+\ =============================================================================
+\ Actor Access Words
+\ =============================================================================
+
+: free?  's en @ 0= ;
+: as> ( a - <code> ; ) [[ r> execute ]] ;
+: actor ( n - a ) actors [] ;
+: actor# ( a - n ) actors index ;
+: act> ( - ) ( - ) 0 time !  r> beha ! ; 
+: act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
+: physics> ( - ) ( - ) r> phys ! ;
+
+: all> ( - ) ( - )
+    r> {: xt :}
+    me unsafe-[[ 
+    0 actor to me
+    #actors for
+        xt execute 
+        /actor +to me
+    loop
+    ]] ; 
+
+: actives> ( - ) ( - )
+    r> {: xt :}
+    me unsafe-[[
+    0 actor to me
+    #actors for
+        en @ if xt execute then
+        /actor +to me
+    loop
+    ]] ; 
+
+\ =============================================================================
+\ Actor Serialization
+\ =============================================================================
+
+m: peeked ( - ) ;
+
+|| : .en ( - )
+    en @ if ." (ACTIVE)" else ." (FREE)" then ;
+
+|| : (peek) ( - )
+    as> me actor# . cla @ .name .en space x 2p?  me peeked ;
+
+: peek ( actor - )
+    ['] (peek) catch drop ;
+
+: !" ( - <var>" )
+    '"' parse 2dup 2>r
+    f" %s ?" evaluate
+    2r> fe" .\" %s ! \"" evaluate ; immediate
+
+: p!" ( - <var>" )
+    '"' parse 2dup 2>r
+    f" %s p?" evaluate
+    2r> fe" %p .\" %s ! \"" evaluate ; immediate
+
+\ =============================================================================
+\ Actor Errors
+\ =============================================================================
+
+: disabled?  's disabled @ ;
+: disable  's disabled on ; 
+: ?disabled  disabled @ if r> drop then ;
+
+: behave beha @ oexec ;
+|| : (think)  actives> ?disabled behave ;
+|| : (move)  actives> ?disabled phys @ oexec ;
+
+variable gamelife
+0 0 2value gametime
+
+: +time ( - )
+    gametime usdelta 0 d+ to gametime  1 gamelife +! ;
+
+|| : (+time) ( - )
+    +time actives> ?disabled pdelta time +! ;
+
+: step ( - )
+    (+time) (think) (move) ;
+
+\ =============================================================================
+\ Find actor
+\ =============================================================================
+
+|| 0 value xt
+
+|| : (find) ( 0 actor - 0|actor f )
+    to me
+    en @ 0= ?dup ?exit
+    xt execute if me swap else -1 then ;
+
+: who> ( - actor ) ( - f )
+    me >r
+    r> to xt
+    0 ['] (find) actors each
+    r> to me ; 
+
+\ =============================================================================
+\ Actor drawing
+\ =============================================================================
+
+: ?pillory ( - )
+    me disabled? if
+        12 color s" !" print
+    then ;
+
+: sprite ( - )
+    x 2@ 2p>s at bmp @ cput ;
+
+: backsprites ( - )
+    hold> actives> prio @ ?exit sprite ?pillory ;
+
+: sprites ( - )
+    hold> actives> prio @ -exit sprite ?pillory ;
+
+\ =============================================================================
+\ Actor management
+\ =============================================================================
+
+variable next#
+
+create default object% , /actor allot&erase
+
+: floating ( - )
+    physics> vx 2@ x 2+! ;
+
+default [[
+    en on
+    prio on
+    -5 -5 x1 2!  10 10 w1 2!
+    floating
+]]
+
+: priority ( n - )
+    0 #actors 1 - clamp next# ! ;
+
+: unload ( - )
+    en off  0 bmp !  0 beha !  0 phys ! ;
+
+: just ( - )
+    \ cr ." just >> All actors cleared!"
+    0 next# !  actives>  unload ;
+
+: 1actor ( - )
+    default cell+ me cell+ /actor cell- move
+    pen 2@ 2s>p x 2! ;
+
+validations dup @ swap off
+\ Need to circumvent validation for speed and because
+\ the pools start uninitialized.
+|| : unsafe-free?  's en @ 0= ;
+validations !
+
+: (one) ( class - actor )
+    {: c | saved-me :} 
+    me to saved-me
+    #actors for
+        next# @ actor dup unsafe-free? if
+            c >object to me
+            1actor
+            me
+            saved-me to me
+            unloop exit
+        then  drop
+        next# @ 1 + #actors mod next# !
+    loop  -1 abort" one : Out of actors." ;
+
+: one ( class - actor )
+    (one) dup init ;
+    
+: *actor ( - actor )
+    object% one ;
+
+create dummy /actor allot&erase
+dummy object% >object drop
+
+\ =============================================================================
+\ Object collisions
+\ =============================================================================
+
+: hitbox@ ( - x1 y1 x2 y2 )
+    x 2@ 2p>s x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;
+    
+: hit? ( obj obj - f )
+    over free? over free? or if 2drop 0 exit then
+    >r [[ hitbox@ ]] r> [[ hitbox@ ]] overlap? ;
+
+\ =============================================================================
+\ Scripting tools
+\ =============================================================================
+
+: att ( col row - ) gap dup 2*  gap 2 / dup 2+  at ;
+
+: *[[ ( class - <code> ]] )
+    \ Parse-ahead instantiation for serialized objects/actors
+    \ Allows property settings between *[[ ]] that can be picked up by INIT
+    s" (one) [[ " evaluate
+    ']' parse evaluate  1 >in +!
+    s" me init ]]" evaluate ; immediate
+
+: in? ( - f ) x 2@ 2p>s 0 239 within >r 0 319 within r> and ;
+: ?out ( - f ) in? not dup if unload exit then ;
+: passed? ( n - f ) time @ <= dup if 0 time ! then ;
+: from ( actor x y - ) rot as> x 2@ 2p>s 2+ at  ; \ me actor# priority ;
+: halt  beha off  0 0 vx 2! ;
+: morph ( class - )
+    >r x 2@ vx 2@
+    default me /actor move
+    r> cla !
+    vx 2! x 2! init ;
+
+: is? ( actor class - f )
+    swap 's cla @ = ;
+
+: out ( actor - )
+    [[ unload ]] ;
+
+: vanish  y @ 16384. or y ! ;
+: appear  y @ 16384. invert and y ! ;
+: copy ( a1 a2 - a2 ) dup >r /actor move r> ;
+: expanded ( a1 n - a2 )
+    swap dummy copy as>
+        dup negate dup x1 2+! 2 * dup w1 2+!
+        me ;
+: hitbox! ( x y w h - ) w1 2! x1 2! ;
+: freemove ( - )
+    halt floating act>
+        <left> held? if -2. x +! then
+        <right> held? if 2. x +! then
+        <up> held? if -2. y +! then
+        <down> held? if 2. y +! then ;
+
+\ =============================================================================
+\ Timer actors
+\ =============================================================================
+
+|| synonym xt1 n2
+
+c" timer%" create-class
+
+: clear-timers ( -- )
+    actives> me timer% is? -exit unload ;
+
+|| : (timer) ( time. xt -- )
+    xt1 ! n1 ! act> n1 @ passed? -exit unload xt1 @ execute ;
+
+: timer> ( time. - ) ( - )
+    r> timer% one [[ (timer) ]] ;
+
+\ =============================================================================
+\ Secondary actor storage
+\ =============================================================================
+
+|| variable tnext#
+: temp ( n - a ) temps [] ;
+: *temp ( - a )
+    #temps for
+        tnext# @ temp dup unsafe-free? if
+            unloop exit
+        then
+        drop
+        tnext# @ 1 + #temps mod tnext# !
+    loop  -1 abort" Out of temps" ;
+
+: temps> ( - ) ( - )
+    r> #temps for
+        i swap >r temp unsafe-[[ r@ execute ]] r>
+    loop drop ;
+
+: clear-temps ( - )
+    temps> unload ;
+
+\ =============================================================================
+\ Script Classes
+\ =============================================================================
+
+|| cstring classname$
+
+: script-class ( - <name> class )
+    \ Create a script class with its own private scope (if it doesn't already exist)
+    \ Sets ME to a false object of the class for convenient static assignments
+    only forth definitions
+    bl word count classname$ place
+    classname$ find not nip if
+        classname$ create-class
+    then
+    classname$ count -% f" `%s" $private
+    classname$ count evaluate
+    dup statics: ;
+
+: actor-oexec-error-handler ( n - n )
+    dup -exit
+    cr ." oexec >> Error on actor, disabling: " me peek
+    me disable ;
+    
+static autoclass
+    
+|| : ?hide-autoclass ( a len - )
+    >pad find if
+        dup execute 's autoclass @ if
+            \ Hide existing autoclass if any to fix LOCATE,
+            \ which would otherwise take us to the call to LOAD-SCRIPTS
+            \ in cases where we want to (re)define it within a script.
+            >name hidename
+        else drop then 
+    else drop then ;
+
+: actor-class ( - <name> )
+    bl preparse ?hide-autoclass
+    script-class
+    ['] actor-oexec-error-handler swap 's oexec-error-handler ! ;

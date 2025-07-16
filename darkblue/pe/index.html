@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bezier Path Editor</title>
+    <style>
+        body { margin: 0; background: #222; color: #fff; font-family: Arial, sans-serif; }
+        canvas { border: 1px solid #666; display: block; margin: 10px auto; background: #333; }
+        .controls { 
+            text-align: center; 
+            padding: 10px; 
+            background: #444; 
+            border-bottom: 1px solid #666; 
+        }
+        .control-group { 
+            margin: 5px 0; 
+        }
+        button { 
+            margin: 0 5px; 
+            padding: 8px 12px; 
+            background: #666; 
+            color: #fff; 
+            border: none; 
+            border-radius: 3px; 
+            cursor: pointer; 
+        }
+        button:hover { background: #777; }
+        #output { 
+            margin: 10px; 
+            padding: 10px; 
+            background: #333; 
+            border: 1px solid #666; 
+            white-space: pre-wrap; 
+            font-family: monospace; 
+            max-height: 200px; 
+            overflow-y: auto; 
+        }
+        .file-controls {
+            background: #555;
+            padding: 10px;
+            border-bottom: 1px solid #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="file-controls">
+        <button onclick="saveToFile()">💾 Save JSON</button>
+        <button onclick="loadFromFile()">📁 Load JSON</button>
+        <button onclick="saveForthFile()">📄 Export Forth</button>
+        <label><input type="checkbox" id="returnToStart"> Return to Start</label>
+        <label style="margin-left: 20px;">Path Name: <input type="text" id="pathName" value="my-path" style="background: #333; color: #fff; border: 1px solid #666; padding: 2px 5px;"></label>
+        <span id="currentFile" style="margin-left: 20px; color: #aaa;">No file loaded</span>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label>Selected Point:</label>
+            <label>Duration: <input type="number" id="duration" value="1000" onchange="updateSelectedPoint()"></label>
+            <label>Easing: <select id="easing" onchange="updateSelectedPoint()">
+                <option value="0">Linear</option>
+                <option value="1">Ease In</option>
+                <option value="2">Ease Out</option>
+                <option value="3">Ease In-Out</option>
+                <option value="auto">Auto</option>
+            </select></label>
+            <label>In Strength: <input type="range" id="inStrength" min="0" max="1" step="0.1" value="0.5" onchange="updateSelectedPoint()"></label>
+            <label>Out Strength: <input type="range" id="outStrength" min="0" max="1" step="0.1" value="0.5" onchange="updateSelectedPoint()"></label>
+        </div>
+        <div class="control-group">
+            <button onclick="clearPath()">Clear</button>
+            <button onclick="exportAndCopy()">📋 Export & Copy</button>
+            <button onclick="debugPoints()">Debug Points</button>
+            <button onclick="resetView()">Reset View</button>
+            <button onclick="toggle320x240()">Toggle 320x240</button>
+        </div>
+    </div>
+    
+    <div style="text-align: center;">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <div style="padding: 10px; background: #333;">
+            <label>Import Data:</label>
+            <textarea id="importData" style="width: 100%; height: 60px; background: #444; color: #fff; border: 1px solid #666;" placeholder="Paste JSON or Forth path data here..."></textarea>
+            <button onclick="importFromTextarea()" style="margin-top: 5px;">Import JSON</button>
+            <button onclick="importForthPath()" style="margin-top: 5px;">Import Forth Path</button>
+        </div>
+        <div id="output">Click to add waypoints. Drag waypoints or control handles to edit.</div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const output = document.getElementById('output');
+        
+        let points = [];
+        let selectedPoint = null;
+        let selectedHandle = null;
+        let isDragging = false;
+        let isPanning = false;
+        let spacePressed = false;
+        let currentFilePath = null;
+        let zoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let showGrid = true;
+        let show320x240 = true;
+
+        // File operations
+        async function saveToFile() {
+            try {
+                let filePath = currentFilePath;
+                
+                if (!filePath) {
+                    const result = await ipcRenderer.invoke('save-file-dialog');
+                    if (result.canceled) return;
+                    filePath = result.filePath;
+                }
+                
+                const data = JSON.stringify(points, null, 2);
+                const writeResult = await ipcRenderer.invoke('write-file', filePath, data);
+                
+                if (writeResult.success) {
+                    currentFilePath = filePath;
+                    document.getElementById('currentFile').textContent = filePath;
+                    output.textContent = `Saved to ${filePath}`;
+                } else {
+                    output.textContent = `Save failed: ${writeResult.error}`;
+                }
+            } catch (error) {
+                output.textContent = `Save error: ${error.message}`;
+            }
+        }
+
+        async function loadFromFile() {
+            try {
+                const result = await ipcRenderer.invoke('save-file-dialog');
+                if (result.canceled) return;
+                
+                const readResult = await ipcRenderer.invoke('read-file', result.filePath);
+                
+                if (readResult.success) {
+                    const data = JSON.parse(readResult.data);
+                    points = data;
+                    currentFilePath = result.filePath;
+                    document.getElementById('currentFile').textContent = result.filePath;
+                    draw();
+                    output.textContent = `Loaded from ${result.filePath}`;
+                } else {
+                    output.textContent = `Load failed: ${readResult.error}`;
+                }
+            } catch (error) {
+                output.textContent = `Load error: ${error.message}`;
+            }
+        }
+
+        async function saveForthFile() {
+            try {
+                const result = await ipcRenderer.invoke('save-forth-dialog');
+                if (result.canceled) return;
+                
+                const forthCode = generateForthCode();
+                const writeResult = await ipcRenderer.invoke('write-file', result.filePath, forthCode);
+                
+                if (writeResult.success) {
+                    output.textContent = `Forth code saved to ${result.filePath}`;
+                } else {
+                    output.textContent = `Save failed: ${writeResult.error}`;
+                }
+            } catch (error) {
+                output.textContent = `Save error: ${error.message}`;
+            }
+        }
+
+        function generateForthCode() {
+            let segmentsCode = points.slice(1).map((point, i) => {
+                const actualIndex = i + 1;
+                const prev = points[actualIndex - 1];
+                const cp1x = prev.outx - prev.x;
+                const cp1y = prev.outy - prev.y;
+                const cp2x = point.inx - prev.x;
+                const cp2y = point.iny - prev.y;
+                
+                // Format with column alignment for: "-999 -999 at", "99999 waypoint", "-999.9 -999.9 -999.9 -999.9 curve", "0 ease", "-1.23 -1.23 strength"
+                const atPart = `${point.x} ${point.y} at`.padEnd(15);  // accommodate "-999 -999 at"
+                const waypointPart = `${point.duration} waypoint`.padEnd(17);  // accommodate "99999 waypoint"
+                const curvePart = `[[ ${cp1x.toFixed(1)} ${cp1y.toFixed(1)} ${cp2x.toFixed(1)} ${cp2y.toFixed(1)} curve`.padEnd(40);  // accommodate "-999.9 -999.9 -999.9 -999.9 curve"
+                const easePart = `${point.easing} ease`.padEnd(8);  // accommodate "0 ease"
+                const strengthPart = `${point.inStrength.toFixed(2)} ${point.outStrength.toFixed(2)} strength`;  // accommodate "-1.23 -1.23 strength"
+                
+                return `        ${atPart} ${waypointPart} ${curvePart} ${easePart} ${strengthPart} ]]`;
+            }).join('\n');
+            
+            if (document.getElementById('returnToStart').checked) {
+                segmentsCode += '\n        0 0 at          1 waypoint        [[ 0.0 0.0 0.0 0.0 curve                 0 ease   0.00 0.00 strength          ]]';
+            }
+            
+            // Wrap in path and segments markers
+            const pathName = document.getElementById('pathName').value || 'my-path';
+            const forthCode = `path[ ${pathName}
+    segments[
+${segmentsCode}
+    segments]
+path]`;
+            
+            return forthCode;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Transform coordinates: canvas (0,0) at top-left, game coords (0,0) at center
+            ctx.save();
+            ctx.translate(canvas.width/2 + panX, canvas.height/2 + panY);
+            ctx.scale(zoom, -zoom); // Flip Y axis and apply zoom
+            
+            // Draw grid
+            if (showGrid) {
+                ctx.strokeStyle = '#444';
+                ctx.lineWidth = 1/zoom;
+                ctx.beginPath();
+                
+                const gridSize = 50;
+                const left = (-canvas.width/2 - panX) / zoom;
+                const right = (canvas.width/2 - panX) / zoom;
+                const top = (canvas.height/2 + panY) / zoom;
+                const bottom = (-canvas.height/2 + panY) / zoom;
+                
+                for (let x = Math.floor(left/gridSize) * gridSize; x <= right; x += gridSize) {
+                    ctx.moveTo(x, top);
+                    ctx.lineTo(x, bottom);
+                }
+                for (let y = Math.floor(bottom/gridSize) * gridSize; y <= top; y += gridSize) {
+                    ctx.moveTo(left, y);
+                    ctx.lineTo(right, y);
+                }
+                ctx.stroke();
+                
+                // Origin axes
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 2/zoom;
+                ctx.beginPath();
+                ctx.moveTo(left, 0);
+                ctx.lineTo(right, 0);
+                ctx.moveTo(0, top);
+                ctx.lineTo(0, bottom);
+                ctx.stroke();
+            }
+            
+            // Draw 320x240 box
+            if (show320x240) {
+                ctx.strokeStyle = '#f80';
+                ctx.lineWidth = 2/zoom;
+                ctx.strokeRect(-160, -120, 320, 240);
+            }
+            
+            // Draw path
+            if (points.length > 1) {
+                ctx.strokeStyle = '#0ff';
+                ctx.lineWidth = 2/zoom;
+                ctx.beginPath();
+                
+                for (let i = 0; i < points.length - 1; i++) {
+                    const p1 = points[i];
+                    const p2 = points[i + 1];
+                    
+                    if (i === 0) {
+                        ctx.moveTo(p1.x, p1.y);
+                    }
+                    
+                    ctx.bezierCurveTo(p1.outx, p1.outy, p2.inx, p2.iny, p2.x, p2.y);
+                }
+                
+                ctx.stroke();
+            }
+            
+            // Draw points and handles
+            points.forEach((point, index) => {
+                // Control handles
+                if (selectedPoint === index) {
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 1/zoom;
+                    ctx.beginPath();
+                    ctx.moveTo(point.x, point.y);
+                    ctx.lineTo(point.inx, point.iny);
+                    ctx.moveTo(point.x, point.y);
+                    ctx.lineTo(point.outx, point.outy);
+                    ctx.stroke();
+                    
+                    // In handle
+                    ctx.fillStyle = '#f0f';
+                    ctx.beginPath();
+                    ctx.arc(point.inx, point.iny, 4/zoom, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Out handle
+                    ctx.fillStyle = '#ff0';
+                    ctx.beginPath();
+                    ctx.arc(point.outx, point.outy, 4/zoom, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Waypoint
+                ctx.fillStyle = selectedPoint === index ? '#0f0' : '#fff';
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 6/zoom, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Point number
+                ctx.save();
+                ctx.scale(1/zoom, -1/zoom);
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(index.toString(), point.x*zoom, -point.y*zoom + 4);
+                ctx.restore();
+            });
+            
+            ctx.restore();
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - canvas.width/2 - panX) / zoom;
+            const y = -((e.clientY - rect.top - canvas.height/2 - panY) / zoom);
+            return {x, y};
+        }
+
+        function findNearestPoint(mousePos) {
+            const threshold = 10;
+            
+            for (let i = 0; i < points.length; i++) {
+                const point = points[i];
+                
+                // Check waypoint
+                if (Math.hypot(mousePos.x - point.x, mousePos.y - point.y) < threshold) {
+                    return {type: 'waypoint', index: i};
+                }
+                
+                // Check handles if this point is selected
+                if (selectedPoint === i) {
+                    if (Math.hypot(mousePos.x - point.inx, mousePos.y - point.iny) < threshold) {
+                        return {type: 'in', index: i};
+                    }
+                    if (Math.hypot(mousePos.x - point.outx, mousePos.y - point.outy) < threshold) {
+                        return {type: 'out', index: i};
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        function updateSelectedPoint() {
+            if (selectedPoint === null) return;
+            
+            const point = points[selectedPoint];
+            point.duration = parseInt(document.getElementById('duration').value);
+            
+            if (document.getElementById('easing').value === 'auto') {
+                applyAutoEasing();
+            } else {
+                point.easing = parseInt(document.getElementById('easing').value);
+            }
+            
+            point.inStrength = parseFloat(document.getElementById('inStrength').value);
+            point.outStrength = parseFloat(document.getElementById('outStrength').value);
+            
+            draw();
+        }
+
+        function updateControls() {
+            if (selectedPoint === null) return;
+            
+            const point = points[selectedPoint];
+            document.getElementById('duration').value = point.duration || 1000;
+            document.getElementById('easing').value = point.easing || 0;
+            document.getElementById('inStrength').value = point.inStrength || 0.5;
+            document.getElementById('outStrength').value = point.outStrength || 0.5;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const mousePos = getMousePos(e);
+            
+            if (spacePressed) {
+                isPanning = true;
+                canvas.style.cursor = 'grabbing';
+                return;
+            }
+            
+            const nearest = findNearestPoint(mousePos);
+            
+            if (nearest) {
+                selectedPoint = nearest.index;
+                selectedHandle = nearest.type;
+                isDragging = true;
+                updateControls();
+            } else {
+                // Add new waypoint
+                const newPoint = {
+                    x: mousePos.x,
+                    y: mousePos.y,
+                    type: 'waypoint',
+                    inx: mousePos.x - 50,
+                    iny: mousePos.y,
+                    outx: mousePos.x + 50,
+                    outy: mousePos.y,
+                    duration: 1000,
+                    easing: 0,
+                    inStrength: 0.5,
+                    outStrength: 0.5
+                };
+                
+                points.push(newPoint);
+                selectedPoint = points.length - 1;
+                selectedHandle = null;
+                updateControls();
+                applyAutoEasing();
+            }
+            
+            draw();
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isPanning) {
+                panX += e.movementX;
+                panY += e.movementY;
+                draw();
+                return;
+            }
+            
+            if (!isDragging || selectedPoint === null) return;
+            
+            const mousePos = getMousePos(e);
+            const point = points[selectedPoint];
+            
+            if (selectedHandle === 'waypoint') {
+                const dx = mousePos.x - point.x;
+                const dy = mousePos.y - point.y;
+                point.x = mousePos.x;
+                point.y = mousePos.y;
+                point.inx += dx;
+                point.iny += dy;
+                point.outx += dx;
+                point.outy += dy;
+            } else if (selectedHandle === 'in') {
+                point.inx = mousePos.x;
+                point.iny = mousePos.y;
+            } else if (selectedHandle === 'out') {
+                point.outx = mousePos.x;
+                point.outy = mousePos.y;
+            }
+            
+            draw();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            isPanning = false;
+            selectedHandle = null;
+            if (spacePressed) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSteps = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3];
+            const currentIndex = zoomSteps.findIndex(z => Math.abs(z - zoom) < 0.01);
+            let newIndex = currentIndex + (e.deltaY > 0 ? -1 : 1);
+            newIndex = Math.max(0, Math.min(zoomSteps.length - 1, newIndex));
+            
+            zoom = zoomSteps[newIndex];
+            draw();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                spacePressed = true;
+                canvas.style.cursor = 'grab';
+                e.preventDefault();
+            }
+            
+            if (e.ctrlKey && e.key === 's') {
+                saveForthFile();
+                e.preventDefault();
+            }
+            
+            if (selectedPoint === null) return;
+            
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (points.length > 1) {
+                    points.splice(selectedPoint, 1);
+                    selectedPoint = Math.min(selectedPoint, points.length - 1);
+                    updateControls();
+                    draw();
+                }
+                e.preventDefault();
+            } else if (e.key === 'Insert' || e.key === 'i') {
+                insertPointAfter(selectedPoint);
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                spacePressed = false;
+                canvas.style.cursor = 'default';
+            }
+        });
+
+        function insertPointAfter(index) {
+            if (index >= points.length - 1) return;
+            
+            const p1 = points[index];
+            const p2 = points[index + 1];
+            
+            // Midpoint on bezier curve (rough approximation)
+            const midX = (p1.x + p1.outx + p2.inx + p2.x) / 4;
+            const midY = (p1.y + p1.outy + p2.iny + p2.y) / 4;
+            
+            const newPoint = {
+                x: midX, y: midY, type: 'waypoint',
+                inx: midX - 25, iny: midY,
+                outx: midX + 25, outy: midY,
+                duration: 1000, easing: 0,
+                inStrength: 0.5, outStrength: 0.5
+            };
+            
+            points.splice(index + 1, 0, newPoint);
+            selectedPoint = index + 1;
+            updateControls();
+            draw();
+        }
+
+        function toggle320x240() {
+            show320x240 = !show320x240;
+            draw();
+        }
+
+        function resetView() {
+            zoom = 1;
+            panX = 0;
+            panY = 0;
+            draw();
+        }
+
+        function applyAutoEasing() {
+            if (selectedPoint === null) return;
+            
+            const point = points[selectedPoint];
+            const index = selectedPoint;
+            
+            if (index === 0) {
+                point.easing = 2; // Ease out for first point
+            } else if (index === points.length - 1) {
+                point.easing = 1; // Ease in for last point
+            } else {
+                point.easing = 3; // Ease in-out for middle points
+            }
+            
+            document.getElementById('easing').value = point.easing;
+            draw();
+        }
+
+        function exportAndCopy() {
+            const forthCode = generateForthCode();
+            output.textContent = forthCode;
+            navigator.clipboard.writeText(forthCode);
+        }
+
+        function clearPath() {
+            points = [];
+            selectedPoint = null;
+            draw();
+        }
+
+        function debugPoints() {
+            output.textContent = JSON.stringify(points, null, 2);
+        }
+
+        function importFromTextarea() {
+            const jsonStr = document.getElementById('importData').value.trim();
+            if (jsonStr) {
+                try {
+                    const data = JSON.parse(jsonStr);
+                    points = data;
+                    draw();
+                    output.textContent = 'JSON imported successfully';
+                    document.getElementById('importData').value = '';
+                } catch (e) {
+                    output.textContent = 'Error parsing JSON: ' + e.message;
+                }
+            } else {
+                output.textContent = 'Please paste JSON data in the text area';
+            }
+        }
+
+        function importForthPath() {
+            const forthStr = document.getElementById('importData').value.trim();
+            if (!forthStr) {
+                output.textContent = 'Please paste Forth path data in the text area';
+                return;
+            }
+            
+            try {
+                // Extract path name from path[ ] markers
+                const pathMatch = forthStr.match(/path\[\s*(\S+)/);
+                if (pathMatch) {
+                    document.getElementById('pathName').value = pathMatch[1];
+                }
+                
+                // Filter lines to only process segment data, handle both old and new format
+                const lines = forthStr.split('\n').filter(line => {
+                    const trimmed = line.trim();
+                    return trimmed && 
+                           !trimmed.includes('path[') && 
+                           !trimmed.includes('segments[') && 
+                           !trimmed.includes('segments]') && 
+                           !trimmed.includes('path]') && 
+                           !trimmed.includes('easing[') && 
+                           !trimmed.includes('easing]') &&
+                           !trimmed.includes('*alpdata') &&
+                           (trimmed.includes('at') && trimmed.includes('waypoint'));
+                });
+                
+                points = [];
+                
+                const firstPoint = {
+                    x: 0, y: 0, type: 'waypoint',
+                    inx: -50, iny: 0, outx: 50, outy: 0,
+                    duration: 1000, easing: 0, inStrength: 0.5, outStrength: 0.5
+                };
+                points.push(firstPoint);
+                
+                lines.forEach((line) => {
+                    // Updated regex to handle double brackets [[ ]] format
+                    const match = line.match(/(-?\d+)\s+(-?\d+)\s+at\s+(\d+)\s+waypoint\s+\[\[\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+curve\s+(\d+)\s+ease\s+([\d.]+)\s+([\d.]+)\s+strength\s*\]\]/);
+                    
+                    if (match) {
+                        const [, relX, relY, dur, cp1x, cp1y, cp2x, cp2y, ease, inStr, outStr] = match;
+                        
+                        const newPoint = {
+                            x: parseInt(relX),
+                            y: parseInt(relY),
+                            type: 'waypoint',
+                            inx: 0, iny: 0, outx: 0, outy: 0,
+                            duration: parseInt(dur),
+                            easing: parseInt(ease),
+                            inStrength: parseFloat(inStr),
+                            outStrength: parseFloat(outStr)
+                        };
+                        
+                        const prevPoint = points[points.length - 1];
+                        prevPoint.outx = prevPoint.x + parseFloat(cp1x);
+                        prevPoint.outy = prevPoint.y + parseFloat(cp1y);
+                        newPoint.inx = prevPoint.x + parseFloat(cp2x);
+                        newPoint.iny = prevPoint.y + parseFloat(cp2y);
+                        
+                        newPoint.outx = newPoint.x + 50;
+                        newPoint.outy = newPoint.y;
+                        
+                        points.push(newPoint);
+                    }
+                });
+                
+                draw();
+                output.textContent = `Imported ${points.length} points from Forth path`;
+                document.getElementById('importData').value = '';
+            } catch (e) {
+                output.textContent = 'Error parsing Forth path: ' + e.message;
+            }
+        }
+
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+require scripts\fireball.vfx
+
+coke.png 16 16 tileset coke.ts
+
+actor-class coke%
+
+coke.ts animation spin.anm 19 0 range,
+
+coke :: init
+    1. vy !
+    -8 -4 x1 2! 16 8 w1 2!
+    spin.anm 1. cycle
+    act>
+        p1 me hit? if p1 burn explode exit then
+        x1 2@ w1 2@ bg0 tmcol> explode ; \ unhit? ?exit explode ;

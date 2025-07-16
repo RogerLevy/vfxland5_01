@@ -1,0 +1,30 @@
+private
+create walkv's  1. , 0 ,   0 , -1. ,   -1. , 0 ,   0 , 1. , 
+
+public
+0 constant right
+1 constant up
+2 constant left
+3 constant down
+
+var fac
+
+: dirkeys? ( - f )
+    <left> held? <right> held? or <up> held? or <down> held? or ;
+
+: dirkeysup? ( - f )
+    <left> letgo? <right> letgo? or <up> letgo? or <down> letgo? or ;
+
+: pudlr4 ( - )
+    <left> pressed? if  left fac !  exit then
+    <right> pressed? if  right fac !  exit then
+    <up> pressed? if  up fac !  exit then
+    <down> pressed? if  down fac !  exit then ;
+
+: sudlr4 ( - )
+    <left> held? if  left fac !  exit then
+    <right> held? if  right fac !  exit then
+    <up> held? if  up fac !  exit then
+    <down> held? if  down fac !  exit then ;
+
+: dir>v  2 cells * walkv's + 2@ ;

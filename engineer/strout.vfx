@@ -1,0 +1,37 @@
+|| create str 32768 allot
+|| 0 value >str
+|| : Emit-string  drop  str >str + c!  1 +to >str ;
+|| : Type-string  drop  bounds ?do  i c@ 0 emit-string  loop ;
+|| : CR-string    drop  10 0 emit-string ;
+|| create string-vectors
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' Emit-string ,
+  ' drop ,
+  ' Type-string ,
+  ' CR-string ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+|| create strdev   0 , string-vectors ,
+|| 0 value old-dev
+: z[  0 to >str  op-handle @ to old-dev  strdev op-handle ! ;
+: ]z  0 emit  str  old-dev op-handle ! ;
+: s[  z[ ;
+: s]  ]z >str 1 - ;

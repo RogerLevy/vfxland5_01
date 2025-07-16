@@ -1,0 +1,683 @@
+\ ------------------------------------------------------------------------------
+\ Oversight Contract System
+\ Contract-oriented debugging with inline self-healing and hybrid syntax
+\  made in collaboration with Claude Sonnet 4
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Temporary Logging Shims (until logging.vfx bug is fixed)
+\ =============================================================================
+
+public
+
+: log-warning ( addr:string len:string -- )
+    cr ." [WARN] " type ;
+: log-error ( addr:string len:string -- )
+    cr ." [ERROR] " type ;
+: log-debug ( addr:string len:string -- )
+    cr ." [DEBUG] " type ;
+: log-info ( addr:string len:string -- )
+    cr ." [INFO] " type ;
+    
+\ =============================================================================
+\ Other private utilities
+\ =============================================================================
+
+private
+
+\ Get last CREATE'd word's body (System dependent)
+: lastbody ( - a ) last @ ctrl>nfa name> >body ;
+
+: prop ( size - <name> n ) ( - a )
+    create /obj , +to /obj 
+    does> @ me + ;
+
+: struct ( n - a )
+    here swap allot&erase ;
+
+: cache-source ( -- addr len )
+    {: | start-addr a len #lines :}
+    here to start-addr
+    \ Don't prepend :noname - we'll call it directly
+    0 to #lines
+    begin
+        0 parse to len to a         \ Parse rest of current line        
+        len if                      \ If we got something
+            1 +to #lines
+            a here len cmove         \ Copy line to dictionary
+            len allot                \ Advance by line length
+            10 c,                    \ Add newline (LF)
+            \ Check if line contains semicolon
+            a len s" ;" search nip nip if
+                \ Found semicolon, we're done
+                start-addr  here start-addr - exit
+            then
+        then
+        refill                      \ Get next line
+        0=                          \ Continue if refill failed
+    until
+    start-addr  here start-addr - ;  \ Return what we captured
+
+\ =============================================================================
+\ Core Types and Constants
+\ =============================================================================
+
+public
+
+\ Validation types (bitfield values)
+1 constant crucial      \ Essential safety checks, catch real bugs
+2 constant charmful     \ Non-critical checks, artistic concerns, info
+
+
+\ Result codes returned by validators
+\ 0 = fail and throw
+\ 1 = fail but just warn (can be OR'd with else-warn)
+\ -1 = succeed and continue
+
+: else-warn ( n:result -- n:result )
+    \ Modify result to indicate warning instead of throw
+    1 or ;
+
+\ =============================================================================
+\ Core Variables
+\ =============================================================================
+
+public
+
+
+variable safety             \ Master bitfield/flag controlling runtime validations
+                            \ usage: charmful / crucial safety !
+                            \ or: safety on
+                            
+variable validations        \ Flag controlling the compilation of validated words vs "plain"
+                            \ Intended for validator and performance-critical code
+                            \ usage: validations off / on
+
+\ variable should-recheck?    \ State flag for fix verification
+variable current-validation \ Currently executing validation object
+variable #contracts         \ Total number of registered contracts
+\ variable #violations        \ Total contract violations detected
+
+
+\ =============================================================================
+\ Contract System Classes
+\ =============================================================================
+
+private
+
+\ Contract struct - stores validation rules for a word
+0 to /obj
+    cell prop enabled       
+    cell prop pre-val        \ Precondition validation
+    cell prop post-val       \ Postcondition validation  
+    32 prop word-name$       \ Target word name (counted string)
+    256 prop pre-str$        \ Debug message before word execution
+    256 prop post-str$       \ Debug message after word execution
+/obj constant /contract
+
+\ Validation instance struct - individual validation attached to a contract
+0 to /obj
+    \ Keep this as the first prop to allow `on` and `off`
+    cell prop enabled       
+    cell prop xt            \ Execution token of validation function
+    cell prop level         \ Validation type (crucial/charmful)
+    cell prop validator     \ Reference to original validator struct
+    256 prop test-name$
+/obj constant /validation
+
+\ Validator struct - stores cached source and compilation state
+0 to /obj
+    cell prop enabled       \ (currently unused)
+    cell prop xt            \ Execution token (0 if not compiled)
+    cell prop level         \ Validation type (crucial/charmful)
+    cell prop source-addr   \ Pointer to cached source text
+    cell prop source-len    \ Length of cached source
+    cell prop compiled?     \ Flag: has source been compiled?
+/obj constant /validator
+
+\ =============================================================================
+\ Internal Implementation Support
+\ =============================================================================
+
+private
+
+cstring wordname$
+: >$ ( a len - $ )
+    wordname$ place wordname$ ;
+
+: qualify-name ( addr len -- qaddr qlen )
+    f" %s.contract" ;
+
+: create-contract ( addr:word-name len:word-name -- contract )
+    \ Create new contract object for named word
+    2dup qualify-name >$ $create 
+    /contract struct [[
+        word-name$ place
+        1 #contracts +!
+        enabled on
+    me ]] ;
+
+: lookup-contract-current ( addr:word-name len:word-name -- contract | 0 )
+    \ Look up contract by word name, return 0 if not found
+    qualify-name >$ >r       \ save qualified name
+    get-order get-current    \ Save search order and current wordlist
+    only dup +order          \ Isolate to just current wordlist
+    r> find if execute else drop 0 then >r  \ save contract | 0
+    set-current set-order    \ Restore original search order
+    r> ;                     \ restore contract | 0
+    
+: lookup-contract ( addr len -- contract | 0 )
+    \ For inspection - use full search order
+    qualify-name >$ find if execute else drop 0 then ;
+
+: register-contract ( contract -- ) ( -- contract )
+    \ Register contract
+    \ create-contract adds a CREATE'd word to dictionary, so this is a no-op
+    drop ;
+
+: create-validation ( validator -- validation )
+    \ Create validation instance from validator function and type
+    {: vtor :}
+    /validation struct [[
+        vtor 's level @ level !
+        0 xt !                          \ Will fetch dynamically from validator
+        vtor validator !
+        vtor body> >name count test-name$ place
+        enabled on
+    me ]] ;
+
+: set-pre-validation ( validation contract -- )
+    \ Attach validation to contract (pre)
+    's pre-val ! ;
+
+: set-post-validation ( validation contract -- )
+    \ Attach validation to contract (post)
+    's post-val ! ;
+    
+|| variable caller-name
+
+: caller-rp  rp@ 11 cells + ;
+
+-999 #Errdef err_oversight "ERR: Validation failed."
+
+: run-validation ( ... contract validation -- ... )
+    \ dup 0= if 2drop exit then 
+    
+    dup 's enabled @  over 's level @ safety @ and 0<>  and 0= if
+        2drop exit
+    then
+
+    {: c val | res :}
+    current-validation @ >r
+    val current-validation !
+    \ should-recheck? off
+
+    val 's validator @ \ dup ." validator: " . 
+    's xt @
+    \ dup ." xt: " . dup disasm/f
+    execute to res
+    r> current-validation !
+
+    res -1 = ?exit
+    
+    \ Recheck logic disabled for now
+    \ should-recheck? @ if
+    \     name-a name-len f" %s failed, attempting self-fix..." log-info
+    \     val 's xt @ execute
+    \     
+    \     res 0< if
+    \         \ if res = -1 (pass), report and continue
+    \         name-a name-len f" %s fix passed" log-info
+    \         should-recheck? off
+    \         validation-failed? off
+    \         exit
+    \     else
+    \         \ if res = 0 or 1, just report the failure
+    \         name-a name-len f" %s fix failed" log-info
+    \     then
+    \ then
+    \ 1 #violations +!
+    caller-rp @ ip>nfa caller-name !
+    res 0= if
+        val 's validator @ >name count
+        caller-name @ count f" %s >> %s failed - throwing" log-error
+        .s
+        caller-rp (.rs)
+        -999 throw
+    then
+    res 1 = if
+        val 's validator @ >name count 
+        caller-name @ count f" %s >> %s failed - warning" log-warning
+        .s ." <-- Note this was the stack AFTER the validation ran"
+        cr 
+    then ;
+    
+|| : validated-word ( wrapper -- )
+    safety @ 0= if @ execute exit then
+    {: | impl-xt c :}
+    @+ to impl-xt
+    @ to c ( contract )
+    
+    c 's enabled @ 0= if impl-xt execute exit then
+    
+    c 's pre-str$ @ $ff and if  \ faster than c@ which compiles a call fsr
+        c 's pre-str$ count log-debug
+    then
+
+    c dup 's pre-val @ dup if run-validation else 2drop then
+    impl-xt execute
+    c dup 's post-val @ dup if run-validation else 2drop then
+    
+    c 's post-str$ @ $ff and if
+        c 's post-str$ count log-debug
+    then ;
+    
+|| : does-wrapper
+    immediate does>
+        ( wrapper )
+        state @ if \ compiling
+            validations @ if
+                \ Compile validated word
+                postpone literal postpone validated-word
+            else
+                \ Compile/execute unvalidated word
+                dup cell+ cell+ @ if  \ check immediate flag
+                    @ execute
+                else
+                    @ compile,
+                then
+            then
+        else \ interpreting
+            \ Always execute
+            validations @ if
+                validated-word
+            else
+                @ execute
+            then
+        then ;
+
+: walk-contract ( xt contract - ) ( validation - )
+    {: xt c :}
+    c [[
+        pre-val @ xt execute 
+        post-val @ xt execute
+    ]] ;
+
+0 value each-contract-xt
+
+: (each-contract) ( thread# nfa - f )
+    nip
+    dup count s" .CONTRACT" search nip nip if
+        name> >body
+        each-contract-xt execute
+    else
+        drop
+    then -1 ;
+
+: each-contract ( xt - ) ( contract - )
+    to each-contract-xt
+    ['] (each-contract) WalkAllWords ;
+
+: evaluate-lines ( addr len -- ? )
+    {: addr len | line-start line-len pos :}
+    addr to line-start
+    0 to pos
+    begin
+        pos len < while
+        addr pos + c@ 10 = if           \ Found newline
+            addr pos + line-start - to line-len
+            line-len if
+                \ cr line-start line-len type
+                line-start line-len evaluate
+            then
+            addr pos + 1+ to line-start \ Start of next line
+        then
+        1 +to pos
+    repeat
+    \ Handle last line if no trailing newline
+    addr pos + line-start - to line-len
+    line-len if
+        cr line-start line-len type
+        line-start line-len evaluate
+    then ;
+
+: compile-validator ( validator -- )
+    {: vtor :}
+    \ cr vtor .name
+    vtor 's compiled? @ if exit then     \ Already compiled?
+    
+    :noname                             \ Start compilation, get XT 
+    vtor 's xt !                        \ Store XT immediately
+    
+    vtor 's source-addr @ vtor 's source-len @ 
+    \ cr ." Cached source: [" 2dup type ." ]"
+    
+    evaluate-lines                      \ Compile the body line by line
+    
+    \ Manually complete the word compilation
+    state off                           \ Turn off compile state
+    
+    \ cr ." Compiled XT: " vtor 's xt @ .
+    vtor 's compiled? on               \ Mark as compiled
+;
+
+: ?compile-validator ( validation -- )
+    ?dup -exit
+    {: val :}
+    val 's validator @ compile-validator ;
+
+: assure-validators ( contract -- )
+    {: c :}
+    ['] ?compile-validator c walk-contract ;
+        
+|| variable pending-contract        \ Contract object being processed  
+|| variable pending-xt              \ XT of nameless word to be wrapped
+|| variable building-internal?      \ Flag: are we building nameless internal word?
+
+\ =============================================================================
+\ Validator Definition
+\ =============================================================================
+
+public
+
+: test: ( n:type -- <name> )
+    \ Create a new validator with specified type - now caches source
+    {: vtype | src-addr src-len :}
+    create
+    /validator struct [[
+        vtype level !
+        0 xt !                          \ Not compiled yet
+        cache-source
+        source-len !            \ Store source length
+        source-addr !          \ Store source address
+        0 compiled? !                   \ Not compiled yet
+    ]] ;
+
+\ =============================================================================
+\ Contract Attachment - Stack-based Syntax
+\ =============================================================================
+
+public
+
+: >before ( validator addr:word-name len:word-name -- )
+    \ Attach/get validation before target word (stack-based for dynamic use)
+    {: validator name-a name-len | c val :}
+    name-a name-len lookup-contract-current to c
+    c 0= if
+        name-a name-len create-contract to c
+        c register-contract
+    else
+        -1 abort" >BEFORE >> Only one pre-validation per word currently supported!"
+    then
+    validator create-validation to val
+    val c set-pre-validation ;
+
+: >after ( validator addr:word-name len:word-name -- )
+    \ Attach/get validation after target word (stack-based for dynamic use)
+    {: validator name-a name-len | c val :}
+    name-a name-len lookup-contract-current to c
+    c 0= if
+        name-a name-len create-contract to c
+        c register-contract
+    else
+        -1 abort" >AFTER >> Only one pre-validation per word currently supported!"
+    then
+    validator create-validation to val
+    val c set-post-validation ;
+    
+\ =============================================================================
+\ Contract Attachment - Compiler Syntax
+\ =============================================================================
+
+public
+
+\ These are intended to be interpret only
+
+: before ( -- <target-word> <validator> )
+    \ Attach/get validation before target word (immediate, parses word name)
+    bl parse ' execute -rot >before ; 
+
+: after ( -- <target-word> <validator> )
+    \ Attach/get validation after target word (immediate, parses word name)
+    bl parse ' execute -rot >after ; 
+
+\ =============================================================================
+\ Debug Messages
+\ =============================================================================
+
+public
+
+|| : ensure-contract ( addr:word-name len:word-name -- contract )
+    {: name-a name-len | c :}
+    name-a name-len lookup-contract-current to c
+    c 0= if
+        name-a name-len create-contract to c
+        c register-contract
+    then
+    c ;
+
+: say-before ( -- ) ( <word-name> <message...> )
+    \ Set debug message to display before word execution
+    bl parse ensure-contract >r 
+    0 parse r> 's pre-str$ place ;
+
+: say-after ( -- ) ( <word-name> <message...> )
+    \ Set debug message to display after word execution
+    bl parse ensure-contract 
+    0 parse r> 's post-str$ place ;
+
+\ =============================================================================
+\ Self-Healing Support
+\ =============================================================================
+
+public
+
+: fix? ( n:result -- n:result f:should-fix )
+    dup 0 >= ;
+
+\    \ Complete self-healing operator: detects failure, enables fix, handles recheck
+\    \ Returns true on first failure to allow fix code, manages all recheck logic
+\    \ NOTE: Non-reentrant - assumes sequential validation execution
+\    dup 0 >= if
+\        should-recheck? @ 0= 
+\        dup if 
+\            should-recheck? on 
+\            current-validation @ 's xt @ >name count f" %s performing self-fix..." log-info
+\        then
+\    else
+\        false
+\    then ;
+
+\ =============================================================================
+\ Contract Inspection
+\ =============================================================================
+
+public
+
+: .validation ( validation -- )
+    [[
+        test-name$ count type space
+        enabled @ if ." (ENABLED)" else ." (DISABLED)" then
+    ]] ;
+    
+|| : (.validation)  @ cr .validation -1 ;
+
+: >contract ( xt -- contract )
+    dup >r xt>wid >r         \ Get its wordlist
+    get-order get-current    \ Save search state
+    only r> +order           \ Search only that wordlist
+    r> >name count           \ get word's name again...
+    lookup-contract >r       \ Look for contract there
+    set-current set-order    \ Restore search state
+    r> ;
+
+: csee ( -- <word-name> )
+    \ Display contract information for word
+    ' >contract ?dup 0= if
+        cr ." No contract found for that word. "
+    else
+        [[
+            cr pre-val @ .validation
+            cr post-val @ .validation
+        ]]
+    then ;  
+
+\ =============================================================================
+\ System Integration
+\ =============================================================================
+
+public
+
+: init-oversight ( -- )
+    \ Initialize contract system on startup
+    0 #contracts !
+    \ 0 #violations !
+    safety on  \ both crucial and charmful on by default
+    validations on  \ enable validation compilation
+    ;
+    
+: shutdown-oversight ( -- )
+    \ Clean up contract system on exit
+    \ TODO but Maybe not needed
+    ;
+
+\ =============================================================================
+\ Validator Writing Utilities
+\ =============================================================================
+
+\ =============================================================================
+\ Automatic Contract Wrapping - Redefined : and ;
+\ =============================================================================
+
+: : ( -- <word-name> )
+    \ Note that contracts do not support immediate words
+    {: | c :}
+
+    \ Check if contracts are enabled first
+    bl preparse                     \ Get word name ( addr len )
+    lookup-contract-current to c
+
+    c if                            \ Contract exists? ( contract | <nothing> )
+        c assure-validators         \ Compile validators if needed
+        \ Create wrapper word with create...does> pattern
+        bl parse >$ $create         \ Create word header with original name
+        c pending-contract !
+        \ Store data structure: [ implementation-xt , contract , immediate flag ] 
+        0 ,                         \ Reserve space for internal XT (filled by ;)
+        c ,                         \ Store contract reference
+        0 ,                         \ immediate flag
+        does-wrapper                \ Set up does> behavior
+        :noname pending-xt !        \ Start nameless internal word
+        -1 building-internal? !     \ Set flag
+    else
+        \ No contract, proceed normally
+        :
+    then ;
+
+: ; ( -- )
+    \ First, complete compilation of the word
+    postpone ;
+
+    \ Check if we were building an internal contracted word
+    building-internal? @ if
+        \ Fill in the internal XT in the wrapper word's data structure
+        \ The wrapper word is the most recently created word
+        pending-xt @                    \ Get nameless word XT
+        lastbody                        \ Get body of wrapper word
+        !                               \ Store internal XT in first cell
+        0 building-internal? !          \ Clear flag
+        0 pending-contract !            \ Clear contract
+        0 pending-xt !
+    then ; immediate
+    
+: wrap-word ( -- <name> )
+    \ Add validations to an existing word
+    \ This is needed because with :/; :
+    \ 1. old word gets redefined by wrapper word
+    \ 2. wrapper word gets redefined by redefined word
+    \ 3. therefore we can't "reach" the old word
+    {: | c :}
+    bl preparse lookup-contract-current to c
+    c if                                \ Contract exists? ( addr len contract | 0 )
+        c assure-validators             \ Compile validators if needed
+        bl preparse
+        \ cr ." Wrapping " 2dup type
+        >$ find ?undef      \ Get XT of original word
+        bl parse >$ $create             \ Create word header with original name
+        does-wrapper
+        \ Store data structure: [ implementation-xt , contract , immediate-flag ] 
+        dup ,                           \ Store internal XT (saving a copy for immediate?)
+        c ,                             \ Store contract reference
+        immediate? ,                    \ Immediate flag
+    else
+        cr bl parse f" Contract for `%s` not found, wrapping skipped." log-warning
+    then ;
+
+\ =============================================================================
+\ Enable/Disable Validators
+\ =============================================================================
+
+public
+
+|| variable the-contract
+|| variable validator-xt
+
+|| : ?disable-validation ( validation - )
+    [[ 
+        xt @ validator-xt @ = if
+            cr ." disabling for "
+            the-contract @ body> >name count 9 - type 
+            enabled off
+        then
+    ]] ;
+    
+: disable-contract-validator ( contract - )
+    dup the-contract !
+    ['] ?disable-validation swap walk-contract ;
+
+: disable-validator ( validator - )
+    's xt @ validator-xt !
+    ['] disable-contract-validator each-contract ; 
+
+|| : ?enable-validation ( validation - f )
+    [[ 
+        xt @ validator-xt @ = if
+            cr ." enabling for "
+            the-contract @ body> >name count 9 - type 
+            enabled on
+        then
+    ]] -1 ;
+
+: enable-contract-validator  ( contract - )
+    dup the-contract !
+    ['] ?enable-validation swap walk-contract ;
+
+: enable-validator ( validator - )
+    's xt @ validator-xt !
+    ['] enable-contract-validator each-contract ; 
+
+\ =============================================================================
+\ Include Extensions
+\ =============================================================================
+
+\ TODO: fix this, PROJECT >> SWITCH crashes and I think this is why
+
+variable include-levels
+
+: wrapped-include ( ... xt - )
+    include-levels @ 8 >= if
+        -1 abort" File include max nesting exceeded (8)"
+    then
+    validations @ >r
+    include-levels @ >r
+    1 include-levels +! 
+    catch
+    r> include-levels ! 
+    r> validations !
+    throw ;
+
+\ : include  ['] include wrapped-include ;
+\ : included  ['] included wrapped-include ;
+\ : require  ['] require wrapped-include ;
+\ : required  ['] required wrapped-include ;
+

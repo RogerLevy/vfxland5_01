@@ -1,0 +1,117 @@
+\ ------------------------------------------------------------------------------
+\ Engineer OOP extension
+\ ------------------------------------------------------------------------------
+
+0 value me
+0 value /obj    \ next field offset
+cell value /static \ next static field offset; "cell" reserves class field
+: field ( ofs size - <name> n ) ( a - a )
+    create over , + $C0FFEE , does> @ + ;
+|| : ?already ( - )
+    >in @ bl word find if dup >body cell+ @ $C0FFEE = if
+    r> drop drop drop exit then then drop >in ! ; DoNotSin
+|| : ?literal
+    state @ if postpone literal then ;
+
+\ Object stack
+: pagealign ( - )  here $ff and 256 swap - allot ;
+: aligned-page ( - <name> )  pagealign here $100 allot constant ;
+aligned-page os
+variable osp   os osp ! \ object stack pointer
+
+\ Addressing
+: [[ ( a - ) me osp @ !  4 osp c+!  to me ;
+: unsafe-[[ ( a - ) me osp @ !  4 osp c+!  to me ;
+: ]] ( - ) -4 osp c+!  osp @ @ to me ;
+: ofield ( size - <name> n ) ( - a )
+    /obj swap field to /obj 
+    does> @ me + ;
+
+: var ( - <name> ) ( - a )
+    ?already cell ofield ; DoNotSin 
+
+: private-var ( - <name> ) ( - a )
+    private cell ofield ; DoNotSin 
+
+: 's ( a - <name> a )
+    ' >body @ ?literal s" +" evaluate ; immediate 
+
+\ Classes
+var cla
+|| : >static ( obj - class )
+    's cla @ ;
+|| : ?already
+    >in @ bl word find if r> 3drop exit then drop >in ! ; DoNotSin
+|| : preword
+    >in @ swap word swap >in ! ;
+|| : ?message
+    >in @  ' >body 3 cells + @ $11111111 <>
+    abort" Message not found!  (Did you forget an underscore?)"
+    >in ! ;
+
+
+1024 constant /class
+create class% here , 1020 allot&erase $22222222 , 
+
+: create-class ( $ - ) ( - ) 
+    $create class% , 1020 allot&erase $22222222 ,
+    lastbody , \ false object for convenient static assignments
+;
+
+: statics: ( class - )
+    /class + cell+ [[ ;
+
+: -% ( a c -- a c' )
+    dup -exit 2dup + 1 - c@ '%' = -exit 1 - ;
+
+: static ( - <name> ) ( - a )
+\    ?already
+    /static  cell field  to /static  does> @ me >static + ;
+
+\ Messages
+
+static oexec-error-handler
+
+: oexec ( ... xt - ... )
+    ?dup if catch ?dup if
+        oexec-error-handler @ ?dup if execute then
+        throw
+    then then ;
+
+|| : do-message ( ... message actor - ... )
+    [[
+        dup @ me >static + @ ?dup if
+            nip
+        else
+            cell+ cell+ @
+        then
+        ( xt ) oexec
+    ]] ;
+
+|| : does-message  does> swap do-message ;
+
+: dispatch,  here 0 , $11111111 , :noname swap ! ;
+
+: m: ( - <name> <code> ; ) ( ... obj - ... ) 
+    \ Declare a message and its default behavior
+    static does-message dispatch, ;
+
+: :: ( class - <msg> <code> ; ) ( ... obj - ... ) 
+    \ Define the response of a given class to a given message 
+    ?message
+    {: c | msg[ 256 ] ofs :}
+    bl preparse msg[ place
+    0 postpone 's to ofs
+    c body> >name count 1 - ` msg[ count ` 2swap f" : %s::%s" 2dup upper evaluate
+    state on
+    here ( xt ) c ofs + ! ;
+
+\ Instantiation
+: >object ( a class - class:object )
+    over ! ;
+
+\ Defaults
+c" object%" create-class
+m: init ( - ) ;
+m: destruct ( - ) ;
+

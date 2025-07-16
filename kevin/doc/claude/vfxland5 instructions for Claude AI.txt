@@ -1,0 +1,72 @@
+# Overview
+
+I'm building a 2D puzzle platformer game with its own engine and tools entirely in Forth.  Specifically, VFXForth. (I am not writing a Forth interpreter.) 
+I'm using the Allegro 5 library for my graphics/audio/input.
+My engine currently has a REPL and some data-editing tools (tilesets, levels, and bitmaps) but I plan to add more sophisticated tools and perhaps even a code editor someday in the long term.
+I am using Forth for gameplay scripting as well as coding the engine itself.  I am also using it for some of my data storage.
+
+For my level layout (scene) files it is basically just Forth code that creates all of the level's actors and set any properties.
+For game state, I've implemented a custom format that combines binary data and code.  I store the modified world map, an embedded layout (scene) file, and some variables stored as human-readable code that just sets some variables.
+
+For Allegro 5 I didn't write a full wrapper. There are a few wrapper-like functions to make things more convenient (Allegro 5 isn't as easy to use as Allegro 4) but for the most part I'm calling Allegro functions directly.
+
+My game loop is pretty traditional but I have some things that resemble events, including the ability for a program to check for and respond to Allegro events.
+
+(By the way, VFXForth doesn't allow words to be runtime redefined, though you can redefine words that will be compiled for the rest of the calls to it in the application.)
+
+I'm using a pretty unique Forth-like approach to my actors.  I wrote my own OOP extension.  
+
+# Project structure
+
+All of my current projects live in a folder called vfxland5.
+
+The very bottom component is called Engineer and provides Allegro 5 (selected bindings and some wrappers), the graphics window, automatic loading of bitmaps, input, a REPL, and several common utility words.
+
+Above that is a middleware called Supershow that provides an actor system, a UI system, collision detection between actors-and-actors and between actors-and-tiled-background, a tilemap system, sound support, GPU shader support, a CRT TV effect, and an array component.
+
+Above that is the engine/IDE designed for this game, called Spunk. In this engine, there is one tiled background, and up to 1024 active sprite-based actors, both powered by my middleware called Supershow. There is also a level editor, a tileset property editor, and a bitmap editor.  All run in-game and are designed to speed up development through enabling instant feedback.
+
+Interactivity is key to this project's edge.
+
+Project priorities are:
+
+- Solo project
+- Small and simple codebase
+- Prefer static allocation
+- Interactive development and game design
+- Extend Forth to make things easier and more powerful
+
+# Instructions
+
+Check the Allegro 5 and WIN32 APIs for work-saving functions.
+
+Limit locals declarations to one per word definition, at the top in place of the stack comment. Forth does not support inline local declarations.
+
+If using the `<code> ;` pattern in a nested fashion, do not use `;` mid-definition, instead use `exit`.  
+
+Assume that externally allocated structs such as ALLEGRO_BITMAPs do not need to be freed until program close, unless specified otherwise.
+
+VFXForth's FFI can't pack more than 8 floats from the FPU stack.  When functions take more than 8 32-bit floats, use the `<float> f>ds` pattern, placed before any other floats, like this:  `8e f>ds >r 0e 1e 2e 3e 4e 5e 6e 7e r> al_long_function`. (This assumes the 8e should go at the end.  We use the return stack strictly to help with readability and avoid issues with any ints or addresses that might also be in the signature.)  I have modified these functions' bindings to take ints in place of the excess floats so that the FFI doesn't pop more than 8 floats.
+
+# OOP overview
+
+There are classes, but they don't have their own properties.  Instead, all property words (which I call "vars") are global and objects have a fixed size, currently 512 bytes.  There is no subclassing.  There are late-bound methods, which I call messages, and they must be declared ahead in the source tree.  Private methods are just private regular words.  Classes automatically create a private scope (actually tied to the source file, done by the word PRIVATE) for encapsulation.  There is a current object pointer called ME, that you can scope with [[ and ]] when writing regular Forth words that work on objects.  Since all properties are global it's fine to access these from pure procedural-style code.  You can define static properties for classes.
+
+# vfxland5 conventions
+
+I frequently use the `<code> ;` pattern described in the stack conventions file.
+
+`show>` would execute bg sprites as the caller's continuation. It's like having inline anonymous functions or code blocks.
+Example makes it crystal clear:
+```forth
+game show> bg sprites ;
+```
+
+1. act> assigns some code for an actor to execute each frame, implementing a simple state machine.
+2. draw> assigns code for a UI element to execute to render itself
+3. actives> iterates on every active actor 
+4. temps> does the same but for those in the temps list
+
+For actors, typically `me` is set for you. Most actor words don't take an actor on the stack, so that you don't need to do as much stack manipulation.
+Yes, though sometimes these types of words aren't re-entrant because I didn't expect to need to nest them. Possible room for improvement.
+

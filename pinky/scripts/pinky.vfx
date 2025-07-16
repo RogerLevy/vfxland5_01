@@ -1,0 +1,44 @@
+require scripts/flame.vfx
+
+pinky.png 32 32 tileset pinky.ts
+
+actor-class pinky%
+
+( a n - )
+: tooth  drop 0 swap !  *zelda1* ;
+: coke  drop 0 swap !  *zelda10*  enlighten ;
+
+dictionary reactions
+' tooth c" 1" reactions lookup !
+' coke c" 29" reactions lookup !
+
+: ?react ( a n - )
+    dup (.) >pad reactions lookup @ ?dup if execute else 2drop then ;
+
+: !vx  fac @ dir>v  0.5 dup 2p*  vx 2! ;
+: turn/idle  dirkeys? if  sudlr4  walk  else  idle  then ;
+: ?walk  dirkeys? if  pudlr4  walk  then ;
+: tread  -7 -5 14 14 bg0 tread> dup @ ?react ;
+: (col-room)  bg0 tmcol> 7 cut-corners ;
+: col-room  -6 -1 12 12 4dup (col-room) keep-in ;
+
+create idles  2 , 1 , 2 h| , 0 ,
+create walks  3 , 11 , 3 h| , 7 ,
+
+: ?anim  ( n - n n )
+    dirkeys? if walks 4 else idles 1 then
+    >r  fac @ cells + @ pinky.ts swap tile  r> ;
+
+pinky :: _idle  0 0 vx 2!  pinky.ts baseid@ bmp ! ;
+pinky :: _walk  !vx ;
+
+: ahead  dup fac @ dir>v 2p*  0 1 2+  me -rot from ;
+: shoot  *zelda5*  8 ahead  fac @  flame% one [[ fac ! ]] ;
+: animate  ?anim 8 ticks cycle ;
+: ?turnwalk  dirkeysup? if  turn/idle  else  ?walk  then ;
+: ?shoot  <space> pressed? if  shoot  then ;
+
+pinky :: init
+    me to p1  -3. y +!
+    down fac !  \ 1 y1 +!  
+    idle  act>  animate ?turnwalk ?shoot tread col-room ;

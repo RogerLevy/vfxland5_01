@@ -1,0 +1,133 @@
+\ Engineer contract oriented programming system v2
+\ Important changes:
+\ - Validations are defined and assigned AFTER the words they wrap
+\   are defined.
+\ - Validation files are automatically loaded
+\   try myfile / include myfile.vfx --> also loads myfile-vals.vfx
+\   (Of course you can load common building-block validations manually)
+\ - Some terminology changes
+
+\ validation types (expressed as a bitfield, but can't be both)
+\     off = 0
+\     crucial = 1       catch real bugs, low-level safety checks
+\     charmful = 2      info, non-critical checks, artistic concerns
+\ 
+\ result codes
+\     0 = fail and throw
+\     1 = fail but just warn  ( <flag> else-warn )
+\     -1 = succeed and continue
+
+: else-warn
+    1 or ;
+
+\ --- Debug messages
+\ They are not in the pre/postval arrays but in reserved props
+\ so that the validator can ensure they print before and after everything
+
+\ `just` is a Supershow word that clears the stage
+say-before just Clearing all actors...
+say-after just All actors cleared!
+
+\ --- OOP validations
+
+: is-class?
+    0<> ;
+
+crucial val: is-non-zero? ( n - n n:res )
+    dup 0<> ;
+    
+crucial val: is-valid-object? ( a - a n:res )
+    dup 's cla @ is-class? ;
+
+crucial val: validate-me ( - n:res )
+    me 0<> if
+        me is-valid-object? drop execute nip
+    else
+        false
+    then ;
+
+is-non-zero? before [[ drop
+is-valid-object? before [[ drop
+
+is-non-zero? before 's drop     \ <-- special annoying case needed for 
+is-valid-object? before 's drop \     immediate words
+
+validate-me after ]] drop
+
+\ --- Aesthetic validations
+
+charmful val: validate-pile ( - n:res )
+    pile @ 1 + bitmap@ 0<>
+    dup if
+        warn" Second tile in pi le is blank. Just lyk"
+    then 
+    else-warn ;
+
+\ `lay` ( a - ) draws a tilemap 
+is-non-zero? before lay drop
+validate-pile before lay drop
+
+is-non-zero? ['] lay >before drop
+validate-pile ['] lay >before drop
+
+\ --- Organizational validations
+
+\ info" uses f" to support formatted strings
+charmful val: demarcate-frame ( - n:res )
+    gamelife @ info" ********** BEGIN NEW FRAME #%07n **********"
+    -1 ;
+    
+demarcate-frame before frame drop
+
+\ --- Self-healing/fixing validation example (not a real case)
+
+\ fix? ( n:res - n:res f ) state-aware word
+\   returns true the first time the validation runs
+\   if this is the fix-verification pass, returns false
+\   could theoretically be extended with extra logic, for example,
+\   if we wanted to disable self-healing on a per-contract basis
+\   for whatever reason
+
+charmful val: is-in-bounds? ( x. y. - x. y. n:res )
+    2dup in-bounds? else-warn
+    dup 0= if
+        >r 2dup 2p>s swap 
+            warn" Coords on stack out of bounds (%n, %n)"
+        r>
+    then
+    fix? if
+        2drop 160. 120.
+        2dup 2s>p swap info" Changed coords to (%n, %n)"
+    then ;
+
+is-in-bounds? before pos! drop
+
+
+\   [WARN] is-in-bounds? Coords on stack out of bounds (-111, 999)"
+\   [WARN] is-in-bounds? failed
+\   [INFO] is-in-bounds? attempting self-fix...
+\   [INFO] is-in-bounds? Changed coords to (160, 120)"
+\   [INFO] is-in-bounds? fix passed / fix failed
+
+
+\ --- Contract system control
+
+safety on / off 
+crucial safety !
+charmful safety !
+
+--- Terms
+
+    contract 
+    validator = xt, len pair
+    validation = object that gets added to contract
+        i.e. preconditions and postconditions
+
+\ --- Contract system querying
+
+\ contract debug info 
+s" pos!" .contract
+ or
+csee pos!
+
+

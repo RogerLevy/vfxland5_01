@@ -1,0 +1,36 @@
+\ ------------------------------------------------------------------------------
+\ Csound 6 Core Bindings for VFX Forth - Essential ASU Functions
+\ ------------------------------------------------------------------------------
+
+library: csound64.dll
+
+\ Core Lifecycle
+extern "C" void * csoundCreate( int options );
+extern "C" int csoundStart( void * csound );
+extern "C" void csoundStop( void * csound );
+extern "C" void csoundDestroy( void * csound );
+
+\ Performance
+extern "C" int csoundPerformKsmps( void * csound );
+extern "C" int csoundGetKsmps( void * csound );
+
+\ Threading
+extern "C" void * csoundCreateThread( void * routine, void * userdata );
+
+\ Channel Communication (Real-time Control)
+extern "C" void csoundSetAudioChannel( void * csound, void * name, void * samples );
+extern "C" void csoundSetControlChannel( void * csound, void * name, double floatval );
+extern "C" void csoundSetStringChannel( void * csound, void * name, void * string );
+
+\ Orchestra/Score Loading
+extern "C" int csoundCompileOrc( void * csound, void * code );
+extern "C" int csoundReadScore( void * csound, void * code );
+extern "C" int csoundSetOption( void * csound, void * option );
+
+\ Score Events
+extern "C" void csoundScoreEvent( void * csound, int type, void * pfields, int count );
+
+
+extern "C" void csoundCreateMessageBuffer( void * csound, int toStdOut );
+extern "C" void csoundSetMessageStringCallback( void * csound, void * callback );
+extern "C" void csoundSetDebug( void * csound, int debug );

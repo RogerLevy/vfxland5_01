@@ -1,0 +1,56 @@
+require doordata.vfx
+
+m: open ( - ) ;
+var dest \ room #
+var kind
+0 constant brass
+1 constant concrete
+2 constant jade
+3 constant chrome
+var lockstate
+0 constant unlocked
+1 constant locked
+2 constant oneway
+
+actor-class door%
+door-g.png 40 20 tileset door-g.ts
+door-s.png 40 20 tileset door-s.ts
+door-g.ts animation g-open.anm    0 9 range,
+door-g.ts animation g-close.anm   9 0 range,
+door-s.ts animation s-open.anm    0 9 range,
+door-s.ts animation s-close.anm   9 0 range,
+: ?open.anm  kind @ brass = if g-open.anm else s-open.anm then  ;
+: ?close.anm  kind @ brass = if g-close.anm else s-close.anm then ;
+: !kind
+    0 0 +tile@ | n |
+    n 13 = if brass kind ! then
+    n 15 = if chrome kind ! oneway lockstate ! then
+    idle ;
+
+public
+door% :: open
+    14 0 0 +tile!
+    *creak*
+    ?open.anm .5 cycle
+    act&> a.done @ -exit
+        ?close.anm 0 cycle
+    act> 0.4 passed? -exit
+        ?close.anm .5 cycle
+    act&> a.done @ -exit
+        *shut*
+        ?open.anm 0 cycle
+        idle ;
+: ?enter  <up> pressed? -exit lockstate @ ?exit p1 me hit? -exit
+    s" enter" evaluate ;
+
+door% :: init  room# @ doordata [] @ dest ! -10 -10 20 20 hitbox! idle ;
+door% :: _idle  ?open.anm 0 cycle act> ?enter ;
+door% :: peeked  !" kind" !" dest" !" lockstate" ;
+
+: create-doors
+    tmh for tmw for
+        i j bg0 spot @ dup 13 = swap 15 = or if
+            0 priority  i j att door% *[[ !kind ]]
+            14 i j bg0 spot !  \ Door frame.
+        then
+    loop loop ;

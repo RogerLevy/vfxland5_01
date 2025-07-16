@@ -1,0 +1,15 @@
+actor-class moneybag%
+
+: #moneybags  0 actives> me moneybag% is? -exit 1 + ;
+
+: ?collect  p1 me hit? if s" get-moneybag" evaluate unload ( ?win ) then ;
+: ?hidden?  x 2@ 2p>s gap dup 2/ bg0 spot @ 0<> dup not moneybag.png and bmp ! ;
+
+moneybag :: init
+    moneybag.png bmp !  vanish
+    act> ?collect ;
+
+public
+
+: enlighten  actives>  me moneybag% is? -exit appear ;
+: veil  actives>  me moneybag% is? -exit vanish ;

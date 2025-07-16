@@ -1,0 +1,67 @@
+\ ------------------------------------------------------------------------------
+\ REPL
+\ ------------------------------------------------------------------------------
+variable repl  repl on
+|| : toggle dup @ 0= swap ! ;
+|| synonym dup-endcase end-case
+|| aligned-page uios
+|| variable uiosp  uios uiosp !
+|| variable active  active on
+|| variable stackmode
+|| stackmode jumptable ?. ' . , ' p. , ' h. ,
+|| : ?.s depth | d | d 0 max 0 ?do d 1 - i - pick ?. loop ; 
+: ints  0 stackmode ! ;
+: fixeds  1 stackmode ! ;
+: hexints  2 stackmode ! ;
+: ?type ?dup 0= if drop else type then ;
+|| : .prompt
+    context @ ['] forth >body @ <> if context @ .name then 
+    ." >"  tib #tib @ ?type
+    active @ if
+        counter 20 / 8 and if ." _" then
+    then ;
+|| : obey
+    cr tib #tib @ 2dup ?type  space
+    ['] evaluate catch 0 #tib ! throw ;
+|| : ?charkey
+    alt? if drop exit then
+    case
+        ( bksp ) 8 of #tib @ -exit -1 #tib +! exit endof
+        ( tab ) 9 of exit endof
+        ( enter ) 13 of alt? not if obey then exit endof
+        ( esc ) 27 of exit endof
+    dup-endcase
+    dup 32 < over 127 = or if drop exit then
+    tib #tib @ + c! 1 #tib +! ;
+|| : bar ( - )
+    at@f  pen 2@ 320 16 2+ 2s>f  0e 0e 1e 1e  al_draw_filled_rectangle ;
+|| : text ( zstr - )
+    >r  builtin-font  1e 1e 1e 1e  at@f  0  r> al_draw_text ;
+|| : bar-text ( - )
+    +m  0e 0e 0.5e 1e 0e transform
+    z[ ?.s ]z text
+    0 8 +at
+    z[ .prompt ]z text
+    -m ;
+: repl-events
+    ALLEGRO_EVENT_KEY_DOWN happened? if
+        the-key <tab> = if repl toggle then
+    then
+    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
+        active off
+    then
+    ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
+        active on
+    then
+    repl @ if
+        osp @ >r uiosp @ osp !
+        ALLEGRO_EVENT_KEY_CHAR happened? if
+            the-char ?charkey
+        then
+        osp @ uiosp ! r> osp !
+    then ;
+
+: draw-repl ( - ) 
+    repl @ if
+        0 240 16 - at bar bar-text
+    then ;

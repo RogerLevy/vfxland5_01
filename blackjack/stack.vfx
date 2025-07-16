@@ -1,0 +1,32 @@
+\ ------------------------------------------------------------------------------
+\ Circular Stack
+\ ------------------------------------------------------------------------------
+
+: umod  0 swap mu/mod 2drop ; 
+: (wrap)  cell+ @ umod ;
+: >tos  dup @ 1 - over (wrap) cells swap cell+ cell+ + ;
+: >nos  dup @ 2 - over (wrap) cells swap cell+ cell+ + ;
+
+: stack>  0 , , ;
+: stack,  ( length - ) dup stack> cells allot&erase ;
+: pushed  @ ;
+: capacity  cell+ @ ;
+: []  2dup ?oor  >r cells r> cell+ cell+ + ; 
+: pop  ( stack - val )
+    dup >r >tos @
+    r@ @ 1 - r> ! ;
+: push  ( val stack - )
+    >r  1 r@ +!  r> >tos ! ;
+: .stack  ( stack - )
+    dup pushed 0 do  i over [] ?  loop drop ;
+
+0 value s 0 value xt
+: each  ( xt stack - ) ( a - )
+    xt >r s >r  to s to xt
+    s pushed 0 do  i s [] xt execute loop
+    r> to s r> to xt ;
+: each>  r> swap each ; DoNotSin
+
+\ create s 100 stack,
+\ 321 s push
+\ s .stack

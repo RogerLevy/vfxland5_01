@@ -1,0 +1,7 @@
+public class lighter
+
+lighter :: init
+    lighter.png bmp !
+    act>
+        levitate
+        p1 me hit? -exit s" get-lighter" evaluate unload ;

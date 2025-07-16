@@ -1,0 +1,83 @@
+OVERSIGHT SYSTEM STATUS
+=======================
+Text format file for tracking Oversight contract system development status.
+
+TODO SECTION
+============
+
+[X] Implement selective compilation approach (choose one):
+    - Option 1: Compilation hook approach (intercept compile, and ndcs,)
+    - Option 2: Vocabulary approach (parallel -WRAPPED vocabularies)
+    - COMPLETED: Used meta-compilation approach with immediate execution
+
+[ ] Add immediate word support for contracts
+
+[ ] Add field validation capabilities 
+    - Auto-create field validation contracts with common validations
+    - Integrate with existing prop/ofield system
+
+[ ] Implement post-compilation contract application
+    - Hook into ';' to auto-apply contracts after word definition
+    - Auto-wrap words based on validation file contents
+    - Eliminates contract ordering constraints
+
+[ ] Consider adding pre-array and post-array back to validation system
+    - Execute if they are non-null
+    - Would allow for more flexible validation scenarios
+    - Need to evaluate performance impact
+
+[ ] Add optional statistics tracking for contract system
+    - Track number of calls of particular words
+    - Useful for profiling and optimization
+    - Should be optional to avoid performance overhead
+    - Could be built on the pre-array system, conveniently enabling selective tracking
+
+[X] Fix the return stack trace in oversight error reporting
+    - Current (.rs) implementation may not work correctly with oversight's wrapped calls
+    - Investigate and fix stack trace display in validation error messages
+
+[ ] Consolidate dual precondition validations into single validators
+    - c! (check-char-value + check-store-address) 
+    - c+! (check-char-value + check-store-address)
+    - place (check-place-addresses + check-place-length)
+    - allot (check-allot-size + allot&erase check-allot-size)
+    - Combine into single validation functions since multiple ones
+        are no longer supported
+
+[ ] Design and implement per-line stack underflow checking
+    - Add capability to detect when stack underflow occurs on specific lines
+    - Integrate with existing validation system
+    - Should work with crucial/charmful validation levels
+    - Consider performance impact when validations are enabled
+
+[X] Enable combining say validators with normal validators
+    - Currently debug message validators (say-before/say-after) and functional 
+      validators are mutually exclusive on the same word
+    - Allow both types to coexist for enhanced debugging capabilities
+    - COMPLETED: Fixed say-before/after validator compilation issues
+
+
+DATED ENTRIES
+=============
+
+2025-07-01
+----------
+The Oversight contract system is functional and seems stable. The core features 
+are working well:
+- Contract attachment with before/after syntax
+- Validation execution with crucial/charmful levels
+- Safety on/off runtime control
+- Self-healing capabilities with fix? operator
+- Debug messaging and inspection tools
+
+I will be using the system as-is for the time being, without implementing the 
+ability to disable Oversight-enhanced compilation until a later time. Two 
+approaches have been documented for selective original/wrapped word compilation:
+1. Compilation hook approach (intercept compile, and ndcs,)
+2. Vocabulary approach (parallel -WRAPPED vocabularies)
+
+2025-07-02 - 10:53 am
+---------------------
+Optimized `validations off` path and further optimized runtime overhead.
+We went from ~1500us on a test in Dark Blue to <200us on the same test, even
+with the addition of object validations.

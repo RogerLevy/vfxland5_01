@@ -1,0 +1,14 @@
+actor-class slimedrop%
+    0.025 gravity !
+    1. terminal-vy !
+
+: physics
+    vy @ gravity @ + terminal-vy @ min vy !
+    -3 -3 6 6 bg0 tmcol>
+        floor? if *beep7* unload then ;
+
+slimedrop% :: init
+    bg.ts 7 tile bmp !
+    ['] physics phys !
+    -1 -1 x1 2! 2 2 w1 2!
+    act> me p1 hit? -exit unload s" slimed" evaluate ;

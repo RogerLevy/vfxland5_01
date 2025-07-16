@@ -1,0 +1,23 @@
+\ ------------------------------------------------------------------------------
+\ spunk - Project loader
+\  Essentially an IDE definition?
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Load the game
+\ =============================================================================
+
+s" constants.vfx" ?included 
+include %idir%\..\supershow\supershow.vfx
+s" checks.vfx" ?included
+include %idir%\spunk.vfx
+s" common.vfx" ?included
+s" modules.vfx" ?included
+load-scripts
+s" game.vfx" ?included
+
+\ =============================================================================
+\ Testing harness
+\ =============================================================================
+
+s" testing.vfx" ?included

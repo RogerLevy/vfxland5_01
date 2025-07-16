@@ -1,0 +1,61 @@
+\ ------------------------------------------------------------------------------
+\ Fixed file loading words with absolute path canonicalization
+\ Shadows VFX Forth's include/require to fix relative path tracking bug
+\ ------------------------------------------------------------------------------
+
+only forth definitions also system
+
+\ Path canonicalization utilities
+create abs-path-buf$  256 allot
+create temp-path-buf$ 256 allot
+
+: >abspath ( c-addr u -- c-addr2 u2 )
+    \ Convert any path to absolute canonical form using Windows API
+    2dup temp-path-buf$ zplace
+    temp-path-buf$ 256 abs-path-buf$ 0 GetFullPathName
+        0> if
+            2drop abs-path-buf$ zcount
+        then ;
+
+: normalize ( c-addr u -- c-addr2 u2 )
+    >abspath ;           \ Convert to canonical absolute path
+
+\ Fixed file loading words
+: included      \ c-addr u --
+    EmptyIdle
+    expand
+    normalize                   \ Get canonical filename
+    cr ." Including " 2dup type
+    2dup AddSourceFile -rot           \ Store canonical name
+    2dup r/o ?Relative-Open-File 
+    #-258 ?throw
+    -rot  ++IncDir
+    dup >r (include-file)
+    r> close-file drop
+    --IncDir
+    throw
+    base @ -> SbBase
+    depth -> SbDepth
+    context @ -> sbContext
+    current @ -> sbCurrent
+    2drop ;
+
+: include       \ "<name>" --
+    bl parse included ;
+
+: required      \ c-addr u --
+    expand
+    normalize          \ Get canonical filename
+    2dup ['] SourceFiles voc>wid search-wordlist
+        if  drop 2drop  else  included  then ;
+
+: require       \ "<name>" --
+    bl parse required ;
+
+\ Test word to show what gets stored
+
+: (.source)  cr nip count type -1 ;
+
+: .sources   
+    cr cr ." Source Files in Current Build:"
+    ['] (.source) ['] SourceFiles >body @ WalkWordList ;

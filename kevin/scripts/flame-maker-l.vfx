@@ -1,0 +1,12 @@
+require scripts\flame.vfx
+
+var kids
+
+class flame-maker-l%
+: *flame  flame% one dup [[ left fac ! ]] ;
+flame-maker-l :: init
+    flame.ts baseid@ h| bmp !  
+    act>
+        bmp off 
+        kids @ 0= if  2.0 passed? -exit  me 0 0 from *flame kids !  then 
+        kids @ if  kids @ flame is? not if 0 kids ! then  then ;

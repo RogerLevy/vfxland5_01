@@ -1,0 +1,21 @@
+actor-class bolo%
+
+bolo.png 32 32 tileset bolo.ts
+bolo.ts animation bolo-idle.anm 2 frame, 3 0 range,
+bolo.ts animation bolo-bulge.anm 4 5 range,
+bolo.ts animation bolo-burst.anm 6 8 range,
+bolo.ts animation bolo-leak.anm 9 11 range,
+
+: burst
+    bolo-bulge.anm .5 cycle
+    act> 0.5 passed? -exit
+        bolo-burst.anm .25 cycle
+    act> a.done @ -exit
+        bolo-leak.anm .25 cycle halt ;
+
+bolo :: _idle
+    -16 -16 32 32 hitbox!
+    bolo-idle.anm 1. 6 / cycle
+    act> p1 me hit? -exit burst ;
+
+bolo :: init  idle ;

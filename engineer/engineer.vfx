@@ -1,0 +1,616 @@
+\ ------------------------------------------------------------------------------
+\ Engineer IDE v1
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Core System Components
+\ =============================================================================
+
+include %idir%\vfxcore.vfx  \ assumes cwd is ../
+
+\ =============================================================================
+\ Engineer Variables
+\ =============================================================================
+
+variable 'show ( - ) \ app logic and rendering
+' noop 'show !
+defer desktop ( - ) \ default behavior of SHOW (restored on EMPTY)
+defer boot ( - ) \ app startup code like loading assets
+defer onSwitchIn ( - ) \ Window gets focus
+variable debug  debug on
+variable going
+variable bye-chain
+cstring home-path$
+create funcs 32 12 * allot&erase
+
+\ =============================================================================
+\ System Integration
+\ =============================================================================
+
+: bye ( - )  bye-chain do-chain  0 ExitProcess ;
+|| create buf 256 allot
+: path  buf 256 buf GetCurrentDirectory ;
+
+\ =============================================================================
+\ Oversight - Contract-orientation system
+\ =============================================================================
+
+public
+
+include %idir%/debug/oversight.vfx
+
+\ Enable Oversight and validated Forth core words if debugging mode enabled
+\ - Performance can be increased by 30-50% by disabling VALIDATIONS,
+\       (just, keeping it disabled requires preserving the value of VALUDATIONS)
+\ - In addition, because validators are compiled lazily, validator
+\       compilation errors can happen if words aren't found etc but the error
+\       is not intuitive, showing the wrong source location.
+
+init-oversight
+include %idir%/debug/core-checks.vfx
+include %idir%/checks.vfx
+
+debug @ 0= [if]
+    validations off  \ Speeds up performance by 85%-90%
+[then]
+
+
+\ =============================================================================
+\ Additional Facilities
+\ =============================================================================
+
+include %idir%/strout.vfx  \ TODO: maybe deprecate/remove
+include %idir%/error2.vfx  \ TODO: Make platform-agnostic
+
+\ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
+include %idir%/counter.vfx  \ required by mersenne
+include %idir%/mersenne.vfx
+include %idir%/gamemath.vfx
+
+\ =============================================================================
+\ Allegro
+\ =============================================================================
+
+LIBRARY: allegro_monolith-5.2.dll
+include %idir%/allegro-5.2.5.vfx
+include %idir%/al-utils.vfx
+include %idir%/keys.vfx
+
+\ =============================================================================
+\ Window bring-to-front
+\ =============================================================================
+
+extern void * GetForegroundWindow( );
+extern bool SetForegroundWindow( void * hwnd );
+GetForegroundWindow value vfx-hwnd
+\ vfx-hwnd 0 0 0 0 0 $41 SetWindowPos drop 
+
+: >display ( - )
+    flushOP-gen drop \ flush buffered output (VFX)
+    reset-keyboard 
+    display al_get_win_window_handle SetForegroundWindow drop ;
+
+: >vfx ( - )
+    vfx-hwnd SetForegroundWindow drop ;
+
+\ =============================================================================
+\ Filesystem
+\ =============================================================================
+
+: dir-exists? ( a n - f )
+    >zpad GetFileAttributes -1 <> ;
+
+: >datadir ( a n - a n )
+    s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
+
+: each-file ( path:a n xt - ) ( a n - )
+    -rot >zpad al_create_fs_entry locals| e xt |
+    e al_open_directory if
+        begin  e al_read_directory ?dup while
+            dup >r al_get_fs_entry_name zcount xt execute
+            r> al_destroy_fs_entry
+        repeat
+        e al_close_directory drop    
+    else
+        abort" Couldn't open directory"
+    then 
+    e al_destroy_fs_entry ;
+
+\ =============================================================================
+\ Interactive Tools
+\ =============================================================================
+
+\ Try/Retry - Convenient code testing
+
+variable honing     \ flag, controls forced reloading of REQUIRE'd files
+cstring retry-filepath$
+
+wordlist constant honing-wl
+
+: >try ( a len - )
+    honing @ if honing-wl +order then
+    2dup >abspath retry-filepath$ place
+    ['] included catch
+    honing @ if honing-wl -order then
+    throw ;
+
+|| : retry ( - )
+    retry-filepath$ count >try ;
+
+: try ( - <file-noext> )
+    bl parse f" %s.vfx" >try ;
+
+honing-wl +order definitions
+: require include ;
+: required included ;
+public
+
+\ =============================================================================
+\ Bitmap array
+\ =============================================================================
+
+public
+
+65536 ?constant #bitmaps
+create bitmaps #bitmaps cells allot&erase
+
+variable next-bmp# 1 next-bmp# !
+
+|| : bitmap[]  $FFFF and cells bitmaps + ;
+|| : bitmap! bitmap[] ! ;
+
+: bitmap@ ( n - bmp )
+    bitmap[] @ ;
+
+: +bitmap ( bmp - n )
+    next-bmp# @ dup >r bitmap! 1 next-bmp# +! r> ;
+
+\ =============================================================================
+\ Graphics
+\ =============================================================================
+
+include %idir%/matrix.vfx
+create pen 0 , 0 , \ int
+
+: at@f ( - f:x f:y )
+    pen 2@ 2s>f ;
+
+|| : draw-bitmap ( bmp n - )
+    over if at@f al_draw_bitmap else 2drop then ;
+
+|| : abmpw  dup if al_get_bitmap_width then ;
+|| : abmph  dup if al_get_bitmap_height then ;
+
+\ =============================================================================
+\ Automatic bitmap loader
+\ =============================================================================
+
+|| variable bitmap-assets \ list
+
+: .loading ; \ cr ." Loading " 2dup -path type ;
+: .adding ; \ cr ." Adding " 2dup -path type ;
+
+: load-bitmap ( a n - allegro-bitmap )
+    .loading >zpad al_load_bitmap ;
+
+: $global-create
+    current @ >r also forth definitions $create previous r> current ! ;
+
+: add-bitmap-asset ( a n - ) \ path
+    .adding 
+    2dup load-bitmap +bitmap ( n ) 
+    >r -path >pad
+    $global-create bitmap-assets link r> , 
+    does> cell+ @ ;
+
+: bitmap-file ( n - a n )
+    bitmap@ | bmp |
+    bmp 0= abort" BITMAP-FILE Bitmap is null!" 
+    bmp al_is_sub_bitmap if
+        bmp al_get_parent_bitmap to bmp
+    then
+    bitmap-assets begin @ ?dup while
+        dup cell+ @ bitmap@ bmp = if
+            body> >name count exit
+        then
+    repeat  -1 abort" BITMAP-FILE Bitmap file not found!" ;
+
+|| : ?bitmap ( a n - ) \ path
+    2dup -path >pad find if
+        >body cell+ @ >r load-bitmap r> bitmap[] !
+    else
+        drop add-bitmap-asset
+    then ;
+
+|| : (load-bitmap) ( a n - ) \ path
+    ?bitmap ;
+
+: load-bitmaps ( - )
+    s" gfx" >datadir ['] (load-bitmap) each-file ;
+
+|| : (reload-bitmap) ( a n - ) \ path
+    \ TODO: reload only updated bitmaps
+    2dup -path >pad find if >body cell+ @ bitmap@ al_destroy_bitmap else drop then
+    (load-bitmap) ;
+
+: reload-bitmaps ( - )
+    s" gfx" >datadir ['] (reload-bitmap) each-file ;
+
+: destroy-bitmaps ( - )
+    cr ." Destroying bitmaps"
+    65536 1 do
+        i bitmap[] dup @ ?dup if al_destroy_bitmap then off
+    loop  1 next-bmp# ! ;
+
+\ =============================================================================
+\ Drawing primitives
+\ =============================================================================
+
+: at ( x y - )
+    pen 2! ;
+
+: +at ( x y - )
+    pen 2+! ;
+
+: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
+    dup bitmap@ swap 24 rshift draw-bitmap ;
+
+: bmpwh ( n - w h )
+    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
+
+\ =============================================================================
+\ Print text
+\ =============================================================================
+
+include %idir%/print.vfx
+
+\ =============================================================================
+\ Input
+\ =============================================================================
+
+: held? ( - f )  kbs0 swap al_key_down 0<> ;
+: kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
+: pressed? ( - f )  kdelta 1 = ;
+: letgo? ( - f )  kdelta -1 = ;
+: shift? ( - f )  215 held? 216 held? or ;
+: ctrl? ( - f )  217 held? 218 held? or ;
+0 value alt?
+    
+\ =============================================================================
+\ Framerate independence
+\ =============================================================================
+
+|| 60e fvalue tps \ float, ticks per second
+|| 0 0 2value ustime \ long, in microseconds
+0 value mstime \ int, in milliseconds
+0 value usdelta
+0 value pdelta \ fixed, in seconds
+0e fvalue sdelta \ in seconds
+
+: ticks  ( n - ms )
+    s>f 1000e tps f/ f* f>s ;
+
+|| : !delta  ( - )
+    ustime  ucounter 2dup to ustime  2swap 2-
+        d>s to usdelta
+    usdelta s>f 1000000e f/ to sdelta
+    ustime 1000 m/ to mstime
+    sdelta f>p to pdelta ;
+
+4 value zoom
+
+\ : resize-display ( w h - )
+\     2dup to apph to appw  2dup to winh to winw
+\     display -rot al_resize_display drop ;
+
+\ =============================================================================
+\ Event handling
+\ =============================================================================
+
+|| create e /ALLEGRO_EVENT allot&erase
+: happened? ( n - f ) e ALLEGRO_EVENT.type @ = ;
+: the-char ( - n ) e KEYBOARD_EVENT.unichar @ ;
+: the-key ( - n ) e KEYBOARD_EVENT.keycode @ ;
+: the-wheel ( - n ) e MOUSE_EVENT.dz @ ;
+: the-mouse ( - n ) e MOUSE_EVENT.x 2@ ; 
+: the-walt ( - n ) e MOUSE_EVENT.dx 2@ ; 
+: the-mbutton ( - n ) e MOUSE_EVENT.button @ ;
+
+\ =============================================================================
+\ REPL
+\ =============================================================================
+
+include %idir%/repl.vfx
+
+\ =============================================================================
+\ Function Keys
+\ =============================================================================
+
+|| : func[] 32 * funcs + ;
+
+: func ( a c n - )
+    <f1> - func[] place ;
+
+: ?func ( n - )
+    <f1> - dup 0 12 within if
+        ( postpone [ ) func[] count cr 2dup type evaluate else drop then ;
+
+s" reload" <f5> func
+
+\ =============================================================================
+\ Display Mode Control
+\ =============================================================================
+
+|| : ?corner ( - )
+    ; \ debug @ -exit  fullscreen? ?exit
+    \ display 4 4 al_set_window_position ;
+
+|| : fullscreen ( - )
+    cr ." FULLSCREEN" -1 to fullscreen?  monw to winw  monh to winh ;
+
+|| : windowed ( - )
+    cr ." WINDOWED" 0 to fullscreen?  appw to winw  apph to winh ;
+
+|| : *display ( - )
+    fullscreen? if fullscreen else windowed then
+    create-display  ?corner ;
+
+|| : w/f
+    fullscreen? if windowed else fullscreen then
+    display ALLEGRO_FULLSCREEN_WINDOW fullscreen? 1 and
+    al_set_display_flag 0= if cr ." w/f Fail!" then
+    ?corner !delta !delta ;
+
+\ =============================================================================
+\ Main Loop Support
+\ =============================================================================
+
+|| create kbs2 /ALLEGRO_KEYBOARD_STATE allot
+
+: save-kb
+    kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move
+    kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
+
+: restore-kb
+    kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
+
+|| : ?lock repl @ if save-kb then ; 
+|| : ?unlock repl @ if restore-kb then ;
+    
+|| : -keys  reset-keyboard ;
+|| : ?w/f  <enter> pressed?  alt? and if w/f -keys then ;
+|| : ?quit  <esc> pressed? debug @ and if going off >vfx quit then ;
+|| : ?bye  <f4> pressed?  alt? and if bye then ;
+
+|| : spin ( - f: n )
+    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
+
+|| : pre ( - )
+    0 #tib ! postpone \\ 
+    ['] noop is EditOnError
+    !delta !delta ;
+    
+|| : ?throw ( n - ) 
+    dup -1 = if drop exit then
+    dup if going off >vfx then throw ;
+
+|| : cls ( - )
+    0e 0e 0e 1e al_clear_to_color  0 0 at ;
+
+defer pump
+
+|| : draw-game ( - ) 
+    cls 
+    'show @ catch ?throw
+    pump ;
+
+: show> ( - ) ( - )
+    r> dup 'show ! cls execute ; 
+
+: poll ( - )
+    poll-keyboard  <alt> held? <altgr> held? or to alt? ;
+
+: refresh ( - )
+    ustime 
+    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
+    to ustime
+    display al_flip_display
+    !delta
+    poll ;
+
+|| : spin ( - f: n )
+    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
+
+\ =============================================================================
+\ Interface Module
+\ =============================================================================
+
+load-bitmaps
+
+' engineer` public-xt !
+include %idir%/ide1.vfx
+' forth public-xt !
+
+\ =============================================================================
+\ Global Events
+\ =============================================================================
+
+|| : global-events ( - )
+    ALLEGRO_EVENT_DISPLAY_CLOSE happened? if
+        bye
+    then
+    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
+        reset-keyboard reset-mouse
+    then
+    ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
+        onSwitchIn
+    then
+    ALLEGRO_EVENT_DISPLAY_RESIZE happened? if
+        display al_acknowledge_resize
+    then
+    ide-events ;
+
+\ =============================================================================
+\ Global Event Handler
+\ =============================================================================
+
+|| : ?event ( - f )
+    alqueue e al_get_next_event 0<>
+        dup -exit >r global-events r> ;
+
+|| variable need-pump
+    
+|| : (pump) ( - )
+    need-pump @ -exit
+    begin ?event not until ;
+
+:noname ( - )
+    ['] (pump) catch ?throw need-pump on ;
+    is pump
+
+: event? ( - f )
+    repl @ if 0 exit then
+    need-pump off ?event ;
+
+\ =============================================================================
+\ Main Loop
+\ =============================================================================
+
+|| : ?idle ( - ) debug @ if EmptyIdle ( yield ) then ;
+|| : controls ( - ) ?quit ?w/f ?bye ?idle ;
+|| : screen ( - ) debug @ if draw-ide else draw-game then ;
+
+: frame ( - )
+    screen refresh controls ;
+
+: go ( - )
+    going @ ?exit
+    >display pre going on begin frame again ;
+
+\ =============================================================================
+\ Entry Points  
+\ =============================================================================
+
+|| : /console
+    debug @ -exit
+    hWndMain to vfx-hwnd
+    >vfx ;
+
+|| : setup
+    \ Initialize Engineer
+    init-mersenne
+    init-allegro
+    /console
+    *display
+    init-vga-font
+    0 0 to ustime ;
+
+|| : cartridge
+    \ Load user program
+    load-bitmaps
+    s" main.vfx" fileExist? if s" main.vfx" included then ;
+
+: frigid ( - )
+    \ Development startup
+    path home-path$ place
+    +xrefs
+    s" xref.xrf" fileexist? if load-xref then
+    rs setup cartridge ;
+
+: cold ( - )
+    \ Release startup
+    frigid boot go ;
+
+\ =============================================================================
+\ Debugging tools
+\ =============================================================================
+
+\ include debug/logging.vfx \ TODO: test and fix
+\ debug @ [if]
+\ include debug/contracts.vfx
+\ [then]
+
+\ =============================================================================
+\ Entry point
+\ =============================================================================
+
+|| create bye-chain-root
+bye-chain link 0 ,
+
+|| : debug-cold ( - )
+    [ ' EntryPoint >body @ compile, ] ;
+
+|| : cleanup ( - )
+    bye-chain-root bye-chain !
+    destroy-bitmaps ;
+
+' cleanup bye-chain-root cell+ !
+
+\ || : return ( - )
+\     home-path$ count $cwd ;
+
+: empty ( - )
+    rs
+    cleanup
+    ['] desktop 'show !
+    ['] noop is boot
+\    ['] noop is .apperr
+    ['] noop is onSwitchIn
+    [ /obj ] literal to /obj
+    [ /static ] literal to /static
+    only forth definitions 
+    s" anew gild" evaluate ;
+
+: switch ( - )
+    empty cartridge ;
+
+: reload ( - )
+    honing @ if retry else switch then ;
+
+\ =============================================================================
+\ Turnkey creation
+\ =============================================================================
+
+: save-release ( - <path> )
+    ['] cold is EntryPoint
+    fullscreen?
+        repl @
+            repl off
+            debug off
+            fullscreen
+            save
+        repl !
+        debug on
+    if fullscreen else windowed then ;
+
+: save-debug ( - <path> )
+    ['] debug-cold is EntryPoint
+    fullscreen?
+        repl @
+            repl on
+            debug on
+            windowed
+            save
+        repl !
+    if fullscreen else windowed then ;
+
+|| : prj ( - a len ) path '\' ending ;
+
+: turnkey ( - )
+    prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" cr 2dup type shellcmd
+    200 ms
+    prj prj f" save-release ..\..\rel\%s\%s" cr 2dup type evaluate
+    prj prj f" save-debug ..\..\rel\%s\%s-debug" cr 2dup type evaluate ;
+
+\ =============================================================================
+\ Kickoff
+\ =============================================================================
+
+: engineer.cold
+    (.cold)
+    ."  ~~~ Engineer v1 ~~~ "
+    cr ;
+    
+assign engineer.cold to-do .cold   \ .cold is a VFX thing
+marker gild
+

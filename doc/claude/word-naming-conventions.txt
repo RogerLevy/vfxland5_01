@@ -1,0 +1,42 @@
+Core Principles
+
+Brevity over verbosity: log not write-log-line
+Context-dependent generics: close not close-log-file when scope is clear
+Direct action verbs: Choose immediate, active names
+
+Prefix Conventions
+
+h: Handles (hlog for log file handle)
+$: Hexadecimal literal
+#: Counts (#errors for error counter)
++: Increment, increase, add, push
+-: Decrement, negate, clear, undo, pop
+*: Instantiate, generate
+!: Set, calculate, generate (the following word is destination)
+@: Retrieve from (the following word is source)
+
+Suffix Conventions
+
+#: Current index
+$: Counted strings (logfile$ for filename buffer, returns address only)
+%: Class
+-: Increment, increase, 
+!: Store (the preceding word qualifies what is on the stack)
+@: Fetch (the preceding word qualifies what will be left on the stack)
+,: Compile (into dictionary)
+
+Naming Patterns
+
+Domain grouping: Related functions share prefixes (init-logging, shutdown-logging)
+Remove redundant qualifiers: Avoid log-file- prefix when context is obvious
+Scope-appropriate specificity: Generic names OK in focused vocabularies
+
+Examples
+forth\ Verbose → Concise
+write-log-line → log
+close-log-file → close  
+log-file-handle → hlog
+errors-this-session → #errors
+generate-log-filename → generate-logfile$
+Style Goal
+Readable brevity - names short enough to scan quickly while remaining meaningful within their immediate context. Prioritizes interactive development flow over verbose self-documentation.

@@ -1,0 +1,449 @@
+\ ==============================================================================
+\ Core Forth Validations
+\   Safety validations for standard Forth words using contract system v2
+\   Provides memory safety, bounds checking, and reasonable limits
+\
+\ VALIDATED WORDS
+\   Memory access: @ ! +! c@ c! c+! 2@ 2! sf@ sf! on off cells execute catch
+\   Arithmetic: */ */mod d>s f>s
+\   String operations: count type move fill place erase
+\   File I/O: open-file create-file close-file read-file write-file 
+\             file-position reposition-file
+\   Compiler: parse find allot allot&erase
+\   Memory management: allocate free resize
+\
+\ VALIDATION CONTROL
+\   Use global 'validations' flag to enable/disable all validations:
+\     validations on   \ Enable all validations
+\     validations off  \ Disable all validations (zero overhead)
+\
+\ ==============================================================================
+
+\ ==============================================================================
+\ Common Validation Helpers
+\ ==============================================================================
+
+validations dup @ swap off
+
+: valid-address?  1048576 0x80000000 within ;
+
+crucial test: valid-address ( addr -- addr n:result )
+    \ Validate address is non-null and in reasonable range
+    dup valid-address? ; \ Below kernel space (Windows)
+
+crucial test: reasonable-size ( n -- n n:result )
+    \ Validate size is reasonable (0 to 256MB, warn over 16MB)
+    dup 0 268435456 within 0= if
+        0 s" Excessive buffer size (>256MB)" log-error exit
+    then    \ Max 256MB (256 * 1024 * 1024)
+    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
+    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+
+crucial test: reasonable-allocation ( n -- n n:result )
+    \ Validate allocation size is reasonable (1 to 256MB, warn over 16MB)
+    dup 0 268435456 within 0= if
+        0 s" Excessive buffer size (>256MB)" log-error exit
+    then    \ Max 256MB (256 * 1024 * 1024)
+    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
+    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+
+crucial test: valid-char ( n -- n n:result )
+    \ Validate character is in 0-255 range (warn if outside)
+    dup 0 255 within? else-warn ;
+
+crucial test: reasonable-length ( n -- n n:result )
+    \ Validate string/buffer length is reasonable (0 to 64KB)
+    dup 0 65536 within? ;
+
+\ ==============================================================================
+\ Colon Word Equivalents for Validator Composition
+\ ==============================================================================
+
+: check-valid-address ( addr -- addr n:result )
+    \ Colon equivalent of valid-address validator
+    dup valid-address? ;
+
+: check-reasonable-size ( n -- n n:result )  
+    \ Colon equivalent of reasonable-size validator
+    dup 0 268435456 within 0= if
+        0 s" Excessive buffer size (>256MB)" log-error exit
+    then    \ Max 256MB (256 * 1024 * 1024)
+    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
+    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+
+: check-reasonable-allocation ( n -- n n:result )
+    \ Colon equivalent of reasonable-allocation validator  
+    dup 0 268435456 within 0= if
+        0 s" Excessive buffer size (>256MB)" log-error exit
+    then    \ Max 256MB (256 * 1024 * 1024)
+    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
+    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+
+: check-valid-char ( n -- n n:result )
+    \ Colon equivalent of valid-char validator
+    dup 0 255 within? else-warn ;
+
+\ ==============================================================================
+\ Memory Access Validations
+\ ==============================================================================
+
+crucial test: check-fetch-address ( addr -- addr n:result )
+    \ Validate address for fetch operations
+    check-valid-address ;
+
+crucial test: check-store-address ( addr -- addr n:result )
+    \ Validate address for store operations
+    check-valid-address ;
+
+\ ==============================================================================
+\ Memory Arithmetic Validations
+\ ==============================================================================
+
+crucial test: check-cells-overflow ( n -- n n:result )
+    \ Check for overflow in cells calculation
+    dup dup cells cell/ = ;           \ n*cell/cell should equal n
+
+\ ==============================================================================
+\ String Operation Validations
+\ ==============================================================================
+
+crucial test: check-counted-string ( addr -- addr n:result )
+    \ Validate counted string format
+    check-valid-address ;
+
+crucial test: check-type-params ( addr len -- addr len n:result )
+    \ Validate type parameters with self-healing (clamp length)
+    {: addr len | len-result :}
+    len 0 <= if
+        s" <zero length string> " 1 exit
+    else
+        len 32768 u<= else-warn to len-result
+        len-result fix? nip if
+            s" String length over 32768, limiting..." log-warning
+            len 32768 umin to len
+        then
+    then
+    addr len
+    addr check-valid-address nip len-result and ;
+    
+crucial test: check-move-params ( addr1 addr2 u -- addr1 addr2 u n:result )
+    \ Validate move operation parameters
+    {: addr1 addr2 u | addr1-result addr2-result size-result final :}
+    addr1 check-valid-address to addr1-result drop
+    addr1-result 0 >= if s" Invalid source address" log-error then
+    addr2 check-valid-address to addr2-result drop
+    addr2-result 0 >= if s" Invalid destination address" log-error then
+    u check-reasonable-size to size-result drop
+    size-result 0 >= if s" Invalid size" log-error then
+    
+    addr1 addr2 u
+    addr1-result addr2-result and size-result and ;
+
+crucial test: check-fill-params ( addr u char -- addr u char n:result )
+    \ Validate fill operation parameters
+    {: addr u char | addr-result size-result char-result final :}
+    addr check-valid-address to addr-result drop
+    addr-result 0 >= if s" Invalid address" log-error then
+    u check-reasonable-size to size-result drop
+    size-result 0 >= if s" Invalid size" log-error then
+    char check-valid-char to char-result drop
+    char-result 0 >= if s" Invalid fill character" log-error then
+    
+    addr u char
+    addr-result size-result and char-result and ;
+
+\ crucial test: check-place-addresses ( addr1 len addr2 -- addr1 len addr2 n:result )
+\     \ Validate place operation with self-healing (clamp length to buffer)
+\     {: addr1 len addr2 | dest-result src-result final :}
+\     addr1 check-valid-address to src-result drop      \ Source valid
+\     src-result 0 >= if s" Invalid source address" log-error then
+\     addr2 check-valid-address to dest-result drop     \ Destination valid
+\     dest-result 0 >= if s" Invalid destination address" log-error then
+\     
+\     addr1 len addr2
+\     dest-result src-result and ;
+
+\ charmful test: check-place-length ( addr1 len addr2 -- addr1 len addr2 n:result )
+\     over 0 255 within? else-warn
+\     >r swap 0 255 clamp swap r> ;
+
+\ ==============================================================================
+\ Arithmetic Operation Validations
+\ ==============================================================================
+
+crucial test: check-star-slash ( n1 n2 n3 -- n1 n2 n3 n:result )
+    \ Check for intermediate overflow in */ operation
+    {: n1 n2 n3 | final :}
+    n1 n2 n3
+    
+    \ Check division by zero first
+    n3 0= if 0
+        s" Division by zero" log-error
+        exit
+    then
+    -1 ;
+    \ n1 abs 65536 <=  n2 abs 65536 <=  and ;
+
+\ ==============================================================================
+\ Conversion Operation Validations  
+\ ==============================================================================
+
+crucial test: check-double-to-single ( d -- d n:result )
+    \ Warn if double doesn't fit in single
+    dup 0= else-warn ;
+
+charmful test: check-float-to-single ( r -- r n:result )
+    \ Warn if float doesn't fit in single
+    \ Simple range check for typical single-cell range
+    fdup -2147483648.0e f>= fover 2147483647.0e f<= and else-warn
+    dup 0 >= if
+        s" Float-to-single range check failed (only reported on first failure for word)" log-warning
+        current-validation @ off \ validation disables individually for each word on its first failure
+    then ;
+
+\ ==============================================================================
+\ File I/O Validations
+\ ==============================================================================
+
+crucial test: check-filename ( addr len mode -- addr len n:result )
+    \ Validate filename parameters
+    {: addr len mode | addr-result final :}
+    addr check-valid-address to addr-result drop
+    addr-result 0 >= if s" Invalid filename address" log-error then
+    
+    addr len mode
+    addr-result len 0 260 within? and ;
+
+crucial test: check-file-handle ( fid -- fid n:result )
+    \ Basic file handle validation (non-zero)
+    dup 0= if 0 exit then
+    -1 ;
+
+crucial test: check-io-buffer ( addr u file -- addr u n:result )
+    \ Validate I/O buffer parameters
+    {: file | addr-result size-result :}
+    over check-valid-address to addr-result drop
+    addr-result 0 >= if s" Invalid buffer address" log-error then
+    dup check-reasonable-size to size-result drop
+    
+    file addr-result size-result and ;
+
+\ ==============================================================================
+\ Parsing Validations
+\ ==============================================================================
+
+crucial test: check-parse-char ( char -- char n:result )
+    \ Validate parse delimiter character
+    dup 0 127 within? ;              \ ASCII range
+
+crucial test: check-find-string ( addr -- addr n:result )
+    \ Validate find string parameter
+    check-valid-address ;
+
+\ ==============================================================================
+\ Memory Management Validations
+\ ==============================================================================
+
+crucial test: check-allocation-size ( u -- u n:result )
+    \ Validate allocation size
+    check-reasonable-allocation ;
+
+crucial test: check-allocated-address ( addr -- addr n:result )
+    \ Basic check for allocated address (warn if suspicious)
+    dup check-valid-address ;
+
+\ ==============================================================================
+\ Execution Validations
+\ ==============================================================================
+
+crucial test: check-execution-token ( xt -- xt n:result )
+    \ Validate execution token
+    check-valid-address ;                  \ XT should be valid address
+
+\ ==============================================================================
+\ Dictionary Validations
+\ ==============================================================================
+
+crucial test: check-allot-size ( n -- n n:result )
+    \ Validate allot size
+    {: | size-result space-result :}
+    check-reasonable-size to size-result
+    size-result 0 >= if s" Invalid allocation size" log-error then
+    dup unused <= to space-result             \ Check available space
+    space-result 0= if s" Insufficient memory space" log-error then
+    size-result space-result and ;
+
+\ ==============================================================================
+\ Combined Validators (Quick&Dirty Fix for Multiple Pre-Validations)
+\ NOTE: This is a temporary workaround while contracts only support one 
+\ validation per side. This is NOT an established convention.
+\ ==============================================================================
+
+crucial test: check-char-store-params ( n addr -- n addr n:result )
+    \ Combined validator for c! - validates both character and address
+    {: | char-result addr-result final :}
+    over check-valid-char to char-result drop
+    char-result 0 >= if s" check-char-value failed" log-error then
+    dup check-valid-address to addr-result drop
+    addr-result 0 >= if s" check-store-address failed" log-error then
+    
+    char-result addr-result and ;
+
+crucial test: check-place-params ( addr1 len addr2 -- addr1 len addr2 n:result )
+    \ Combined validator for place - validates addresses and length
+    {: addr1 len addr2 | addr-result src-result dest-result len-result :}
+
+    addr1 check-valid-address to src-result drop      \ Source valid
+    src-result 0 >= if s" Invalid source address" log-error then
+    addr2 check-valid-address to dest-result drop     \ Destination valid
+    dest-result 0 >= if s" Invalid destination address" log-error then
+
+    src-result dest-result and to addr-result
+    
+    addr-result 0< if
+        len 0 255 within? else-warn to len-result
+        len 0 255 clamp to len 
+        len-result 0 >= if s" Invalid source length - clamped" log-warning then
+    then 
+    
+    addr1 len addr2
+    addr-result len-result and ;
+
+\ ==============================================================================
+\ Contract Attachments and Word Wrapping
+\ ==============================================================================
+
+validations on
+
+also forth
+
+\ Memory Access Words
+before @ check-fetch-address
+wrap-word @
+
+before ? check-fetch-address
+wrap-word ?
+
+before ! check-store-address
+wrap-word !
+
+before +! check-store-address
+wrap-word +!
+
+before c@ check-fetch-address
+wrap-word c@
+
+before c! check-char-store-params
+wrap-word c!
+
+before c+! check-char-store-params
+wrap-word c+!
+
+before 2@ check-fetch-address
+wrap-word 2@
+
+before 2! check-store-address
+wrap-word 2!
+
+before sf@ check-fetch-address
+wrap-word sf@
+
+before sf! check-store-address
+wrap-word sf!
+
+before on check-store-address
+wrap-word on
+
+before off check-store-address
+wrap-word off
+
+\ Memory Arithmetic Words
+before cells check-cells-overflow
+wrap-word cells
+
+\ String Operation Words
+before count check-counted-string
+wrap-word count
+
+before type check-type-params
+wrap-word type
+
+before move check-move-params
+wrap-word move
+
+before fill check-fill-params
+wrap-word fill
+
+: erase  0 fill ;
+
+before place check-place-params
+wrap-word place
+
+\ Arithmetic Words
+before */ check-star-slash
+wrap-word */
+
+before */mod check-star-slash
+wrap-word */mod
+
+\ Conversion Words
+before d>s check-double-to-single
+wrap-word d>s
+
+before f>s check-float-to-single
+wrap-word f>s
+
+\ File I/O Words
+before open-file check-filename
+wrap-word open-file
+
+before create-file check-filename
+wrap-word create-file
+
+before close-file check-file-handle
+wrap-word close-file
+
+before read-file check-io-buffer
+wrap-word read-file
+
+before write-file check-io-buffer
+wrap-word write-file
+
+before file-position check-file-handle
+wrap-word file-position
+
+before reposition-file check-file-handle
+wrap-word reposition-file
+
+\ Parsing Words
+before parse check-parse-char
+wrap-word parse
+
+before find check-find-string
+wrap-word find
+
+\ Memory Management Words
+before allocate check-allocation-size
+wrap-word allocate
+
+before free check-allocated-address
+wrap-word free
+
+before resize check-allocation-size
+wrap-word resize
+
+\ Execution Words
+before execute check-execution-token
+wrap-word execute
+
+before catch check-execution-token
+wrap-word catch
+
+\ Dictionary Words
+before allot check-allot-size
+wrap-word allot
+
+before allot&erase check-allot-size
+wrap-word allot&erase
+
+validations !

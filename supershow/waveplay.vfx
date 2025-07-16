@@ -1,0 +1,183 @@
+\ ------------------------------------------------------------------------------
+\ Simple sample-based audio
+\ ------------------------------------------------------------------------------
+defer voice? ( smp - f )
+|| 256 constant #samples
+\ ALLEGRO SAMPLE * , ALLEGRO_SAMPLE_ID [2] , choke flag , 
+|| create samples  #samples 4 cells * allot&erase
+|| variable next-smp#  1 next-smp# !
+|| 2variable ch 
+|| 0 value strm
+
+\ =============================================================================
+\ Wrappers
+\ =============================================================================
+
+: play-sample ( allegro-sample - )
+    ?dup -exit
+    1e 0e 1e  ALLEGRO_PLAYMODE_ONCE  ch  al_play_sample ;
+    
+: stop-sample ( ALLEGRO_SAMPLE_ID* - )
+    dup  al_stop_sample  2 cells erase ;
+
+: sample-playing? ( ALLEGRO_SAMPLE_ID* - f )
+    dup al_lock_sample_id
+        al_get_sample_instance_playing
+        swap al_unlock_sample_id ;
+
+: load-sample ( a n - allegro-sample )
+    >zpad al_load_sample ;
+
+\ =============================================================================
+\ Sample pool
+\ =============================================================================
+
+|| : sample[]  #samples 1 - and 4 cells * samples + ;
+
+|| : chokes-itself ( smp - )
+   sample[] cell+ cell+ cell+ on ;
+
+|| : +sample ( allegro-sample - smp )
+    next-smp# @ 1 next-smp# +!
+    dup >r sample[] !  r@ chokes-itself  r> ;
+
+\ =============================================================================
+\ Playback
+\ =============================================================================
+
+|| : @ch ( smp - )
+    ch 2@ rot sample[] cell+ 2! ;
+
+|| : ?choke ( smp - smp )
+    dup sample[] ( a ) dup cell+ cell+ cell+ @ if
+        cell+ stop-sample
+    else  ( a ) drop  then ;
+
+: sound  ( smp - )
+    dup voice? not if drop exit then
+    ?choke  dup sample[] @ play-sample  @ch ;
+
+:noname ( smp - f ) drop -1 ; is voice?
+
+\ =============================================================================
+\ Automatic loading
+\ =============================================================================
+
+|| : lastnfa  last @ ctrl>nfa ;
+
+|| : *sample* ( a n - ) \ filename 
+    lastnfa dup >r count -ext f" *%s*" >pad
+    $create r> name> >body @ ,
+    does> @ sound ;
+
+|| : does-sample  does> @ ;
+
+|| : add-sample-asset ( a n - ) \ filename
+    2dup load-sample +sample ( smp ) >r
+        -path >pad $create  r> , 
+    does-sample
+    *sample* ; 
+
+|| : ?sample ( a n - ) \ path
+    2dup -path >pad find if
+        >r
+        .loading
+        load-sample r> >body @ sample[] !
+    else
+        drop
+        .adding
+        add-sample-asset
+    then ;
+
+|| : (load-sample) ( a n - ) \ path
+    ?sample ;
+
+|| : (reload-sample) ( a n - ) \ path
+    \ TODO: reload only updated samples
+    2dup >pad find if
+        >body @ sample[] @ al_destroy_sample
+    else
+        drop
+    then
+    (load-sample) ;
+
+|| : clear-handles ( - )
+    #samples for
+        i sample[] 3 cells erase
+    loop
+    0 to strm
+    0 next-smp# ! ;
+
+|| : destroy-samples ( - )
+    cr ." Destroying samples"  
+    #samples for
+        i sample[] @ al_destroy_sample  
+    loop
+    clear-handles ;
+
+: load-samples ( - )
+    s" smp" >datadir dir-exists? -exit
+    clear-handles
+    current @ also forth definitions
+    s" smp" >datadir ['] (load-sample) each-file
+    previous current ! ;
+
+: reload-samples ( - )
+    s" smp" >datadir dir-exists? -exit
+    clear-handles
+    current @ also forth definitions
+    s" smp" >datadir ['] (reload-sample) each-file
+    previous current ! ;
+
+\ =============================================================================
+\ Streaming
+\ =============================================================================
+
+|| : stream-sample ( a n loopmode - )
+    \ Can only stream one at a time
+    \ Allegro destroys the stream handle on exit
+    \ strm ?dup if  al_destroy_audio_stream  0 to strm  then
+    locals| lm |
+    s" bgm\" >datadir f" %s%s"
+    >zpad 3 2048 al_load_audio_stream 
+        dup 0= if ." Unable to stream audio file." then
+        ?dup -exit
+        to strm 
+    strm lm al_set_audio_stream_playmode drop
+    strm almixer al_attach_audio_stream_to_mixer drop ;
+
+: stream ( a n - )
+    ALLEGRO_PLAYMODE_ONCE stream-sample ;
+
+: streamL ( a n - )
+    ALLEGRO_PLAYMODE_LOOP stream-sample ;
+
+\ =============================================================================
+\ Control
+\ =============================================================================
+
+: stream-gain! ( n. - )
+    p>f strm al_set_audio_stream_gain drop ;
+
+|| : stop-sounds ( - )
+    strm ?dup if  0 al_set_audio_stream_playing drop  then
+    #samples for
+        i sample[] cell+ stop-sample
+    loop ;
+
+: hush ( - )
+    stop-sounds ;
+
+: gain ( n. - )
+    p>f almixer al_set_mixer_gain drop ;
+
+: playing? ( smp - f )
+    sample[] cell+ dup 2@ or if sample-playing? else drop 0 then ;
+
+\ =============================================================================
+\ Kickoff
+\ =============================================================================
+
+load-samples
+prune:  stop-sounds  destroy-samples ;
+' destroy-samples AtExit

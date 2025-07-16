@@ -1,0 +1,8 @@
+require scripts\kevin.vfx
+
+class kevin-spawner%
+kevin-spawner :: init
+    kevin.ts baseid@ bmp !
+    x 2@ 2p>s start-xy 2!
+    act> 0 bmp ! ;
+    

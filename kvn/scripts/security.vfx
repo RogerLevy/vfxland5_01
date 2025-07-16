@@ -1,0 +1,9 @@
+actor-class security%
+
+security% :: init
+    bg.ts 186 tile bmp !
+    act>
+        bmp off
+        p1 's x @ x @ 8. + >= -exit
+        *beep1*
+        unload 186 0 0 +tile! ;

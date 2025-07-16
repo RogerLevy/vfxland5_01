@@ -1,0 +1,12 @@
+money - for buying a gift. if you get all of it, you get old.
+
+lighter - momentary light. limited fuel.
+bombs - throw, need lighter or fire to light (automatic?)
+lantern - need lighter or fire to light
+
+
+
+
+
+
+

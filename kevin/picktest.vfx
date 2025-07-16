@@ -1,0 +1,34 @@
+create mousex 0 , 0 , here cell- constant mousey
+variable mbuttons
+: mouse  mousex 2@ ;
+: bmpbox
+    bmp @ bmpwh | h w |
+    x 2@ 2p>s w h 2 2 2/ 2- 2dup w h 2+ ;
+
+actor-class picktest%
+0 value mx 0 value my
+: pick
+    mouse to my to mx
+    actives> 
+        bmp @ -exit
+        \ cr me peek
+        mx my 2dup bmpbox overlap? if
+            cr bmp @ bitmap-file type
+        then ;
+
+: events
+    begin event? while
+        ALLEGRO_EVENT_MOUSE_AXES happened? if
+            the-mouse 2s>p +m inverse 2p*m -m 2p>s mousex 2!
+        then
+        ALLEGRO_EVENT_MOUSE_BUTTON_DOWN happened? if
+            pick
+        then        
+    repeat ;
+
+picktest% :: init
+    act> events ;
+
+root [[
+    picktest% el: picktest [[ ]]
+]]

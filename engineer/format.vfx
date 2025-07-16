@@ -1,0 +1,116 @@
+\ Adapted from jkotlinski's printf.fs
+\ https://github.com/jkotlinski/forth-strfmt/blob/master/printf.fs
+\
+\ The format string contains ordinary characters (except %), which are copied
+\ unchanged to the destination buffer, and conversion specifications.
+\ Conversion specifications have the following format:
+\ 
+\ - Introductory % character
+\ - An optional - that specifies left justify
+\ - An optional 0 that left-pads using 0 instead of space
+\ - An optional decimal integer value that specifies minimum field width
+\ - A conversion format specifier
+\ 
+\ The following format specifiers are available:
+\ 
+\ % - %
+\ c - character
+\ n - signed number
+\ u - unsigned number
+\ dn - double-cell signed number
+\ du - double-cell unsigned number
+\ s - string (c-addr u)
+\ [ - evaluate up to ]
+\ 
+\ Examples:
+\ 
+\ 10 s" Joe" s" %s has a %n%% discount!" printf
+\ Joe has a 10% discount! ok
+\ 10 s" %05n" printf
+\ 00010 ok
+\ s" spaced" s" %-10s out" printf
+\ spaced     out ok
+
+|| variable min-field-width
+|| create left-justify 1 allot
+|| create pad-char 1 allot
+|| create charbuf 1 allot
+|| : pad-left ( dst c-addr u -- dst c-addr u )
+    left-justify c@ if exit then dup min-field-width @ < if
+    min-field-width @ over - >r rot dup r@ pad-char c@ fill r> + -rot then ;
+|| : pad-right ( dst u -- dst )
+    tuck + swap left-justify c@ if min-field-width @ swap - >r r@ 0> if
+    dup r@ bl fill r@ + then r> drop else drop then ;
+|| : add-field ( dst c-addr u -- dst ) pad-left >r over r@ move r> pad-right ;
+|| : parse-min-field-width ( src srcend -- src srcend )
+    over c@ '-' = dup if rot 1+ -rot then left-justify c!
+    over c@ '0' = if swap 1+ swap '0' else bl then pad-char c!
+    base @ >r decimal over - 0 -rot 0 -rot >number
+    rot drop rot min-field-width ! over + r> base ! ;
+|| variable dest
+|| : parse-cmdspec ( dst src srcend -- dst src srcend )
+    swap 1+ swap parse-min-field-width >r dup >r c@ case 
+        '%' of s" %" add-field endof
+        'c' of swap charbuf c! charbuf 1 add-field endof
+        'n' of swap dup s>d dabs <# #s rot sign #> add-field endof
+        'p' of swap p>f -1 (f.) add-field endof
+        'f' of -1 (f.) add-field endof
+        'u' of swap 0 <# #s #> add-field endof
+        's' of -rot add-field endof
+        'd' of
+            r> 1+ dup >r c@ case
+                'n' of -rot tuck dabs <# #s rot sign #> add-field endof
+                'u' of -rot <# #s #> add-field endof
+            endcase
+        endof
+        '[' of
+            dest !
+            r> 1 + r>
+            over -
+            ']' csplit
+            2swap over + >r >r evaluate
+            dest @
+        endof
+    endcase r> r> ;
+
+\ Prints n*x into buffer c-addr2 using the format string at c-addr1 u.
+\ caddr2 u3 is the resulting string.
+: format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
+    dup >r -rot over + begin 2dup < while over c@ '%' = if parse-cmdspec else
+    -rot 2dup c@ swap c! -rot 1+ -rot then swap 1+ swap repeat
+    2drop r> tuck - ;
+
+
+\ Safe f" implementation with rotating buffers
+100 constant #format-buffers
+256 constant /format-buffer
+create format-buffers #format-buffers /format-buffer * allot&erase
+variable format-buffer-index
+
+: fbuf+ ( - a )
+    format-buffer-index @ 1 + #format-buffers mod 
+    dup format-buffer-index !
+        /format-buffer * format-buffers + ;
+
+: safer-format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
+    fbuf+ format ;
+
+: f"
+    state @ if
+        postpone (s") ", postpone safer-format
+    else
+        '"' parse >syspad fbuf+ format
+    then ; immediate
+
+: fe"
+    readEscaped count 
+    state @ if
+        postpone (s") $, postpone safer-format
+    else
+        fbuf+ format
+    then ; immediate
+
+\ rs
+\ variable hi  999 hi !
+\ 5 f" %05n %[1234]%n %[hi @]%n" type
+\ quit

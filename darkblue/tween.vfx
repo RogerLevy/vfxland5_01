@@ -1,0 +1,64 @@
+
+\ Easing transformers
+\  ( startval change. ratio. -- val )
+
+:noname ;
+constant EASE-IN
+
+:noname  1.0 swap - >r swap over + swap negate r> ;
+constant EASE-OUT
+
+:noname 
+    dup 0.5 < if
+        2 * swap 2 / swap
+    else
+        swap 2 / rot over + -rot swap 0.5 - 2 * [ ease-out compile, ]
+    then ;
+constant EASE-IN-OUT
+
+\ Easing functions
+\  ( startval change. ratio. -- val )
+\  all of these are "in" animations, to be transformed by the above
+\  exponential formula: c * math.pow(2, 10 * (t / d - 1)) + b;
+\  quadratic formula: c * (t /= d) * t + b
+
+|| : (overshoot) >r dup dup r@ 1.0 + p* r> - p* p* p* + ;
+
+:noname p* + ;                                           constant LINEAR     
+:noname 1.0 - 10.0 p* 2e p>f f**  f>p p* + ;             constant EXPONENTIAL
+:noname 90.0 p* 90.0 - psin 1.0 + p* + ;                 constant SINUSOID       
+:noname dup p* p* + ;                                    constant QUADRATIC  
+:noname dup p* dup p* p* + ;                             constant CUBIC      
+:noname dup p* 1.0 swap - psqrt 1.0 - p* negate + ;      constant CIRCULAR   
+:noname 1.70158 (overshoot) ;                            constant OVERSHOOT  
+
+\ Tween object
+
+actor-class tween%
+private-var d 
+private-var adr 
+private-var xt 
+private-var ease 
+private-var n1 
+private-var n2 
+private-var s1 
+private-var spd
+
+|| : val n1 @ n2 @ over - s1 @ 1. min d @ execute ease @ execute ;
+|| : step spd @ s1 +! ;
+: ?done s1 @ 1. >= if ( xt @ parent @ [[ ?execute ]] ) unload then ;
+|| : tween-act  act> step val adr @ ! ?done ;
+|| : len! 1. swap p/ 60 / spd ! ;
+
+\ Tweening
+
+: *tween ( ease dir adr n2. len. - tween )
+    tween% one [[
+        len! n2 ! adr ! d ! ease !
+        adr @ @ n1 !
+        tween-act
+    me ]] ;
+
+: tween ( ease dir adr n2. len. - )
+    *tween drop ;
+

@@ -1,0 +1,405 @@
+engineer.vfx
+  System Control
+    variable 'show ( - a ) \ Application logic/rendering execution token
+    variable debug ( - a ) \ Debug mode flag
+    variable going ( - a ) \ Main loop continue flag
+    4 value zoom ( - n ) \ Display scaling factor (default 4)
+    0 value mstime ( - ms ) \ Current time in milliseconds
+    0 value pdelta ( - n. ) \ Frame delta in fixed-point seconds
+    0e fvalue sdelta ( - f ) \ Frame delta in float seconds
+    0 value alt? ( - f ) \ Alt key state value
+    : bye ( - ) \ Exit application
+    : empty ( - ) \ Reset system to clean state
+    : cold ( - ) \ Release startup sequence
+    : frigid ( - ) \ Development startup sequence
+    : switch ( - ) \ Switch project context
+    : reload ( - ) \ Reload current context
+    : go ( - ) \ Main application loop
+  Display Management
+    : clip-screen ( - ) \ Set clipping to game screen bounds
+    : cls ( - ) \ Clear screen to black
+    : >display ( - ) \ Bring display window to front
+    : >vfx ( - ) \ Bring VFX console to front
+  Graphics System
+    : at ( x y - ) \ Set pen position
+    : +at ( x y - ) \ Add to pen position
+    : put ( bitmap - ) \ Draw bitmap at current pen position
+    : bmpwh ( bitmap - w h ) \ Get bitmap dimensions
+  Input System
+    : held? ( key - f ) \ Check if key is currently held
+    : pressed? ( key - f ) \ Check if key was just pressed
+    : letgo? ( key - f ) \ Check if key was just released
+    : shift? ( - f ) \ Check if shift key is held
+    : ctrl? ( - f ) \ Check if ctrl key is held
+  Timing System
+    : ticks ( n - ms ) \ Convert tick count to milliseconds
+    : frame ( - ) \ Execute one frame of main loop
+    : present ( - ) \ Present frame to display with timing
+  Filesystem
+    : dir-exists? ( a:path len:path - f ) \ Check if directory exists
+    : >datadir ( a:path len:path - a:path len:path ) \ Convert to data directory path
+    : each-file ( a:path xt - ) \ Execute xt for each file in directory
+  Development Tools
+    : try ( - <filename> ) \ Load and execute VFX file
+    : retry ( - ) \ Retry loading the last file
+    : func ( a:cmd len:cmd key - ) \ Assign function key command
+    : ?func ( key - ) \ Execute function key command
+  Bitmap Management
+    : bitmap@ ( index - bitmap ) \ Get bitmap by index
+    : +bitmap ( bitmap - index ) \ Add bitmap, return index
+    : load-bitmaps ( - ) \ Load all PNG files from dat/gfx/
+    : reload-bitmaps ( - ) \ Reload all bitmaps from gfx directory
+    : destroy-bitmaps ( - ) \ Free all allocated bitmap memory
+    : bitmap-file ( index - a:fn len:fn ) \ Get filename for bitmap index
+  Turnkey System
+    : save-release ( - <path> ) \ Save release executable
+    : save-debug ( - <path> ) \ Save debug executable
+    : turnkey ( - ) \ Complete turnkey build process
+
+allegro-5.2.5.vfx
+  Display Constants
+    ALLEGRO_FULLSCREEN etc \ Display flags
+    ALLEGRO_PIXEL_FORMAT_* etc \ Pixel format constants
+  Event Constants
+    ALLEGRO_EVENT_* etc \ Event type constants
+    KEYBOARD_EVENT.* etc \ Event field accessors
+  Audio Constants
+    ALLEGRO_AUDIO_DEPTH_* etc \ Audio bit depth constants
+    ALLEGRO_PLAYMODE_* etc \ Audio playback mode constants
+  Bitmap Constants
+    ALLEGRO_MEMORY_BITMAP etc \ Bitmap storage flags
+  Structures
+    constant /ALLEGRO_EVENT ( - n ) \ Event structure size
+    constant /ALLEGRO_KEYBOARD_STATE ( - n ) \ Keyboard state structure size
+    constant /ALLEGRO_MOUSE_STATE ( - n ) \ Mouse state structure size
+
+al-utils.vfx
+  Configuration
+    640 value appw ( - w ) \ Application width in pixels
+    480 value apph ( - h ) \ Application height in pixels
+    0 value winw ( - w ) \ Current window width
+    0 value winh ( - h ) \ Current window height
+    0 value monw ( - w ) \ Monitor width in pixels
+    0 value monh ( - h ) \ Monitor height in pixels
+    0 value fullscreen? ( - f ) \ Fullscreen mode flag
+    0 value display ( - a ) \ Allegro display handle
+    ALLEGRO_OPENGL ALLEGRO_PROGRAMMABLE_PIPELINE or value display-flags ( - n ) \ Display creation flags
+    0 value builtin-font ( - font ) \ Built-in font handle
+  State Arrays
+    array kbs0 \ Current keyboard state buffer
+    array kbs1 \ Previous keyboard state buffer
+    array ms0 \ Current mouse state buffer
+    array ms1 \ Previous mouse state buffer
+  System Functions
+    : reset-keyboard ( - ) \ Reset keyboard system state
+    : init-allegro ( - ) \ Initialize Allegro subsystems
+    : create-display ( - ) \ Create game display window
+    : poll-keyboard ( - ) \ Update keyboard state buffers
+    : poll-mouse ( - ) \ Update mouse state buffers
+    : reset-mouse ( - ) \ Reset mouse state
+    : file-dialog ( z$:init z$:ptrn z$:mode - a:fn len:fn ) \ Show file selection dialog
+  Aliases
+    alias alqueue \ Event queue handle alias
+    alias almixer \ Audio mixer handle alias
+
+oop.vfx
+  Context Management
+    0 value me ( - obj ) \ Current object context pointer
+    0 value /obj ( - offset ) \ Next instance field offset 
+    0 value /static ( - offset ) \ Next static field offset
+  Object Context
+    : [[ ( obj - ) \ Enter object context
+    : ]] ( - ) \ Exit object context
+    : unsafe-[[ ( obj - ) \ Enter object context without safety checks
+  Field Definition
+    : var ( - <name> ) ( - a ) \ Define instance variable field, me = base
+    : static ( - <name> ) ( - a ) \ Define class-level static field, me -> class = base
+  Property Access
+    : 's ( obj - <name> a ) \ Property access operator
+  Classes
+    : create-class ( c$ - class ) ( - class ) \ Create new class
+    : :: ( - <message> <code> ; ) \ Define method implementation
+  Messages
+    : m: ( - <name> <code> ; ) ( ... obj - ... ) \ Define message with default behavior
+    : do-message ( ... obj msg - ... ) \ Send message with late binding
+  Object Creation
+    : >object ( obj class - class:obj ) \ Initialize object at memory location
+  Built-in Classes
+    class object% \ Base object class
+
+array.vfx
+  Array Creation
+    : *array ( max width - array ) \ Create unnamed array
+    : array ( max width - <name> ) ( - array ) \ Create named array
+    : array: ( width - <name> ) ( - array ) \ Begin named array definition
+    : array; ( width a - ) \ Complete named array definition
+    : array[ ( width - width array ) \ Begin unnamed array definition
+    : array] ( width array - array ) \ Complete unnamed array definition
+  Stack Creation
+    : *stack ( max width - stack ) \ Create unnamed stack
+    : stack ( max width - <name> ) ( - stack ) \ Create named stack
+  Array Access
+    : [] ( index array - a ) \ Get element address by index
+    : tos ( array - a ) \ Get top/last element address
+    : index ( a:elem array - index ) \ Calculate element index
+    : n[] ( n. array - a ) \ Get element by normalized index
+  Array Information
+    : max-items ( array - n ) \ Get maximum capacity
+    : /item ( array - n ) \ Get element size in bytes
+    : #items ( array - n ) \ Get current element count
+  Stack Operations
+    : push ( a:value stack - ) \ Push value onto stack
+    : pop ( stack - a:value ) \ Pop value from stack
+    : push-data ( a:data stack - ) \ Push data block onto stack
+    : pop-data ( stack - a:data ) \ Pop data block from stack
+    : vacate ( array - ) \ Empty array or stack
+  Iteration
+    : each ( ... xt array - ... ) \ Execute xt for each element address
+    : each@ ( ... xt array - ... ) \ Execute xt for each element value
+
+dictionary.vfx
+  Dictionary Operations
+    : dictionary ( - <name> ) ( - dict ) \ Create named dictionary
+    : lookup ( $ dict - a ) \ Look up or create key
+    : walk-dictionary ( xt dict - ) \ Iterate over entries
+    : walk> ( dict - <code> ; ) \ Continuation-style iteration
+    : dict. ( dict - ) \ Print dictionary contents
+
+fixed.vfx
+  Conversion
+    : s>p ( n - n. ) \ Convert integer to fixed-point
+    : p>s ( n. - n ) \ Convert fixed-point to integer
+    : p>f ( n. - f ) \ Convert fixed-point to float
+    : f>p ( f - n. ) \ Convert float to fixed-point
+  Arithmetic
+    : p* ( n. p. - n. ) \ Fixed-point multiply
+    : p/ ( n. p. - n. ) \ Fixed-point divide
+  Display
+    : n. ( n. - ) \ Print fixed-point number
+    : p? ( a - ) \ Print fixed-point number at address
+  Math Functions
+    : pcos ( n. - n. ) \ Fixed-point cosine
+    : psin ( n. - n. ) \ Fixed-point sine
+    : ptan ( n. - n. ) \ Fixed-point tangent
+    : pacos ( n. - n. ) \ Fixed-point inverse cosine
+    : pasin ( n. - n. ) \ Fixed-point inverse sine
+    : patan ( n. - n. ) \ Fixed-point inverse tangent
+    : psqrt ( n. - n. ) \ Fixed-point square root
+  Utilities
+    : 1i ( n. - n. ) \ Get integer part as fixed-point
+
+format.vfx
+  String Formatting
+    : format ( ... a:buf len:buf a:fmt - a:str len:str ) \ Format string with stack arguments
+    : f" ( - a:str len:str ) \ Immediate formatting word
+    : fe" ( - a:str len:str ) \ Formatting with escape sequences
+
+misc.vfx
+  Stack Manipulation
+    : ` ( - ) \ No-op placeholder (1-backtick)
+    : `` ( - ) \ No-op placeholder (2-backtick)
+    : ``` ( - ) \ No-op placeholder (3-backtick)
+    : ```` ( - ) \ No-op placeholder (4-backtick)
+    : not ( f - f ) \ Logical not
+    : ?exit ( f - ) \ Exit if true
+    : -exit ( f - ) \ Exit if false
+  String Utilities
+    : >zpad ( a:str len:str - z$ ) \ Copy to zero-terminated pad
+    : >pad ( a:str len:str - c$ ) \ Copy to counted string pad
+    : $+ ( c$ a:str len:str - c$ ) \ Append to counted string
+  Path Manipulation
+    : -path ( a:path len:path - a:fn len:fn ) \ Remove directory path from filepath
+    : -ext ( a:path len:path - a:name len:name ) \ Remove extension from filepath
+    : ending ( a:str len:str char - a:end len:end ) \ Find substring ending with character
+    : slashes ( a:str len:str - a:str len:str ) \ Convert slashes to backslashes
+  File Operations
+    : file, ( a:fn len:fn - ) \ Include file at compile time
+    : bytes-left ( id - n ) \ Get bytes remaining in file
+    : write ( a:src len:src a:fn len:fn - ) \ Write data to file
+    : read ( a:buf len:buf a:fn len:fn - ) \ Read data from file
+  Debug/Development
+    : .s ( - ) \ Smart stack display
+    : f.s ( - ) \ Float stack display
+    : .rs ( - ) \ Return stack display
+    : rs ( - ) \ Reset all stacks
+    : .name ( xt/body - ) \ Smart name printing
+  Memory/Dictionary
+    : @+ ( a - val a ) \ Fetch value and increment address
+    : lastbody ( - a ) \ Get body of last `create`'d word
+    : ?constant ( n - <name> ) \ Conditional constant definition
+    : ?fconstant ( f:n - <name> ) \ Conditional float constant definition
+  Control Structures
+    : for ( limit - ) \ Counted loop alias
+    : :now ( - <name> ) \ Immediate colon definition and execution
+    : link, ( a - ) \ Link address into chain
+    : do-chain ( a - ) \ Execute chain of linked words
+  Data Structures
+    : jumptable ( len - <name> ) ( ... - ... ) \ Create named jump table
+    : cstring ( len - <name> ) ( - $ ) \ Create counted string buffer
+  Math
+    : clamp ( val min max - val ) \ Clamp value to range
+    : umod ( u1 u2 - rem ) \ Unsigned modulo
+    : h. ( n - ) \ Print in hexadecimal
+  Advanced
+    : d[ ( a - ) \ Save dictionary pointer
+    : d] ( - ) \ Restore dictionary pointer
+
+scope.vfx
+  Scope Control
+    : private ( - ) \ Switch to private wordlist
+    : public ( - ) \ Switch to public wordlist
+    : || ( - <code> ) \ Execute code in private context
+  Search Order Stack
+    : push-order ( - ) \ Save current search order
+    : pop-order ( - ) \ Restore search order
+  Protected Include
+    : include ( - <filename> ) \ Include file with scope protection
+    : included ( a:fn len:fn - ) \ Include file with scope protection
+    : require ( - <filename> ) \ Require file with scope protection
+    : required ( a:fn len:fn - ) \ Required file with scope protection
+    : ?included ( a:fn len:fn - ) \ Conditional include
+  Advanced
+    : borrow ( - <scope> <word> ) \ Import word from another scope
+
+print.vfx
+  Text Output
+    : color ( r g b - ) \ Set text rendering color
+    : print ( a:text len:text - ) \ Print text at pen position
+    : mltext ( a:text len:text w - ) \ Render multi-line text with wrapping
+    : glyph ( char - ) \ Draw single character glyph
+  Text Measurement
+    : textw ( a:text len:text - w ) \ Calculate text width
+    : font@ ( - font ) \ Get current font handle
+  System
+    : init-vga-font ( - ) \ Initialize built-in VGA font
+
+vga13h.vfx
+  Palette Data
+    constant vga13h ( - a ) \ Standard VGA 256-color palette
+
+matrix.vfx
+  Matrix Stack
+    : +m ( - ) \ Push transformation matrix
+    : -m ( - ) \ Pop transformation matrix
+  Transformations
+    : transform ( f:xx f:xy f:yx f:yy f:tz - ) \ Apply 2D transformation
+    : identity ( - ) \ Reset to identity matrix
+    : inverse ( - ) \ Invert current matrix
+  Coordinate Transform
+    : 2p*m ( x. y. - x. y. ) \ Transform 2D point
+
+gamemath.vfx
+  2D Vector Operations
+    : x@ ( a - x ) \ Extract X component
+    : y@ ( a - y ) \ Extract Y component
+    : 2@ ( a - x y ) \ Fetch both vector components
+    : 2! ( x y a - ) \ Store 2D vector
+    : 2+! ( x y a - ) \ Add offset to vector
+    : 2, ( x y - ) \ Compile 2D vector
+    : 2+ ( x1 y1 x2 y2 - x y ) \ Add two vectors
+    : 2- ( x1 y1 x2 y2 - x y ) \ Subtract vectors
+    : 2* ( x1 y1 x2 y2 - x y ) \ Scale vectors 
+    : 2/ ( x1 y1 x2 y2 - x y ) \ Divide vectors
+    : 2mod ( x y xmod ymod - x y ) \ Apply dual modulo
+    : 2negate ( x y - x y ) \ Negate vector
+  Fixed-Point 2D Operations
+    : 2s>f ( x y - f:x f:y ) \ Convert integer to float vector
+    : 2p>s ( x. y. - x y ) \ Convert fixed-point to integer vector
+    : 2s>p ( x y - x. y. ) \ Convert integer to fixed-point vector
+    : 2p>f ( x. y. - f:x f:y ) \ Convert fixed-point to float vector
+    : 2f>p ( f:x f:y - x. y. ) \ Convert float to fixed-point vector
+    : 2p. ( x. y. - ) \ Print fixed-point vector
+    : 2p? ( a - ) \ Print fixed-point vector at address
+    : 2i ( x. y. - x. y. ) \ Get integer parts as fixed-point
+    : 2p* ( x. y. scale. - x. y. ) \ Scale fixed-point vector
+    : 2p/ ( x. y. divisor. - x. y. ) \ Divide fixed-point vector
+  Range/Collision Operations
+    : 2rnd ( - x y ) \ Generate random 2D vector
+    : overlap? ( x1 y1 x2 y2 - f ) \ Check range overlap
+    : inside? ( x y x1 y1 x2 y2 - f ) \ Check point in rectangle
+    : lerp ( a. b. t. - val. ) \ Linear interpolation
+    : 2max ( x1 y1 x2 y2 - x y ) \ Component-wise maximum
+    : 2min ( x1 y1 x2 y2 - x y ) \ Component-wise minimum
+    : 2clamp ( x y min:x min:y max:x max:y - x y ) \ Clamp to bounds
+  Bit Operations
+    : << ( val bits - val ) \ Left shift
+    : >> ( val bits - val ) \ Right shift
+
+mersenne.vfx
+  Random Generation
+    : rnd32 ( - u ) \ Generate 32-bit random number
+    : rnd ( max - n ) \ Generate random in range
+    : seed! ( seed - ) \ Seed random generator
+    : init-mersenne ( - ) \ Initialize with time-based seed
+
+counter.vfx
+  Performance Timing
+    : dcounter ( - d ) \ High-resolution performance counter
+    : ucounter ( - d ) \ Microsecond counter
+    : counter ( - ms ) \ Millisecond counter
+    : timing ( xt - ) \ Time code execution
+    : time? ( xt - ) \ Time and display result
+
+strout.vfx
+  String Capture
+    : z[ ( - ) \ Begin zero-terminated string capture
+    : ]z ( - z$ ) \ End zero-terminated capture
+    : s[ ( - ) \ Begin counted string capture
+    : s] ( - a:str len:str ) \ End counted string capture
+
+repl.vfx
+  Display Modes
+    : ints ( - ) \ Display integers in decimal
+    : fixeds ( - ) \ Display as fixed-point values
+    : hexints ( - ) \ Display in hexadecimal
+  System Integration
+    : repl-events ( - ) \ Process REPL keyboard events
+    : draw-repl ( - ) \ Draw REPL interface overlay
+  Variables
+    variable repl ( - a ) \ REPL enable flag
+
+debug/oversight.vfx
+  Validation Levels
+    : crucial ( - ) \ Essential safety level
+    : charmful ( - ) \ Non-critical level
+    : else-warn ( - ) \ Convert failure to warning
+  Control Variables
+    variable safety ( - a ) \ Master validation enable/disable flag
+    variable validations ( - a ) \ Compilation-time validation control
+  Validator Definition
+    : test: ( - <name> ) \ Define validator with cached source
+  Contract Attachment
+    : before ( - <target> <validator> validation ) \ Attach pre-condition validator
+    : after ( - <target> <validator> validation ) \ Attach post-condition validator
+    : >before ( xt a:name len:name - a ) \ Stack-based pre-condition attachment
+    : >after ( xt a:name len:name - a ) \ Stack-based post-condition attachment
+  Debug Messages
+    : say-before ( - <word> <message> ) \ Set pre-execution debug message
+    : say-after ( - <word> <message> ) \ Set post-execution debug message
+  Word Wrapping
+    : wrap-word ( - <name> ) \ Add validations to existing word
+  Inspection
+    : csee ( - <word> ) \ Display contract information
+    : xt>contract ( xt - a ) \ Get contract record
+  Control
+    : init-oversight ( - ) \ Initialize oversight system
+    : disable-validator ( xt - ) \ Disable specific validator
+    : enable-validator ( xt - ) \ Enable validator
+
+keys.vfx
+  Letter Keys
+    <A> through <Z> \ Letter key constants
+  Number Keys
+    <0> through <9> \ Number key constants
+  Function Keys
+    <F1> through <F12> \ Function key constants
+  Special Keys
+    <ESCAPE> <ENTER> <SPACE> <TAB> <BACKSPACE> <DELETE> <INSERT> <HOME> <END> <PAGEUP> <PAGEDOWN> \ Common keys
+  Arrow Keys
+    <LEFT> <RIGHT> <UP> <DOWN> \ Directional keys
+  Modifier Keys
+    <lshift> <rshift> <LCTRL> <RCTRL> <ALT> <ALTGR> <LWIN> <RWIN> \ Modifier keys
+  Keypad Keys
+    <PAD0> through <PAD9> <PAD_PLUS> <PAD_MINUS> <PAD_MULTIPLY> <PAD_DIVIDE> <PAD_ENTER> <PAD_DELETE> \ Keypad keys
+  Aliases
+    <esc> <bksp> <ins> <del> \ Common aliases

@@ -1,0 +1,83 @@
+require scripts\orb.vfx
+include darkblue-math.vfx
+
+ship-v1.png 27 27 tileset ship.ts
+
+actor-class ship%
+var r
+var m
+
+: flash
+    act>
+    ship.ts 15 tile bmp !
+    act> act> me init ;
+    
+: hit-orb
+    *snd-03*
+    *snd-06*
+\    *snd-08*
+    you [[
+        -1 energy +!
+        
+        \ small knockback
+        you me collision-force3 vx 2+!
+        
+        \ expel a tri
+        360. rnd dup
+        me swap 20 vec from
+        tri% one [[
+            0.5 vec vx 2!
+        ]]
+        
+        flash
+    ]]
+    unload ;
+
+: hit-tri
+    *snd-07*
+    1 energy +! unload ;
+
+variable screen-bounced-counter 
+
+: &screen
+    me 0.9 screen-bounce-force vx 2+!
+    screen-bounced? if
+        *snd-08*
+        5 screen-bounced-counter !
+    then ;
+
+: &objects
+    actives>
+        r @ -exit
+        you me rhit? -exit
+        me orb% is? if hit-orb exit then
+        me tri% is? if hit-tri exit then ;
+
+: collisions
+    &screen &objects ;
+
+: countdown
+    dup @ 1 - 0 max swap ! ;
+
+: controls
+    screen-bounced-counter countdown
+    screen-bounced-counter @ ?exit
+    <a> held? if  -.2 vx +!  then
+    <d> held? if  .2 vx +!  then
+    <w> held? if  -.2 vy +! then
+    <s> held? if  .2 vy +! then ;
+
+: decel
+    vx 2@ 0.93 dup 2p* vx 2! ;
+
+: physics
+    decel collisions vx 2@ x 2+! ;
+
+ship% :: init
+    me to player
+    ship.ts 0 tile bmp !
+    13. r !
+    10. m !
+    ['] physics phys !
+    act>
+        controls ;

@@ -1,0 +1,83 @@
+Todo:
+improve big door entering
+
+
+lighter
+    short-range flame
+    light braziers
+        reveals things
+    burn plants
+    explode bombs (deadly)
+    
+
+
+OPL sound FX
+OPL jingles
+
+[x] climbing (vines)
+
+
+[x] permadeath (one life for the entire game, which will be about an hour long, should take 3-5 hours total for average player)
+	make it feel real
+
+inventory screen that uses its own display list
+	save to a compressed .scn file - this is your inventory
+
+
+watering can
+
+
+a game of volleyball you can play in a corner of the screen with a little rabbit
+
+
+eventually the graphics should be pretty detailed and varied, at least in spots.
+
+a neighborhood with sad music
+
+
+[x] title screen
+
+hanging lightbulb
+
+[x] doors
+
+	[x] gold = can open (brass)
+	[x] silver = cannot open (concrete)
+
+	[x] when the game begins, kevin comes out of a door
+
+
+mouse with a big lion head
+
+
+small outdoor area that's too bright and busy to relax in 
+
+cat
+dancing plant
+big door
+
+[x] falling coke cans
+
+variety of deaths
+	[x] burned
+	split
+	twisted
+	scared
+	squashed
+	transformed (to a mouse statue)
+	drawn and halved
+	eaten
+
+
+girl in a "cage" 
+
+--------------------------------- code ideas ----------------------------------
+
+reload-bitmaps
+	recreate sub-bitmaps	
+		need to check the ENTIRE bitmap array for each reloaded bitmap :/
+		so instead we'll go through the tileset definitions and do it the other way around
+			(recreating from the new bitmap from the slot after reloading)
+			(don't forget to delete the old sub bitmaps!)
+
+ 

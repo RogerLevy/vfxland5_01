@@ -1,0 +1,33 @@
+require ../lib/claude-math.vfx
+
+tri.png 17 17 tileset tri.ts
+
+actor-class tri%
+var r
+var m
+var ang
+var vang
+
+: repel
+    player me 75e 2.5e repelling-force
+    vx 2@ 2+ 1. clamplen vx 2! ;
+
+: ang>bmp ( ts n. - n )
+    360. umod dup >r
+    5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
+
+: flicker  gamelife @ 1 and 0<> and ;
+
+tri% :: init
+    tri.ts 0 tile bmp !
+    4. r !
+    0. m !
+    360. rnd ang !
+    9. 2 rnd if negate then vang !
+    act>
+        repel
+        vang @ ang +!
+        tri.ts ang @ ang>bmp ( flicker ) bmp !
+        \ tri.ts time @ 16.666 p/ 2 * 36 mod tile bmp !
+        ?cull ;
+        

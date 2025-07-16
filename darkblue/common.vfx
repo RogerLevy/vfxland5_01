@@ -1,0 +1,29 @@
+
+0 value player
+var hp
+var r \ radius 
+var m \ mass
+variable energy  1000 energy !
+
+aka <start> <enter>
+
+: hrs  gametime 360000000 m/ ;
+: mins  gametime 60000000 m/ 60 mod ;
+: secs  gametime 1000000 m/ 60 mod ;
+: hud
+    15 color
+    \ 0 310 at s[ 480 8 / for space loop s] print    
+    0 312 at energy @ f" %n" print
+    363 312 at secs mins hrs f" %02n:%02n:%02n" print ;
+
+\ Scripting helpers
+: pos@ 's x 2@ ;
+: in? ( - f )
+    x 2@
+    0. r @ 2 * - 320. r @ 2 * + within? >r
+    0. r @ 2 * - 426. r @ 2 * + within? r> and ;
+: ?cull in? ?exit unload ;
+: center-pos  160. 120. ;
+: player-pos  player pos@ ;
+: chance ( dividend divisor -- f )  rnd swap < ;
+: you  osp @ cell- @ ;

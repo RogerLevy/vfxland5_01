@@ -1,0 +1,6 @@
+actor-class enemy13%
+
+enemy13% :: init ( - )
+    enemy13.png bmp !
+    act>
+        ;

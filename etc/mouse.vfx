@@ -1,0 +1,19 @@
+create mousex 0 , 0 , here cell- constant mousey
+create mickeyx 0 , 0 , here cell- constant mickeyy
+variable mbuttons
+: mouse  mousex 2@ ;
+: mickey mickeyx 2@ ;
+: lb  mbuttons @ 1 and ;
+: rb  mbuttons @ 2 and 1 >> ;
+: mouse-events
+    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN happened? if
+        mbuttons @ the-mbutton or mbuttons !
+    then
+    ALLEGRO_EVENT_MOUSE_BUTTON_UP happened? if
+        mbuttons @ the-mbutton invert and mbuttons !
+    then ;
+: get-mouse
+    poll-mouse
+    mousex 2@ 
+    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2s>p +m inverse 2p*m -m 2p>s mousex 2!
+    mousex 2@ 2swap 2- mickeyx 2! ;

@@ -1,0 +1,79 @@
+validations dup @ swap off
+
+: valid-class? ( a - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup 1024 + @ $22222222 = r> and >r
+    then
+    drop r> ;
+
+: valid-object? ( a - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup @ ( class ) valid-class? r> and >r
+    then
+    drop r> ;
+
+crucial test: check-object ( a - a n:res )
+    dup  valid-object? ;
+        
+before [[ check-object
+wrap-word [[
+
+before do-message check-object
+borrow oop` do-message
+wrap-word do-message
+validations dup @ swap on \ important!
+    : does-validated-message  does> swap do-message ;
+validations !
+
+: m: ( - <name> <code> ; ) ( ... obj - ... ) 
+    static does-validated-message dispatch, ;
+
+\ have to redefine these because it's not possible to wrap them ( :: crashes )
+cell to /static
+static oexec-error-handler
+m: init ( - ) ;
+m: destruct ( - ) ;
+
+: ?literal  state @ if postpone literal then ;
+
+\ TODO: properly support immediate word validations to avoid this mess...
+
+validations dup @ swap on
+    before ?object check-object
+    : ?object ;
+validations !
+
+: 's ( a - <name> a )
+    validations @ if
+        state @ if
+            s" ?object" evaluate 
+        else
+            [ validations dup @ swap on ] ?object [ validations ! ]
+        then
+    then
+    ' >body @ ?literal s" +" evaluate ; immediate 
+
+
+crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
+    next-bmp# @ #bitmaps < ;
+
+before +bitmap CHECK-BITMAPS-OVERFLOW
+
+charmful test: CHARMFUL-BITMAP-INDEX ( n - n res )
+    dup $ffff and 0 #bitmaps 1 - within 
+    dup 0= if
+        s" Invalid bitmap index (non-crucial, only reported on first failure for word)" log-warning
+        current-validation @ off \ validation disables individually for each word on its first failure
+    then ;
+
+crucial test: CRUCIAL-BITMAP-INDEX ( n - n res )
+    dup $ffff and 0 #bitmaps 1 - within ;
+
+before bitmap@ CHARMFUL-BITMAP-INDEX
+before put CHARMFUL-BITMAP-INDEX
+before bmpwh CHARMFUL-BITMAP-INDEX
+before bitmap-file CRUCIAL-BITMAP-INDEX
+
+validations !

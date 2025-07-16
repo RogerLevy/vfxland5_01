@@ -1,0 +1,115 @@
+\ ------------------------------------------------------------------------------
+\ spunk
+\ Non-scrolling 2D open world game framework
+\ ------------------------------------------------------------------------------
+ 
+\ =============================================================================
+\ Variables
+\ =============================================================================
+
+1024 constant #rooms
+tmw tmh * cells constant /screen
+|| : ?flip  4 rnd 24 << or ;
+|| : randoms,  for 256 rnd ?flip , loop ;
+create mram /screen cell/ #rooms * randoms,
+mram value bg0
+variable room#
+
+\ =============================================================================
+\ Low-level stuff
+\ =============================================================================
+
+: roombase$  room# @ s" maps\room" >datadir f" %s%03n" >pad count ;
+: room.dat$  roombase$ f" %s.dat" ;
+: room.scn$  roombase$ f" %s.scn" ;
+: screen  1023 and /screen * mram + ;
+
+\ =============================================================================
+\ Stashing actors between rooms
+\ =============================================================================
+
+var r#  \ the room each actor was in
+        \ -1 = persist
+        \ -2 = discard
+var a#  \ we also try to restore the ordering using actor#
+
+|| : belong?
+    r# @ room# @ = ` r# @ -1 = ` or ;
+
+: stash ( - )
+    r# @ -1 <> if room# @ r# ! then
+    me actor# a# !  me *temp /actor move  unload ;
+
+: throwaway ( - )
+    -2 r# ! ;
+
+timer% :: init ( - )
+    throwaway ;
+
+: persist ( - )
+    -1 r# ! ;
+
+: stow ( - )
+    actives> r# @ -2 = if unload else stash then ;
+
+borrow stage` unsafe-free?
+: takeout ( - )
+    temps>
+        me unsafe-free? ?exit
+        belong? -exit
+        a# @ priority
+        me *actor /actor move
+        unload ;
+
+\ =============================================================================
+\ Room control
+\ =============================================================================
+
+variable load-room-chain
+
+: room ( n - ) 1023 and room# ! room# @ screen to bg0 ;
+: +room ( n - ) room# @ + room ;
+
+: warp ( n - )
+    1023 and
+    cr ." WARPING TO ROOM " dup .
+    stow  room  takeout
+    load-room-chain do-chain ;
+
+: +warp ( n - )
+    room# @ + 1000 + 1000 mod warp ;
+
+: revert-bg ( - )
+    bg0 ` /screen ` room.dat$ `` read ;
+
+: revert ( - )
+    revert-bg
+    just
+    room.scn$ ?included
+    load-room-chain do-chain ;
+
+: load-world ( - )
+    clear-temps #rooms for i room revert stow loop ;
+
+\ =============================================================================
+\ Read/write the background
+\ =============================================================================
+
+: colrow  ( - c r ) x 2@ `` xy>cr ;
+: +tile@  ( c r - n ) colrow 2+ `` bg0 ` spot c@ ;
+: +tile!  ( n c r - ) colrow 2+ `` bg0 ` spot c! ;
+: ftile@  ( f: c r - n ) 2f>p xy>cr `` bg0 ` spot c@ ;
+: ftile!  ( n f: c r - ) 2f>p xy>cr `` bg0 ` spot c! ;
+
+\ =============================================================================
+\ Rendering
+\ =============================================================================
+
+\ A word could change bg0 and we call BG multiple times
+\ to draw multiple layers.
+\ Ex:
+\ variable layer#
+\ 2 /screen array layer-array
+\ : layer dup layer# ! layer-array [] to bg0 ;
+\ : layers 0 layer bg 1 layer bg ;
+: bg  0 0 at bg0 lay ;

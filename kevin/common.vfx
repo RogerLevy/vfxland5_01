@@ -1,0 +1,84 @@
+\ ------------------------------------------------------------------------------
+\ Common game-specific definitions / config
+\
+\ Intended for common words but try to limit it to
+\ stuff that's likely to be named the same across projects.
+\ ------------------------------------------------------------------------------
+
+502 constant start# \ starting room #
+502 constant debug-start# 
+<space> constant <jump>
+<down> constant <squat>
+<enter> constant <start>
+<q> constant <use>
+debug @ [if] <enter> [else] <esc> [then] constant <subscreen>
+dummy value p1
+create start-xy 160 , 120 , 
+variable #deaths
+var can-travel
+create item$ 17 allot&erase 
+variable can-save
+
+\ Extensions
+: spawn  swap for me 0 0 from dup one drop loop drop ;
+
+\ Platforming
+include platformer.vfx 
+
+\ Global assets
+\ bgm bgm1 crack.xm 
+bg.png 20 20 tileset bg.ts
+bg.ts baseid@ pile !
+s" gfx\bg.dat" bg.ts load-metas 
+
+\ Inventory
+dictionary inventory
+: have ( $ - n )
+    dup c@ 0= if drop 0 exit then
+    inventory lookup @ ;
+create layout
+    ," lighter" ," moneybag" 0 ,
+: item ( n - $ )  layout swap for count + loop ; 
+: itembmp ( c$ - n )  count f" %s.png" evaluate ;
+: select ( c$ - )  count item$ place ;
+: ?select
+    layout  item$ c@ 0= if
+\        begin dup @ while dup have if select exit then count + repeat cell+ 
+        begin dup @ while dup have if select exit then count + repeat drop
+    else
+\        begin dup @ while dup have if drop exit then count + repeat cell+ 
+        begin dup @ while dup have if drop exit then count + repeat
+        dup select ( nothing )
+    then ;
+: get ( n $ - )  inventory lookup +! ;
+: discard ( n $ - )  inventory lookup dup >r @ swap - 0 max r> ! ;
+: divest ( - )  inventory walk> 0 swap ! drop ;
+: current-item ( - )
+    item$ c@ -exit
+    item.png cput  item$ itembmp cput ;
+
+\ Global events
+: get-lighter  1 c" lighter" get *zelda8* ;
+: get-moneybag  100 c" money" get *zelda6* ;
+: dying  can-travel off ;  \ disables saving and traveling
+
+\ Movement between rooms
+: !startxy  x 2@ 2p>s start-xy 2! ;
+
+: travel ( x. y. n - )
+    +warp
+    p1 [[ x 2!  !startxy ]]
+    blank
+    s" game" evaluate ;
+
+: ?travel
+    can-travel @ -exit
+    beha @ -exit
+    x @ 320. >= if  4. y @ 1 travel  exit then
+    x @ 0. <= if  316. y @ -1 travel  exit then
+    y @ 240. >= if  x @ 4. 100 travel  exit then
+    y @ 0. <= if  x @ 236. -100 travel  then ;
+
+\ Create doors
+require scripts\door.vfx
+load-room-chain link ' create-doors ,

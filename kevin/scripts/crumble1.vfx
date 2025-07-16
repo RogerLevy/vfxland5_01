@@ -1,0 +1,11 @@
+crumble1.png 20 20 tileset crumble1.ts
+
+class crumble1%
+
+crumble1.ts animation crumble.anm 0 21 range,
+
+crumble1 :: init
+    \ crumble1.ts 10 tile bmp !
+    crumble.anm 0.5 cycle
+    act> throwaway a.done @ -exit \ 0 a.spd !
+    unload 0 0 0 +tile! ;

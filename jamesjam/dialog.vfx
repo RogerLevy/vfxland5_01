@@ -1,0 +1,75 @@
+\ ------------------------------------------------------------------------------
+\ Jamesjam Dialog System
+\ ------------------------------------------------------------------------------
+
+m: depict ;
+m: interact ( actor - ) drop ;
+var talkable
+create script 256 allot
+0 value speaker
+0 value nearby
+
+\ Figure
+root [[
+    object% el: bubble [[ ]]
+    object% el: dialog [[
+        160 120 at object% el: portrait-box [[  
+            portrait.png bmp !
+            0 0 at object% el: portrait [[ ]]
+        ]]
+        0 208 at object% el: textbox [[
+            8 8 at object% el: text [[ ]]
+        ]]
+        32 88 at object% el: textbox2 [[
+            8 8 at object% el: text2 [[ ]]
+        ]]
+    ]]
+]]
+
+\ Rendering
+:noname bubble as> draw>
+    script @ 0= nearby 0<> and if
+        nearby 's talkable @ if
+            nearby 5 -22 from  talk.png put
+        then
+    then ;
+execute    
+:now dialog as> draw> speaker 0<> portrait-box 's vis ! ;
+:now textbox as> draw> textbox.png put ;
+:now textbox2 as> draw> textbox2.png put ;
+:now text as> draw> script count print ;
+:now text2 as> draw> script count print ;
+
+\ Flow
+|| : find-nearby  who> you me <> you me 4 expanded hit? and ;
+|| : listening
+    vis off
+    p1 to you
+    0 to speaker
+    act>
+        find-nearby to nearby 
+        nearby -exit 
+        <space> pressed? if  you nearby interact  then ;
+|| : saying
+    vis on
+    act> 0.5 passed? -exit
+    act> <space> pressed? -exit
+        halt script off p1 [[ idle ]]
+        listening ;
+|| : (say)  ( a n - )
+    script place p1 [[ halt ]] dialog as> saying ;
+: say ( a n - )
+    portrait-box 's vis on
+    me to speaker
+    speaker depict
+    portrait 's anm off
+    textbox 's vis on
+    textbox2 's vis off
+    (say) ;
+: narrate ( a n - )
+    portrait-box 's vis off
+    textbox 's vis off
+    textbox2 's vis on
+    (say) ;
+synonym portrait portrait
+dialog [[ listening ]]

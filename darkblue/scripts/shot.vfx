@@ -1,0 +1,6 @@
+actor-class shot%
+
+shot% :: init
+    orb3.png bmp !
+    act>
+        2.0 passed? if unload then ;

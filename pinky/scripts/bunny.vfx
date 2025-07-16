@@ -1,0 +1,24 @@
+var kind
+
+bunny.png 32 32 tileset bunny.ts
+
+actor-class bunny%
+
+: ?h  vx @ 0< if h| then ;
+: ?dir  p1 's x @ x @ > if negate then ;
+: runaway  3.0 ?dir vx !  act> bunny.ts 1 tile ?h 2 125 cycle ;
+
+: kind0 ;
+: kind1  act> p1 's x 2@ x 2@ dist 48. <= -exit runaway ;
+
+create kinds
+    ' kind0 ,
+    ' kind1 ,
+here kinds - cell/ constant #kinds
+
+bunny :: init
+    bunny.ts baseid@ bmp !
+    #kinds rnd kind !
+    \ 1 kind !
+    kind @ 0 #kinds 1 - clamp cells kinds + @ execute
+;

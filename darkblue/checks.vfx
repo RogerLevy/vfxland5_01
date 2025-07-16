@@ -1,0 +1,6 @@
+validations dup @ swap off 
+
+say-before game GAME
+say-before title TITLE
+
+validations !

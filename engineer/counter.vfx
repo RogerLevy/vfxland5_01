@@ -1,0 +1,21 @@
+private
+extern bool QueryPerformanceCounter( void * count );
+extern bool QueryPerformanceFrequency( void * lpFrequency );
+public
+
+: DCOUNTER ( -- d )
+    0 0 SP@ QueryPerformanceCounter DROP SWAP ;
+
+: uCOUNTER ( -- d )
+   DCOUNTER  1000000
+   0 0 SP@ QueryPerformanceFrequency DROP NIP M*/ ;
+
+: COUNTER ( -- ms )
+   DCOUNTER  1000
+   0 0 SP@ QueryPerformanceFrequency DROP NIP M*/ DROP ;
+
+: timing ( xt - n )
+    ucounter 2>r execute ucounter 2r> d- drop ;
+    
+: time? ( xt - )
+   timing . ;

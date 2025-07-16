@@ -1,0 +1,70 @@
+require scripts\shot.vfx
+require scripts\orb.vfx
+require scripts\tri.vfx
+
+actor-class enemy1%
+var hp
+var r
+var m
+
+: regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
+: speed 0.3 rnd 0.05 + ;
+: bias  me pos@ dist 160 / ;
+: towards  me pos@ 2- ang 0.33 rnd center-pos bias + vec 2+ ;
+: p/c  4 5 chance if player-pos else center-pos then ;
+
+variable tris-next#  512 tris-next# !
+
+: burst
+    *snd-09*
+    next# @ >r
+    512 next# !
+    for
+        tri% one [[
+            360. rnd speed vec p/c towards vx 2!
+        ]]
+    loop
+    \ next# @ tris-next# !
+    r> next# ! ;
+
+: die
+    me 0 0 from 10 burst
+    unload 
+    ; \ regen ;
+
+\ variable orbs-next#  4096 orbs-next# !
+    
+: shoot
+    gamelife @ 40 mod ?exit
+    next# @ >r
+    4096 512 + next# !
+    me 0 0 from orb% one [[
+        player pos@ me pos@ 2- ang 1. vec vx 2!
+    ]]
+    \ next# @ orbs-next# !
+    r> next# ! ;
+    
+: ?bullets
+    actives>
+        me shot% is? -exit
+        you me hit? if
+            you [[
+                *snd-05*
+                -1 hp +!
+                hp @ 0 <= if die then
+            ]]
+            unload
+        then ;
+
+: enemy-physics
+    ?bullets vx 2@ x 2+!
+    ?cull ;
+
+enemy1% :: init
+    enemy1.png bmp !
+    1 hp !
+    8. r !
+    5. m !
+    ['] enemy-physics phys !
+    act> ['] shoot catch drop ;
+    

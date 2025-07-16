@@ -1,0 +1,101 @@
+\ parent lowest highest next prev
+
+: u+  rot + swap ;
+
+: dlremove  ( node -- )
+    dup 's parent @ dup 0= if  2drop  exit  then
+    locals| p n |
+    0 n 's parent !
+    p 's lowest @ p 's highest @ = if
+        n p 's lowest @ = if
+            0 dup p 's lowest ! p 's highest !
+        exit then
+        -1 abort" dlremove: Corrupt tree!"
+    else
+        n p 's lowest @ = if
+            0 n 's next @ 's prev !
+            n 's next @ p 's lowest !
+            0 dup n 's prev ! n 's next !
+        exit then
+        n p 's highest @ = if
+            0 n 's prev @ 's next !
+            n 's prev @ p 's highest !
+            0 dup n 's prev ! n 's next !
+        exit then
+        n 's next @ n 's prev @ 's next !
+        n 's prev @ n 's next @ 's prev !
+        0 dup n 's prev ! n 's next !
+    then ;
+
+: (dlinit)  ( node parent -- )
+    locals| p n |
+    n dup p 's lowest ! p 's highest !
+    p n 's parent ! ;
+
+: dlpush  ( node parent -- )
+    2dup = abort" dlinsert: Same node!" 
+    over dlremove
+    dup 's lowest @ 0= if  (dlinit)  exit  then
+    locals| p n |
+    n p 's highest @ 's next !
+    p 's highest @ n 's prev !
+    n p 's highest !
+    p n 's parent ! ;
+
+: dlinsert-after  ( node dest -- )
+    2dup = abort" dlinsert: Same node!"
+    dup 's parent @ 0= if 2drop exit then
+    over dlremove 
+    dup 's next @ 0= if  's parent @ dlpush exit  then
+    dup 's next @ locals| neighbor dest src |
+    src dest 's next !
+    dest src 's prev !
+    neighbor src 's next !
+    src neighbor 's prev !
+    dest 's parent @ src 's parent ! ;
+
+: dlunshift  ( node parent -- )
+    2dup = abort" dlinsert: Same node!" 
+    over dlremove
+    dup 's lowest @ 0= if  (dlinit)  exit  then
+    locals| p n |
+    p 's lowest @ n 's next !
+    n p 's lowest @ 's prev ! 
+    n p 's lowest !
+    p n 's parent ! ;
+
+: dleach  ( xt node -- )
+    's lowest @ ?dup if
+        [[
+            begin  me while
+                next @ >r  dup >r execute r>  r> to me
+            repeat
+            drop
+        ]]
+    else ( xt ) drop then ;
+
+: (dlorphan)  0 dup next ! dup prev ! parent ! ;
+
+: dlclear  ( node -- )
+    's lowest @ ?dup if
+        [[
+            begin  me while
+                next @  (dlorphan)  to me
+            repeat
+        ]]
+        0 dup lowest ! highest !
+    then ;
+
+: #children ( obj - n )
+    's lowest @ dup if 0 swap begin 1 u+ 's next @ ?dup 0= until then ;
+
+: nth-child ( n obj - obj )
+    dup #children >r 's lowest @ swap 0 r> umod for 's next @ loop ;
+
+: descendant? ( obj obj - f )
+    swap [[
+        begin parent @ dup while
+            over = if   ]] drop -1   exit then
+            parent @ to me
+        repeat nip ( 0 )
+    ]] ;

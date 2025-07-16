@@ -1,0 +1,16 @@
+\ extern void * GetForegroundWindow( );
+\ GetForegroundWindow 0 -10 0  1920 2 / 20 +  520 $40 SetWindowPos drop
+
++xrefs
+optimising off
+include file-fix.vfx
+include engineer.vfx
+\ 0 to GenINI? \ don't save/load VFX INI file
+\ 0 to InitSupport? \ don't need windows constants
+256 1024 * 1024 * set-size  \ of dictionary
+
+cwd ..\bin
+save-debug engineer
+
+cwd ..
+save-xref

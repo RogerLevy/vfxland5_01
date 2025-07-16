@@ -1,0 +1,33 @@
+\ ------------------------------------------------------------------------------
+\ Better error reporting
+\ ------------------------------------------------------------------------------
+
+\ Print stack info on exceptions
+\ ------------------------------
+
+5 cells constant /es-frame
+
+: null-catch-save  0 ;
+
+validations dup @ swap off
+: debug-catch-restore  \ throw-code n -- throw-code
+    drop
+    \ dup -1 = if exit then \ silent throw
+    \ dup 0= if exit then \ not an error
+    exc0 @ excp @ - /es-frame / 1 = -exit
+    cr ." Topmost catch: "
+    \ >r  \ save throw code
+    .s
+    \ r>  \ restore throw code
+    rp@ 2 cells + (.rs)
+    cr cr ;
+validations !
+  
+: null-debugger ( err context - filter? )
+    2drop -1 ;
+    
+\ Assign system hooks
+\ -------------------
+
+' null-catch-save ' debug-catch-restore extends-catch
+' null-debugger to-callback debugger

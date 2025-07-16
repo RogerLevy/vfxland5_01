@@ -1,0 +1,29 @@
+100 100 at enemy9 one constant test2
+test2 [[
+\    test-path pb1 path-move
+\    infinity-path pb1 path-move  3.0 pb1 path-speed
+    angular-path pb1 path-move  1.0 pb1 path-speed
+    0. n1 !
+    :noname act> meander x 2+! \ cr x 2p? 
+        <[> pressed? if -1 bmp +! then
+        <]> pressed? if 1 bmp +! then ;
+    execute
+
+\\    
+    
+at( 100, 100 )
+test2 = new enemy9()
+with( test2 ) {
+    pathMove( pb1, angularPath )
+    pathSpeed( pb1, 1.0 )
+    n1 = 0
+    act( function () {
+        [x, y] += meander()
+        if pressed( '[' ) {
+            bmp -= 1
+        }
+        if pressed( ']' ) {
+            bmp += 1
+        }
+    } )
+}

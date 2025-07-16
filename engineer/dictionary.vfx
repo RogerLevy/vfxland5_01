@@ -1,0 +1,32 @@
+\ =============================================================================
+\ Dictionaries (key/value structures)
+\ =============================================================================
+
+|| 0 value xt
+|| : (walk) -1 swap dup name> >body xt execute ; 
+
+: lookup ( $ wl - a )
+    {: $ wl | buf[ 256 ] :}
+    $ count buf[ place
+    get-order get-current
+    only  wl +order definitions buf[ find if
+        >body >r
+    else
+        $create here 0 , >r
+    then
+    set-current set-order r> ;   
+
+: dictionary ( - <name> ) ( - wl )
+    create wordlist drop ;
+
+: walk-dictionary ( xt dict - ) ( -1 $ a - f )
+    \ second stack effect belongs to the XT.
+    xt >r  to xt
+    ['] (walk) swap traverse-wordlist
+    r> to xt ;
+
+: walk> ( dict - ) ( -1 $ a - f )
+    r>  walk-dictionary ;
+
+: dict. ( dict - )
+    walk> cr swap count type ."  = " ? ;

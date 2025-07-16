@@ -1,0 +1,6 @@
+actor-class knot%
+
+: jitter  2. 2. 2rnd 1. 1. 2- vx 2! ;
+
+knot :: init
+    0 prio !  knot.png bmp !  act> jitter ;

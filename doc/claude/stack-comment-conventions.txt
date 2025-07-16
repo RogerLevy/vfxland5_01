@@ -1,0 +1,32 @@
+# Stack notation conventions
+
+These are current. Some older code might be inconsistent.
+
+a = address
+c = count
+n = integer
+u = unsigned integer
+f = flag (0 or -1)
+? = unknown type
+xt = execution token
+$ = byte-counted string (can be used as a suffix)
+z$ = zero-terminated string
+d = double int
+. = fixed-point number (binary format is 16.16, usually used as a suffix) 
+... = any number of items of any time
+
+other parameter types are given as struct names or class names, or descriptive such as src and dest and you need to infer the type (usually addresses)
+
+floats are on a separate stack so they follow data stack items on either side, denoted with a single f: 
+
+frequently, return params can be different types depending on the top flag item.  alternate return params are separated by a |.  example: ( n - $ -1 | n 0)
+
+these only apply to my code's stack diagrams.  your functions should use MPE locals.
+
+items using the same symbol on both sides of the diagram don't necessarily mean "return the passed in value unchanged".
+
+( - <name>) this denotes reading the input stream for a space-delimeted string.
+
+( - <code> ;) this denotes the remainder of the caller, which is popped from the return stack.  it inspired by does> and is convenient in game scripting.  example: : game show> bg sprites ;
+
+

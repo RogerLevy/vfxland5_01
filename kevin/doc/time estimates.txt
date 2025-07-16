@@ -1,0 +1,18 @@
+assets                             hours
+--------------------------------------------------------------------
+10 death animations                20
+300 rooms                          50
+200 tiles                          10
+5 full length songs                20
+50 loops                           12
+10 ambiences                       3
+100 sound effects                  8
+100 small scripts                  16
+50 medium scripts                  50
+10 large scripts                   200
+3 endings                          15
+8 items                            80
+testing, debugging, and revision   40
+-------------------------------------------------------------------
+TOTAL                              524 or 131 4-hour days (4.5 mo)
+

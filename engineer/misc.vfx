@@ -1,0 +1,135 @@
+\ ------------------------------------------------------------------------------
+\ Misc
+\ ------------------------------------------------------------------------------
+
+: ` ; immediate
+: `` ; immediate
+: ``` ; immediate
+: ```` ; immediate
+synonym aka synonym
+aka not 0=
+: >zpad  pad zplace pad ;
+: >pad  pad place pad ;
+: $+  ( $ a n - $ ) rot dup >r append r> ;
+: ?exit  s" if exit then" evaluate ; immediate
+: -exit  s" 0= if exit then" evaluate ; immediate 
+aka | locals|
+aka cd cwd
+\ : 2+  rot + >r + r> ;
+: 2-  rot swap - >r - r> ;
+: for  s" 0 ?do" evaluate ; immediate
+: @+  dup cell+ swap @ ;
+: .name ( xt - )
+    \ Smart name print
+    \ Note: Slow!
+    body> dup inForth? if >name count type space else . then ;
+: f>ds  0 >r rp@ sf! r> ;
+: :now  :noname  ';' parse evaluate  postpone ;  execute ;
+
+: link ( list - )
+    here  over @ ,  swap ! ;
+
+: do-chain ( list - )
+    begin @ ?dup while dup cell+ @ execute repeat ;
+
+: .s
+    cr depth 8 min | d |
+    d 0< -4 ?throw
+    ." DS( " d . ." ):[ " 
+    d if
+        d 0 ?do d 1 - i - pick . loop 
+    else
+        ." Empty! "
+    then
+    ." ] ";
+: f.s 
+    cr fdepth | d |
+    d 0< -400 ?throw
+    ." FS:[ " 
+    d if
+        d 0 ?do d 1 - i - fpick f. loop 
+    else
+        ." Empty! "
+    then
+    ." ] ";
+: rs reset-stacks ;
+: ending ( a n c - a n )
+   >r begin  2dup r@ scan
+      ?dup while  2swap 2drop  #1 /string
+   repeat  r> 2drop ;
+: slashes  2dup  over + swap do  i c@ '/' = if
+    '\' i c!  then  #1 +loop ; 
+: -path ( a n - a n ) slashes  '\' ending  0 max ;
+: -ext  2dup '.' scan nip - ;
+: bytes-left  ( id - n )
+    >r r@ file-size abort" Get file size error" drop
+    r> file-position abort" Get file position error" drop
+    - ;
+: file, ( a n - )
+    expand cr 2dup type
+    r/o open-file drop | #1 |
+    here 
+    #1 bytes-left allot
+    #1 bytes-left #1 read-file 2drop
+    #1 close-file drop 0 , ;
+: preword ( - a ) >in @ bl parse rot >in ! >pad ;
+: ?constant ( n - <name> ) ( - n )
+    preword find nip if drop ' drop else constant then ;
+: ?fconstant ( n - <name> ) ( - n )
+    preword find nip if fdrop ' drop else fconstant then ;
+: lastbody ( - a ) last @ ctrl>nfa name> >body ;
+: lpc ( n - n) dup 'A' >= over 'Z' <= and -exit $20 or ;
+: >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lpc swap c! loop ;
+: jumptable ( a - <name> ) ( ... - ... ) 
+    create , does> @+ @ cells + @ execute ;
+: h. ." $" base @ swap hex . base ! ;
+variable saved-dp
+: d[ ( a - ) dp @ saved-dp ! dp ! ;
+: d] ( - ) saved-dp @ dp ! ;
+
+\ r0 @ constant .rsbase
+: (.rs) ( a -- )
+    cr {: rp :}
+    ." RS:[ " 
+    \ Walk from bottom (r0) to top (rp@), going downward
+    rp r0 @ over 6 cells + min  ?do
+        i @ .name                    \ Print return address
+        i rp <> if                  \ Not the last item?
+            ." > "                   \ Print separator
+        then
+    cell negate +loop
+    ." ] " ;
+
+: .rs ( -- )
+    rp@ (.rs) ;
+
+: cstring ( -- <name> )
+    create 256 allot&erase ;
+  
+: clamp >r max r> min ;
+: umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
+: preparse ( - a len ) >in @ swap parse rot >in ! ;
+
+aka se" s\"
+
+0 value #1
+: file[ w/o create-file throw to #1 ;
+: data, #1 write-file throw ;
+: line, #1 write-line throw ;
+: nl,  s" " line, ;
+: file] #1 close-file drop ;
+
+aka file-exists? fileexists?
+
+: write ( a n path n - )
+    2dup file-exists? if 2dup delete-file throw then
+    w/o create-file throw >r
+    r@ write-file throw
+    r> close-file drop ;
+
+: read ( a n path n - )
+    2dup file-exists? not if 2drop 2drop exit then
+    r/o open-file throw >r
+    ( a n ) r@ read-file throw drop 
+    r> close-file drop ;
+

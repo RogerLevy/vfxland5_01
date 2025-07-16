@@ -1,0 +1,189 @@
+\ ------------------------------------------------------------------------------
+\ Supershow
+\
+\ minimal engine with actors, VGA colors, CRT effect,
+\ sample playback, and tilemaps.
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Validations
+\ =============================================================================
+
+include %idir%\checks.vfx
+
+20 ?constant gap  
+320 gap / ?constant tmw
+240 gap / ?constant tmh
+
+\ =============================================================================
+\ Dependencies
+\ =============================================================================
+
+\ Shaders 
+require %idir%\shader.vfx
+
+\ CRT shader
+require %idir%\crt.vfx
+
+\ Audio engine
+require %idir%\waveplay.vfx
+
+\ =============================================================================
+\ Utilities
+\ =============================================================================
+
+: 4s>p  2s>p 2>r 2s>p 2r> ;
+: 2?  2@ swap . . ;
+: h.  hex . decimal ;
+: at@  pen 2@ ;
+: toggle dup @ 0= swap ! ;
+: cput ( n - ) dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
+: hold>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;
+: h|  $1000000 or ;
+: v|  $2000000 or ;
+: hv|  h| v| ;
+: named? ( xt $ - f ) >r >name count r> count 2dup upper compare 0= ; 
+: bmpw bmpwh drop ;
+: bmph bmpwh nip ;
+
+\ =============================================================================
+\ Trigonometry
+\ =============================================================================
+
+: fscale ( f: x y s - f: x y ) fswap fover f* frot frot f* fswap ;
+: uvec ( deg. - x. y. ) p>f deg>rad fdup fcos f>p fsin f>p ;  
+: fuvec ( f: deg - f: x f: y ) deg>rad fdup fcos fswap fsin ;  
+: vec ( deg. len. - x. y. ) p>f p>f fuvec frot fscale f>p f>p swap ;
+: ang ( x. y. - deg. ) p>f p>f fatan2 rad>deg 360e f+ 360e fmod f>p ;
+: hypot ( x. y. - n. ) p>f fdup f* p>f fdup f* f+ fsqrt f>p ;
+: dist ( x. y. x. y. - n. ) 2- hypot ;   
+
+\ =============================================================================
+\ Other math helpers
+\ =============================================================================
+
+|| 0e fvalue t
+: alerp ( F: angle1 angle2 t -- result )
+  to t
+  FOVER F-                                \ diff = angle2 - angle1  
+  FDUP 180.0e F> IF 360.0e F- THEN        \ wrap to [-180,180]
+  FDUP -180.0e F< IF 360.0e F+ THEN 
+  t F* F+                                 \ angle1 + t*diff
+  FDUP 0.0e F< IF 360.0e F+ THEN          \ wrap to [0,360)
+  FDUP 360.0e F>= IF 360.0e F- THEN ;
+
+\ =============================================================================
+\ Streaming audio
+\ =============================================================================
+
+: bgm ( - <name> <filename> ) ( - )
+    create bl parse $, does> count streamL ;
+: audioclip ( - <name> <filename> ) ( - )
+    create bl parse $, does> count stream ;
+
+\ =============================================================================
+\ Blank the screen
+\ =============================================================================
+
+: blank show @ ['] noop show ! 10 for frame loop show ! ;
+
+\ =============================================================================
+\ Stage
+\ =============================================================================
+
+include %idir%\stage.vfx
+
+\ =============================================================================
+\ Tilemap
+\ =============================================================================
+
+include %idir%\tilemap.vfx
+include %idir%\udlr.vfx
+include %idir%\tmcol.vfx
+include %idir%\tread.vfx
+
+\ =============================================================================
+\ Sprite animation
+\ =============================================================================
+
+var anm var a.ts var a.spd var a.len
+var a.ofs var a.done var a.flp
+|| variable aspd \ pointer to len in animation header
+|| : >frames ( anim - a ) cell+ cell+ ;
+|| : ?baseid  a.ts @ dup if baseid@ then ;
+|| : !bmp  a.ofs @ p>s cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
+|| : ?done  a.ofs @ a.spd @ + a.len @ s>p >= -exit  a.done on ;
+: cycle ( anim spd. - ) \ to stop, say `anm off`
+    a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  !bmp ;
+: animation ( ts - <name> )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
+    create , here aspd ! 0 , ;
+: frame, ( n - )
+    , 1 aspd @ +! ;
+: range, ( n n - )
+    2dup < if 1 + swap do i frame, loop
+    else swap do i frame, -1 +loop then ;
+|| : +animation ( - )
+    anm @ -exit
+    a.spd @ a.ofs @ + a.len @ s>p mod a.ofs !
+    !bmp ?done ;
+: animate ( - )
+    actives> +animation ;
+
+\ =============================================================================
+\ Create classes from bitmaps automatically
+\ =============================================================================
+
+|| : load-autoclass ( a n - )
+    -path | n a |
+    a n -ext f" %s%%" >pad find nip ?exit
+    \ cr ." Creating auto-class from bitmap " a n type
+    a n -ext f" %s%%" 2dup
+    >pad create-class  \ note: CREATE-CLASS doesn't create a scope
+    lastbody 's autoclass on
+    a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
+
+: load-autoclasses
+    s" gfx" >datadir dir-exists? -exit
+    get-order get-current
+        s" gfx" >datadir `` ['] load-autoclass ` each-file
+    set-current set-order ;
+
+\ =============================================================================
+\ Load scripts
+\ =============================================================================
+
+|| : load-script ( a n - )
+    -path f" scripts\%s" required ;
+
+: load-scripts ( - )
+    load-autoclasses
+    s" scripts" dir-exists? -exit
+    s" scripts" ['] load-script each-file ;
+
+\ =============================================================================
+\ Automatically refresh bitmaps and tilesets
+\ =============================================================================
+
+: reload-graphics
+    cr ." Reloading graphics..."
+    reload-bitmaps
+    reload-tilesets ;
+
+\ =============================================================================
+\ Initialization
+\ =============================================================================
+
+: init-supershow ( - )
+    init-tilesets
+    load-samples
+    init-crt
+    debug @ if
+        ['] reload-graphics is onSwitchIn
+    else
+        display al_hide_mouse_cursor
+    then ;
+
+
+debug @ [if]
+    include %idir%/tools.vfx
+[then]

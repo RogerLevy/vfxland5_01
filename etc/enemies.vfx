@@ -1,0 +1,2 @@
+\ id            hp      atk         gold        spd         path
+for: ASDF hp: 1 atk: 0 gold: 0 spd: 0. path: asdfasdf 

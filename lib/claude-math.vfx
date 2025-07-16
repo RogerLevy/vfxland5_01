@@ -1,0 +1,37 @@
+: repelling-force ( obj1 obj2 f: repel-radius f: force-strength. -- x. y. )
+    {: obj1 obj2 f: repel-radius f: force-strength
+        | f: dx f: dy f: distance f: force-magnitude :}
+
+    \ Calculate distance between objects
+    obj2 's x 2@ obj1 's x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ Check if outside radius or at same position
+    distance repel-radius f>= distance 0e f= or if
+       0. 0. exit
+    then
+
+    \ Calculate repulsion force (inverse square law)
+    force-strength distance f/ distance f/ to force-magnitude
+
+    \ Normalize direction and apply force
+    dx distance f/ force-magnitude f*
+    dy distance f/ force-magnitude f*
+    2f>p ;
+
+: fclamplen ( f: x y len -- f: x y )
+    {: F: x F: y F: max-length | f: length f: scale :}
+    x fdup f* y fdup f* f+ fsqrt to length 
+
+    \ Return original if within limit
+    length max-length f<= if
+       x y exit
+    then
+
+    \ Scale down to max length
+    max-length length f/ to scale
+    x scale f* y scale f* ;
+
+: clamplen ( x. y. len. -- x. y. )
+    -rot 2p>f p>f fclamplen 2f>p ;
+
