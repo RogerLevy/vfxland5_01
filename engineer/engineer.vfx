@@ -120,25 +120,40 @@ GetForegroundWindow value vfx-hwnd
 \ Interactive Tools
 \ =============================================================================
 
-\ Try/Retry - Convenient code testing
+\ Try/Honing - Convenient code testing
 
-variable honing     \ flag, controls forced reloading of REQUIRE'd files
+variable honing     \ boolean XT, controls forced reloading of REQUIRE'd files
+                    \ as well as the action of the F5 key.
+                    \ ( off = reload game, on = retry file )
+                    \ if not 0 or -1, HONING is treated as an XT to execute 
+                    \ instead of re-INCLUDEing the last TRY'd file.
+
 cstring retry-filepath$
 
 wordlist constant honing-wl
 
 : >try ( a len - )
+    dup 0= if 2drop exit then
     honing @ if honing-wl +order then
-    2dup >abspath retry-filepath$ place
+    2dup >abspath
+    retry-filepath$ place
     ['] included catch
     honing @ if honing-wl -order then
     throw ;
 
 || : retry ( - )
-    retry-filepath$ count >try ;
+    honing @ -1 0 within? if
+        retry-filepath$ count >try 
+    else
+        honing @ execute
+    then ;
 
 : try ( - <file-noext> )
+    bl preparse nip 0= if
+        bl parse 2drop retry exit
+    then
     bl parse f" %s.vfx" >try ;
+
 
 honing-wl +order definitions
 : require include ;
