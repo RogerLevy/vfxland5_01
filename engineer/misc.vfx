@@ -72,11 +72,14 @@ aka cd cwd
     #1 bytes-left allot
     #1 bytes-left #1 read-file 2drop
     #1 close-file drop 0 , ;
-: preword ( - a ) >in @ bl parse rot >in ! >pad ;
+: preword ( - pad )
+    >in @ bl parse rot >in ! >pad ;
 : ?constant ( n - <name> ) ( - n )
     preword find nip if drop ' drop else constant then ;
 : ?fconstant ( n - <name> ) ( - n )
     preword find nip if fdrop ' drop else fconstant then ;
+: ?value ( n - <name> ) ( - n )
+    preword find nip if drop ' drop else value then ;
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
 : lpc ( n - n) dup 'A' >= over 'Z' <= and -exit $20 or ;
 : >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lpc swap c! loop ;
@@ -133,3 +136,4 @@ aka file-exists? fileexists?
     ( a n ) r@ read-file throw drop 
     r> close-file drop ;
 
+aka ed locate

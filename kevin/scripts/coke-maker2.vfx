@@ -1,6 +1,6 @@
 require scripts\coke-maker.vfx
 
 class coke-maker2%
-borrow coke-maker` init-coke-maker
+borrow coke-maker~ init-coke-maker
 coke-maker2 :: peeked  !" n1" ;
 coke-maker2 :: init  1000 init-coke-maker ;

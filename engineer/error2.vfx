@@ -15,7 +15,7 @@ validations dup @ swap off
     \ dup -1 = if exit then \ silent throw
     \ dup 0= if exit then \ not an error
     exc0 @ excp @ - /es-frame / 1 = -exit
-    cr ." Topmost catch: "
+    cr ." Catch: "
     \ >r  \ save throw code
     .s
     \ r>  \ restore throw code

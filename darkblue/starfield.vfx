@@ -16,6 +16,9 @@ variable ctr
 : star dup x swap y at star.png put ;
 
 public
-: starfield hold> seeds #stars for @+ star loop drop 1 ctr +! ;
+
+: starfield ( - )
+    hold>
+        seeds #stars for @+ star loop drop 1 ctr +! ;
 
 validations !

@@ -17,7 +17,7 @@ var bmp
 var x1 var y1 var w1 var h1 \ hitbox 1 (objects)
 var beha
 var time  \ ms
-var n1 var n2
+var n1 var n2 var n3 var n4 \ General purpose vars
 var phys
 var prio  \ 0 = behind BG, <>0 = in front of BG
 var disabled  \ controls behavior and physics
@@ -61,10 +61,12 @@ var disabled  \ controls behavior and physics
 m: peeked ( - ) ;
 
 || : .en ( - )
-    en @ if ." (ACTIVE)" else ." (FREE)" then ;
+    en @ if ." (ACTIVE) " else ." (FREE) " then ;
 
 || : (peek) ( - )
-    as> me actor# . cla @ .name .en space x 2p?  me peeked ;
+    as> ." #" me actor# . cla @ .name ( .en )
+    ." at pos " x 2p?
+    me peeked ;
 
 : peek ( actor - )
     ['] (peek) catch drop ;
@@ -88,8 +90,24 @@ m: peeked ( - ) ;
 : ?disabled  disabled @ if r> drop then ;
 
 : behave beha @ oexec ;
-|| : (think)  actives> ?disabled behave ;
-|| : (move)  actives> ?disabled phys @ oexec ;
+
+: ?sp ( a - )
+    \ Restore SP. If debug mode is on, report stack imbalances.
+    debug @ if
+        dup sp@ cell+ cell+ <> if
+            cr
+            s[ ." (THINK) >> Stack imbalance in logic for " 
+                me peek s] log-warning
+            .s
+        then
+    then
+    sp! ;
+        
+|| : (think) ( - )
+    actives> ?disabled sp@ >r behave r> ?sp ;
+
+|| : (move) ( - )
+    actives> ?disabled phys @ oexec ;
 
 variable gamelife
 0 0 2value gametime
@@ -309,7 +327,7 @@ c" timer%" create-class
     classname$ find not nip if
         classname$ create-class
     then
-    classname$ count -% f" %s`" $private
+    classname$ count -% f" %s~" $private
     classname$ count evaluate
     dup statics: ;
 

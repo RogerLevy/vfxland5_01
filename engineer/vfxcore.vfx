@@ -3,5 +3,5 @@ include %idir%/scope.vfx
 include %idir%/fixed.vfx
 include %idir%/format.vfx
 include %idir%/array.vfx
-include %idir%/oop.vfx
+include %idir%/nib.vfx
 include %idir%/dictionary.vfx   

@@ -22,7 +22,8 @@ variable repl  repl on
     then ;
 || : obey
     cr tib #tib @ 2dup ?type  space
-    ['] evaluate catch 0 #tib ! throw ;
+    ['] evaluate catch 0 #tib !
+    dup .throw if rs state off then ; \ throw ;
 || : ?charkey
     alt? if drop exit then
     case
@@ -63,5 +64,7 @@ variable repl  repl on
 
 : draw-repl ( - ) 
     repl @ if
+        pen 2@ 2>r
         0 240 16 - at bar bar-text
+        2r> at
     then ;

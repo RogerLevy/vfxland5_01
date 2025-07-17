@@ -2,9 +2,9 @@ require %idir%\..\..\supershow\ui\ui.vfx
 
 element-class toolbox%
 
-borrow be` lb
-borrow be` mouse
-borrow be` mickey    
+borrow be~ lb
+borrow be~ mouse
+borrow be~ mickey    
 
 : backing ( w h -)
     at@ 2+ 2>r

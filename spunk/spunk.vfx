@@ -52,7 +52,7 @@ timer% :: init ( - )
 : stow ( - )
     actives> r# @ -2 = if unload else stash then ;
 
-borrow stage` unsafe-free?
+borrow stage~ unsafe-free?
 : takeout ( - )
     temps>
         me unsafe-free? ?exit

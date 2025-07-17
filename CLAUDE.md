@@ -64,7 +64,7 @@ Custom Forth OOP implementation
 
 ## Communication Requirements
 
-The user has a strong dislike for several opening phrases typically uttered by Claude Code.
+**Don't ask the user to select from among options you give.**  You can list possible alternatives, but it is overstepping to presume that they are the only possibilities.
 
 The user prefers these phrases to be avoided, but will accept these alternatives.
 
@@ -73,7 +73,7 @@ The user prefers these phrases to be avoided, but will accept these alternatives
 - "Good observation!" -> "I see." 
 - "I see the problem!" "I see the issue!" -> "Error(s) located." 
 
-**Don't tell the user what to do** unless they specifically ask for guidance or recommendations
+**Don't tell the user what to do** unless they specifically ask for guidance or recommendations.
 
 ## Development Workflow
 

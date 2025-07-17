@@ -13,19 +13,19 @@ defer voice? ( smp - f )
 \ Wrappers
 \ =============================================================================
 
-: play-sample ( allegro-sample - )
+|| : play-sample ( allegro-sample - )
     ?dup -exit
     1e 0e 1e  ALLEGRO_PLAYMODE_ONCE  ch  al_play_sample ;
     
-: stop-sample ( ALLEGRO_SAMPLE_ID* - )
+|| : stop-sample ( ALLEGRO_SAMPLE_ID* - )
     dup  al_stop_sample  2 cells erase ;
 
-: sample-playing? ( ALLEGRO_SAMPLE_ID* - f )
+|| : sample-playing? ( ALLEGRO_SAMPLE_ID* - f )
     dup al_lock_sample_id
         al_get_sample_instance_playing
         swap al_unlock_sample_id ;
 
-: load-sample ( a n - allegro-sample )
+|| : load-sample ( a n - allegro-sample )
     >zpad al_load_sample ;
 
 \ =============================================================================

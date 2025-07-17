@@ -22,6 +22,7 @@ variable going
 variable bye-chain
 cstring home-path$
 create funcs 32 12 * allot&erase
+0 value reload-shift?
 
 \ =============================================================================
 \ System Integration
@@ -353,6 +354,19 @@ include %idir%/repl.vfx
 s" reload" <f5> func
 
 \ =============================================================================
+\ Persistent variable control
+\ =============================================================================
+
+: control-variable ( n - <name> )
+    \ Define a variable with initial value n, but only if the name doesn't already exist for the file.
+    \ If the variable already exists, this is a no-op.
+    \ Allows for redefinitions by temporarily isolating the search order.
+    push-order
+    only current @ +order
+    preword find nip if drop bl word drop else create , then
+    pop-order ;
+
+\ =============================================================================
 \ Display Mode Control
 \ =============================================================================
 
@@ -410,13 +424,15 @@ s" reload" <f5> func
     dup if going off >vfx then throw ;
 
 || : cls ( - )
-    0e 0e 0e 1e al_clear_to_color  0 0 at ;
+    0e 0e 0e 1e al_clear_to_color ;
 
 defer pump
 
 || : draw-game ( - ) 
-    cls 
+    pen 2@ 2>r
+    cls
     'show @ catch ?throw
+    2r> at
     pump ;
 
 : show> ( - ) ( - )
@@ -442,7 +458,7 @@ defer pump
 
 load-bitmaps
 
-' engineer` public-xt !
+' engineer~ public-xt !
 include %idir%/ide1.vfx
 ' forth public-xt !
 
@@ -492,7 +508,8 @@ include %idir%/ide1.vfx
 \ =============================================================================
 
 || : ?idle ( - ) debug @ if EmptyIdle ( yield ) then ;
-|| : controls ( - ) ?quit ?w/f ?bye ?idle ;
+|| : ?reload-shift ( - ) shift? to reload-shift? ;
+|| : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else draw-game then ;
 
 : frame ( - )
@@ -580,7 +597,12 @@ bye-chain link 0 ,
     empty cartridge ;
 
 : reload ( - )
-    honing @ if retry else switch then ;
+    honing @ reload-shift? not and if
+        retry
+    else
+        switch
+        repl on
+    then ;
 
 \ =============================================================================
 \ Turnkey creation

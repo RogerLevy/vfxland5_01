@@ -101,5 +101,5 @@ variable skipped
 public
 
 : title
-    title` ( skippable ) movie 
+    title~ ( skippable ) movie 
     show> ?skip step backdrop starfield sprites ;

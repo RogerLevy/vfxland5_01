@@ -1,15 +1,20 @@
 : scatter
     360. rnd swap vec vx 2! ;
 
+enemy20% control class
+
+: spawn
+    class @ cue [[ 2. scatter ]] ;
+
 :event
-    enemy10% one [[ 1. scatter ]]
+    spawn
     0.25 delay
-    0 5 +at
-    enemy10% one [[ 1. scatter ]]
+    5 5 +at
+    spawn
     0.25 delay
-    0 5 +at
-    enemy10% one [[ 1. scatter ]]
+    -5 5 +at
+    spawn
     0.25 delay
-    0 5 +at
-    enemy10% one [[ 1. scatter ]]
+    -5 -5 +at
+    spawn
 ;

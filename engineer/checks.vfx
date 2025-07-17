@@ -21,7 +21,7 @@ before [[ check-object
 wrap-word [[
 
 before do-message check-object
-borrow oop` do-message
+borrow nib~ do-message
 wrap-word do-message
 validations dup @ swap on \ important!
     : does-validated-message  does> swap do-message ;

@@ -23,7 +23,7 @@
 \
 \ Example Event File (events/intro.vfx):
 \   :event 
-\     100 100 at player% one [[ ]]
+\     100 100 at player% spawn [[ ]]
 \     3. delay
 \     cr ." Welcome to the game!"
 \   ;
@@ -36,68 +36,89 @@
 
 actor-class event%
 
-: start-event ( xt - )
-    execute ;
+: (suicidal) ( - )
+    act> cr ." Event finished: " unload me peek ;   
 
-aka xt n1
-aka secs n2
+: start-event ( xt - )
+    at@ 2>r
+    (suicidal)
+    sp@ cell+ >r execute r> ?sp
+    2r> at ;
+
+var delay-xt
+var delay-secs
 
 public
 
-|| : (suicidal)
-    act> unload ;   
-
 : delay ( secs. - )
-    secs ! r> xt ! 
+    delay-secs ! r> delay-xt ! 
     act>
-        secs @ passed? -exit
+        delay-secs @ passed? -exit
         x 2@ 2p>s at    \ restore pen from event's position
-        (suicidal)      \ unless another DELAY (or ACT>) is called, event 
+        (suicidal)      \ unless another delay (or act>) is called, event 
                         \ unalives itself on the next frame.
-        xt @ execute
+        delay-xt @ execute
 ;
 
-: spawn ( class - )
+: spawn ( class - actor )
     at@ 2s>p x 2!  \ save pen in event's position 
-    one [[ ]] ;
+    one ;
+
+: >event-path  f" events\%s.vfx" ;
+
+|| : ?event-exists ( a len -- )
+    >event-path file-exists? not if
+        -1 abort" Event doesn't exist!"
+    then ;
     
 : require-event ( - <event> )
+    bl preparse ?event-exists
+    bl preparse $private 
     f" events\%s.vfx" required ;
 
-cstring event$
-2variable last-event-at
+|| cstring event$
+\ || 2variable last-event-at
 
-: hone-event ( - )
-    last-event-at 2@ at
+|| : hone-event ( - )
+    \ last-event-at 2@ at
     event$ count f" run %s" evaluate ;
-    
+
 : run ( - <event> )
-    \ Development tool; clear the stage, load and execute an event
-    \ Turns on HONING, so everything it depends on is reloaded and F5 runs it
-    \ again via HONING as an XT
-    \ TODO: support saving the data stack in TRY for RETRY to recreate in
-    \ HONING mode; or just put that mechanism in here and HONE-EVENT
+    \ development tool; clear the stage, load and execute an event
+    \ turns on honing, so everything it depends on is reloaded and f5 runs it
+    \ again via honing as an xt
+    \ todo: support saving the data stack in try for retry to recreate in
+    \ honing mode; or just put that mechanism in here and hone-event
     {: | a len :}
     bl parse to len to a
+    a len ?event-exists 
     a len event$ place
-    at@ last-event-at 2!
-    ['] hone-event honing !
-    a len f" events\%s.vfx" >try
+    \ at@ last-event-at 2!
+    ['] hone-event honing !    
+    a len f" %s~" $private 
+    a len >event-path >try
     a len >pad find if
         execute
     else
-        drop -1 abort" Event not found! Did you forget :EVENT? "
+        drop -1 abort" event not found! did you forget :event ? "
     then ;
-    
+
+: scene ( - )
+    \ Clear stage of all events, skipping ME.
+
+    \ me to director 
+    0 0 at
+    actives> me you = ?exit me event% is? -exit unload ;
+
 || : does-event ( - )
     does> @ event% one [[ start-event ]] ;
 
 : :event ( - ) ( ... - )
     public
-    CurrSourceName -path -ext >pad $create
+    currsourcename -path -ext >pad $create
     0 ,
     does-event
     :noname lastbody ! ;
     
-\ TODO: automated event file creation
-\ : event ( - <name> )
+\ todo: automated event file creation
+\ : event ( - <name> )  
