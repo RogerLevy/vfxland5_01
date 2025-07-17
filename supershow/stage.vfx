@@ -309,7 +309,7 @@ c" timer%" create-class
     classname$ find not nip if
         classname$ create-class
     then
-    classname$ count -% f" `%s" $private
+    classname$ count -% f" %s`" $private
     classname$ count evaluate
     dup statics: ;
 
