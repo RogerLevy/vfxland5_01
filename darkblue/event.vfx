@@ -1,0 +1,103 @@
+\ ------------------------------------------------------------------------------
+\ Scripted Event System
+\
+\ These are scripted events - authored sequences that play out over time.
+\ Not to be confused with event-driven programming!
+\
+\ This system provides a framework for creating and executing scripted game events
+\ with hot-reload development support. Events are defined in separate .vfx files
+\ and can be dynamically loaded, executed, and reloaded during development.
+\
+\ Core Components:
+\ - event% actor class: Base class for all scripted events
+\ - :EVENT word: Creates named events that can be executed later
+\ - DELAY mechanism: Allows events to wait for specified time periods
+\ - RUN command: Development tool for testing events with hot-reload
+\ - REQUIRE-EVENT: Loads event files from the events/ directory
+\
+\ Usage Pattern:
+\ 1. Create event files in events/ directory using :EVENT to define them
+\ 2. Use RUN <eventname> during development to test with hot-reload
+\ 3. Use REQUIRE-EVENT <eventname> to load events into the game
+\ 4. Events can spawn actor instances and set up delayed actions
+\
+\ Example Event File (events/intro.vfx):
+\   :event 
+\     100 100 at player% one [[ ]]
+\     3. delay
+\     cr ." Welcome to the game!"
+\   ;
+\
+\ Hot-Reload Development:
+\ - RUN enables HONING mode for automatic reloading on F5
+\ - All dependencies are reloaded when the event is modified
+\ - Supports iterative event scripting and testing
+\ ------------------------------------------------------------------------------
+
+actor-class event%
+
+: start-event ( xt - )
+    execute ;
+
+aka xt n1
+aka secs n2
+
+public
+
+|| : (suicidal)
+    act> unload ;   
+
+: delay ( secs. - )
+    secs ! r> xt ! 
+    act>
+        secs @ passed? -exit
+        x 2@ 2p>s at    \ restore pen from event's position
+        (suicidal)      \ unless another DELAY (or ACT>) is called, event 
+                        \ unalives itself on the next frame.
+        xt @ execute
+;
+
+: spawn ( class - )
+    at@ 2s>p x 2!  \ save pen in event's position 
+    one [[ ]] ;
+    
+: require-event ( - <event> )
+    f" events\%s.vfx" required ;
+
+cstring event$
+2variable last-event-at
+
+: hone-event ( - )
+    last-event-at 2@ at
+    event$ count f" run %s" evaluate ;
+    
+: run ( - <event> )
+    \ Development tool; clear the stage, load and execute an event
+    \ Turns on HONING, so everything it depends on is reloaded and F5 runs it
+    \ again via HONING as an XT
+    \ TODO: support saving the data stack in TRY for RETRY to recreate in
+    \ HONING mode; or just put that mechanism in here and HONE-EVENT
+    {: | a len :}
+    bl parse to len to a
+    a len event$ place
+    at@ last-event-at 2!
+    ['] hone-event honing !
+    a len f" events\%s.vfx" >try
+    a len >pad find if
+        execute
+    else
+        drop -1 abort" Event not found! Did you forget :EVENT? "
+    then ;
+    
+|| : does-event ( - )
+    does> @ event% one [[ start-event ]] ;
+
+: :event ( - ) ( ... - )
+    public
+    CurrSourceName -path -ext >pad $create
+    0 ,
+    does-event
+    :noname lastbody ! ;
+    
+\ TODO: automated event file creation
+\ : event ( - <name> )

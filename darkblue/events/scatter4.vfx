@@ -1,0 +1,15 @@
+: scatter
+    360. rnd swap vec vx 2! ;
+
+:event
+    enemy10% one [[ 1. scatter ]]
+    0.25 delay
+    0 5 +at
+    enemy10% one [[ 1. scatter ]]
+    0.25 delay
+    0 5 +at
+    enemy10% one [[ 1. scatter ]]
+    0.25 delay
+    0 5 +at
+    enemy10% one [[ 1. scatter ]]
+;
