@@ -53,7 +53,6 @@ tri% :: init
         repel
         vang @ ang +!
         tri.ts ang @ ang>bmp ( ?flicker ) bmp !
-        \ tri.ts time @ 16.666 p/ 2 * 36 mod tile bmp !
         ?bounce/cull
         ;
         

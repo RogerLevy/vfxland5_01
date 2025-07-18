@@ -15,7 +15,7 @@ var m
 
 variable tris-next#  512 tris-next# !
 
-: burst
+: burst ( n - )
     *snd-09*
     next# @ >r
     512 next# !
@@ -29,7 +29,7 @@ variable tris-next#  512 tris-next# !
     r> next# ! ;
 
 : die
-    me 0 0 from 10 burst
+    me 0 0 from 20 burst
     unload 
     ; \ regen ;
 
@@ -48,7 +48,7 @@ variable tris-next#  512 tris-next# !
 : ?bullets
     actives>
         me shot% is? -exit
-        you me hit? if
+        you me rhit? if
             you [[
                 *snd-05*
                 -1 hp +!
@@ -64,7 +64,7 @@ variable tris-next#  512 tris-next# !
 enemy1% :: init
     enemy1.png bmp !
     1 hp !
-    8. r !
+    20. r !
     5. m !
     ['] enemy-physics phys !
     act> ['] shoot catch drop ;
