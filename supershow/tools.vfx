@@ -13,11 +13,24 @@ also engineer~
     to c
     actives> me c is? if (resurrect) then ;
     
+cstring update-name$
+
+|| : hone-update ( - )
+    update-name$ count f" update %s" evaluate ;
+    
 : update ( - <class> )
     \ Live update actor class
-    bl preparse f" scripts\%s.vfx" >try
-    bl word count f" %s%%" >pad find if >body init-by-class exit then 
-    drop ;
+    {: | class :}
+    bl parse -% 2dup f" %s%%" >pad find if
+        >body to class
+        update-name$ place
+    else
+        -1 abort" Class not found!"
+    then
+    ['] hone-update honing ! 
+    update-name$ count f" scripts\%s.vfx" >try
+    class init-by-class
+    update-name$ count f" %s~" $private ;
 
 : .actors ( - )
     actives> cr me peek ;
