@@ -6,7 +6,7 @@
 \ rptest3
 
 : *ship
-    ship% one dup [[ actor# turret% one 's n1 ! ;
+    ship% one [[ me actor# turret% one 's n1 ! ]] ;
 
 : test1
     50 50 at *ship

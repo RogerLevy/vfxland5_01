@@ -8,6 +8,8 @@ var m
 var ang
 var vang
 
+aka bounced n1
+
 : repel
     player me 75e 2.5e repelling-force
     vx 2@ 2+ 1. clamplen vx 2! ;
@@ -16,7 +18,30 @@ var vang
     360. umod dup >r
     5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
 
-: flicker  gamelife @ 1 and 0<> and ;
+: flicker  gamelife @ 2 / 1 and 0<> and ;
+
+: ?flicker  bounced @ -exit flicker ;
+
+: x-bounce  vx @ negate vx ! ;
+: y-bounce  vy @ negate vy ! ;
+
+: ?bounce/cull
+    bounced @ 0= if
+        x @ vx @ + 0 gamew 1 - >. within? not if
+            bounced on
+            x-bounce
+            0 time !
+        then
+        y @ vy @ + 0 gameh >. within? not if
+            bounced on
+            y-bounce 
+            0 time !
+        then
+    else
+        \ 1.5 passed? if 
+        \     unload
+        \ then
+    then ;
 
 tri% :: init
     tri.ts 0 tile bmp !
@@ -27,7 +52,8 @@ tri% :: init
     act>
         repel
         vang @ ang +!
-        tri.ts ang @ ang>bmp ( flicker ) bmp !
+        tri.ts ang @ ang>bmp ( ?flicker ) bmp !
         \ tri.ts time @ 16.666 p/ 2 * 36 mod tile bmp !
-        ?cull ;
+        ?bounce/cull
+        ;
         

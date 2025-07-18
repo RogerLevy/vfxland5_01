@@ -20,7 +20,7 @@ var m
         -1 energy +!
         
         \ small knockback
-        you me collision-force3 vx 2+!
+        you me collision-force3 0.5 0.5 2p* vx 2+!
         
         \ expel a tri
         360. rnd dup
@@ -58,17 +58,23 @@ variable screen-bounced-counter
 
 : countdown
     dup @ 1 - 0 max swap ! ;
+    
+.3 control-variable spd
+0.91 control-variable ine
+
+: speed spd @ ;
+: -speed speed negate ;
 
 : controls
     screen-bounced-counter countdown
     screen-bounced-counter @ ?exit
-    <a> held? if  -.2 vx +!  then
-    <d> held? if  .2 vx +!  then
-    <w> held? if  -.2 vy +! then
-    <s> held? if  .2 vy +! then ;
+    <a> held? if  -speed vx +!  then
+    <d> held? if  speed vx +!  then
+    <w> held? if  -speed vy +! then
+    <s> held? if  speed vy +! then ;
 
 : decel
-    vx 2@ 0.93 dup 2p* vx 2! ;
+    vx 2@ ine @ dup 2p* vx 2! ;
 
 : physics
     decel collisions vx 2@ x 2+! ;

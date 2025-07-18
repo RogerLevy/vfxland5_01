@@ -40,7 +40,7 @@ turret% :: init
                 *shoot*
                 n3 @ 
                     owner 0 0 from shot% one [[
-                        ( n2 ) 4. vec vx 2!
+                        ( n2 ) 8. vec vx 2!
                         \ owner 's vx 2@ 0.5 dup 2p* vx 2+!
                         -1 energy +!
                     ]]

@@ -1,0 +1,50 @@
+: radius r @ ;
+: -radius radius negate ;
+
+: from-top ( xratio. y. -- x. y. )
+    >r gamew *  r> ;
+
+: from-bottom ( xratio. y. -- x. y. )
+    >r gamew *  r> gameh >. + ;
+
+1. control-variable timing
+enemy1% control-variable class
+1.5 control-variable speed 
+
+: *enemy ( - actor )
+    class @ spawn ;
+
+: come-down ( xratio. - )
+    -radius from-top x 2!
+    0 speed @ vx 2!
+;
+
+: come-up ( xratio. - )
+    radius from-bottom x 2! 
+    0 speed @ negate vx 2!
+;
+
+: *player ( - )
+    *ship ;
+
+: (reset) ( - )
+    0 next# ! actives> you me = ?exit unload ;
+
+: reset ( - )
+    (reset)
+    50 gameh 2 / at *player
+    100 energy ! ;
+
+:event
+    reset
+    begin
+    *enemy [[ 0.6 come-down ]]    
+    timing @ delay
+    *enemy [[ 0.7 come-up ]]
+    timing @ delay
+    *enemy [[ 0.8 come-down ]]    
+    timing @ delay
+    *enemy [[ 0.9 come-up ]]
+    timing @ 4 * delay
+    again
+;

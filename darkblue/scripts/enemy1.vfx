@@ -8,9 +8,9 @@ var r
 var m
 
 : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
-: speed 0.3 rnd 0.05 + ;
+: tri-speed 0.2 rnd 0.05 + ;
 : bias  me pos@ dist 160 / ;
-: towards  me pos@ 2- ang 0.33 rnd center-pos bias + vec 2+ ;
+: towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
 : p/c  4 5 chance if player-pos else center-pos then ;
 
 variable tris-next#  512 tris-next# !
@@ -21,7 +21,8 @@ variable tris-next#  512 tris-next# !
     512 next# !
     for
         tri% one [[
-            360. rnd speed vec p/c towards vx 2!
+            p/c towards vx 2!
+            360. rnd 5. rnd vec vx 2+!
         ]]
     loop
     \ next# @ tris-next# !
@@ -35,7 +36,7 @@ variable tris-next#  512 tris-next# !
 \ variable orbs-next#  4096 orbs-next# !
     
 : shoot
-    gamelife @ 40 mod ?exit
+    gamelife @ 80 mod ?exit
     next# @ >r
     4096 512 + next# !
     me 0 0 from orb% one [[

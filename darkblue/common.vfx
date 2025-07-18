@@ -1,4 +1,7 @@
 
+427 constant gamew
+320 constant gameh
+
 0 value player
 var hp
 var r \ radius 
@@ -27,3 +30,4 @@ aka <start> <enter>
 : player-pos  player pos@ ;
 : chance ( dividend divisor -- f )  rnd swap < ;
 : you  osp @ cell- @ ;
+: that osp @ @ ;
