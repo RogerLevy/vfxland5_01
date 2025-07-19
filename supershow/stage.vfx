@@ -64,11 +64,11 @@ m: peeked ( - ) ;
 
 || : .status ( - )
     benched @ if ." (BENCHED) " exit then
-    en @ if ." (ACTIVE) " else ." (FREE) " then ;
+    en @ 0= if ." (FREE) " then ;
 
 || : (peek) ( - )
     as> ." #" me actor# . cla @ .name .status
-    ." at: " x 2p?
+    ." at: " x 2@ 2p>s swap . .
     me peeked ;
 
 : peek ( actor - )
