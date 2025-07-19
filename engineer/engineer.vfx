@@ -21,7 +21,7 @@ variable debug  debug on
 variable going
 variable bye-chain
 cstring home-path$
-create funcs 32 12 * allot&erase
+create funcs 256 12 * allot&erase
 0 value reload-shift?
 
 \ =============================================================================
@@ -341,16 +341,18 @@ include %idir%/repl.vfx
 \ Function Keys
 \ =============================================================================
 
-|| : func[] 32 * funcs + ;
-
+|| : func[] 256 * funcs + ;
+   
 : func ( a c n - )
     <f1> - func[] place ;
+
+|| : clear-funcs ( - )
+    funcs 256 12 * erase
+    s" ?reload" <f5> func ;
 
 : ?func ( n - )
     <f1> - dup 0 12 within if
         ( postpone [ ) func[] count cr 2dup type evaluate else drop then ;
-
-s" ?reload" <f5> func
 
 \ =============================================================================
 \ Persistent variable control
@@ -558,9 +560,9 @@ bye-chain link 0 ,
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn
-    [ /obj ] literal to /obj
-    [ /static ] literal to /static
-    only forth definitions 
+    init-nib
+    clear-funcs
+    only forth definitions
     s" anew gild" evaluate ;
 
 : cartridge
