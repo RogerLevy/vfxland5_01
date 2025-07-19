@@ -64,7 +64,7 @@ variable tris-next#  512 tris-next# !
 enemy1% :: init
     enemy1.png bmp !
     1 hp !
-    20. r !
+    12. r !
     5. m !
     ['] enemy-physics phys !
     act> ['] shoot catch drop ;

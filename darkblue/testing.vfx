@@ -35,6 +35,12 @@ include pathtest2.vfx
     just game test2 pathtest
     go ;
 
+
+require scripts\ship.vfx
+borrow ship~ die
+: die
+    ship~ player [[ die ]] ;
+
 \ Title Test
 \ title
 

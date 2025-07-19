@@ -3,7 +3,6 @@ require title.vfx
 \ require subscreen.vfx
 \ require savegame.vfx
 \ require %idir%\..\supershow\ui\ui.vfx
-require starfield.vfx
 
 \ Game
 : backdrop  0 0 at backdrop.png put ;

@@ -25,6 +25,6 @@ orb% :: init
     \ orb.anm 0.5 cycle
     act>
         \ gamelife @ 4 / 2 mod if orb2.png else orb3.png then bmp !
-        gamelife @ 3 / orb-anim #items mod orb-anim [] @ bmp !
+        gamelife @ 1.75 p/ orb-anim #items mod orb-anim [] @ bmp !
         ?cull ;
         

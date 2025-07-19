@@ -1,10 +1,14 @@
 require scripts\orb.vfx
+require scripts\enemy1.vfx
 
 ship-v1.png 27 27 tileset ship.ts
 
 actor-class ship%
 var r
 var m
+
+variable screen-bounced-counter 
+0 value recovering?
 
 aka flash-ctr n1 
 
@@ -27,19 +31,60 @@ aka flash-ctr n1
         ]]
     loop ;
 
+: decelerate
+    { d }
+    vx @ abs d - vx @ 0< if negate then vx ! 
+    vy @ abs d - vy @ 0< if negate then vy ! ;
+
+: slowdown-playfield ( - )
+    actives>
+        me you = ?exit
+        floating act>
+            \ .016 decelerate
+            vx 2@ 0.94 dup 2p* vx 2! ;
+
+: lightning ( - )
+    lightning% one as> act> act> act> unload ;
+
+: slowdown-starfield ( - )
+    object% one as> act>
+        \ starfield-speed 0.06 - 0 max to starfield-speed ;
+        starfield-speed 0.94 p* to starfield-speed ;
+
+: shatter ( - )
+    200 for
+        me
+        360. rnd 14 rnd vec from
+        dot% one [[ 360. rnd 2. rnd vec vx 2! ]] 
+    loop
+    unload ;
+
+: die ( - )
+    0 energy !
+    62 flash-ctr !
+    slowdown-playfield
+    slowdown-starfield
+    act>
+        !bmp
+        1.0 passed? -exit
+        lightning
+    act> act> act> 
+        shatter ;
+
 ship% :: damage ( n - )
+    *snd-03*
     dup negate energy +!
+    energy @ 0 <= if
+        drop die exit
+    then
     dup expel 
     2 + flash-ctr @ + 62 min flash-ctr ! ;
 
 : hit-orb 
-    *snd-03*
-\    *snd-06*
-\    *snd-08*
     ( you = player )
     5 you damage
     you [[
-        you me collision-force3 ( 0.5 0.5 2p* ) vx 2+!  \ small knockback
+        you me collision-force3 ( 0.5 0.5 2p* ) vx 2+!  \ knockback
     ]]
     unload ;
 
@@ -47,7 +92,12 @@ ship% :: damage ( n - )
     *snd-07*
     1 energy +! unload ;
 
-variable screen-bounced-counter 
+: hit-enemy
+    recovering? ?exit
+    30 you damage
+    you [[
+        you me collision-force3 3 3 2* vx 2+!  \ knockback
+    ]] ;
 
 : &screen
     me 0.9 screen-bounce-force vx 2+!
@@ -56,12 +106,13 @@ variable screen-bounced-counter
         5 screen-bounced-counter !
     then ;
 
-0 value recovering?
 : &objects
+    en @ -exit
     flash-ctr @ 0 >= to recovering?
     actives>
         r @ -exit
         you me rhit? -exit
+        me enemy1% is? if hit-enemy exit then
         me orb% is? if hit-orb exit then
         recovering? ?exit
         me tri% is? if hit-tri exit then ;
@@ -75,7 +126,7 @@ variable screen-bounced-counter
 .3 control-variable spd
 0.91 control-variable ine
 
-: speed spd @ ;
+: speed spd @ recovering? if 2.5 p/ then ;
 : -speed speed negate ;
 
 : controls
