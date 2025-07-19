@@ -28,7 +28,6 @@ variable public-xt  ' forth public-xt !
 : public ( - )
     only public-xt @ execute definitions wlname ?wordlist +order ;
 : || private 0 parse evaluate public ; immediate
-: ^^ public 0 parse evaluate private ; immediate
 : borrow ( - <scope> <word> )
     ' >body @ +order
     bl parse 2dup 

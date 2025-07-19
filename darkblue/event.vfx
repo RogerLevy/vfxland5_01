@@ -87,8 +87,8 @@ public
     \ development tool; clear the stage, load and execute an event
     \ turns on honing, so everything it depends on is reloaded and f5 runs it
     \ again via honing as an xt
-    \ todo: support saving the data stack in try for retry to recreate in
-    \ honing mode; or just put that mechanism in here and hone-event
+    \ TODO: support saving the data stack in TRY for TRY-AGAIN to recreate in
+    \ honing mode; or just put that mechanism in RUN and HONE-EVENT.
     {: | a len :}
     bl parse to len to a
     a len ?event-exists 

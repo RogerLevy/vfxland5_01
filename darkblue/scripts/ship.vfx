@@ -27,20 +27,19 @@ aka flash-ctr n1
         ]]
     loop ;
 
-^^ : damage ( n - )
+ship% :: damage ( n - )
     dup negate energy +!
-    player [[
-        dup expel 
-        2 + flash-ctr @ + 62 min flash-ctr !
-    ]] ;
+    dup expel 
+    2 + flash-ctr @ + 62 min flash-ctr ! ;
 
 : hit-orb 
     *snd-03*
 \    *snd-06*
 \    *snd-08*
+    ( you = player )
+    5 you damage
     you [[
-        5 damage
-        you me collision-force3 0.5 0.5 2p* vx 2+!  \ small knockback
+        you me collision-force3 ( 0.5 0.5 2p* ) vx 2+!  \ small knockback
     ]]
     unload ;
 

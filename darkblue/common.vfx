@@ -1,15 +1,20 @@
-
-427 constant gamew
-320 constant gameh
-
-0 value player
+\ Vars
 var hp
 var r \ radius 
 var m \ mass
-variable energy  1000 energy !
 
+\ Messages
+m: damage ( n - ) drop ;
+ 
+\ Global variables
+0 value player
+variable energy  1000 energy !
+variable automatic
+
+\ Input names
 aka <start> <enter>
 
+\ HUD
 : hrs  gametime 360000000 m/ ;
 : mins  gametime 60000000 m/ 60 mod ;
 : secs  gametime 1000000 m/ 60 mod ;

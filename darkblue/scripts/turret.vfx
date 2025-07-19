@@ -4,8 +4,6 @@ actor-class turret%
 var n3
 var shooting
 
-^^ variable automatic
-
 turret.png 32 32 tileset turret.ts
 
 : ang>bmp ( ts n. - n )
