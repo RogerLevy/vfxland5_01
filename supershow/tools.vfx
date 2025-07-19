@@ -45,7 +45,7 @@ cstring update-name$
     bl parse $cwd
     200 ms
     \ ['] dir >r
-    ['] switch >r   \ I have *no* idea why this pattern is required here.
+    ['] cartridge >r \ I have *no* idea why this pattern is required here.
                     \ I think Windows doesn't like something about it.
                     \ SWITCH works fine if run directly after running PROJECT,
                     \ and also if the shell command is removed.

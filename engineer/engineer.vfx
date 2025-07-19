@@ -125,7 +125,7 @@ GetForegroundWindow value vfx-hwnd
 
 variable honing     \ boolean XT, controls forced reloading of REQUIRE'd files
                     \ as well as the action of the F5 key.
-                    \ ( off = reload game, on = retry file )
+                    \ ( off = reload game, on = reload module or other action )
                     \ if not 0 or -1, HONING is treated as an XT to execute 
                     \ instead of re-INCLUDEing the last TRY'd file.
 
@@ -142,7 +142,7 @@ wordlist constant honing-wl
     honing @ if honing-wl -order then
     throw ;
 
-|| : retry ( - )
+|| : try-again ( - )
     honing @ -1 0 within? if
         retry-filepath$ count >try 
     else
@@ -151,10 +151,9 @@ wordlist constant honing-wl
 
 : try ( - <file-noext> )
     bl preparse nip 0= if
-        bl parse 2drop retry exit
+        bl parse 2drop try-again exit
     then
     bl parse f" %s.vfx" >try ;
-
 
 honing-wl +order definitions
 : require include ;
@@ -351,7 +350,7 @@ include %idir%/repl.vfx
     <f1> - dup 0 12 within if
         ( postpone [ ) func[] count cr 2dup type evaluate else drop then ;
 
-s" reload" <f5> func
+s" ?reload" <f5> func
 
 \ =============================================================================
 \ Persistent variable control
@@ -537,35 +536,6 @@ include %idir%/ide1.vfx
     init-vga-font
     0 0 to ustime ;
 
-|| : cartridge
-    \ Load user program
-    load-bitmaps
-    s" main.vfx" fileExist? if s" main.vfx" included then ;
-
-: frigid ( - )
-    \ Development startup
-    path home-path$ place
-    +xrefs
-    s" xref.xrf" fileexist? if load-xref then
-    rs setup cartridge ;
-
-: cold ( - )
-    \ Release startup
-    frigid boot go ;
-
-\ =============================================================================
-\ Debugging tools
-\ =============================================================================
-
-\ include debug/logging.vfx \ TODO: test and fix
-\ debug @ [if]
-\ include debug/contracts.vfx
-\ [then]
-
-\ =============================================================================
-\ Entry point
-\ =============================================================================
-
 || create bye-chain-root
 bye-chain link 0 ,
 
@@ -593,15 +563,46 @@ bye-chain link 0 ,
     only forth definitions 
     s" anew gild" evaluate ;
 
-: switch ( - )
-    empty cartridge ;
+: cartridge
+    \ Load user program
+    empty
+    load-bitmaps
+    s" main.vfx" fileExist? if s" main.vfx" included then ;
+
+: frigid ( - )
+    \ Development startup
+    path home-path$ place
+    +xrefs
+    s" xref.xrf" fileexist? if load-xref then
+    rs setup cartridge ;
+
+: cold ( - )
+    \ Release startup
+    frigid boot go ;
+
+\ =============================================================================
+\ Debugging tools
+\ =============================================================================
+
+\ include debug/logging.vfx \ TODO: test and fix
+\ debug @ [if]
+\ include debug/contracts.vfx
+\ [then]
+
+\ =============================================================================
+\ Reloading
+\ =============================================================================
 
 : reload ( - )
+    \ Reload game and 
+    cartridge
+    repl on ;
+
+: ?reload ( - )
     honing @ reload-shift? not and if
-        retry
+        try-again
     else
-        switch
-        repl on
+        reload
     then ;
 
 \ =============================================================================
