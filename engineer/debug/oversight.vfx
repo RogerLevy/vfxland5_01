@@ -408,8 +408,8 @@ public
     c 0= if
         name-a name-len create-contract to c
         c register-contract
-    else
-        -1 abort" >BEFORE >> Only one pre-validation per word currently supported!"
+\    else
+\        -1 abort" >BEFORE >> Only one pre-validation per word currently supported!"
     then
     validator create-validation to val
     val c set-pre-validation ;
@@ -421,8 +421,8 @@ public
     c 0= if
         name-a name-len create-contract to c
         c register-contract
-    else
-        -1 abort" >AFTER >> Only one pre-validation per word currently supported!"
+\    else
+\        -1 abort" >AFTER >> Only one pre-validation per word currently supported!"
     then
     validator create-validation to val
     val c set-post-validation ;
@@ -497,6 +497,7 @@ public
 public
 
 : .validation ( validation -- )
+    ?dup -exit
     [[
         test-name$ count type space
         enabled @ if ." (ENABLED)" else ." (DISABLED)" then
@@ -519,8 +520,8 @@ public
         cr ." No contract found for that word. "
     else
         [[
-            cr pre-val @ .validation
-            cr post-val @ .validation
+            cr ." Pre: " pre-val @ .validation
+            cr ." Post: " post-val @ .validation
         ]]
     then ;  
 

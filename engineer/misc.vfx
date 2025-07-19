@@ -136,4 +136,3 @@ aka file-exists? fileexists?
     ( a n ) r@ read-file throw drop 
     r> close-file drop ;
 
-aka ed locate
