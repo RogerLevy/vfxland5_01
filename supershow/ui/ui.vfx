@@ -117,10 +117,11 @@ borrow stage~ unsafe-free?
 
 \ Element script classes
 
-: element-oexec-error-handler ( n - n )
-    dup -exit
+: element-oexec-error-handler ( n - )
+    ?dup -exit
     cr ." oexec >> Error on element, disabling: " me peek
-    me disable ;
+    me bench
+    throw ;
 
 : element-class ( - <name> )
     script-class

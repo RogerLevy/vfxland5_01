@@ -5,11 +5,14 @@
 0 value me
 0 value /obj    \ next field offset
 cell value /static \ next static field offset; "cell" reserves class field
+
 : field ( ofs size - <name> n ) ( a - a )
     create over , + $C0FFEE , does> @ + ;
+
 || : ?already ( - )
     >in @ bl word find if dup >body cell+ @ $C0FFEE = if
     r> drop drop drop exit then then drop >in ! ; DoNotSin
+
 || : ?literal
     state @ if postpone literal then ;
 
@@ -23,6 +26,7 @@ variable osp   os osp ! \ object stack pointer
 : [[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : unsafe-[[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
+
 : ofield ( size - <name> n ) ( - a )
     /obj swap field to /obj 
     does> @ me + ;
@@ -38,15 +42,20 @@ variable osp   os osp ! \ object stack pointer
 
 \ Classes
 var cla
+
 || : >static ( obj - class )
     's cla @ ;
+
 || : ?already
     >in @ bl word find if r> 3drop exit then drop >in ! ; DoNotSin
-|| : preword
+
+|| : preword ( - a len )
     >in @ swap word swap >in ! ;
+
 || : ?message
-    >in @  ' >body 3 cells + @ $11111111 <>
-    abort" Message not found!  (Did you forget an underscore?)"
+    >in @
+    ' >body 3 cells + @ $11111111 <>
+    abort" Word is not a message!  (Did you forget an underscore?)"
     >in ! ;
 
 
@@ -70,12 +79,15 @@ create class% here , 1020 allot&erase $22222222 ,
 
 \ Messages
 
-static oexec-error-handler
+static oexec-error-handler ( n - )
 
 : oexec ( ... xt - ... )
     ?dup if catch ?dup if
-        oexec-error-handler @ ?dup if execute then
-        throw
+        oexec-error-handler @ ?dup if
+            execute
+        else
+            throw
+        then
     then then ;
 
 || : do-message ( ... message actor - ... )

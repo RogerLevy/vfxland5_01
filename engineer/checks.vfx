@@ -32,7 +32,7 @@ validations !
 
 \ have to redefine these because it's not possible to wrap them ( :: crashes )
 cell to /static
-static oexec-error-handler
+static oexec-error-handler ( n - )
 m: init ( - ) ;
 m: destruct ( - ) ;
 

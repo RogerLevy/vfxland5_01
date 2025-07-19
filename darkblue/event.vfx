@@ -42,7 +42,7 @@ actor-class event%
 : start-event ( xt - )
     at@ 2>r
     (suicidal)
-    sp@ cell+ >r execute r> ?sp
+    sp@ cell+ >r execute r> !sp
     2r> at ;
 
 var delay-xt

@@ -2,13 +2,15 @@
 \ Stage - Actor System
 \ ------------------------------------------------------------------------------
 
-variable gamelife
 1024 ?constant #actors
 #actors 8 * ?constant #temps
 512 ?constant /actor
 
 #actors /actor array actors 
 #temps /actor array temps
+
+variable gamelife
+0 0 2value gametime
 
 var en
 var x var y
@@ -20,7 +22,7 @@ var time  \ ms
 var n1 var n2 var n3 var n4 \ General purpose vars
 var phys
 var prio  \ 0 = behind BG, <>0 = in front of BG
-var disabled  \ controls behavior and physics
+var benched  \ controls behavior and physics
 
 \ =============================================================================
 \ Actor Access Words
@@ -65,11 +67,11 @@ m: peeked ( - ) ;
 
 || : (peek) ( - )
     as> ." #" me actor# . cla @ .name ( .en )
-    ." at pos " x 2p?
+    ." at: " x 2p?
     me peeked ;
 
 : peek ( actor - )
-    ['] (peek) catch drop ;
+    (peek) ; \ ['] (peek) catch drop ;
 
 : !" ( - <var>" )
     '"' parse 2dup 2>r
@@ -85,41 +87,43 @@ m: peeked ( - ) ;
 \ Actor Errors
 \ =============================================================================
 
-: disabled?  's disabled @ ;
-: disable  's disabled on ; 
-: ?disabled  disabled @ if r> drop then ;
+: benched?  's benched @ ;
+: bench  's benched on ; 
+: ?benched  benched @ if r> drop then ;
 
 : behave beha @ oexec ;
 
-: ?sp ( a - )
+: !sp ( a - )
     \ Restore SP. If debug mode is on, report stack imbalances.
     debug @ if
         dup sp@ cell+ cell+ <> if
             cr
-            s[ ." (THINK) >> Stack imbalance in logic for " 
-                me peek s] log-warning
+            s[
+                ." Stack imbalance in logic for actor " 
+                me peek
+            s] log-warning
             .s
         then
     then
     sp! ;
         
-|| : (think) ( - )
-    actives> ?disabled sp@ >r behave r> ?sp ;
+|| : (behave) ( - )
+    actives> ?benched sp@ >r behave r> !sp ;
 
 || : (move) ( - )
-    actives> ?disabled phys @ oexec ;
-
-variable gamelife
-0 0 2value gametime
+    actives> ?benched phys @ oexec ;
 
 : +time ( - )
     gametime usdelta 0 d+ to gametime  1 gamelife +! ;
 
 || : (+time) ( - )
-    +time actives> ?disabled pdelta time +! ;
+    +time actives> ?benched pdelta time +! ;
+
+|| : (step) ( - )
+    (+time) (behave) (move) ;
 
 : step ( - )
-    (+time) (think) (move) ;
+    ['] (step) catch .throw-catch ;
 
 \ =============================================================================
 \ Find actor
@@ -143,7 +147,7 @@ variable gamelife
 \ =============================================================================
 
 : ?pillory ( - )
-    me disabled? if
+    me benched? if
         12 color s" !" print
     then ;
 
@@ -162,7 +166,8 @@ variable gamelife
 
 variable next#
 
-create default object% , /actor allot&erase
+create default /actor allot&erase
+default object% >object drop
 
 : floating ( - )
     physics> vx 2@ x 2+! ;
@@ -334,10 +339,14 @@ c" timer%" create-class
     classname$ count evaluate
     dup statics: ;
 
-: actor-oexec-error-handler ( n - n )
-    dup -exit
-    cr ." oexec >> Error on actor, disabling: " me peek
-    me disable ;
+: actor-oexec-error-handler ( n - )
+    ?dup -exit
+    cr ." oexec >> Actor had an oopsie, disabling: " me ['] peek catch drop
+    cr ." (Stage) Throw:"
+    .s
+    .rs
+    me bench
+    throw ;
     
 static autoclass
     

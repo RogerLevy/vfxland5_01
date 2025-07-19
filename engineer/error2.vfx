@@ -1,5 +1,5 @@
 \ ------------------------------------------------------------------------------
-\ Better error reporting
+\ Better VFX error reporting
 \ ------------------------------------------------------------------------------
 
 \ Print stack info on exceptions
@@ -9,18 +9,25 @@
 
 : null-catch-save  0 ;
 
+: .catch ( throw-code - )
+    -exit
+    cr ." Catch: "
+    \ >r  \ save throw code
+    .s
+    \ r>  \ restore throw code
+    rp@ 1 cells + (.rs)
+    cr ;
+
+: .throw-catch ( throw-code - )
+    dup .throw .catch ;
+
 validations dup @ swap off
 : debug-catch-restore  \ throw-code n -- throw-code
     drop
     \ dup -1 = if exit then \ silent throw
     \ dup 0= if exit then \ not an error
     exc0 @ excp @ - /es-frame / 1 = -exit
-    cr ." Catch: "
-    \ >r  \ save throw code
-    .s
-    \ r>  \ restore throw code
-    rp@ 2 cells + (.rs)
-    cr cr ;
+    dup .catch ;
 validations !
   
 : null-debugger ( err context - filter? )

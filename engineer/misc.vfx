@@ -35,7 +35,7 @@ aka cd cwd
 : .s
     cr depth 8 min | d |
     d 0< -4 ?throw
-    ." DS( " d . ." ):[ " 
+    ."     DS( " d . ." ):[ " 
     d if
         d 0 ?do d 1 - i - pick . loop 
     else
@@ -45,7 +45,7 @@ aka cd cwd
 : f.s 
     cr fdepth | d |
     d 0< -400 ?throw
-    ." FS:[ " 
+    ."     FS:[ " 
     d if
         d 0 ?do d 1 - i - fpick f. loop 
     else
@@ -93,13 +93,13 @@ variable saved-dp
 \ r0 @ constant .rsbase
 : (.rs) ( a -- )
     cr {: rp :}
-    ." RS:[ " 
+    ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
-    rp r0 @ over 6 cells + min  ?do
+    rp r0 @ over 5 cells + min  ?do
         i @ .name                    \ Print return address
-        i rp <> if                  \ Not the last item?
-            ." > "                   \ Print separator
-        then
+        \ i rp <> if                  \ Not the last item?
+        \     ." > "                   \ Print separator
+        \ then
     cell negate +loop
     ." ] " ;
 

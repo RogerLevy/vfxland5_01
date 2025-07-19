@@ -23,7 +23,7 @@ variable repl  repl on
 || : obey
     cr tib #tib @ 2dup ?type  space
     ['] evaluate catch 0 #tib !
-    dup .throw if rs state off then ; \ throw ;
+    dup .throw-catch if rs state off then ; \ throw ;
 || : ?charkey
     alt? if drop exit then
     case

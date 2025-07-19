@@ -7,7 +7,7 @@ also engineer~
 || 0 value c
 
 || : (resurrect) ( - )
-    disabled off me init ;
+    benched off me init ;
 
 : init-by-class ( class - )
     to c

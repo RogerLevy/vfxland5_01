@@ -242,7 +242,7 @@ cstring wordname$
         cr
         val 's validator @ >name count
         caller-name @ count f" %s >> %s failed - throwing" log-error
-        cr ." Throw:"
+        cr ." (Oversight) Throw:"
         .s
         caller-rp (.rs)
         -999 throw
