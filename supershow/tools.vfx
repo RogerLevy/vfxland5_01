@@ -74,3 +74,6 @@ cstring update-name$
         cr ." Script already exists, locating"
     then
     n[ count f" locate %s%%" evaluate ;
+    
+: edit ( - <name> )
+    bl parse f" locate %s%%" evaluate ;
