@@ -16,7 +16,7 @@ var m
 variable tris-next#  512 tris-next# !
 
 : burst ( n - )
-    *snd-09*
+    \ *snd-09*
     next# @ >r
     512 next# !
     for
@@ -50,7 +50,7 @@ variable tris-next#  512 tris-next# !
         me shot% is? -exit
         you me rhit? if
             you [[
-                *snd-05*
+                *snd-06* \ *snd-05*
                 -1 hp +!
                 hp @ 0 <= if die then
             ]]

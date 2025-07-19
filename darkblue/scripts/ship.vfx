@@ -9,10 +9,11 @@ var m
 aka flash-ctr n1 
 
 : ?flash ( n - n )
-    flash-ctr @ 2 / 5 mod 3 = if
+    flash-ctr @ 0< ?exit
+    flash-ctr @ 5 mod 2 < if
         drop 15
     then
-    flash-ctr @ 0> if -1 flash-ctr +! then ;
+    flash-ctr @ -1 > if -1 flash-ctr +! then ;
 
 : !bmp
     ship.ts 0 ?flash tile bmp ! ;
@@ -20,27 +21,26 @@ aka flash-ctr n1
 : expel ( n - )
     for
         360. rnd dup
-        me swap 20 vec from
+        me swap 20 vec from  \ note FROM takes ints
         tri% one [[
             1. vec vx 2!
         ]]
     loop ;
 
-: damage ( n - )
-    dup expel 2 * 2 + flash-ctr ! ;
-    
-: hit-orb
+^^ : damage ( n - )
+    dup negate energy +!
+    player [[
+        dup expel 
+        2 + flash-ctr @ + 62 min flash-ctr !
+    ]] ;
+
+: hit-orb 
     *snd-03*
-    *snd-06*
+\    *snd-06*
 \    *snd-08*
     you [[
-        -1 energy +!
-        
-        \ small knockback
-        you me collision-force3 0.5 0.5 2p* vx 2+!
-        
-        \ expel some tris
         5 damage
+        you me collision-force3 0.5 0.5 2p* vx 2+!  \ small knockback
     ]]
     unload ;
 
@@ -57,11 +57,14 @@ variable screen-bounced-counter
         5 screen-bounced-counter !
     then ;
 
+0 value recovering?
 : &objects
+    flash-ctr @ 0 >= to recovering?
     actives>
         r @ -exit
         you me rhit? -exit
         me orb% is? if hit-orb exit then
+        recovering? ?exit
         me tri% is? if hit-tri exit then ;
 
 : collisions

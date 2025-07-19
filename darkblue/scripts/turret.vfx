@@ -4,6 +4,8 @@ actor-class turret%
 var n3
 var shooting
 
+^^ variable automatic
+
 turret.png 32 32 tileset turret.ts
 
 : ang>bmp ( ts n. - n )
@@ -11,38 +13,50 @@ turret.png 32 32 tileset turret.ts
     5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
 
 : owner n1 @ actor ;
-
 : flicker  gamelife @ 1 and if drop 0 then ;
 
-: ?shoot
+: shoot ( - )
+    *shoot*
+    n3 @ 
+        owner 0 0 from shot% one [[
+            ( n2 ) 8. vec vx 2!
+            \ owner 's vx 2@ 0.5 dup 2p* vx 2+!
+            -1 energy +!
+        ]] ;
+
+: button?  automatic @ if held? else pressed? then ;
+
+: ?aim ( - )
     shooting off 
-    <l> held? if 0. n3 ! shooting on then
-    <.> held? if 45. n3 ! shooting on then 
-    <,> held? <k> held? or if 90. n3 ! shooting on then 
-    <m> held? <n> held? or if 135. n3 ! shooting on then
-    <j> held? if 180. n3 ! shooting on then
-    <u> held? if 225. n3 ! shooting on then
-    <i> held? if 270. n3 ! shooting on then
-    <o> held? if 315. n3 ! shooting on then ;
+    <l> button? if 0. n3 ! shooting on then
+    <.> button? if 45. n3 ! shooting on then 
+    <,> button? <k> button? or if 90. n3 ! shooting on then 
+    <m> button? <n> button? or if 135. n3 ! shooting on then
+    <j> button? if 180. n3 ! shooting on then
+    <u> button? if 225. n3 ! shooting on then
+    <i> button? if 270. n3 ! shooting on then
+    <o> button? if 315. n3 ! shooting on then ;
 
-turret% :: init
-    turret.ts 0 tile bmp !
-    act>
-        ?shoot
-        n2 @ p>f n3 @ p>f 0.2e alerp f>p n2 !
-        n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
-        n2 @ 360. umod 180. >= if 1. 1. x 2+! then
-        turret.ts n2 @ ang>bmp flicker bmp !
-
+: ?fire ( - )
+    automatic @ if
         shooting @ if
             time @ .12 >= if 0 time ! then
             time @ 0= if
-                *shoot*
-                n3 @ 
-                    owner 0 0 from shot% one [[
-                        ( n2 ) 8. vec vx 2!
-                        \ owner 's vx 2@ 0.5 dup 2p* vx 2+!
-                        -1 energy +!
-                    ]]
+                shoot
             then
-        then ;
+        then
+    else
+        shooting @ if
+            shoot
+        then
+    then ;
+    
+turret% :: init
+    turret.ts 0 tile bmp !
+    act>
+        ?aim ?fire
+        n2 @ p>f n3 @ p>f 0.2e alerp f>p n2 !
+        n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
+        n2 @ 360. umod 180. >= if 1. 1. x 2+! then
+        turret.ts n2 @ ang>bmp flicker bmp ! ;
+
