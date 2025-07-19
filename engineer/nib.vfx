@@ -54,12 +54,15 @@ var cla
 || : preword ( - a len )
     >in @ swap word swap >in ! ;
 
-|| : ?message
-    >in @
-    ' >body 3 cells + @ $11111111 <>
-    abort" Word is not a message!  (Did you forget an underscore?)"
-    >in ! ;
+|| : message?  3 cells + @ $11111111 = ;
 
+|| : ?message ( - )
+    >in @
+    ' >body message? not if
+        cr
+        -1 abort" Word is not a message!  (Did you forget an underscore?)"
+    then
+    >in ! ;
 
 1024 constant /class
 create class% here , 1020 allot&erase $22222222 , 
@@ -110,15 +113,27 @@ static oexec-error-handler ( n - )
     \ Declare a message and its default behavior
     static does-message dispatch, ;
 
-: :: ( class - <msg> <code> ; ) ( ... obj - ... ) 
-    \ Define the response of a given class to a given message 
-    ?message
-    {: c | msg[ 256 ] ofs :}
-    bl preparse msg[ place
-    0 postpone 's to ofs
-    c body> >name count 1 - ` msg[ count ` 2swap f" : %s::%s" 2dup upper evaluate
+: >:: ( class message - <code> ; ) ( ... obj - ... ) 
+    \ Define the response of a given class to a given message (passed on stack)
+    \ Expects message to be a message
+    {: c msg | name[ 256 ] ofs :}
+    msg body> >name count name[ place
+    msg @ to ofs
+    name[ count
+        c body> >name count 1 -
+        f" : %s::%s" 2dup upper evaluate
     state on
     here ( xt ) c ofs + ! ;
+
+: :: ( class - <msg> <code> ; ) ( ... obj - ... ) 
+    \ Define the response of a given class to a given message (read-ahead word)
+    \ Checks if the given name is actually a message
+    ?message ' >body >:: ;   
+\    bl preparse msg[ place
+\    0 postpone 's to ofs
+\    c body> >name count 1 - ` msg[ count ` 2swap f" : %s::%s" 2dup upper evaluate
+\    state on
+\    here ( xt ) c ofs + ! ;
 
 \ Instantiation
 : >object ( a class - class:object )
