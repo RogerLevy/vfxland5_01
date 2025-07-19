@@ -120,7 +120,7 @@ static oexec-error-handler ( n - )
 
 \ Instantiation
 : >object ( a class - class:object )
-    over ! ;
+    over 's cla ! ;
 
 \ Defaults
 c" object%" create-class
