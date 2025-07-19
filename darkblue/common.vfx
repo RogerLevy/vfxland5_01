@@ -28,6 +28,5 @@ aka <start> <enter>
 : ?cull in? ?exit unload ;
 : center-pos  160. 120. ;
 : player-pos  player pos@ ;
-: chance ( dividend divisor -- f )  rnd swap < ;
-: you  osp @ cell- @ ;
-: that osp @ @ ;
+: chance ( dividend divisor -- f ) rnd swap < ;
+

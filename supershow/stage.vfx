@@ -62,11 +62,12 @@ var benched  \ controls behavior and physics
 
 m: peeked ( - ) ;
 
-|| : .en ( - )
+|| : .status ( - )
+    benched @ if ." (BENCHED) " exit then
     en @ if ." (ACTIVE) " else ." (FREE) " then ;
 
 || : (peek) ( - )
-    as> ." #" me actor# . cla @ .name ( .en )
+    as> ." #" me actor# . cla @ .name .status
     ." at: " x 2p?
     me peeked ;
 
@@ -341,11 +342,11 @@ c" timer%" create-class
 
 : actor-oexec-error-handler ( n - )
     ?dup -exit
+    me bench
     cr ." oexec >> Actor had an oopsie, disabling: " me ['] peek catch drop
     cr ." (Stage) Throw:"
     .s
     .rs
-    me bench
     throw ;
     
 static autoclass

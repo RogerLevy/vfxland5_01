@@ -80,7 +80,7 @@
 
 : index ( a array - n )
     | a |
-    a >items - a /item /  a ?range drop ;
+    a >items - a /item /  ; \ a ?range drop ;
 
 : each ( ... xt array - ... ) ( ... a - ... f )
     | a xt |

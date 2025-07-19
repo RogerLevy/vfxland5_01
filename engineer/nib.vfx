@@ -26,6 +26,8 @@ variable osp   os osp ! \ object stack pointer
 : [[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : unsafe-[[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
+: you  osp @ cell- @ ;
+: that osp @ @ ;
 
 : ofield ( size - <name> n ) ( - a )
     /obj swap field to /obj 
