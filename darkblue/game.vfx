@@ -22,7 +22,7 @@ require title.vfx
 : retry ( - )
     blank blank blank
     1.0 to starfield-speed
-    s" run test1" evaluate ;
+    eval" run test1" ;
 
 \ Game
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;

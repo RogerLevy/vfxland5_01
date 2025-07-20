@@ -7,9 +7,9 @@
 : from-bottom ( xratio. y. -- x. y. )
     >r gamew *  r> gameh >. + ;
 
-1. control-variable timing
-enemy1% control-variable class
-1.5 control-variable speed 
+1. tweek timing
+enemy1% tweek class
+1.5 tweek speed 
 
 : *enemy ( - actor )
     class @ spawn ;
@@ -25,7 +25,7 @@ enemy1% control-variable class
 ;
 
 :event
-    s" reset" evaluate
+    eval" reset" 
     begin
     *enemy [[ 0.6 come-down ]]    
     timing @ delay

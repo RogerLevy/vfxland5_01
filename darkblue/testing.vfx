@@ -34,11 +34,13 @@ include pathtest2.vfx
 
 
 require scripts\ship.vfx
-borrow ship~ die
-: die
-    ship~ player [[ die ]] ;
+: die ( - )
+    ship~ player [[ eval" die" ;
+
+
 
 \ Title Test
 \ title
 
 game
+run test1 

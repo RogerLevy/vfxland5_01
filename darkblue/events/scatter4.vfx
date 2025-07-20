@@ -1,4 +1,4 @@
-enemy20% control-variable class
+enemy20% tweek class
 
 : scatter
     360. rnd swap vec vx 2! ;

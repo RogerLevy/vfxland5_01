@@ -358,14 +358,29 @@ include %idir%/repl.vfx
 \ Persistent variable control
 \ =============================================================================
 
-: control-variable ( n - <name> )
+: tweek ( n - <name> )
     \ Define a variable with initial value n, but only if the name doesn't already exist for the file.
     \ If the variable already exists, this is a no-op.
     \ Allows for redefinitions by temporarily isolating the search order.
     push-order
     only current @ +order
-    preword find nip if drop bl word drop else create , then
+    preword find nip if drop bl word drop else create , $12341234 , then
     pop-order ;
+
+: (?.tweek) ( thread# nfa - f )
+    nip
+    {: nfa :} 
+    nfa name> >body cell+ @ $12341234 = if
+        cr
+        ."     "
+        nfa count type
+        ."  = "
+        nfa name> >body @ dup .name p.
+    then
+    -1 ;
+
+: .tweeks ( - )
+    ['] (?.tweek) walk-order ;
 
 \ =============================================================================
 \ Display Mode Control

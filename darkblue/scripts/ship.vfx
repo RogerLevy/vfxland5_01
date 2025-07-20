@@ -7,8 +7,13 @@ actor-class ship%
 var r
 var m
 
-variable screen-bounced-counter 
+variable paralysis                \ paralyzes player when >0
 0 value recovering?
+
+5 tweek sbp            \ screen bounce paralysis length
+.3 tweek spd           \ normal movement speed
+0.93 tweek ine         \ inertia
+.03 tweek dec           \ deceleration
 
 aka flash-ctr n1 
 
@@ -31,10 +36,10 @@ aka flash-ctr n1
         ]]
     loop ;
 
-: decelerate
-    { d }
-    vx @ abs d - vx @ 0< if negate then vx ! 
-    vy @ abs d - vy @ 0< if negate then vy ! ;
+: decelerate ( n. - )
+    {: d :}
+    vx @ abs d - vx @ 0< if negate 0 min else 0 max then vx ! 
+    vy @ abs d - vy @ 0< if negate 0 min else 0 max then vy ! ;
 
 : slowdown-playfield ( - )
     actives>
@@ -59,7 +64,7 @@ aka flash-ctr n1
     loop
     unload
     3.0 timer>
-        s" retry" evaluate ;
+        eval" retry" ;
 
 : die ( - )
     0 energy !
@@ -83,6 +88,7 @@ ship% :: damage ( n - )
     2 + flash-ctr @ + 62 min flash-ctr ! ;
 
 : hit-orb 
+    recovering? ?exit
     ( you = player )
     5 you damage
     you [[
@@ -105,7 +111,7 @@ ship% :: damage ( n - )
     me 0.9 screen-bounce-force vx 2+!
     screen-bounced? if
         *snd-08*
-        5 screen-bounced-counter !
+        sbp @ paralysis !
     then ;
 
 : &objects
@@ -122,24 +128,22 @@ ship% :: damage ( n - )
 : collisions
     &screen &objects ;
 
-: countdown
+: countdown ( a - )
     dup @ 1 - 0 max swap ! ;
     
-.3 control-variable spd
-0.91 control-variable ine
-
 : speed spd @ recovering? if 2.5 p/ then ;
 : -speed speed negate ;
 
 : controls
-    screen-bounced-counter countdown
-    screen-bounced-counter @ ?exit
+    paralysis countdown
+    paralysis @ ?exit
     <a> held? if  -speed vx +!  then
     <d> held? if  speed vx +!  then
     <w> held? if  -speed vy +! then
     <s> held? if  speed vy +! then ;
 
 : decel
+    \ ; dec @ decelerate ;
     vx 2@ ine @ dup 2p* vx 2! ;
 
 : physics
