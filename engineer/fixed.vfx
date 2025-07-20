@@ -8,7 +8,8 @@
 : f>p 65536e f* f>s ;
 : p* 65536 */ ;
 : p/ 65536 swap */ ;
-: p. p>f f. ;
+\ : ?1/-1 dup 0> if 1 else dup 0< if -1 then then ;
+: p. ( ?1/-1 + ) p>f 5 (f.) type space ;
 : p? @ p. ;
 : 1i $ffff0000 and ;
 : pcos p>f  deg>rad fcos f>p ;

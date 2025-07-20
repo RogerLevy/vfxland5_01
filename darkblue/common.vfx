@@ -38,3 +38,11 @@ aka <start> <enter>
 : backdrop  0 0 at backdrop.png put ;
 : (blank) show> backdrop ;
 : blank 'show @ (blank) 10 for frame loop 'show ! ;
+
+: eval" ( - <string>" )
+    \ Late-bound execution
+    state @ if
+        postpone (s") ", postpone evaluate
+    else
+        '"' parse >syspad evaluate
+    then ; immediate

@@ -21,8 +21,10 @@ aka cd cwd
 : @+  dup cell+ swap @ ;
 : .name ( xt - )
     \ Smart name print
-    \ Note: Slow!
-    body> dup inForth? if >name count type space else . then ;
+    \ NOTE: Slow!
+    dup body> inForth? if
+        body> >name count type space
+    else . then ;
 : f>ds  0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 
@@ -136,3 +138,9 @@ aka file-exists? fileexists?
     ( a n ) r@ read-file throw drop 
     r> close-file drop ;
 
+: walk-order ( xt - ) ( thread# nfa - f )
+    {: xt :}
+    get-order for
+        cr dup .name 
+        xt swap WalkWordList
+    loop ;
