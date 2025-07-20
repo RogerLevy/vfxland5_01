@@ -5,9 +5,6 @@
 \  
 \ rptest3
 
-: *ship
-    ship% one [[ me actor# turret% one 's n1 ! ]] ;
-
 : test1
     50 50 at *ship
     100 100 at enemy1% one drop ;

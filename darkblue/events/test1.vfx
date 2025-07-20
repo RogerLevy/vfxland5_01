@@ -24,19 +24,8 @@ enemy1% control-variable class
     0 speed @ negate vx 2!
 ;
 
-: *player ( - )
-    *ship ;
-
-: (reset) ( - )
-    0 next# ! actives> you me = ?exit unload ;
-
-: reset ( - )
-    (reset)
-    50 gameh 2 / at *player
-    100 energy ! ;
-
 :event
-    reset
+    s" reset" evaluate
     begin
     *enemy [[ 0.6 come-down ]]    
     timing @ delay

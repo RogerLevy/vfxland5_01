@@ -21,8 +21,8 @@ aka <start> <enter>
 : hud
     15 color
     \ 0 310 at s[ 480 8 / for space loop s] print    
-    0 312 at energy @ f" %n" print
-    363 312 at secs mins hrs f" %02n:%02n:%02n" print ;
+    8 0 at energy @ f" %n" print
+    357 0 at secs mins hrs f" %02n:%02n:%02n" print ;
 
 \ Scripting helpers
 : pos@ 's x 2@ ;
@@ -35,3 +35,6 @@ aka <start> <enter>
 : player-pos  player pos@ ;
 : chance ( dividend divisor -- f ) rnd swap < ;
 
+: backdrop  0 0 at backdrop.png put ;
+: (blank) show> backdrop ;
+: blank 'show @ (blank) 10 for frame loop 'show ! ;

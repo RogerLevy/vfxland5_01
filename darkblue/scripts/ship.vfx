@@ -57,7 +57,9 @@ aka flash-ctr n1
         360. rnd 14 rnd vec from
         dot% one [[ 360. rnd 2. rnd vec vx 2! ]] 
     loop
-    unload ;
+    unload
+    3.0 timer>
+        s" retry" evaluate ;
 
 : die ( - )
     0 energy !

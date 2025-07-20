@@ -4,8 +4,27 @@ require title.vfx
 \ require savegame.vfx
 \ require %idir%\..\supershow\ui\ui.vfx
 
+\ Global commands
+: *ship
+    ship% one [[ me actor# turret% one 's n1 ! ]] ;
+
+: *player ( - )
+    *ship ;
+
+: (reset) ( - )
+    0 next# ! actives> you me = ?exit unload ;
+
+: reset ( - )
+    (reset)
+    50 gameh 2 / at *player
+    100 energy ! ;
+
+: retry ( - )
+    blank blank blank
+    1.0 to starfield-speed
+    s" run test1" evaluate ;
+
 \ Game
-: backdrop  0 0 at backdrop.png put ;
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
 : render  backdrop .75 .75 scale> starfield hud sprites animate ;
 : think  step ;
