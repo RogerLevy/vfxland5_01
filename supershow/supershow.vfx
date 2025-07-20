@@ -85,7 +85,7 @@ require %idir%\waveplay.vfx
 \ Blank the screen
 \ =============================================================================
 
-: blank show @ ['] noop show ! 10 for frame loop show ! ;
+: blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;
 
 \ =============================================================================
 \ Stage
