@@ -61,6 +61,7 @@ Custom Forth OOP implementation
 - **File extensions**: `.vfx` for VFX Forth source, `.dat` for binary data
 - **Output formatting**: `cr` goes at the beginning of line outputs, not the end
 - **Backup files**: naming convention `original-filename-backup-YYYYMMDD-HHMMSS.ext`
+- When referring to Forth words outside of code, write them in ALL-CAPS to help distinguish them.
 
 ## Communication Requirements
 
