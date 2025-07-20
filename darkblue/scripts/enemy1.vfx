@@ -50,7 +50,7 @@ variable tris-next#  512 tris-next# !
         me shot% is? -exit
         you me rhit? if
             you [[
-                *snd-06* \ *snd-05*
+                0.7 loud *snd-06* \ *snd-05*
                 -1 hp +!
                 hp @ 0 <= if die then
             ]]

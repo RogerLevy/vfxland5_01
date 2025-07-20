@@ -67,6 +67,7 @@ aka flash-ctr n1
         eval" retry" ;
 
 : die ( - )
+    hush
     0 energy !
     62 flash-ctr !
     slowdown-playfield
@@ -97,7 +98,7 @@ ship% :: damage ( n - )
     unload ;
 
 : hit-tri
-    *snd-07*
+    0.6 loud *snd-07*
     1 energy +! unload ;
 
 : hit-enemy

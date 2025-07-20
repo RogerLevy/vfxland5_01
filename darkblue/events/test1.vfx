@@ -26,6 +26,7 @@ enemy1% tweek class
 
 :event
     eval" reset" 
+    0.5 loud *bgm1*
     begin
     *enemy [[ 0.6 come-down ]]    
     timing @ delay

@@ -8,6 +8,7 @@ defer voice? ( smp - f )
 || variable next-smp#  1 next-smp# !
 || 2variable ch 
 || 0 value strm
+|| variable play-gain  1. play-gain !
 
 \ =============================================================================
 \ Wrappers
@@ -15,7 +16,8 @@ defer voice? ( smp - f )
 
 || : play-sample ( allegro-sample - )
     ?dup -exit
-    1e 0e 1e  ALLEGRO_PLAYMODE_ONCE  ch  al_play_sample ;
+    play-gain @ p>f 0e 1e  ALLEGRO_PLAYMODE_ONCE  ch  al_play_sample
+    1.0 play-gain ! ;
     
 || : stop-sample ( ALLEGRO_SAMPLE_ID* - )
     dup  al_stop_sample  2 cells erase ;
@@ -138,11 +140,14 @@ defer voice? ( smp - f )
     \ Allegro destroys the stream handle on exit
     \ strm ?dup if  al_destroy_audio_stream  0 to strm  then
     locals| lm |
+    strm ?dup if  0 al_set_audio_stream_playing drop  then
     s" bgm\" >datadir f" %s%s"
     >zpad 3 2048 al_load_audio_stream 
         dup 0= if ." Unable to stream audio file." then
         ?dup -exit
-        to strm 
+        to strm
+    strm play-gain @ p>f al_set_audio_stream_gain drop
+    1.0 play-gain !
     strm lm al_set_audio_stream_playmode drop
     strm almixer al_attach_audio_stream_to_mixer drop ;
 
@@ -156,7 +161,10 @@ defer voice? ( smp - f )
 \ Control
 \ =============================================================================
 
-: stream-gain! ( n. - )
+: loud ( n. - )
+    play-gain ! ;
+
+: stream-gain ( n. - )
     p>f strm al_set_audio_stream_gain drop ;
 
 || : stop-sounds ( - )
@@ -173,6 +181,12 @@ defer voice? ( smp - f )
 
 : playing? ( smp - f )
     sample[] cell+ dup 2@ or if sample-playing? else drop 0 then ;
+
+: seek ( f:secs - )
+    strm al_seek_audio_stream_secs drop ;
+
+: playhead ( - f:secs )
+    strm al_get_audio_stream_position_secs ;
 
 \ =============================================================================
 \ Kickoff
