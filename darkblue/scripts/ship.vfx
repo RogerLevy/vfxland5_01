@@ -13,7 +13,7 @@ variable paralysis                \ paralyzes player when >0
 5 tweek sbp            \ screen bounce paralysis length
 .3 tweek spd           \ normal movement speed
 0.93 tweek ine         \ inertia
-.03 tweek dec           \ deceleration
+\ .03 tweek dec           \ deceleration
 
 aka flash-ctr n1 
 

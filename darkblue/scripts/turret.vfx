@@ -1,10 +1,20 @@
+\ Charging system:
+\ - 5-level charge system (0-100 charge points) with escalating costs and power
+\ - Charge delay prevents accidental charging - must hold key 8+ frames before charging begins
+\ - Resource protection - charging caps automatically to preserve 10+ energy, prevents player suicide
+\ - Immediate pea shots - initial key press fires weak shot, holding continues to charge
+\ - Cancel-on-redirect - pressing new direction key cancels current charge and fires pea shot
+\ - Level progression feedback - displays current charge level and caps with "CHARGING CAPPED!!!" message
+\ - Dual firing modes - pea shooter (1 energy) vs charged shots (2-30 energy based on level)
+
 require scripts\shot.vfx
 
 actor-class turret%
-var n3
 var shooting
 
 turret.png 32 32 tileset turret.ts
+
+aka aim n3
 
 : ang>bmp ( ts n. - n )
     360. umod dup >r
@@ -13,47 +23,157 @@ turret.png 32 32 tileset turret.ts
 : owner n1 @ actor ;
 : flicker  gamelife @ 1 and if drop 0 then ;
 
-: shoot ( - )
+variable charging
+variable charge
+variable level
+variable level-ctr
+variable charge-key
+
+8 tweek charge-delay
+
+2 cells array: dir-buttons
+    \ key , angle ,
+    <l> , 0. ,
+    <.> , 45. ,
+    <,> , 90. ,
+    <k> , 90. ,
+    <m> , 135. ,
+    <n> , 135. ,
+    <j> , 180. ,
+    <u> , 225. ,
+    <i> , 270. ,
+    <o> , 315. ,    
+array;
+
+: dir-key@ ( n - n ) dir-buttons [] @ ;
+: dir-ang@ ( n - ang. ) dir-buttons [] cell+ @ ;
+
+2 cells array: charge-levels
+    \ cost , power ,
+    0   , 2 ,   \ medium projectile, damages one enemy
+    10  , 5 ,   \ large projectile, damages one enemy
+    25  , 10 ,  \ moving laser projectile, damages multiple enemies as its travels
+    50  , 20 ,  \ thin laser cannon, damages multiple enemies instantly
+    100 , 30 ,  \ wide laser cannon, damages multiple enemies instantly
+array;
+
+: >cost  charge-levels [] @ ;
+: >power  charge-levels [] cell+ @ ;
+: @charge  charge @ ;
+
+: @level ( - charge-level )
+    0 5 for
+        @charge
+        i >cost charge-delay @ + >= if
+            drop i
+        then
+    loop ;
+
+: .charge ( - )
+    charging @ -exit
+    @charge . ;
+    
+: .level ( - )
+    cr level @ . ;
+
+: end-charge ( - )   
+    0 charge ! 0 level-ctr ! 0 level ! charging off ;
+
+: pea ( - )
     *shoot*
-    n3 @ 
+    aim @ 
         owner 0 0 from shot% one [[
             ( n2 ) 8. vec vx 2!
             \ owner 's vx 2@ 0.5 dup 2p* vx 2+!
             -1 energy +!
         ]] ;
 
-: button?  automatic @ if held? else pressed? then ;
+: fire ( level - )
+    dup >power negate energy +!
+    cr ." FIRE!!! " . end-charge pea ;
+
+: ?+level ( - )
+    @charge charge-delay @ < ?exit
+    @level level @ > if
+        1 level +! 15 level-ctr !
+        .level        
+    then ;
+
+: can-afford? ( n - f )
+    >cost energy @ swap - 10 >= ;
+
+: +charge ( - )
+    charge @ 1 + 100 charge-delay @ + min charge !
+    @level can-afford? not if
+        charge @ 1 - 0 max charge !
+        cr ." CHARGING CAPPED!!!"
+    then ;
+
+: cancel-charge ( - )
+    charging @ -exit
+    end-charge ;
+
+: ?charge ( - )
+    automatic @ ?exit
+    dir-buttons #items for
+        i dir-key@ pressed? if 
+            charging on
+            i dir-key@ charge-key !
+        then
+    loop 
+    charging @ if
+        charge-key @ letgo? if
+            @charge charge-delay @ < if
+                end-charge
+                exit
+            then
+            level @ fire
+        else
+            level-ctr @ 0= if
+                +charge ?+level
+            else
+                -1 level-ctr +!
+            then
+        then
+        .charge
+    then ;
+
+: ?aim-auto ( - )
+    dir-buttons #items for
+        i dir-key@ held? if
+            i dir-ang@ aim ! shooting on
+        then
+    loop ;
+
+: ?aim-normal ( - )
+    dir-buttons #items for
+        i dir-key@ pressed? if 
+            cancel-charge
+            i dir-ang@ aim ! shooting on
+        then
+    loop ;
 
 : ?aim ( - )
-    shooting off 
-    <l> button? if 0. n3 ! shooting on then
-    <.> button? if 45. n3 ! shooting on then 
-    <,> button? <k> button? or if 90. n3 ! shooting on then 
-    <m> button? <n> button? or if 135. n3 ! shooting on then
-    <j> button? if 180. n3 ! shooting on then
-    <u> button? if 225. n3 ! shooting on then
-    <i> button? if 270. n3 ! shooting on then
-    <o> button? if 315. n3 ! shooting on then ;
+    automatic @ if ?aim-auto else ?aim-normal then ;
 
-: ?fire ( - )
+: ?pea ( - )
     automatic @ if
         shooting @ if
             time @ .12 >= if 0 time ! then
-            time @ 0= if
-                shoot
-            then
+            time @ 0= if pea then
         then
     else
         shooting @ if
-            shoot
+            pea
+            shooting off
         then
     then ;
     
 turret% :: init
     turret.ts 0 tile bmp !
     act>
-        ?aim ?fire
-        n2 @ p>f n3 @ p>f 0.2e alerp f>p n2 !
+        ?aim ?charge ?pea 
+        n2 @ p>f aim @ p>f 0.2e alerp f>p n2 !
         n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
         n2 @ 360. umod 180. >= if 1. 1. x 2+! then
         turret.ts n2 @ ang>bmp flicker bmp ! ;

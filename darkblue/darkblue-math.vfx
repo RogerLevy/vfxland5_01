@@ -1,6 +1,6 @@
 \ words by Claude AI
 
-validations dup @ swap off
+validations dup @ swap off  \ disable validations for speed
 
 var r \ radius
 var m \ mass
@@ -218,5 +218,79 @@ var m \ mass
     
     fx f>p fy f>p
 ;
+
+: walk-line ( x y xt - ) ( x y step# - f )
+    {: endx endy xt | dx dy absdx absdy sx sy err x y lastx lasty steps :}
+    endx to dx  endy to dy
+    dx abs to absdx  dy abs to absdy
+    dx 0< if -1 else 1 then to sx
+    dy 0< if -1 else 1 then to sy
+    absdx absdy - to err
+    0 to x  0 to y
+    -9999 to lastx  -9999 to lasty  \ impossible starting position
+    0 to steps
+
+    begin
+        x lastx <> y lasty <> or if  \ new position?
+            x to lastx  y to lasty
+            x y steps xt execute 0= if exit then
+            steps 1+ to steps
+        then
+        x endx = y endy = and if exit then  \ reached target
+        err 2* absdy > if
+            err absdy - to err
+            x sx + to x
+        then
+        err 2* absdx < if
+            err absdx + to err
+            y sy + to y
+        then
+    again ;
+
+: laser-hit? ( enemy-obj laser-x. laser-y. laser-angle. laser-width. laser-length. - f )
+    {: enemy lx ly angle width length | 
+       f: ex f: ey f: er f: lx1 f: ly1 f: lx2 f: ly2
+       f: dx f: dy f: t f: closest-x f: closest-y f: distance f: half-width :}
+    
+    \ Check if enemy is free
+    enemy free? if 0 exit then
+    
+    \ Get enemy properties
+    enemy 's x 2@ 2p>f to ey to ex
+    enemy 's r @ p>f to er
+    
+    \ Convert laser params to float for calculations  
+    lx p>f to lx1  ly p>f to ly1
+    width p>f 2e f/ to half-width
+    
+    \ Calculate laser endpoints using angle and length
+    angle length uvec 2p>f to dy to dx
+    lx1 dx f+ to lx2
+    ly1 dy f+ to ly2
+    
+    \ Vector from start to end of laser
+    lx2 lx1 f- to dx
+    ly2 ly1 f- to dy
+    
+    \ Find closest point on line segment to enemy
+    \ t = dot product of (enemy - start) and (end - start) / length squared
+    ex lx1 f- dx f*  ey ly1 f- dy f*  f+
+    dx dx f* dy dy f* f+  f/  to t
+    
+    \ Clamp t to [0,1] for line segment
+    t 0e f< if 0e to t then
+    t 1e f> if 1e to t then
+    
+    \ Calculate closest point
+    lx1 dx t f* f+ to closest-x
+    ly1 dy t f* f+ to closest-y
+    
+    \ Distance from enemy to closest point on laser
+    ex closest-x f- fdup f*
+    ey closest-y f- fdup f*
+    f+ fsqrt to distance
+    
+    \ Check collision
+    distance half-width er f+ f< ;
 
 validations !
