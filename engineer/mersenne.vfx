@@ -123,6 +123,7 @@ public
     mersenne tinymt32-generate-uint32 ;
 
 : rnd ( n - n )
+    dup -exit
     rnd32 ?abs swap mod ;
 
 : seed! ( n - )

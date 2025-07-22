@@ -164,3 +164,7 @@ Location: ../01_backups
 - (Windows path) C:\Users\roger\Dev\VfxForth\Kernel\Common
 - (Windows path) C:\Users\roger\Dev\VfxForth\VfxBase
 - doc\claude\vfxman.txt
+
+## User Preferences
+
+- The user does not like "screen shake". Do not suggest it as a game enhancement or interpret anything referred to by the term "shake" or "shaking" as "screen shake" unless it is explicitly describe as such.

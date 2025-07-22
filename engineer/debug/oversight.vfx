@@ -239,7 +239,6 @@ cstring wordname$
     \ 1 #violations +!
     caller-rp @ ip>nfa caller-name !
     res 0= if
-        cr
         val 's validator @ >name count
         caller-name @ count f" %s >> %s failed - throwing" log-error
         cr ." (Oversight) Throw:"
@@ -248,7 +247,6 @@ cstring wordname$
         -999 throw
     then
     res 1 = if
-        cr 
         val 's validator @ >name count 
         caller-name @ count f" %s >> %s failed - warning" log-warning
         .s ." <-- Note this was the stack AFTER the validation ran"

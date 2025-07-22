@@ -11,16 +11,16 @@ require scripts\shot.vfx
 
 actor-class turret%
 var shooting
+var shaking     \ 0 ~ 1.0
+var aim
 
 turret.png 32 32 tileset turret.ts
-
-aka aim n3
 
 : ang>bmp ( ts n. - n )
     360. umod dup >r
     5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
 
-: owner n1 @ actor ;
+: owner  n1 @ actor ;
 : flicker  gamelife @ 1 and if drop 0 then ;
 
 variable charging
@@ -29,7 +29,7 @@ variable level
 variable level-ctr
 variable charge-key
 
-8 tweek charge-delay
+20 tweek charge-delay
 
 2 cells array: dir-buttons
     \ key , angle ,
@@ -48,55 +48,61 @@ array;
 : dir-key@ ( n - n ) dir-buttons [] @ ;
 : dir-ang@ ( n - ang. ) dir-buttons [] cell+ @ ;
 
-2 cells array: charge-levels
-    \ cost , power ,
-    0   , 2 ,   \ medium projectile, damages one enemy
-    10  , 5 ,   \ large projectile, damages one enemy
-    25  , 10 ,  \ moving laser projectile, damages multiple enemies as its travels
-    50  , 20 ,  \ thin laser cannon, damages multiple enemies instantly
-    100 , 30 ,  \ wide laser cannon, damages multiple enemies instantly
+: shoot ( power speed. class - )
+    aim @ 
+    owner 0 0 from swap ( aim. class ) one as>
+        swap ( aim. speed. ) vec vx 2!
+        pwr !
+        act> ?cull ;
+
+: pea ( power - ) *shoot* 8. shot% shoot ;
+: fire-medium ( power - ) *shoot* 8. missile1% shoot ;
+: fire-large ( power - ) *shoot* 8. missile2% shoot ;
+
+3 cells array: charge-levels
+    \ cost , power , xt , 
+    20   , 5 ,  ' fire-medium , \ medium projectile, damages one enemy
+    40  , 10 ,  ' fire-large , \ large projectile, damages one enemy
+    \ 25  , 10 , ' pea , \ moving laser projectile, damages multiple enemies as its travels
+    60  , 20 , ' fire-large , \ thin laser cannon, damages multiple enemies instantly
+    100 , 40 , ' fire-large ,  \ wide laser cannon, damages multiple enemies instantly
 array;
 
 : >cost  charge-levels [] @ ;
 : >power  charge-levels [] cell+ @ ;
+: >fire-xt  charge-levels [] cell+ cell+ @ ;
 : @charge  charge @ ;
 
 : @level ( - charge-level )
-    0 5 for
-        @charge
-        i >cost charge-delay @ + >= if
+    0
+    charge-levels #items for
+        @charge charge-delay @ - 
+        i >cost >= if
             drop i
         then
     loop ;
 
 : .charge ( - )
-    charging @ -exit
     @charge . ;
     
 : .level ( - )
     cr level @ . ;
 
-: end-charge ( - )   
-    0 charge ! 0 level-ctr ! 0 level ! charging off ;
-
-: pea ( - )
-    *shoot*
-    aim @ 
-        owner 0 0 from shot% one [[
-            ( n2 ) 8. vec vx 2!
-            \ owner 's vx 2@ 0.5 dup 2p* vx 2+!
-            -1 energy +!
-        ]] ;
+: end-charge ( - )
+    cr ." End charge"
+    0 charge ! 0 level-ctr ! charging off ;
 
 : fire ( level - )
-    dup >power negate energy +!
-    cr ." FIRE!!! " . end-charge pea ;
+    {: lvl :}
+    lvl >power negate energy +!
+    lvl >power lvl >fire-xt execute
+    end-charge ;
 
 : ?+level ( - )
     @charge charge-delay @ < ?exit
     @level level @ > if
-        1 level +! 15 level-ctr !
-        .level        
+        1 level +! 30 level-ctr !
+        .level
     then ;
 
 : can-afford? ( n - f )
@@ -106,7 +112,7 @@ array;
     charge @ 1 + 100 charge-delay @ + min charge !
     @level can-afford? not if
         charge @ 1 - 0 max charge !
-        cr ." CHARGING CAPPED!!!"
+        cr ." CHARGING CAPPED"
     then ;
 
 : cancel-charge ( - )
@@ -118,10 +124,14 @@ array;
     dir-buttons #items for
         i dir-key@ pressed? if 
             charging on
+            -1 level ! 
             i dir-key@ charge-key !
         then
     loop 
     charging @ if
+        charge @ charge-delay @ = if
+            cr ." Start charge"
+        then
         charge-key @ letgo? if
             @charge charge-delay @ < if
                 end-charge
@@ -135,8 +145,8 @@ array;
                 -1 level-ctr +!
             then
         then
-        .charge
-    then ;
+    then
+    @charge charge-delay @ - 0 max 100 p/ shaking ! ;
 
 : ?aim-auto ( - )
     dir-buttons #items for
@@ -157,24 +167,37 @@ array;
     automatic @ if ?aim-auto else ?aim-normal then ;
 
 : ?pea ( - )
+    energy @ 1 = ?exit  \ TODO: add "jammed gun" animation/sound
     automatic @ if
         shooting @ if
             time @ .12 >= if 0 time ! then
-            time @ 0= if pea then
+            time @ 0= if 1 pea then
         then
     else
         shooting @ if
-            pea
+            1 pea
             shooting off
         then
     then ;
     
+: ?shake ( - )
+    shaking @ dup 3. 3. 2p* 2rnd 2. 2. 2- x 2+! ;
+
+: !ang ( - )
+    n2 @ p>f aim @ p>f 0.2e alerp f>p n2 ! ;
+
+: !pos ( - )
+    n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
+    n2 @ 360. umod 180. >= if 1. 1. x 2+! then
+    ?shake
+    x 2@ 2i x 2! ;
+
+: !bmp ( - )
+    turret.ts n2 @ ang>bmp flicker bmp ! ;
+
 turret% :: init
     turret.ts 0 tile bmp !
     act>
-        ?aim ?charge ?pea 
-        n2 @ p>f aim @ p>f 0.2e alerp f>p n2 !
-        n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
-        n2 @ 360. umod 180. >= if 1. 1. x 2+! then
-        turret.ts n2 @ ang>bmp flicker bmp ! ;
+        ?aim ?charge ?pea
+        !ang !pos !bmp ;
 

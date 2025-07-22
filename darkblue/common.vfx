@@ -2,6 +2,7 @@
 var hp
 var r \ radius 
 var m \ mass
+var pwr
 
 \ Messages
 m: damage ( n - ) drop ;
