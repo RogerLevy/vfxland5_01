@@ -13,6 +13,7 @@ actor-class turret%
 var shooting
 var shaking     \ 0 ~ 1.0
 var aim
+var atk
 
 turret.png 32 32 tileset turret.ts
 
@@ -52,7 +53,7 @@ array;
     aim @ 
     owner 0 0 from swap ( aim. class ) one as>
         swap ( aim. speed. ) vec vx 2!
-        pwr !
+        atk !
         act> ?cull ;
 
 : pea ( power - ) *shoot* 8. shot% shoot ;
@@ -89,7 +90,7 @@ array;
     cr level @ . ;
 
 : end-charge ( - )
-    cr ." End charge"
+    \ cr ." End charge"
     0 charge ! 0 level-ctr ! charging off ;
 
 : fire ( level - )
@@ -129,9 +130,9 @@ array;
         then
     loop 
     charging @ if
-        charge @ charge-delay @ = if
-            cr ." Start charge"
-        then
+        \ charge @ charge-delay @ = if
+        \     cr ." Start charge"
+        \ then
         charge-key @ letgo? if
             @charge charge-delay @ < if
                 end-charge

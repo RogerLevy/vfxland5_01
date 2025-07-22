@@ -1,3 +1,4 @@
+require enemies.vfx
 require title.vfx
 \ require death.vfx
 \ require subscreen.vfx

@@ -1,3 +1,187 @@
-\ id            hp      atk         gold        spd         path
-for: enemy1     hp: 2   atk: 5      gold: 10    spd: 1.0    path: path1 
-for: enemy2     hp: 5   atk: 10     gold: 1000  spd: 2.0    path: path2
+\ ==============================================================================
+\ Enemy Factory System - Living Factory Pattern
+\ ==============================================================================
+\
+\ SUMMARY: Dynamic enemy class generation with hot-reload capability. Combines
+\ Factory, Prototype, and Strategy patterns for rapid game development iteration.
+\
+\ USAGE:
+\   enemy-class enemy1%           \ Create enemy class derived from ENEMIES%
+\   5 i/hp !                      \ Override default HP
+\   enemy1% one                   \ Instantiate enemy
+\
+\ COMPILE-TIME BEHAVIOR:
+\ - enemy-class creates new actor class derived from ENEMIES%
+\ - Copies all i/values (initial values) from base template
+\ - Auto-detects sprite: enemy1% → enemy1.png if available  
+\ - Registers class in dictionary for hot-reload tracking
+\
+\ RUNTIME BEHAVIOR:
+\ - Standard two-phase initialization: (init) then post-init
+\ - (init) applies all i/values to instance variables
+\ - post-init calls _post-init hook for custom behavior
+\ - UPDATE ENEMIES reloads this file and re-initializes all active enemies
+\
+\ SPECIAL FEATURES:
+\ - Live factory modification: i/values can be changed and applied to existing enemies
+\ - Hybrid compile/runtime: classes can be modified at runtime, but maintain object identity
+\ - Data-driven configuration: stats in table, behavior in _post-init hooks
+\ - Hot-reload integration: automatic enemy updates during development
+\ - Controlled inheritance: all enemies derive from single ENEMIES% template
+\
+\ ==============================================================================
+
+require scripts\tri.vfx
+require scripts\orb.vfx
+require scripts\shot.vfx
+
+static is-enemy
+static i/bmp
+static i/hp
+static i/rad
+static i/mass
+static i/atk
+static i/bounty
+
+var hp
+var r
+var m
+var atk
+var bounty
+
+m: _post-init ( - ) ;
+: post-init  me _post-init ;
+
+\ : is-enemy?  [[ is-enemy @ ]] ;
+
+actor-class enemies%
+    is-enemy on
+    enemy1.png i/bmp !
+    1 i/hp !
+    12. i/rad !
+    5. i/mass !
+    30 i/atk !
+    20 i/bounty !
+    
+\ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
+: tri-speed 0.2 rnd 0.05 + ;
+: bias  me pos@ dist 160 / ;
+: towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
+: p/c  4 5 chance if player-pos else center-pos then ;
+
+variable tris-next#  512 tris-next# !
+
+: burst ( n - )
+    \ *snd-09*
+    next# @ >r
+    512 next# !
+    for
+        tri% one [[
+            p/c towards vx 2!
+            360. rnd 5. rnd vec vx 2+!
+        ]]
+    loop
+    \ next# @ tris-next# !
+    r> next# ! ;
+
+: die
+    me 0 0 from bounty @ burst
+    unload 
+    ; \ regen ;
+
+\ variable orbs-next#  4096 orbs-next# !
+
+: ?shoot
+    gamelife @ 80 mod ?exit
+    next# @ >r
+    4096 512 + next# !
+    me 0 0 from orb% one [[
+        player pos@ me pos@ 2- ang 1. vec vx 2!
+    ]]
+    \ next# @ orbs-next# !
+    r> next# ! ;
+    
+: ?bullets
+    actives>
+        me shot% is?
+        me missile1% is? or
+        me missile2% is? or -exit
+        you me rhit? if
+            atk @ 
+            you [[
+                0.7 loud *snd-06* \ *snd-05*
+                ( power ) negate hp +!
+                hp @ 0 <= if die then
+            ]]
+            unload
+        then ;
+
+: enemy-physics
+    ?bullets vx 2@ x 2+!
+    ?cull ;
+
+: (init)
+    i/bmp @ bmp !
+    i/hp @ hp !
+    i/rad @ r !
+    i/mass @ m !
+    i/atk @ atk !
+    i/bounty @ bounty !
+    ['] enemy-physics phys !
+    act> ?shoot ;
+
+enemies% :: init
+    (init) post-init ;
+
+: derive ( src-class dest-class - )
+    /class move ;
+
+: ?/bmp ( class - )
+    {: c :} 
+    c body> >name count -% f" %s.png" >pad find if
+        execute c 's i/bmp !
+    else drop then ;
+
+dictionary enemy-classes
+
+: register-enemy-class ( class - )
+    dup body> >name enemy-classes lookup ! ;
+
+: (include-enemy-class) ( -1 key$ a:val - -1 )
+    rot >r drop count included r> ;
+
+: update-enemies ( - )
+    ['] (include-enemy-class) enemy-classes walk-dictionary
+    actives> is-enemy @ -exit me init ;
+
+\ Enemy table definition DSL
+: val  bl parse evaluate ;
+: str  bl parse ;
+: for:  str f" enemy-class %s%%" evaluate  enemies~ ;
+: hp:  val i/hp ! ;
+: atk: val i/atk ! ;
+: gold: val i/bounty ! ;
+: mass: val i/mass ! ;
+: rad: val i/rad ! ;
+    
+public
+
+: enemy-class ( - <name> )
+    {: | c already? :}
+    bl preparse ?hide-autoclass  \ autoclasses don't count
+    preword find nip to already?
+    (actor-class) to c
+    already? not if
+        enemies% c derive
+        c ?/bmp
+        c register-enemy-class
+    then ;
+
+\ id            hp          atk         gold        spd         path
+for: enemy1     hp: 1       atk: 5      gold: 100   \ spd: 1.0    path: path1 
+for: enemy2     hp: 5       atk: 10     gold: 1000  \ spd: 2.0    path: path2
+
+
+honing @ [if]
+    update-enemies
+[then]
