@@ -1,1 +1,1 @@
-Come up with a good commit message for the staged changes.  **IMPORTANT:** Re-read the staged changes.
+Come up with a good commit message for the staged changes.  **IMPORTANT:** Re-read the staged changes, and DO NOT COMMIT.
