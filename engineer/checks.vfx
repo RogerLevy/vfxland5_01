@@ -20,7 +20,6 @@ crucial test: check-object ( a - a n:res )
 before [[ check-object
 wrap-word [[
 
-
 \ ------------------------------------------------------------------------------
 \ NOTE: This will NOT work!!! it wraps DO-MESSAGE not the message itself!!!
 \

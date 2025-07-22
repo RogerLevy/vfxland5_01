@@ -590,6 +590,7 @@ bye-chain link 0 ,
     \ Development startup
     path home-path$ place
     +xrefs
+    256 1024 * xref-kb
     s" xref.xrf" fileexist? if load-xref then
     rs setup cartridge ;
 

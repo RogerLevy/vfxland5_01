@@ -250,6 +250,7 @@ cstring wordname$
         val 's validator @ >name count 
         caller-name @ count f" %s >> %s failed - warning" log-warning
         .s ." <-- Note this was the stack AFTER the validation ran"
+        caller-rp (.rs)
     then ;
     
 || : validated-word ( wrapper -- )
@@ -611,7 +612,7 @@ public
         c ,                             \ Store contract reference
         immediate? ,                    \ Immediate flag
     else
-        cr bl parse f" Contract for `%s` not found, wrapping skipped." log-warning
+        bl parse f" Contract for `%s` not found, wrapping skipped." log-warning
     then ;
 
 3 cells constant s/wrapper

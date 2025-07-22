@@ -51,7 +51,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
     push-order
     depth >r execute
     r> depth 2 + <> if
-        -1 abort" Stack depth changed in included file!"
+        -1 abort" Stack depth changed in file!"
     then
     pop-order ;
 : include getPathSpec ['] included preserve-order ;

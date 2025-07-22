@@ -20,6 +20,7 @@ cstring update-name$
     
 : update ( - <class> )
     \ Live update actor class
+    \ Activates honing mode with custom command (see HONE-UPDATE)
     {: | class :}
     bl parse -% 2dup f" %s%%" >pad find if
         >body to class
@@ -27,8 +28,12 @@ cstring update-name$
     else
         -1 abort" Class not found!"
     then
-    ['] hone-update honing ! 
-    update-name$ count f" scripts\%s.vfx" >try
+    ['] hone-update honing !
+    update-name$ count f" %s.vfx" file-exists? if
+        update-name$ count f" %s.vfx" >try
+    else
+        update-name$ count f" scripts\%s.vfx" >try
+    then
     class init-by-class
     update-name$ count f" %s~" $private ;
 

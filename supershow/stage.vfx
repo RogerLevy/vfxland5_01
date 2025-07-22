@@ -351,7 +351,7 @@ c" timer%" create-class
     
 static autoclass
     
-|| : ?hide-autoclass ( a len - )
+: ?hide-autoclass ( a len - )
     >pad find if
         dup execute 's autoclass @ if
             \ Hide existing autoclass if any to fix LOCATE,
@@ -361,7 +361,10 @@ static autoclass
         else drop then 
     else drop then ;
 
-: actor-class ( - <name> )
+: (actor-class) ( - <name> class )
     bl preparse ?hide-autoclass
-    script-class
+    script-class ;
+    
+: actor-class ( - <name> )
+    (actor-class)
     ['] actor-oexec-error-handler swap 's oexec-error-handler ! ;
