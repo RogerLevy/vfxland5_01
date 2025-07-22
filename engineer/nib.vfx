@@ -144,6 +144,9 @@ c" object%" create-class
 m: init ( - ) ;
 m: destruct ( - ) ;
 
+: find-class ( a len - class | object% )
+    >pad find if execute else drop object% then ;
+
 \ Initialization
 : init-nib ( - )
     [ /obj ] literal to /obj

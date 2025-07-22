@@ -72,9 +72,11 @@ public
     then ;
     
 : require-event ( - <event> )
+    push-order
     bl preparse ?event-exists
     bl preparse $private 
-    f" events\%s.vfx" required ;
+    f" events\%s.vfx" required
+    pop-order ;
 
 || cstring event$
 \ || 2variable last-event-at
@@ -84,9 +86,9 @@ public
     event$ count f" run %s" evaluate ;
 
 : run ( - <event> )
-    \ development tool; clear the stage, load and execute an event
-    \ turns on honing, so everything it depends on is reloaded and f5 runs it
-    \ again via honing as an xt
+    \ Development tool; clear the stage, load and execute an event.
+    \ Turns on honing, so everything it depends on is reloaded and f5 runs it
+    \ again via honing as an xt.
     \ TODO: support saving the data stack in TRY for TRY-AGAIN to recreate in
     \ honing mode; or just put that mechanism in RUN and HONE-EVENT.
     {: | a len :}
@@ -104,9 +106,7 @@ public
     then ;
 
 : scene ( - )
-    \ Clear stage of all events, skipping ME.
-
-    \ me to director 
+    \ Clear the stage of other events, skipping ME.
     0 0 at
     actives> me you = ?exit me event% is? -exit unload ;
 
@@ -114,6 +114,7 @@ public
     does> @ event% one [[ start-event ]] ;
 
 : :event ( - ) ( ... - )
+    \ Create executable event named after the file being included.
     public
     currsourcename -path -ext >pad $create
     0 ,

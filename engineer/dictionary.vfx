@@ -21,12 +21,12 @@
 
 : walk-dictionary ( xt dict - ) ( -1 key$ a:val - f )
     \ second stack effect belongs to the XT.
-    xt >r  to xt
+    xt >r  swap to xt
     ['] (walk) swap traverse-wordlist
     r> to xt ;
 
 : walk> ( dict - ) ( -1 $ a - f )
-    r>  walk-dictionary ;
+    r> swap walk-dictionary ;
 
 : dict. ( dict - )
     walk> cr swap count type ."  = " ? ;

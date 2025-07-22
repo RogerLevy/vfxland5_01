@@ -1,0 +1,5 @@
+actor-class missile1%
+    is-player-projectile on
+    
+missile1% :: init
+    missile1.png bmp ! ;

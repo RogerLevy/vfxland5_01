@@ -561,7 +561,13 @@ bye-chain link 0 ,
 
 || : cleanup ( - )
     bye-chain-root bye-chain !
-    destroy-bitmaps ;
+    destroy-bitmaps
+    ['] desktop 'show !
+    ['] noop is boot
+\    ['] noop is .apperr
+    ['] noop is onSwitchIn
+    honing off
+    retry-filepath$ 256 erase ;
 
 ' cleanup bye-chain-root cell+ !
 
@@ -571,10 +577,6 @@ bye-chain link 0 ,
 : empty ( - )
     rs
     cleanup
-    ['] desktop 'show !
-    ['] noop is boot
-\    ['] noop is .apperr
-    ['] noop is onSwitchIn
     init-nib
     clear-funcs
     only forth definitions
@@ -612,7 +614,6 @@ bye-chain link 0 ,
 \ =============================================================================
 
 : reload ( - )
-    \ Reload game and 
     cartridge
     repl on ;
 

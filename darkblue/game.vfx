@@ -1,12 +1,12 @@
-require enemies.vfx
 require title.vfx
+require events\test1.vfx
 \ require death.vfx
 \ require subscreen.vfx
 \ require savegame.vfx
 \ require %idir%\..\supershow\ui\ui.vfx
 
 \ Global commands
-: *ship
+: *ship ( - )
     ship% one [[ me actor# turret% one 's n1 ! ]] ;
 
 : *player ( - )
@@ -23,15 +23,15 @@ require title.vfx
 : retry ( - )
     blank blank blank
     1.0 to starfield-speed
-    eval" run test1" ;
+    test1 ;
 
 \ Game
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
 : render  backdrop .75 .75 scale> starfield hud sprites animate ;
 : think  step ;
 : game  show> think render ;
-: boot-darkblue  init-supershow title ;
 
 \ Integrate
+: boot-darkblue  init-supershow title ;
 ' boot-darkblue is boot
 init-supershow 

@@ -48,6 +48,5 @@ aka <start> <enter>
         '"' parse >syspad evaluate
     then ; immediate
 
-
 \ Music
 bgm *bgm1* softice.ogg

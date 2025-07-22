@@ -31,27 +31,37 @@
 \
 \ ==============================================================================
 
-require scripts\tri.vfx
-require scripts\orb.vfx
-require scripts\shot.vfx
+honing @ not [if]
+    \ Stuff that should only be defined once.
 
-static is-enemy
-static i/bmp
-static i/hp
-static i/rad
-static i/mass
-static i/atk
-static i/bounty
+    static is-enemy
+    static i/bmp
+    static i/hp
+    static i/rad
+    static i/mass
+    static i/atk
+    static i/bounty
+    
+    static is-player-projectile
+    
+    m: _post-init ( - ) ;
+    m: _burst ( n - ) drop ;
 
+    dictionary enemy-classes
+
+    variable tris-next#  512 tris-next# !
+    
+[then]
+   
 var hp
 var r
 var m
 var atk
 var bounty
 
-m: _post-init ( - ) ;
 : post-init  me _post-init ;
-
+: burst  me _burst ;
+    
 \ : is-enemy?  [[ is-enemy @ ]] ;
 
 actor-class enemies%
@@ -69,14 +79,14 @@ actor-class enemies%
 : towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
 : p/c  4 5 chance if player-pos else center-pos then ;
 
-variable tris-next#  512 tris-next# !
-
-: burst ( n - )
+enemies% :: _burst ( n - )
+    {: | c :}
+    s" tri%" find-class to c
     \ *snd-09*
     next# @ >r
     512 next# !
     for
-        tri% one [[
+        c one [[
             p/c towards vx 2!
             360. rnd 5. rnd vec vx 2+!
         ]]
@@ -95,7 +105,7 @@ variable tris-next#  512 tris-next# !
     gamelife @ 80 mod ?exit
     next# @ >r
     4096 512 + next# !
-    me 0 0 from orb% one [[
+    me 0 0 from s" orb%" find-class one [[
         player pos@ me pos@ 2- ang 1. vec vx 2!
     ]]
     \ next# @ orbs-next# !
@@ -103,9 +113,7 @@ variable tris-next#  512 tris-next# !
     
 : ?bullets
     actives>
-        me shot% is?
-        me missile1% is? or
-        me missile2% is? or -exit
+        is-player-projectile @ -exit
         you me rhit? if
             atk @ 
             you [[
@@ -142,13 +150,12 @@ enemies% :: init
         execute c 's i/bmp !
     else drop then ;
 
-dictionary enemy-classes
-
 : register-enemy-class ( class - )
     dup body> >name enemy-classes lookup ! ;
 
 : (include-enemy-class) ( -1 key$ a:val - -1 )
-    rot >r drop count included r> ;
+    rot >r drop count -% f" scripts\%s.vfx"
+    cr 2dup type ?included r> ;
 
 : update-enemies ( - )
     ['] (include-enemy-class) enemy-classes walk-dictionary
@@ -159,11 +166,11 @@ dictionary enemy-classes
 : str  bl parse ;
 : for:  str f" enemy-class %s%%" evaluate  enemies~ ;
 : hp:  val i/hp ! ;
-: atk: val i/atk ! ;
-: gold: val i/bounty ! ;
-: mass: val i/mass ! ;
-: rad: val i/rad ! ;
-    
+: atk:  val i/atk ! ;
+: gold:  val i/bounty ! ;
+: mass:  val i/mass ! ;
+: rad:  val i/rad ! ;
+
 public
 
 : enemy-class ( - <name> )
@@ -175,12 +182,12 @@ public
         enemies% c derive
         c ?/bmp
         c register-enemy-class
-    then ;
+    then
+    0 c 's _post-init ! ;
 
 \ id            hp          atk         gold        spd         path
-for: enemy1     hp: 1       atk: 5      gold: 100   \ spd: 1.0    path: path1 
-for: enemy2     hp: 5       atk: 10     gold: 1000  \ spd: 2.0    path: path2
-
+for: enemy1     hp: 1       atk: 10     gold: 20   \ spd: 1.0    path: path1 
+for: enemy2     hp: 5       atk: 20     gold: 30   \ spd: 2.0    path: path2
 
 honing @ [if]
     update-enemies

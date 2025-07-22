@@ -1,5 +1,6 @@
 require scripts\orb.vfx
 require scripts\enemy1.vfx
+require scripts\tri.vfx
 
 ship-v1.png 27 27 tileset ship.ts
 
