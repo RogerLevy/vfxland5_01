@@ -25,7 +25,10 @@ enemy1% tweek class
 :event
     eval" reset"
 \    0.5 loud *bgm1* 50e seek
-    begin
+    gamew gameh 0.75 0.5 2p* at
+    s" bigbug%" find-class one [[ ]] 
+
+    begin        
     *enemy [[ 0.6 come-down ]]    
     timing @ delay
     *enemy [[ 0.7 come-up ]]

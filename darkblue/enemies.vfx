@@ -193,6 +193,7 @@ public
 \ id            hp          atk         gold        spd         path
 for: enemy1     hp: 1       atk: 10     gold: 20   \ spd: 1.0    path: path1 
 for: enemy2     hp: 5       atk: 20     gold: 30   \ spd: 2.0    path: path2
+for: bigbug     hp: 100       atk: 100     gold: 400   rad: 50. \ spd: 2.0    path: path2
 
 honing @ [if]
     hot-reload-enemies
