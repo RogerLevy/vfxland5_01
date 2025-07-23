@@ -1,0 +1,26 @@
+actor-class laser%
+
+var a \ angle
+var w \ width
+var l \ length
+
+: create-actor ( class - )
+    create here /actor allot&erase swap >object drop ;
+
+public
+
+laser% create-actor beam
+20 beam 's atk ! 
+
+: *beam ( laser-angle. laser-length. laser-width. - beam% )
+    beam as> w ! l ! a ! at@ 2s>p x 2! halt en on me ;
+
+: laser ( - )
+    beam as>
+        en @ -exit
+        behave physics +time
+        w @ p>f f>ds >r
+        x 2@ 2p>f
+        a @ l @ vec x 2@ 2+ 2p>f
+        1e 1e 1e 1e 
+        r> al_draw_line ;

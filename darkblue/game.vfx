@@ -1,5 +1,6 @@
 require title.vfx
 require events\test1.vfx
+require laser.vfx
 \ require death.vfx
 \ require subscreen.vfx
 \ require savegame.vfx
@@ -7,7 +8,7 @@ require events\test1.vfx
 
 \ Global commands
 : *ship ( - )
-    ship% one [[ me actor# turret% one 's n1 ! ]] ;
+    ship% one [[ me turret% one 's n1 ! ]] ;
 
 : *player ( - )
     *ship ;
@@ -25,9 +26,9 @@ require events\test1.vfx
     1.0 to starfield-speed
     test1 ;
 
-\ Game
+\ Gameplay main loop 
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
-: render  backdrop .75 .75 scale> starfield hud sprites animate ;
+: render  backdrop .75 .75 scale> starfield hud sprites laser animate ;
 : think  step ;
 : game  show> think render ;
 

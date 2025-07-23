@@ -1,4 +1,5 @@
 require event.vfx
 require darkblue-math.vfx
 require starfield.vfx
+require laser.vfx
 require enemies.vfx

@@ -4,6 +4,9 @@ validations dup @ swap off  \ disable validations for speed
 
 var r \ radius
 var m \ mass
+var a \ angle
+var w \ width
+var l \ length
 
 : collision-force ( src-obj dest-obj -- x-force. y-force. )
     {: obj2 obj1 | f: dx f: dy f: distance f: overlap f: force-magnitude
@@ -247,8 +250,8 @@ var m \ mass
         then
     again ;
 
-: laser-hit? ( enemy-obj laser-x. laser-y. laser-angle. laser-width. laser-length. - f )
-    {: enemy lx ly angle width length | 
+: seg-hit? ( enemy-obj laser-x. laser-y. laser-angle. laser-length. laser-width. - f )
+    {: enemy lx ly angle length width | 
        f: ex f: ey f: er f: lx1 f: ly1 f: lx2 f: ly2
        f: dx f: dy f: t f: closest-x f: closest-y f: distance f: half-width :}
     
@@ -264,7 +267,7 @@ var m \ mass
     width p>f 2e f/ to half-width
     
     \ Calculate laser endpoints using angle and length
-    angle length uvec 2p>f to dy to dx
+    angle length vec 2p>f to dy to dx
     lx1 dx f+ to lx2
     ly1 dy f+ to ly2
     
@@ -292,5 +295,9 @@ var m \ mass
     
     \ Check collision
     distance half-width er f+ f< ;
+
+: laser-hit?  ( actor beam - f )
+    dup 's en @ 0= if 2drop 0 exit then
+    [[ x 2@ a @ l @ w @ ]] seg-hit? ;
 
 validations !

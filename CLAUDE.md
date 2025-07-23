@@ -63,6 +63,11 @@ Custom Forth OOP implementation
 - **Backup files**: naming convention `original-filename-backup-YYYYMMDD-HHMMSS.ext`
 - When referring to Forth words outside of code, write them in ALL-CAPS to help distinguish them.
 
+## Error Handling
+- When code doesn't work, first check for simple typos (wrong function names, missing parameters, etc.) before launching into technical analysis
+- If you wrote incorrect code, acknowledge the mistake directly rather than overexplaining why the wrong code is wrong
+- "I wrote X when I meant Y" is often better than detailed technical rationalization
+
 ## Communication Requirements
 
 **Don't ask the user to select from among options you give.**  You can list possible alternatives, but it is overstepping to presume that they are the only possibilities.

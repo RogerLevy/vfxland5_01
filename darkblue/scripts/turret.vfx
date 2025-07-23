@@ -8,14 +8,20 @@
 \ - Dual firing modes - pea shooter (1 energy) vs charged shots (2-30 energy based on level)
 
 require scripts\shot.vfx
+require tween.vfx
+require scripts\ship.vfx
 
 actor-class turret%
 var shooting
 var shaking     \ 0 ~ 1.0
 var aim
 var atk
+var a
 
-aka flash-ctr n1  \ for detecting ship recovery
+aka owner n1 \ ship tracking pointer
+
+
+borrow ship~ flash-ctr \ ship's recovery counter
 
 turret.png 32 32 tileset turret.ts
 
@@ -23,7 +29,6 @@ turret.png 32 32 tileset turret.ts
     360. umod dup >r
     5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
 
-: owner  n1 @ actor ;
 : flicker  gamelife @ 1 and if drop 0 then ;
 
 variable charging
@@ -53,7 +58,7 @@ array;
 
 : shoot ( power speed. class - )
     aim @ 
-    owner 0 0 from swap ( aim. class ) one as>
+    owner @ 0 0 from swap ( aim. class ) one as>
         swap ( aim. speed. ) vec vx 2!
         atk !
         act> ?cull ;
@@ -62,14 +67,59 @@ array;
 : fire-medium ( atk - ) *shoot* 8. missile1% shoot ;
 : fire-large ( atk - ) *shoot* 8. missile2% shoot ;
 
+var a
+: laser-physics
+    owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
+    owner @ 's a @ a ! ;
+
+\ TODO: turns these into dynamic internal vars (since we can't use n1-n4)
+var dest-w 
+var dest-atk 
+
+: fire-thin ( atk - )
+    *shoot*
+    me 0 0 from
+    me
+    a @ 20. 5. *beam as>
+        w @ dest-w ! 30. w !
+        exponential2 ease-out w dest-w @ 0.2 tween
+        owner ! atk !
+        ['] laser-physics phys !
+        act>
+            80. l +!
+            0.2 passed? -exit
+            exponential2 ease-out w 0.0 0.1 tween
+        act>
+            0.1 passed? -exit
+            unload ;
+
+: fire-wide ( atk - )
+    *shoot*
+    me 0 0 from
+    me
+    aim @ 2000. 50. *beam as>
+        owner ! atk !
+        ['] laser-physics phys !
+        w @ dest-w ! 1.0 w !
+        atk @ dest-atk ! 0 atk !
+        exponential2 ease-in w dest-w @ 0.15 tween
+        act>
+            0.15 passed? -exit
+            dest-atk @ atk !
+            exponential2 ease-out w 0.5 0.5 tween
+        act>
+            0.5 passed? -exit
+            unload ;
+
+( ease dir adr n2. len. - )        
 3 cells array: charge-levels
     \ cost , atk , xt ,
     10  , 0 ,   ' drop , 
     20  , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
-    50  , 10 ,  ' fire-large , \ large projectile, damages one enemy
-    \ 25  , 10 , ' pea , \ moving laser projectile, damages multiple enemies as its travels
-    100 , 20 , ' fire-large , \ thin laser cannon, damages multiple enemies instantly
-    150 , 40 , ' fire-large ,  \ wide laser cannon, damages multiple enemies instantly
+    40  , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
+    \ 25  , 10 , ' pea ,          \ moving laser projectile, damages multiple enemies as its travels
+    60 ,  20 , ' fire-thin ,    \ thin laser cannon, damages multiple enemies instantly
+    100 , 40 , ' fire-wide ,    \ wide laser cannon, damages multiple enemies instantly
 array;
 
 charge-levels #items cell array bars
@@ -80,7 +130,7 @@ charge-levels #items cell array bars
     loop ;
 
 : !bars ( - )
-    owner 13 -13 owner 's vx 2@ 2p>s 2+ from
+    owner @ 13 -13 owner @ 's vx 2@ 2p>s 2+ from
     bars #items 1 do
         i level @ <= if
             i bars [] @ [[ at@ 2s>p x 2! ]]
@@ -131,7 +181,7 @@ charge-levels #items cell array bars
     >cost energy @ swap - 10 >= ;
 
 : +charge ( - )
-    charge @ 1 + 150 min charge !
+    charge @ 1 + 100 min charge !
     @level can-afford? not if
         charge @ 1 - 0 max charge !
     then ;
@@ -150,7 +200,7 @@ charge-levels #items cell array bars
         then
     loop 
     charging @ if
-        owner 's flash-ctr @ 0 >= if  \ -1 = not flashing
+        owner @ 's flash-ctr @ 0 >= if  \ -1 = not flashing
             cancel-charge exit
         then
         charge-key @ letgo? if
@@ -206,16 +256,16 @@ charge-levels #items cell array bars
     shaking @ dup 3. 3. 2p* 2rnd 2. 2. 2- x 2+! ;
 
 : !ang ( - )
-    n2 @ p>f aim @ p>f 0.2e alerp f>p n2 ! ;
+    a @ p>f aim @ p>f 0.2e alerp f>p a ! ;
 
 : !pos ( - )
-    n2 @ 32. vec  owner 's x 2@ 2+  owner 's vx 2@ 2+  x 2!
-    n2 @ 360. umod 180. >= if 1. 1. x 2+! then
+    a @ 32. vec  owner @ 's x 2@ 2+  owner @ 's vx 2@ 2+  x 2!
+    a @ 360. umod 180. >= if 1. 1. x 2+! then
     ?shake
     x 2@ 2i x 2! ;
 
 : !bmp ( - )
-    turret.ts n2 @ ang>bmp flicker bmp ! ;
+    turret.ts a @ ang>bmp flicker bmp ! ;
 
 turret% :: init
     turret.ts 0 tile bmp !

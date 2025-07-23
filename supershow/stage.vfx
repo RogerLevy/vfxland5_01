@@ -92,7 +92,8 @@ m: peeked ( - ) ;
 : bench  's benched on ; 
 : ?benched  benched @ if r> drop then ;
 
-: behave beha @ oexec ;
+: behave ( - )
+    beha @ oexec ;
 
 : !sp ( a - )
     \ Restore SP. If debug mode is on, report stack imbalances.
@@ -111,17 +112,23 @@ m: peeked ( - ) ;
 || : (behave) ( - )
     actives> ?benched sp@ >r behave r> !sp ;
 
-|| : (move) ( - )
-    actives> ?benched phys @ oexec ;
+: physics ( - )
+    phys @ oexec ;
 
-: +time ( - )
+|| : (move) ( - )
+    actives> ?benched physics ;
+
+: +gametime ( - )
     gametime usdelta 0 d+ to gametime  1 gamelife +! ;
 
+: +time ( - )
+    ?benched pdelta time +! ;
+    
 || : (+time) ( - )
-    +time actives> ?benched pdelta time +! ;
+    +gametime actives> +time ;
 
 || : (step) ( - )
-    (+time) (behave) (move) ;
+    (behave) (move) (+time) ;
 
 : step ( - )
     ['] (step) catch .throw-catch ;
@@ -336,7 +343,8 @@ c" timer%" create-class
     classname$ find not nip if
         classname$ create-class
     then
-    classname$ count -% f" %s~" $private
+    \ classname$ count -% f" %s~" $private
+    private
     classname$ count evaluate
     dup statics: ;
 

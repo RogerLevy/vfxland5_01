@@ -23,7 +23,7 @@ enemy1% tweek class
     0 speed @ negate vx 2! ;
 
 :event
-    eval" reset" 
+    eval" reset"
 \    0.5 loud *bgm1* 50e seek
     begin
     *enemy [[ 0.6 come-down ]]    

@@ -25,8 +25,8 @@ synonym d! 2!
 : 2p. swap p. p. ; 
 : 2p? 2@ 2p. ;
 : 2i 1i swap 1i swap ;
-: 2p* rot p* >r p* r> ;
-: 2p/ rot swap p/ >r p/ r> ;
+: 2p* ( x. y. x. y. - x. y. ) rot p* >r p* r> ;
+: 2p/ ( x. y. x. y. - x. y. ) rot swap p/ >r p/ r> ;
 
 \ =============================================================================
 \ Range tools

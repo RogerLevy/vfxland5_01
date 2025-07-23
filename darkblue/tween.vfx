@@ -26,6 +26,8 @@ constant EASE-IN-OUT
 
 :noname p* + ;                                           constant LINEAR     
 :noname 1.0 - 10.0 p* 2e p>f f**  f>p p* + ;             constant EXPONENTIAL
+:noname 1.0 - 20.0 p* 2e p>f f**  f>p p* + ;             constant EXPONENTIAL2
+:noname 1.0 - 40.0 p* 2e p>f f**  f>p p* + ;             constant EXPONENTIAL3
 :noname 90.0 p* 90.0 - psin 1.0 + p* + ;                 constant SINUSOID       
 :noname dup p* p* + ;                                    constant QUADRATIC  
 :noname dup p* dup p* p* + ;                             constant CUBIC      

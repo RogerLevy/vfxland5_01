@@ -110,17 +110,22 @@ enemies% :: _burst ( n - )
     ]]
     \ next# @ orbs-next# !
     r> next# ! ;
+
+enemies% :: damage ( n - )
+    ?dup -exit
+    ( atk ) negate hp +!
+    0.7 loud *snd-06* \ *snd-05*
+    hp @ 0 <= if die then ;
     
 : ?bullets
+    me beam laser-hit? if
+        beam 's atk @ me damage
+        exit
+    then
     actives>
         is-player-projectile @ -exit
         you me rhit? if
-            atk @ 
-            you [[
-                0.7 loud *snd-06* \ *snd-05*
-                ( power ) negate hp +!
-                hp @ 0 <= if die then
-            ]]
+            atk @ you damage
             unload
         then ;
 

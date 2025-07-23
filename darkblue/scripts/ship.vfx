@@ -81,6 +81,7 @@ aka flash-ctr n1
         shatter ;
 
 ship% :: damage ( n - )
+    ?dup -exit
     *snd-03*
     dup negate energy +!
     energy @ 0 <= if
