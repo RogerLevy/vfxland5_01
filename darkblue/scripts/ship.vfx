@@ -16,7 +16,7 @@ variable paralysis                \ paralyzes player when >0
 0.93 tweek ine         \ inertia
 \ .03 tweek dec           \ deceleration
 
-aka flash-ctr n1 
+aka flash-ctr n1
 
 : ?flash ( n - n )
     flash-ctr @ 0< ?exit

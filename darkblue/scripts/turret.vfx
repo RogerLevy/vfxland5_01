@@ -15,6 +15,8 @@ var shaking     \ 0 ~ 1.0
 var aim
 var atk
 
+aka flash-ctr n1  \ for detecting ship recovery
+
 turret.png 32 32 tileset turret.ts
 
 : ang>bmp ( ts n. - n )
@@ -25,7 +27,7 @@ turret.png 32 32 tileset turret.ts
 : flicker  gamelife @ 1 and if drop 0 then ;
 
 variable charging
-variable charge
+\ variable charge  \ moved to common.vfx
 variable level
 variable level-ctr
 variable charge-key
@@ -56,18 +58,37 @@ array;
         atk !
         act> ?cull ;
 
-: pea ( power - ) *shoot* 8. shot% shoot ;
-: fire-medium ( power - ) *shoot* 8. missile1% shoot ;
-: fire-large ( power - ) *shoot* 8. missile2% shoot ;
+: pea ( atk - ) *shoot* 8. shot% shoot ;
+: fire-medium ( atk - ) *shoot* 8. missile1% shoot ;
+: fire-large ( atk - ) *shoot* 8. missile2% shoot ;
 
 3 cells array: charge-levels
-    \ cost , power , xt , 
-    20   , 5 ,  ' fire-medium , \ medium projectile, damages one enemy
-    40  , 10 ,  ' fire-large , \ large projectile, damages one enemy
+    \ cost , atk , xt ,
+    10  , 0 ,   ' drop , 
+    20  , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
+    50  , 10 ,  ' fire-large , \ large projectile, damages one enemy
     \ 25  , 10 , ' pea , \ moving laser projectile, damages multiple enemies as its travels
-    60  , 20 , ' fire-large , \ thin laser cannon, damages multiple enemies instantly
-    100 , 40 , ' fire-large ,  \ wide laser cannon, damages multiple enemies instantly
+    100 , 20 , ' fire-large , \ thin laser cannon, damages multiple enemies instantly
+    150 , 40 , ' fire-large ,  \ wide laser cannon, damages multiple enemies instantly
 array;
+
+charge-levels #items cell array bars
+
+: *bars ( - )
+    charge-levels #items 1 do
+        bar% one i bars [] !
+    loop ;
+
+: !bars ( - )
+    owner 13 -13 owner 's vx 2@ 2p>s 2+ from
+    bars #items 1 do
+        i level @ <= if
+            i bars [] @ [[ at@ 2s>p x 2! ]]
+        else
+            i bars [] @ [[ -9999. -9999. x 2! ]]
+        then
+        0 bar.png bmph 1 + negate +at 
+    loop ;
 
 : >cost  charge-levels [] @ ;
 : >power  charge-levels [] cell+ @ ;
@@ -77,7 +98,7 @@ array;
 : @level ( - charge-level )
     0
     charge-levels #items for
-        @charge charge-delay @ - 
+        @charge 
         i >cost >= if
             drop i
         then
@@ -91,29 +112,28 @@ array;
 
 : end-charge ( - )
     \ cr ." End charge"
-    0 charge ! 0 level-ctr ! charging off ;
+    0 charge ! 0 level-ctr ! charging off -1 level ! ;
 
 : fire ( level - )
     {: lvl :}
-    lvl >power negate energy +!
-    lvl >power lvl >fire-xt execute
+    lvl if  \ level 0 is after the charge delay
+        lvl >cost 0 >cost - negate energy +!
+        lvl >power lvl >fire-xt execute
+    then
     end-charge ;
 
 : ?+level ( - )
-    @charge charge-delay @ < ?exit
     @level level @ > if
-        1 level +! 30 level-ctr !
-        .level
+        1 level +! 15 level-ctr !
     then ;
 
 : can-afford? ( n - f )
     >cost energy @ swap - 10 >= ;
 
 : +charge ( - )
-    charge @ 1 + 100 charge-delay @ + min charge !
+    charge @ 1 + 150 min charge !
     @level can-afford? not if
         charge @ 1 - 0 max charge !
-        cr ." CHARGING CAPPED"
     then ;
 
 : cancel-charge ( - )
@@ -130,14 +150,15 @@ array;
         then
     loop 
     charging @ if
-        \ charge @ charge-delay @ = if
-        \     cr ." Start charge"
-        \ then
+        owner 's flash-ctr @ 0 >= if  \ -1 = not flashing
+            cancel-charge exit
+        then
         charge-key @ letgo? if
-            @charge charge-delay @ < if
-                end-charge
-                exit
-            then
+\            @charge 0= if
+\                end-charge
+\                exit
+\            then
+            
             level @ fire
         else
             level-ctr @ 0= if
@@ -147,7 +168,7 @@ array;
             then
         then
     then
-    @charge charge-delay @ - 0 max 100 p/ shaking ! ;
+    @charge 0 max 100 p/ shaking ! ;
 
 : ?aim-auto ( - )
     dir-buttons #items for
@@ -198,7 +219,9 @@ array;
 
 turret% :: init
     turret.ts 0 tile bmp !
+    *bars
+    -1 level !
     act>
         ?aim ?charge ?pea
-        !ang !pos !bmp ;
+        !ang !pos !bmp !bars ;
 

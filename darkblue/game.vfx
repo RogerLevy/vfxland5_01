@@ -18,7 +18,7 @@ require events\test1.vfx
 : reset ( - )
     (reset)
     50 gameh 2 / at *player
-    100 energy ! ;
+    500 energy ! ;
 
 : retry ( - )
     blank blank blank
