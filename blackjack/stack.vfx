@@ -25,7 +25,7 @@
     xt >r s >r  to s to xt
     s pushed 0 do  i s [] xt execute loop
     r> to s r> to xt ;
-: each>  r> swap each ; DoNotSin
+: each>  r> swap each ;
 
 \ create s 100 stack,
 \ 321 s push

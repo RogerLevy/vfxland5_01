@@ -36,10 +36,10 @@ variable osp   os osp ! \ object stack pointer
     does> @ me + ;
 
 : var ( - <name> ) ( - a )
-    $C0FFEE ?already ?exit cell ofield ; DoNotSin 
+    $C0FFEE ?already ?exit cell ofield ;  
 
 : private-var ( - <name> ) ( - a )
-    private cell ofield ; DoNotSin 
+    private cell ofield ; 
 
 : 's ( a - <name> a )
     ' >body @ ?literal s" +" evaluate ; immediate 

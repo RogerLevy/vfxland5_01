@@ -38,8 +38,9 @@ borrow stage~ unsafe-free?
 \ Definition
 : el: ( class - <name> a )
     el dup constant ;
+    
 : draw> ( - ) ( - )
-    r> draw ! ; DoNotSin
+    r> draw ! ;
 
 \ Announce
 || 0 value xt

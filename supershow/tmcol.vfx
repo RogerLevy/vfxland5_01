@@ -140,7 +140,7 @@ public
     init ud lr
     \ unhit? if hit then
     nx px f- f>p x +!
-    ny py f- f>p y +! ; DoNotSin
+    ny py f- f>p y +! ;
 
 \ ------------------------------------------------------------------------------
 \ Slide around corners (to be called in tmcol>'s body)

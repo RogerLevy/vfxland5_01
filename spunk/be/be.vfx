@@ -171,7 +171,7 @@ is auto-zoom  1 bmp!
 
 \ Modes
 variable mode
-: mode> r> mode ! ; DoNotSin
+: mode> r> mode ! ;
 : m-live mode> ?lock ?think ?unlock bg sprites ?animate ; m-live
 : m-live2 mode> ?lock ?think ?unlock bg backsprites ?animate ; 
 : m-tiles ; \ scrollable tileset, fixed zoom

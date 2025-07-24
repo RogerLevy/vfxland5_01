@@ -22,7 +22,7 @@
             i lx2 min j ly2 min at  pen-colrow a spot xt execute
             me free? if unloop unloop exit then
         gap +loop
-     gap +loop ;  DoNotSin
+     gap +loop ;
 
 \ : ?get  dup @ 1 <> if drop exit then  0 swap ! ;
 \ : test  -8 -8 16 16 bg0 tread> cr  pen 2?  dup ? ?get ; 
