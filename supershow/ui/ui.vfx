@@ -119,7 +119,7 @@ borrow stage~ unsafe-free?
 
 : element-oexec-error-handler ( n - )
     ?dup -exit
-    cr ." oexec >> Error on element, disabling: " me peek
+    cr ." OEXEC >> Error on element, disabling: " me peek
     me bench
     throw ;
 

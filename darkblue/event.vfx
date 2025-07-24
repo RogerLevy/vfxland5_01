@@ -66,16 +66,18 @@ public
 
 : >event-path  f" events\%s.vfx" ;
 
-|| : ?event-exists ( a len -- )
+|| : check-event-file ( a len -- )
     >event-path file-exists? not if
         -1 abort" Event doesn't exist!"
     then ;
     
 : require-event ( - <event> )
+    {: | buf[ 256 ] :}
+    bl parse buf[ place
     push-order
-    bl preparse ?event-exists
-    bl preparse $private 
-    f" events\%s.vfx" required
+    buf[ count check-event-file
+    buf[ count f" %s~" $private 
+    buf[ count >event-path required
     pop-order ;
 
 || cstring event$
@@ -93,7 +95,7 @@ public
     \ honing mode; or just put that mechanism in RUN and HONE-EVENT.
     {: | a len :}
     bl parse to len to a
-    a len ?event-exists 
+    a len check-event-file
     a len event$ place
     \ at@ last-event-at 2!
     ['] hone-event honing !    

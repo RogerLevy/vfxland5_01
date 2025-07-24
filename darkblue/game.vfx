@@ -1,5 +1,5 @@
 require title.vfx
-require events\test1.vfx
+require-event test1
 require laser.vfx
 \ require death.vfx
 \ require subscreen.vfx

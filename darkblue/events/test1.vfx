@@ -1,3 +1,4 @@
+
 : radius r @ ;
 : -radius radius negate ;
 
@@ -7,9 +8,9 @@
 : from-bottom ( xratio. y. -- x. y. )
     >r gamew *  r> gameh >. + ;
 
-1. tweek timing
-enemy1% tweek class
-1.5 tweek speed 
+1. tweak timing
+enemy1% tweak class
+1.5 tweak speed 
 
 : *enemy ( - actor )
     class @ spawn ;

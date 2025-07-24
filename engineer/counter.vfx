@@ -14,8 +14,8 @@ public
    DCOUNTER  1000
    0 0 SP@ QueryPerformanceFrequency DROP NIP M*/ DROP ;
 
-: timing ( xt - n )
+: time-xt ( xt - n )
     ucounter 2>r execute ucounter 2r> d- drop ;
     
 : time? ( xt - )
-   timing . ;
+   time-xt . ;

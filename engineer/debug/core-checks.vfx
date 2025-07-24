@@ -249,14 +249,14 @@ crucial test: check-allocation-size ( u -- u n:result )
     check-reasonable-allocation ;
 
 crucial test: check-allocated-address ( addr -- addr n:result )
-    \ Basic check for allocated address (warn if suspicious)
-    dup check-valid-address ;
+    \ Basic check for allocated address 
+    check-valid-address ;
 
 \ ==============================================================================
 \ Execution Validations
 \ ==============================================================================
 
-crucial test: check-execution-token ( xt -- xt n:result )
+crucial test: check-xt ( xt -- xt n:result )
     \ Validate execution token
     check-valid-address ;                  \ XT should be valid address
 
@@ -433,10 +433,10 @@ before resize check-allocation-size
 wrap-word resize
 
 \ Execution Words
-before execute check-execution-token
+before execute check-xt
 wrap-word execute
 
-before catch check-execution-token
+before catch check-xt
 wrap-word catch
 
 \ Dictionary Words

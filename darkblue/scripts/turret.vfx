@@ -36,7 +36,7 @@ variable level
 variable level-ctr
 variable charge-key
 
-20 tweek charge-delay
+20 tweak charge-delay
 
 2 cells array: dir-buttons
     \ key , angle ,
@@ -81,12 +81,12 @@ var dest-atk
     me
     a @ 20. 5. *beam as>
         w @ dest-w ! 20. w !
-        exponential ease-out w dest-w @ 0.2 tween
+        exponential ease-out w dest-w @ 0.25 tween
         owner ! atk !
         ['] laser-physics phys !
         act>
             80. l +!
-            0.2 passed? -exit
+            0.25 passed? -exit
             exponential2 ease-out w 0.0 0.1 tween
         act>
             0.1 passed? -exit
@@ -96,14 +96,14 @@ var dest-atk
     *shoot*
     me 0 0 from
     me
-    aim @ 2000. 50. *beam as>
+    aim @ 2000. 100. *beam as>
         owner ! atk !
         ['] laser-physics phys !
         w @ dest-w ! 1.0 w !
         atk @ dest-atk ! 0 atk !
-        exponential2 ease-in w dest-w @ 0.15 tween
+        exponential3 ease-in w dest-w @ 0.25 tween
         act>
-            0.15 passed? -exit
+            0.25 passed? -exit
             dest-atk @ atk !
             exponential2 ease-out w 0.5 0.5 tween
         act>

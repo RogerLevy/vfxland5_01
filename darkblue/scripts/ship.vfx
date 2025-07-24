@@ -11,10 +11,10 @@ var m
 variable paralysis                \ paralyzes player when >0
 0 value recovering?
 
-5 tweek sbp            \ screen bounce paralysis length
-.3 tweek spd           \ normal movement speed
-0.93 tweek ine         \ inertia
-\ .03 tweek dec           \ deceleration
+5 tweak sbp            \ screen bounce paralysis length
+.3 tweak spd           \ normal movement speed
+0.93 tweak ine         \ inertia
+\ .03 tweak dec           \ deceleration
 
 aka flash-ctr n1
 
@@ -63,9 +63,7 @@ aka flash-ctr n1
         360. rnd 14 rnd vec from
         dot% one [[ 360. rnd 2. rnd vec vx 2! ]] 
     loop
-    unload
-    3.0 timer>
-        eval" retry" ;
+    unload ;
 
 : die ( - )
     hush
@@ -78,7 +76,9 @@ aka flash-ctr n1
         1.0 passed? -exit
         lightning
     act> act> act> 
-        shatter ;
+        shatter
+        3.0 timer>
+            eval" retry" ;
 
 ship% :: damage ( n - )
     ?dup -exit

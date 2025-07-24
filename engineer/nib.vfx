@@ -9,9 +9,11 @@ cell value /static \ next static field offset; "cell" reserves class field
 : field ( ofs size - <name> n ) ( a - a )
     create over , + $C0FFEE , does> @ + ;
 
-|| : ?already ( - )
-    >in @ bl word find if dup >body cell+ @ $C0FFEE = if
-    r> drop drop drop exit then then drop >in ! ; DoNotSin
+: ?already ( n - f )
+    {: n :}
+    preword find if
+        >body cell+ @ n = dup if bl word drop then
+    else drop 0 then ; 
 
 || : ?literal
     state @ if postpone literal then ;
@@ -34,7 +36,7 @@ variable osp   os osp ! \ object stack pointer
     does> @ me + ;
 
 : var ( - <name> ) ( - a )
-    ?already cell ofield ; DoNotSin 
+    $C0FFEE ?already ?exit cell ofield ; DoNotSin 
 
 : private-var ( - <name> ) ( - a )
     private cell ofield ; DoNotSin 
@@ -47,9 +49,6 @@ var cla
 
 || : >static ( obj - class )
     's cla @ ;
-
-|| : ?already
-    >in @ bl word find if r> 3drop exit then drop >in ! ; DoNotSin
 
 || : preword ( - a len )
     >in @ swap word swap >in ! ;
@@ -79,7 +78,6 @@ create class% here , 1020 allot&erase $22222222 ,
     dup -exit 2dup + 1 - c@ '%' = -exit 1 - ;
 
 : static ( - <name> ) ( - a )
-\    ?already
     /static  cell field  to /static  does> @ me >static + ;
 
 \ Messages

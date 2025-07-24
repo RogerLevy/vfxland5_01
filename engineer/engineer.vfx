@@ -358,16 +358,20 @@ include %idir%/repl.vfx
 \ Persistent variable control
 \ =============================================================================
 
-: tweek ( n - <name> )
-    \ Define a variable with initial value n, but only if the name doesn't already exist for the file.
-    \ If the variable already exists, this is a no-op.
-    \ Allows for redefinitions by temporarily isolating the search order.
+: tweak ( n - <name> )
+    \ Define a variable with initial value n, but only if the name doesn't already exist
+    \    in CURRENT.
+    \ If the tweak already exists, this is a no-op.
     push-order
     only current @ +order
-    preword find nip if drop bl word drop else create , $12341234 , then
+    $12341234 ?already not if 
+        create , $12341234 ,
+    else
+        drop
+    then
     pop-order ;
 
-: (?.tweek) ( thread# nfa - f )
+: (?.tweak) ( thread# nfa - f )
     nip
     {: nfa :} 
     nfa name> >body cell+ @ $12341234 = if
@@ -379,8 +383,8 @@ include %idir%/repl.vfx
     then
     -1 ;
 
-: .tweeks ( - )
-    ['] (?.tweek) walk-order ;
+: .tweaks ( - )
+    ['] (?.tweak) walk-order ;
 
 \ =============================================================================
 \ Display Mode Control
