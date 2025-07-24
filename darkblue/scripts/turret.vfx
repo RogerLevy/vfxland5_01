@@ -80,8 +80,8 @@ var dest-atk
     me 0 0 from
     me
     a @ 20. 5. *beam as>
-        w @ dest-w ! 30. w !
-        exponential2 ease-out w dest-w @ 0.2 tween
+        w @ dest-w ! 20. w !
+        exponential ease-out w dest-w @ 0.2 tween
         owner ! atk !
         ['] laser-physics phys !
         act>
@@ -120,7 +120,7 @@ var dest-atk
     30  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
     \ 25  , 10 , ' pea ,          \ moving laser projectile, damages multiple enemies as its travels
     40 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
-    80 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
+    120 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
 array;
 
 : >charge  charge-levels [] @ ;
@@ -188,7 +188,7 @@ charge-levels #items cell array bars
     >cost energy @ swap - 10 >= ;
 
 : +charge ( - )
-    charge @ 1 + 80 min charge !
+    charge @ 1 + 120 min charge !
     @level can-afford? not if
         charge @ 1 - 0 max charge !
     then ;
@@ -265,8 +265,9 @@ charge-levels #items cell array bars
 : !ang ( - )
     a @ p>f aim @ p>f 0.2e alerp f>p a ! ;
 
+
 : !pos ( - )
-    a @ 32. vec  owner @ 's x 2@ 2+  owner @ 's vx 2@ 2+  x 2!
+    a @ 32. vec  owner @ [[ x 2@ vx 2@ 2+ ]] 2+ x 2!
     a @ 360. umod 180. >= if 1. 1. x 2+! then
     ?shake
     x 2@ 2i x 2! ;
