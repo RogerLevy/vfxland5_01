@@ -118,7 +118,9 @@ borrow stage~ unsafe-free?
 
 \ Element script classes
 
-: element-oexec-error-handler ( n - )
+: element-oexec-error-handler ( xt n - )
+    \ TODO: display xt name
+    nip
     ?dup -exit
     cr ." OEXEC >> Error on element, disabling: " me peek
     me bench

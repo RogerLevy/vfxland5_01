@@ -94,8 +94,8 @@ variable saved-dp
 
 \ r0 @ constant .rsbase
 : (.rs) ( a -- )
-    cr {: rp :}
-    ."     RS:[ " 
+    {: rp :}
+    cr ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 5 cells + min  ?do
         i @ .name                    \ Print return address
@@ -144,3 +144,18 @@ aka file-exists? fileexists?
         cr dup .name 
         xt swap WalkWordList
     loop ;
+    
+    
+: (ABORT")      \ i*x x1 -- | i*x
+    r> dup  count + aligned >r  swap if
+        r@ cr ." ABORT: " rp@ cell+ (.rs)
+        'AbortText !  -2 throw
+    else
+        drop
+    then
+;
+
+: ABORT"
+    ?comp
+    postpone (abort") ",  discard-sinline
+; IMMEDIATE

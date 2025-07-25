@@ -63,7 +63,7 @@ borrow nib~ ?message
 
 \ have to redefine these because it's not possible to wrap them ( :: crashes )
 cell to /static
-static oexec-error-handler ( n - )
+static oexec-error-handler ( xt n - )
 m: init ( - ) ;
 m: destruct ( - ) ;
 

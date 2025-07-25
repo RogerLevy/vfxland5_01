@@ -82,16 +82,18 @@ create class% here , 1020 allot&erase $22222222 ,
 
 \ Messages
 
-static oexec-error-handler ( n - )
+static oexec-error-handler ( xt n - )
 
 : oexec ( ... xt - ... )
-    ?dup if catch ?dup if
-        oexec-error-handler @ ?dup if
-            execute
+    ?dup -exit
+    {: xt :}
+    xt catch ?dup if
+        oexec-error-handler @ if
+            xt swap oexec-error-handler @ execute
         else
             throw
         then
-    then then ;
+    then ;
 
 || : do-message ( ... message actor - ... )
     [[

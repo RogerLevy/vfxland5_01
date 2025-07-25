@@ -348,14 +348,14 @@ c" timer%" create-class
     classname$ count evaluate
     dup statics: ;
 
-: actor-oexec-error-handler ( n - )
-    ?dup -exit
+: actor-oexec-error-handler ( xt n - )
+    {: xt err :} 
+    err -exit
     me bench
-    cr ." OEXEC >> Actor had an oopsie, disabling: " me ['] peek catch drop
-    cr ." (Stage) Throw:"
+    cr xt .name ." >> Actor had an oopsie, disabling: " me ['] peek catch drop
+\    cr ." (Stage) Throw:"
     .s
-    .rs
-    throw ;
+    err throw ;
     
 static autoclass
     
