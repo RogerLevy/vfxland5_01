@@ -1,0 +1,122 @@
+do not lose track of the fact that you are writing non-conventional, Glypher style code, for whatever case the user has deemed appropriate. in other words, if your coding instincts pressure you to not follow any of the guidelines in this prompt, the guidelines MUST override them.
+
+the component will be small.  5-50 lines of word definitions and section labels, and a maximum of 80 columns wide, with the average number of columns being 50, including each definition's name and 4 space indentation.
+you don't have to count non-"logic" in the line count.  examples: variables, fields, dependencies, compile-time initialization and so on. they should be considered mere technical scaffolding.
+
+stack effects should not be necessary
+if you absolute MUST notate a stack effect it should be written in compact style.  example: ( a-a ) takes an address and returns an address
+other effects should be obvious
+
+common naming patterns that have IMPLIED stack effects
+    dest! = ( n- )
+    src@ = ( -n )
+    type@ = ( a-n )
+    cond? = ( -f )
+    ?cond = ( f- ) but not always!!! remember non-alphabetic symbols are just abbreviations not categorical markers!
+    type, = ( n- )
+    type+ = ( n-n ) 
+    
+common naming patterns that rarely/shouldn't take or return parameters
+    !dest !idea
+    @src @noun
+    ,noun
+    +idea
+    -idea
+    /idea
+
+when should a word take parameters?
+    the answer is if using a variable would be a waste.
+    if a piece of data represents a concept that should have a single source of truth, it should be in a variable or field of an object or struct.
+    if it is transient - an intermediary value meant solely for altering the action of a word - it should be a stack item.
+
+example:  ( line numbers in parentheses solely for referencing below )
+    ( 1 ) : *gold gold% one as> !pos !vel ;  
+    ( 2 ) : golds for *gold loop ;           
+    ( 3 ) : reward ( n- ) golds *sound* ;    
+
+    1. !pos and !vel have a contextual meaning of randomization of the gold pieces - they're ommitted in the example simply for brevity
+    2. no stack comment; it's obvious from the FOR
+    3. stack comment included to make very clear how this word is to be used. (the name REWARD doesn't make it obvious, and you shouldn't count on GOLDS whose meaning could conceivably change)
+
+object-oriented code uses implicit base-addresses most of the time.  don't pass objects around between Glypher-style words.  this "object agnosticism" is one reason why vars (actor fields) share a global offset space.
+
+naming symbols
+    ! = store
+    @ = fetch
+    ? = question
+    . = print
+    , = compile
+    + = add
+    - = substract, not, stop
+    * = multiply, create
+    / = divide, init, of
+    # = number of, index
+    $ = counted string ( address pointing to counted string, NOT address + length )
+    % = class (suffix only)
+    ~ = file namespace (suffix only)
+    = = equals
+    : = start definition
+    ; = end definition
+    [] = element of an array
+    ' = XT
+
+stack comment symbols
+    a = address
+    c = count
+    n = number
+    p = fixed point
+    f = flag
+    # = index
+    x y z = vector coords
+    % = object
+    $ = counted string
+    0 = zero
+    1 = -1
+    ? = value of unknown type
+    
+    NOTE: floats are NEVER passed around in Glypher style code.
+
+guidelines for inventing and interpreting word names:
+    - no symbol, alphanumeric or non-alphanumeric, has an absolute meaning in a word name.  (NOTE: they still do in stack comments)
+    - you must treat all symbols as signposts.
+    - internalize the broad meaning of the name as prose, and refer to the definition for the exact technical properties.
+    - component word's meanings are interdependent.  words are clarified by how they are called and their definitions.
+    - abbreviated names help compact the code and make it easier to test. example: REGENERATE -> REGEN
+    
+don't automatically create variables.
+    using a useless word just to illustrate the principle, this should never happen:
+    variable tempx
+    variable tempy
+    : foo? x 2@ 5. 5. 2p* tempy ! tempx ! tempx @ 0> tempy @ 0<> or ;
+
+instead, it should be:
+    : foo? x 2@ 5. 5. 2p* swap 0<> swap 0<> or ;
+
+or better yet:
+    : foo? x 2@ 5 5 2* or ;
+    
+this kind of diligent simplification is crucial.  you must not avoid completely rewriting a definition if it needs different behavior.  don't attempt to pick it apart and "conserve" anything about it:
+    let's say we want to change the logic of FOO?
+    BAD:
+    : foo? x 2@ swap 5 * 2 / 0> swap 5 * 2 / 0> and ; \ preserving use of integers, add stack noise
+    BAD:
+    : foo? x @ 5 * 2 / 0> y @ 5 * 2 / 0> and ;        \ preserving use of integers
+    GOOD:
+    : foo? x @ 5 2 */ 0> y @ 5 2 */ 0> and ;     \ clean rewrite
+    EVEN BETTER:
+    : rescale 2.5 p* ;
+    : foo? x @ rescale 0> y @ rescale 0> and ;   \ clearer, easier to maintain
+    
+what are the general guidelines?
+    - first and foremost the code you write must be small.  you must put in the extra effort to achieve this goal as if your life depends on it.
+    - words should be simple and highly contextual.  (namespaces are here to enable it!)  Glypher words should be 2 to 10 chars long, and ~5 chars should be the most common length.  compound-words should be avoided, constituting no more than 1-4 words in a component.  if you find that a word you need is too complicated, or potentially backend level, writing compound-word(s) in conventional style to accompany the Glypher style code is an acceptable course of action.  IMPORTANT: this allowance is a pressure release valve, not a free pass to write conventional code and present it as Glypher style code.
+    - avoid excessive stack manipulation (e.g. DUP UDUP SWAP OVER NIP).  think of them as necessary evils, not essential grammar.  zero is best, two or three are the limit.
+    - avoid "advanced" stack words (e.g. ROT -ROT >R R> PICK ROLL TUCK)
+    - never pass or return more than 4 TOTAL stack items. ( xy-xy ) ( a-xy ) would be fine.  ( acn-xyf ) is a warning sign that the word should be a conventional one, not a Glypher one, or that the factoring should be rethought.  weigh both paths and take one.  if unsure, flip a coin.
+    - 90-100% of words should take and return no stack items at all.  in other words, avoid passing stack items between Glypher words like your life depends on it, while still adhering to all of the other guidelines.
+    - avoid excessive detail within a definition.  if more complexity is required, it should be factored out into a new word.
+    - avoid repetition of specific details.  for example, constants.  and they don't need to be in a CONSTANT - they can be literals in a word, such as in RESCALE.
+    - avoid obfuscation.  don't abstract repeated patterns thoughtlessly.  sometimes a cluster of 2-3 words is clearer.  sometimes not though.  if unsure, flip a coin.
+    - don't use locals.  don't create global variables, vars, or struct fields to circumvent this guideline.
+    - if it is not currently possible to make the component work in 5-50 lines of Glypher-style code excluding variables and utility/conventional words etc, inform the user, present the completed code and suggest which words you think should be moved out into other components (Glypher-style or otherwise)
+    
