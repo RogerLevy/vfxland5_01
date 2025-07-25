@@ -32,7 +32,9 @@ require laser.vfx
 : think  step ;
 : game  show> think render ;
 
-\ Integrate
+\ Assign BOOT hook
 : boot-darkblue  init-supershow title ;
-' boot-darkblue is boot
-init-supershow 
+last @ is boot
+
+\ Init
+init-supershow

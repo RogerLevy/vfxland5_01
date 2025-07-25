@@ -38,9 +38,7 @@ aka bounced n1
             0 time !
         then
     else
-        \ 1.5 passed? if 
-        \     unload
-        \ then
+        ?cull
     then ;
 
 tri% :: init

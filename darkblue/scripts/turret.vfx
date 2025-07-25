@@ -1,11 +1,11 @@
 \ Charging system:
-\ - 5-level charge system (0-100 charge points) with escalating costs and power
-\ - Charge delay prevents accidental charging - must hold key 8+ frames before charging begins
+\ - 4-level charge system (0-100 charge points) with escalating costs and power
+\ - Charge delay prevents accidental charging - must hold key N frames before charging begins
 \ - Resource protection - charging caps automatically to preserve 10+ energy, prevents player suicide
 \ - Immediate pea shots - initial key press fires weak shot, holding continues to charge
 \ - Cancel-on-redirect - pressing new direction key cancels current charge and fires pea shot
-\ - Level progression feedback - displays current charge level and caps with "CHARGING CAPPED!!!" message
-\ - Dual firing modes - pea shooter (1 energy) vs charged shots (2-30 energy based on level)
+\ - Level progression feedback - displays bars next to owner (the ship)
+\ - Dual firing modes - pea shooter (1 energy) vs charged shots (based on level)
 
 require scripts\shot.vfx
 require tween.vfx
@@ -211,11 +211,6 @@ charge-levels #items cell array bars
             cancel-charge exit
         then
         charge-key @ letgo? if
-\            @charge 0= if
-\                end-charge
-\                exit
-\            then
-            
             level @ fire
         else
             level-ctr @ 0= if
@@ -247,13 +242,11 @@ charge-levels #items cell array bars
 
 : ?pea ( - )
     energy @ 1 = ?exit  \ TODO: add "jammed gun" animation/sound
-    automatic @ if
-        shooting @ if
+    shooting @ if
+        automatic @ if
             time @ .12 >= if 0 time ! then
             time @ 0= if 1 pea then
-        then
-    else
-        shooting @ if
+        else
             1 pea
             shooting off
         then
@@ -264,7 +257,6 @@ charge-levels #items cell array bars
 
 : !ang ( - )
     a @ p>f aim @ p>f 0.2e alerp f>p a ! ;
-
 
 : !pos ( - )
     a @ 32. vec  owner @ [[ x 2@ vx 2@ 2+ ]] 2+ x 2!
