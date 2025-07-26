@@ -28,7 +28,8 @@ turret.png 32 32 tileset turret.ts
     360. umod dup >r
     5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
 
-: flicker  gamelife @ 1 and if drop 0 then ;
+: flicker ( n - n )
+    gamelife @ 1 and if drop 0 then ;
 
 variable charging
 \ variable charge  \ moved to common.vfx
