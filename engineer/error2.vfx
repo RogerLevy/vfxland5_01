@@ -11,9 +11,9 @@
 
 : .catch ( throw-code - )
     -exit
-    cr ." Catch: "
+    cr ." Caught: "
     \ >r  \ save throw code
-    .s
+    \ .s
     \ r>  \ restore throw code
     rp@ 1 cells + (.rs)
     cr ;

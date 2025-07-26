@@ -342,7 +342,7 @@ c" timer%" create-class
 || cstring classname$
 
 : script-class ( - <name> class )
-    \ Create a script class with its own private scope (if it doesn't already exist)
+    \ Create a script class with its own private vocabulary (if it doesn't already exist)
     \ Sets ME to a false object of the class for convenient static assignments
     only forth definitions
     bl word count classname$ place

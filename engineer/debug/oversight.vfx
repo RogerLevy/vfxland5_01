@@ -240,17 +240,16 @@ cstring wordname$
     caller-rp @ ip>nfa caller-name !
     res 0= if
         val 's validator @ >name count
-        caller-name @ count f" %s >> %s failed - throwing" log-error
-        cr ." (Oversight) Throw:"
-        .s
+        f" VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
+        .s
         -999 throw
     then
     res 1 = if
         val 's validator @ >name count 
-        caller-name @ count f" %s >> %s failed - warning" log-warning
-        .s ." <-- Note this was the stack AFTER the validation ran"
+        f" VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
+        .s ." <-- Data stack AFTER the validation ran"
     then ;
     
 || : validated-word ( wrapper -- )

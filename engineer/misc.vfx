@@ -37,7 +37,7 @@ aka cd cwd
 : .s
     cr depth 8 min | d |
     d 0< -4 ?throw
-    ."     DS( " d . ." ):[ " 
+    d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
     d if
         d 0 ?do d 1 - i - pick . loop 
     else
@@ -146,16 +146,19 @@ aka file-exists? fileexists?
     loop ;
     
     
-: (ABORT")      \ i*x x1 -- | i*x
-    r> dup  count + aligned >r  swap if
-        r@ cr ." ABORT: " rp@ cell+ (.rs)
-        'AbortText !  -2 throw
+: .abort ( err a:msg len:msg - )
+    rot if
+        cr ." ABORT: " type
+        rp@ cell+ (.rs)
+        .s
+        -1 throw
     else
-        drop
+        2drop
     then
 ;
 
-: ABORT"
+: abort"
     ?comp
-    postpone (abort") ",  discard-sinline
-; IMMEDIATE
+    postpone s"
+    postpone .abort
+; immediate

@@ -138,7 +138,7 @@ var a.ofs var a.done var a.flp
     a n -ext f" %s%%" >pad find nip ?exit
     \ cr ." Creating auto-class from bitmap " a n type
     a n -ext f" %s%%" 2dup
-    >pad create-class  \ note: CREATE-CLASS doesn't create a scope
+    >pad create-class  \ note: CREATE-CLASS doesn't create a vocabulary
     lastbody 's autoclass on
     a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
 

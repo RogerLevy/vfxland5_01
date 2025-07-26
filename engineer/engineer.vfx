@@ -546,13 +546,13 @@ include %idir%/ide1.vfx
 || : /console
     debug @ -exit
     hWndMain to vfx-hwnd
+    vfx-hwnd z" Engineer Dev Console" SetWindowText drop
     >vfx ;
 
 || : setup
     \ Initialize Engineer
     init-mersenne
     init-allegro
-    /console
     *display
     init-vga-font
     0 0 to ustime ;
@@ -668,6 +668,7 @@ bye-chain link 0 ,
 \ =============================================================================
 
 : engineer.cold
+    /console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
     cr ;
