@@ -3,7 +3,7 @@ validations dup @ swap off
 : valid-class? ( a - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup 1024 + @ $22222222 = r> and >r
+        dup /class + @ $22222222 = r> and >r
     then
     drop r> ;
 

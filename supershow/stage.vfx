@@ -12,6 +12,12 @@
 variable gamelife
 0 0 2value gametime
 
+: var ( - <name> ) ( - a )
+    $C0FFEE ?already ?exit cell ofield ;  
+
+: private-var ( - <name> ) ( - a )
+    private cell ofield ;
+    
 var en
 var x var y
 var vx var vy

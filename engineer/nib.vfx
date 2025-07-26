@@ -35,17 +35,11 @@ variable osp   os osp ! \ object stack pointer
     /obj swap field to /obj 
     does> @ me + ;
 
-: var ( - <name> ) ( - a )
-    $C0FFEE ?already ?exit cell ofield ;  
-
-: private-var ( - <name> ) ( - a )
-    private cell ofield ; 
-
 : 's ( a - <name> a )
     ' >body @ ?literal s" +" evaluate ; immediate 
 
 \ Classes
-var cla
+cell ofield cla
 
 || : >static ( obj - class )
     's cla @ ;
@@ -64,10 +58,10 @@ var cla
     >in ! ;
 
 1024 constant /class
-create class% here , 1020 allot&erase $22222222 , 
+create class% here , /class cell- allot&erase $22222222 , 
 
 : create-class ( $ - ) ( - ) 
-    $create class% , 1020 allot&erase $22222222 ,
+    $create class% , /class cell- allot&erase $22222222 ,
     lastbody , \ false object for convenient static assignments
 ;
 
@@ -129,11 +123,6 @@ static oexec-error-handler ( xt n - )
     \ Define the response of a given class to a given message (read-ahead word)
     \ Checks if the given name is actually a message
     ?message ' >body >:: ;   
-\    bl preparse msg[ place
-\    0 postpone 's to ofs
-\    c body> >name count 1 - ` msg[ count ` 2swap f" : %s::%s" 2dup upper evaluate
-\    state on
-\    here ( xt ) c ofs + ! ;
 
 \ Instantiation
 : >object ( a class - class:object )
