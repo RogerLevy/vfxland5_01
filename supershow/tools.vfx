@@ -62,9 +62,24 @@ cstring update-name$
         file]
         n[ count f" scripts\%s.vfx" included
     else
-        cr ." Script already exists, locating"
+        -1 abort" Script already exists"
     then
     n[ count f" locate %s%%" evaluate ;
+
+: as ( object - )
+    \ Bind the given object and switch to its vocabulary.
+    [[ cla @ body> >name count -% f" %s~" evaluate ;
     
-: edit ( - <name> )
-    bl parse f" locate %s%%" evaluate ;
+: edit ( - <classname> )
+    \ Edit a class (minus the %).
+    \ If no name given, edit the class inferred from the current object (ME).
+    \ Switch to the class's vocabulary.
+    0 preparse nip 0= if
+        cla @ body> >name count -%
+    else
+        bl parse 
+    then
+    2dup f" %s~" evaluate
+    f" locate %s%%" evaluate ;
+
+    

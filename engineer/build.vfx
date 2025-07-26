@@ -10,18 +10,24 @@ include engineer.vfx
 \ 0 to InitSupport? \ don't need windows constants
 256 1024 * 1024 * set-size  \ of dictionary
 
-: project ( - <name> )
+: switch ( - <path> )
+    bl parse home-path$ count f" %s\%s" 2dup file-exists? not if
+        -1 abort" Path doesn't exist!"
+    then
+    $cwd
+    200 ms
+    \ ['] dir >r
+    ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
+                    \ SHELLCMD operations. Return stack anchor is a common
+                    \ pattern to stabilize memory layout when host OS calls
+                    \ interfere with interpreter state. Exact mechanism unknown.
+;
+
+: project ( - <path> )
     home-path$ count $cwd
     bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
     200 ms
-    bl parse $cwd
-    200 ms
-    \ ['] dir >r
-    ['] cartridge >r \ I have *no* idea why this pattern is required here.
-                    \ I think Windows doesn't like something about it.
-                    \ SWITCH works fine if run directly after running PROJECT,
-                    \ and also if the shell command is removed.
-                    \ Reason #8256 why I wish I could avoid host interaction
+    switch
 ;
 
 marker gild
