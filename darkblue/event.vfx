@@ -35,7 +35,9 @@
 \ ------------------------------------------------------------------------------
 
 actor-class event%
-
+    var delay-xt
+    var delay-secs
+    
 : (suicidal) ( - )
     act> cr ." Event finished: " unload me peek ;   
 
@@ -45,8 +47,7 @@ actor-class event%
     sp@ cell+ >r execute r> !sp
     2r> at ;
 
-var delay-xt
-var delay-secs
+
 
 public
 

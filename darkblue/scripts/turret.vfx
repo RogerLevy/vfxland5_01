@@ -12,11 +12,11 @@ require tween.vfx
 require scripts\ship.vfx
 
 actor-class turret%
-var shooting
-var shaking     \ 0 ~ 1.0
-var aim
-var atk
-var a
+    var shooting
+    var shaking     \ 0 ~ 1.0
+    var aim
+    var atk
+    var a
 
 aka owner n1 \ ship tracking pointer
 
@@ -117,10 +117,9 @@ var dest-atk
     \ charge , cost , atk , xt ,
     10  , 0 , 0 ,   ' drop , 
     20  , 10 , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
-    30  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
-    \ 25  , 10 , ' pea ,          \ moving laser projectile, damages multiple enemies as its travels
-    40 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
-    120 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
+    35  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
+    60 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
+    150 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
 array;
 
 : >charge  charge-levels [] @ ;
@@ -146,19 +145,17 @@ charge-levels #items cell array bars
         0 bar.png bmph 1 + negate +at 
     loop ;
 
-: @charge  charge @ ;
-
 : @level ( - charge-level )
     0
     charge-levels #items for
-        @charge 
+        charge @ 
         i >charge >= if
             drop i
         then
     loop ;
 
 : .charge ( - )
-    @charge . ;
+    charge @ . ;
     
 : .level ( - )
     cr level @ . ;
@@ -180,7 +177,7 @@ charge-levels #items cell array bars
         1 level +!
         level @ 0> if
             0.5 loud *snd-04* 
-            15 level-ctr !
+            30 level-ctr !
         then
     then ;
 
@@ -188,7 +185,7 @@ charge-levels #items cell array bars
     >cost energy @ swap - 10 >= ;
 
 : +charge ( - )
-    charge @ 1 + 120 min charge !
+    charge @ 1 + 150 min charge !
     @level can-afford? not if
         charge @ 1 - 0 max charge !
     then ;
@@ -220,7 +217,7 @@ charge-levels #items cell array bars
             then
         then
     then
-    @charge 0 max 60 p/ shaking ! ;
+    charge @ 0 max 60 p/ shaking ! ;
 
 : ?aim-auto ( - )
     dir-buttons #items for

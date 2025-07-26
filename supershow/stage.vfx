@@ -42,15 +42,15 @@ var benched  \ controls behavior and physics
 : act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
 : physics> ( - ) ( - ) r> phys ! ;
 
-: all> ( - ) ( - )
-    r> {: xt :}
-    me unsafe-[[ 
-    0 actor to me
-    #actors for
-        xt execute 
-        /actor +to me
-    loop
-    ]] ; 
+\ : all> ( - ) ( - )
+\     r> {: xt :}
+\     me unsafe-[[ 
+\     0 actor to me
+\     #actors for
+\         xt execute 
+\         /actor +to me
+\     loop
+\     ]] ; 
 
 : actives> ( - ) ( - )
     r> {: xt :}

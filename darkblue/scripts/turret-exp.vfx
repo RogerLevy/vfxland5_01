@@ -18,11 +18,11 @@ require tween.vfx
 require scripts\ship.vfx
 
 actor-class turret-exp%
-var shooting
-var shaking     \ 0 ~ 1.0
-var aim
-var atk
-var a
+    var shooting
+    var shaking     \ 0 ~ 1.0
+    var aim
+    var atk
+    var a
 
 aka owner n1 \ ship tracking pointer
 borrow ship~ flash-ctr \ ship's recovery counter

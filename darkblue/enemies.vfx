@@ -53,12 +53,6 @@ honing @ not [if]
     
 [then]
    
-var hp
-var r
-var m
-var atk
-var bounty
-
 : post-init  me _post-init ;
 : burst  me _burst ;
     
@@ -72,6 +66,13 @@ actor-class enemies%
     5. i/mass !
     30 i/atk !
     20 i/bounty !
+    public
+        var hp
+        var r
+        var m
+        var atk
+        var bounty
+    private
     
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
 : tri-speed 0.2 rnd 0.05 + ;

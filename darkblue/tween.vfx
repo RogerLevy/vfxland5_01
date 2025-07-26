@@ -37,14 +37,14 @@ constant EASE-IN-OUT
 \ Tween object
 
 actor-class tween%
-private-var d 
-private-var adr 
-private-var xt 
-private-var ease 
-private-var n1 
-private-var n2 
-private-var s1 
-private-var spd
+    private-var d 
+    private-var adr 
+    private-var xt 
+    private-var ease 
+    private-var n1 
+    private-var n2 
+    private-var s1 
+    private-var spd
 
 || : val n1 @ n2 @ over - s1 @ 1. min d @ execute ease @ execute ;
 || : step spd @ s1 +! ;

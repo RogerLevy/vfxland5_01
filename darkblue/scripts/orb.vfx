@@ -15,8 +15,8 @@ cell array: orb-anim
 array;
 
 actor-class orb%
-var r
-var m
+    var r
+    var m
 
 orb% :: init
     orb2.png bmp !
