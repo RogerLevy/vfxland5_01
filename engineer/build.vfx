@@ -11,10 +11,10 @@ include engineer.vfx
 256 1024 * 1024 * set-size  \ of dictionary
 
 : switch ( - <path> )
-    bl parse home-path$ count f" %s\%s" 2dup file-exists? not if
-        -1 abort" Path doesn't exist!"
+    bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
+        -1 abort" Project doesn't exist or is not a project!"
     then
-    $cwd
+    bl parse home-path$ count f" %s\%s" $cwd
     200 ms
     \ ['] dir >r
     ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
