@@ -43,20 +43,6 @@ cstring update-name$
 : .temps ( - )
     temps> me free? ?exit cr me peek ;
 
-: project ( - <name> )
-    home-path$ count $cwd
-    bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
-    200 ms
-    bl parse $cwd
-    200 ms
-    \ ['] dir >r
-    ['] cartridge >r \ I have *no* idea why this pattern is required here.
-                    \ I think Windows doesn't like something about it.
-                    \ SWITCH works fine if run directly after running PROJECT,
-                    \ and also if the shell command is removed.
-                    \ Reason #8256 why I wish I could avoid host interaction
-;
-    
 || : has-image? f" %s.png" >pad find nip ;
 
 : script ( - <name> )

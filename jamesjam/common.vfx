@@ -5,6 +5,7 @@
 \ ------------------------------------------------------------------------------
 
 only forth definitions
+
 0 constant start# \ starting room #
 <space> constant <jump>
 <down> constant <squat>
