@@ -13,7 +13,7 @@ variable gamelife
 0 0 2value gametime
 
 : var ( - <name> ) ( - a )
-    $C0FFEE ?already ?exit cell ofield ;  
+    FIELD_MAGIC ?already ?exit cell ofield ;  
 
 : private-var ( - <name> ) ( - a )
     private cell ofield ;

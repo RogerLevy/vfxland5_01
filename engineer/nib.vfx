@@ -6,8 +6,9 @@
 0 value /obj    \ next field offset
 cell value /static \ next static field offset; "cell" reserves class field
 
+magic-id FIELD_MAGIC FIEL
 : field ( ofs size - <name> n ) ( a - a )
-    create over , + $C0FFEE , does> @ + ;
+    create over , + FIELD_MAGIC , does> @ + ;
 
 : ?already ( n - f )
     {: n :}
@@ -47,7 +48,8 @@ cell ofield cla
 || : preword ( - a len )
     >in @ swap word swap >in ! ;
 
-|| : message?  3 cells + @ $11111111 = ;
+magic-id MESSAGE_MAGIC MSG
+|| : message?  3 cells + @ MESSAGE_MAGIC = ;
 
 || : ?message ( - )
     >in @
@@ -58,10 +60,11 @@ cell ofield cla
     >in ! ;
 
 1024 constant /class
-create class% here , /class cell- allot&erase $22222222 , 
+magic-id CLASS_MAGIC CLAS
+create class% here , /class cell- allot&erase CLASS_MAGIC , 
 
 : create-class ( $ - ) ( - ) 
-    $create class% , /class cell- allot&erase $22222222 ,
+    $create class% , /class cell- allot&erase CLASS_MAGIC ,
     lastbody , \ false object for convenient static assignments
 ;
 
@@ -101,7 +104,7 @@ static oexec-error-handler ( xt n - )
 
 || : does-message  does> swap do-message ;
 
-: dispatch,  here 0 , $11111111 , :noname swap ! ;
+: dispatch,  here 0 , MESSAGE_MAGIC , :noname swap ! ;
 
 : m: ( - <name> <code> ; ) ( ... obj - ... ) 
     \ Declare a message and its default behavior

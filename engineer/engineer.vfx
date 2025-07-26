@@ -358,14 +358,14 @@ include %idir%/repl.vfx
 \ Persistent variable control
 \ =============================================================================
 
+magic-id TWEAK_MAGIC TWK
 : tweak ( n - <name> )
     \ Define a variable with initial value n, but only if the name doesn't already exist
     \    in CURRENT.
-    \ If the tweak already exists, this is a no-op.
     push-order
     only current @ +order
-    $12341234 ?already not if 
-        create , $12341234 ,
+    TWEAK_MAGIC ?already not if 
+        create , TWEAK_MAGIC ,
     else
         drop
     then
@@ -374,7 +374,7 @@ include %idir%/repl.vfx
 : (?.tweak) ( thread# nfa - f )
     nip
     {: nfa :} 
-    nfa name> >body cell+ @ $12341234 = if
+    nfa name> >body cell+ @ TWEAK_MAGIC = if
         cr
         ."     "
         nfa count type

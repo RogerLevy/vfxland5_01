@@ -158,7 +158,12 @@ aka file-exists? fileexists?
 ;
 
 : abort"
-    ?comp
-    postpone s"
+    ?comp   
+    postpone s"         \ syntax-highlighting guard: "
     postpone .abort
 ; immediate
+
+: magic-id ( - <name> <id> )
+    create here 0 ,
+    bl parse drop @ swap !
+    does> @ ;

@@ -3,7 +3,7 @@ validations dup @ swap off
 : valid-class? ( a - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup /class + @ $22222222 = r> and >r
+        dup /class + @ CLASS_MAGIC = r> and >r
     then
     drop r> ;
 
@@ -35,6 +35,7 @@ wrap-word [[
 \     static does-validated-message dispatch, ;
 \ ------------------------------------------------------------------------------
 
+magic-id WMESSAGE_MAGIC WMSG
 : m: ( - <name> <code> ; ) ( ... obj - ... )
     m:
     state on
@@ -44,13 +45,13 @@ wrap-word [[
     until
     state off
     lastbody >name count f" wrap-word %s" evaluate
-    $12345678 , ;
+    WMESSAGE_MAGIC , ;
 
 borrow nib~ ?message
 : ?unwrap-message ( - <message> message )
     {: | body :}
     preword find not abort" Message not found" >body to body
-    body s/wrapper + @ $12345678 = if
+    body s/wrapper + @ WMESSAGE_MAGIC = if
         bl parse 2drop
         body @ ( internal xt ) >body 
     else
