@@ -1,6 +1,9 @@
 427 constant gamew
 320 constant gameh
 
+gamew to appw
+gameh to apph
+
 8192 constant #actors
 #actors constant #temps
 32 constant #elements

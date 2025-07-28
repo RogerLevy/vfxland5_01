@@ -28,12 +28,12 @@ require laser.vfx
 
 \ Gameplay main loop 
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
-: render  backdrop .75 .75 scale> starfield hud sprites laser animate ;
+: render  backdrop ( .75 .75 scale> ) starfield hud sprites laser animate ;
 : think  step ;
 : game  show> think render ;
 
 \ Assign BOOT hook
-: boot-darkblue  init-supershow title ;
+: boot-darkblue  init-supershow eval" title" ;
 ' boot-darkblue is boot
 
 \ Init

@@ -16,7 +16,7 @@ variable display-mode  \ 0 = IDE, 1 = Fullscreen (game), 2 = Windowed (game)
 create scalexy
 
 : scaled>  ( x. y. - <code> ; )
-    2dup scalexy 2! +m identity 0e 0e 2p>f 0e transform r> execute -m ;
+    2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> execute -m ;
 
 : scaled-at ( x y - )
     scalexy 2@ 2p/ at ;
@@ -49,11 +49,25 @@ variable hsplit   0.5 hsplit !
     24 * ;
 
 borrow engineer~ draw-game
+: (2x-game) 2. 2. scaled> draw-game ;
+: gamewin-h apph 2 * 100 + ;
 : game-window ( - )
-    2. 2. scaled>
-    0 0 640 480 al_set_clipping_rectangle
-    draw-game
-    0 0 winw winh al_set_clipping_rectangle ;
+    0 0 monw 2 / gamewin-h al_set_clipping_rectangle
+
+    +m
+    identity
+    monw 4 / appw - 2 +
+    gamewin-h 2 / apph - 2 +
+    2s>f 1e 1e 0e transform
+
+    (2x-game)
+
+    1e f>ds >r
+    -1e -1e appw 2 * 1 + apph 2 * 1 + 2s>f 
+    1e 1e 1e 1e r> al_draw_rectangle
+    
+    -m
+    0 0 monw monh al_set_clipping_rectangle ;
 
 borrow engineer~ func[]
 : .hotkeys ( - )
@@ -87,7 +101,7 @@ borrow engineer~ func[]
 
 : info-box ( - )
     1. 2. scaled>
-    0 600 scaled-at
+    0 gamewin-h scaled-at
     s[
         .hotkeys cr
         ." CWD: " path '\' ending type cr
@@ -101,7 +115,7 @@ borrow engineer~ func[]
 
 : user-area ( - )
     1. 2. scaled>
-    0 600 10 lines + scaled-at
+    0 gamewin-h 10 lines + scaled-at
     s" (User Area)" print ;
 
 : command-history ( - )
@@ -283,7 +297,6 @@ display-mode jumptable enact-display-mode
     ' windowed-mode ,
 
 : ide-mode-draw ( - )
-    2. 2. scaled>
     pen 2@ 2>r ide-layout 2r> at ;
 
 : full-mode-draw ( - )
@@ -325,8 +338,7 @@ public
     then ;
 
 : draw-ide ( - )
-    cls
-    draw-display-mode ;
+    +m identity cls draw-display-mode -m ;
 
 : init-ide ( - )
     init-history 

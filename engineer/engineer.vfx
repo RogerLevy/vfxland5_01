@@ -317,12 +317,7 @@ include %idir%/print.vfx
     ustime 1000 m/ to mstime
     sdelta f>p to pdelta ;
 
-4 value zoom
 synonym z zoom
-
-\ : resize-display ( w h - )
-\     2dup to apph to appw  2dup to winh to winw
-\     display -rot al_resize_display drop ;
 
 \ =============================================================================
 \ Event handling
@@ -391,20 +386,18 @@ magic-id TWEAK_MAGIC TWK
 \ =============================================================================
 
 || : fullscreen ( - )
-    cr ." FULLSCREEN"  -1 to fullscreen?  monw to winw  monh to winh ;
+    cr ." FULLSCREEN"  -1 to fullscreen? ;
 
 || : windowed ( - )
-    cr ." WINDOWED"  0 to fullscreen?  appw to winw  apph to winh ;
+    cr ." WINDOWED"  0 to fullscreen? ;
 
 || : *display ( - )
     \ fullscreen? if fullscreen else windowed then
     create-display ;
 
 || : winmode ( - )
-    display
-    ALLEGRO_FULLSCREEN_WINDOW
-    fullscreen? 1 and
-    al_set_display_flag 0= if cr ." WINMODE >> al_set_display_flag failed!" then
+    2 to zoom
+    appw apph fullscreen? resize-display
     !delta !delta ;
     
 || : w/f ( - )
@@ -479,23 +472,22 @@ magic-id TWEAK_MAGIC TWK
 
 : refit ( - )  \ find biggest integer scaling that fits display
     monw monh 2s>f f/
-    320 240 2s>f f/
+    appw apph 2s>f f/
     f> if
-        monh 240 /
+        monh apph /
     else
-        monw 320 /
+        monw appw /
     then
     to zoom ;
 
-: fs-w  320 z * ;
-: fs-h  240 z * ;
-: fs-wh  fs-w fs-h ;
-: border-xy  monw monh 2 2 2/ fs-wh 2 2 2/ 2- ;
+: fs-w  appw z * ;
+: fs-h  apph z * ;
+: border-xy  monw 2 / monh 2 / fs-w 2 / fs-h 2 / 2- ;
 : tv-xy  border-xy `` 2 z * dup `` 2- ;
-: tv-xy2  border-xy `` 2 z * dup `` 2+ fs-wh 2+ ;
+: tv-xy2  border-xy `` 2 z * dup `` 2+ fs-w fs-h 2+ ;
 
 : clip-screen ( - )
-    border-xy fs-wh al_set_clipping_rectangle ;
+    border-xy fs-w fs-h al_set_clipping_rectangle ;
 
 : border ( - )
     identity
@@ -506,7 +498,7 @@ magic-id TWEAK_MAGIC TWK
         0.25e 0.25e 0.25e 1e ```` al_draw_filled_rectangle
 
     6e f>ds >r
-    border-xy 2s>f `` fs-wh 1 1 2+ border-xy 2+ 2s>f ``
+    border-xy 2s>f `` fs-w 1 + fs-h 1 + border-xy 2+ 2s>f ``
         0e 0e 0e 1e ```` r> ` al_draw_rectangle
     
     border-xy 2s>f `` z z 2s>f `` 0e ` transform
@@ -517,9 +509,7 @@ magic-id TWEAK_MAGIC TWK
     fullscreen? if
         refit border
     else
-        2 to zoom
-        0e 0e 2e 2e 0e transform
-        0 0 winw winh al_set_clipping_rectangle
+        0e 0e zoom s>f fdup 0e transform
     then ; 
 
 || : draw-tv ( - )

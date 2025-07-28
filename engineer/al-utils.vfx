@@ -3,8 +3,9 @@
 \ ------------------------------------------------------------------------------
 public
 
-640 value appw
-480 value apph
+2 value zoom
+320 value appw
+240 value apph
 0 value winw
 0 value winh
 0 value monw
@@ -86,14 +87,14 @@ public
     fullscreen? if
         monw to winw  monh to winh
     else
-        appw to winw  apph to winh
+        appw zoom * to winw  apph zoom * to winh
     then
     
     display-flags
         fullscreen? if ALLEGRO_FULLSCREEN_WINDOW or then
         al_set_new_display_flags
     
-    appw apph al_create_display to display
+    winw winh al_create_display to display
         
     al_create_event_queue to queue
     queue  display       al_get_display_event_source  al_register_event_source
@@ -103,7 +104,26 @@ public
 
     reset-keyboard  \ depends on queue
 ;
-    
+
+: resize-display ( w h fullscreen? - )
+    dup to fullscreen?
+    if
+        to apph to appw
+        monw to winw  monh to winh
+    else
+        2dup to apph to appw
+        zoom * to winh zoom * to winw
+        display winw winh .s al_resize_display 0= if
+            cr ." RESIZE-DISPLAY >> al_resize_display failed!"
+        then 
+    then 
+    display
+    ALLEGRO_FULLSCREEN_WINDOW
+    fullscreen? 1 and
+    al_set_display_flag 0= if
+        cr ." RESIZE-DISPLAY >> al_set_display_flag failed!"
+    then ;
+
 : poll-keyboard  ( -- )
     kbs0 kbs1 /ALLEGRO_KEYBOARD_STATE move
     kbs0 al_get_keyboard_state ;
