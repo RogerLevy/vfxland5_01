@@ -34,7 +34,7 @@ require laser.vfx
 
 \ Assign BOOT hook
 : boot-darkblue  init-supershow title ;
-last @ is boot
+' boot-darkblue is boot
 
 \ Init
 init-supershow

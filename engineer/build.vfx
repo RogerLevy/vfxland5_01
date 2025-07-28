@@ -34,7 +34,7 @@ marker gild
     
 
 cwd ..\bin
-save-debug engineer
+save-dev engineer
 
 cwd ..
 save-xref

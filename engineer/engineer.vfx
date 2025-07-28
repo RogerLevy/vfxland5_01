@@ -390,24 +390,22 @@ magic-id TWEAK_MAGIC TWK
 \ Display Mode Control
 \ =============================================================================
 
-|| : ?corner ( - )
-    ; \ debug @ -exit  fullscreen? ?exit
-    \ display 4 4 al_set_window_position ;
-
 || : fullscreen ( - )
-    cr ." FULLSCREEN" -1 to fullscreen?  monw to winw  monh to winh ;
+    cr ." FULLSCREEN"  -1 to fullscreen?  monw to winw  monh to winh ;
 
 || : windowed ( - )
-    cr ." WINDOWED" 0 to fullscreen?  appw to winw  apph to winh ;
+    cr ." WINDOWED"  0 to fullscreen?  appw to winw  apph to winh ;
 
 || : *display ( - )
-    fullscreen? if fullscreen else windowed then
-    create-display  ?corner ;
+    \ fullscreen? if fullscreen else windowed then
+    create-display ;
 
 || : winmode ( - )
-    display ALLEGRO_FULLSCREEN_WINDOW fullscreen? 1 and
-    al_set_display_flag 0= if cr ." w/f Fail!" then
-    ?corner !delta !delta ;
+    display
+    ALLEGRO_FULLSCREEN_WINDOW
+    fullscreen? 1 and
+    al_set_display_flag 0= if cr ." WINMODE >> al_set_display_flag failed!" then
+    !delta !delta ;
     
 \ =============================================================================
 \ Main Loop Support
@@ -600,13 +598,12 @@ load-bitmaps
     >vfx ;
 
 || : setup
-    \ Initialize Engineer
+    \ Initialize runtime environment
     init-mersenne
     init-allegro
     *display
     init-vga-font
-    0 0 to ustime
-    init-ide ;
+    0 0 to ustime ;
 
 || create bye-chain-root
 bye-chain link 0 ,
@@ -630,6 +627,7 @@ bye-chain link 0 ,
 \     home-path$ count $cwd ;
 
 : empty ( - )
+    debug @ -exit
     rs
     cleanup
     init-nib
@@ -643,16 +641,20 @@ bye-chain link 0 ,
     load-bitmaps
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
-: frigid ( - )
-    \ Development startup
+: dev-frigid
+    \ Development-only startup
     path home-path$ place
     +xrefs
     256 1024 * xref-kb
     s" xref.xrf" fileexist? if load-xref then
-    rs setup cartridge ;
+    rs
+    init-ide ;
+
+: frigid ( - )
+    debug @ if dev-frigid then
+    setup cartridge ;
 
 : cold ( - )
-    \ Release startup
     frigid boot go ;
 
 \ =============================================================================
@@ -686,24 +688,37 @@ bye-chain link 0 ,
 : save-release ( - <path> )
     ['] cold is EntryPoint
     fullscreen?
-        repl @
+        ide @ repl @ debug @
+            ide off
             repl off
             debug off
             fullscreen
             save
-        repl !
-        debug on
+        debug ! repl ! ide !
     if fullscreen else windowed then ;
 
 : save-debug ( - <path> )
     ['] debug-cold is EntryPoint
     fullscreen?
-        repl @
-            repl on
-            debug on
+        ide @ repl @ debug @
+            ide off
+            repl off
+            debug off \ This disables Engineer-only initialization.
+                      \ Counter-intuitive because we want to debug the game not Engineer.
             windowed
             save
-        repl !
+        debug ! repl ! ide !
+    if fullscreen else windowed then ;
+
+: save-dev ( - <path> )
+    ['] debug-cold is EntryPoint
+    fullscreen?
+        ide @ repl @
+            ide on
+            repl on
+            windowed
+            save
+        repl ! ide !
     if fullscreen else windowed then ;
 
 || : prj ( - a len ) path '\' ending ;

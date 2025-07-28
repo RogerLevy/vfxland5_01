@@ -84,13 +84,14 @@ public
     ALLEGRO_VSYNC  1  ALLEGRO_SUGGEST  al_set_new_display_option
     
     fullscreen? if
-        ALLEGRO_FULLSCREEN_WINDOW display-flags or to display-flags 
         monw to winw  monh to winh
     else
         appw to winw  apph to winh
     then
     
-    display-flags al_set_new_display_flags
+    display-flags
+        fullscreen? if ALLEGRO_FULLSCREEN_WINDOW or then
+        al_set_new_display_flags
     
     appw apph al_create_display to display
         
