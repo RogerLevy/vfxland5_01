@@ -382,3 +382,5 @@ static autoclass
 : actor-class ( - <name> )
     (actor-class)
     ['] actor-oexec-error-handler swap 's oexec-error-handler ! ;
+    
+:noname me valid-object? if me peek else me . then ; is .me

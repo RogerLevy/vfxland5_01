@@ -1,19 +1,5 @@
 validations dup @ swap off
 
-: valid-class? ( a - n:res )
-    dup firstname here within  >r  \ in dictionary
-    r@ 0< if
-        dup /class + @ CLASS_MAGIC = r> and >r
-    then
-    drop r> ;
-
-: valid-object? ( a - n:res )
-    dup firstname here within  >r  \ in dictionary
-    r@ 0< if
-        dup @ ( class ) valid-class? r> and >r
-    then
-    drop r> ;
-
 crucial test: check-object ( a - a n:res )
     dup  valid-object? ;
         

@@ -11,7 +11,6 @@ aligned-page uios
 variable uiosp  uios uiosp !
 : ?type ?dup 0= if drop else type then ;
 
-
 create scalexy
 
 : scaled>  ( x. y. - <code> ; )
@@ -52,8 +51,6 @@ borrow engineer~ draw-game
     0 0 640 480 al_set_clipping_rectangle
     draw-game
     0 0 winw winh al_set_clipping_rectangle ;
-
-defer .me ( - ) ' noop is .me
 
 : .honing ( - )
     honing @ 0= if ." OFF " exit then
@@ -110,16 +107,16 @@ defer .me ( - ) ' noop is .me
         \ f.s
     s] 12 print2 ;
 
+: .prompt ( - ) 
+    context @ .name
+    ." > "  tib #tib @ ?type ;
+
 : command-line ( - )
     1. 2. scaled>
     split-x 1 lines from-bottom scaled-at
     s[
-        \ context @ ['] forth >body @ <> if
-            context @ .name
-        \ then
-        
-        ." >"  tib #tib @ ?type
-        active @ if
+        .prompt
+        active @ repl @ and if
             counter 20 / 8 and if ." _" then
         then
     s] print ;
@@ -175,10 +172,10 @@ create hist-dev   0 , vectors ,
 \ =============================================================================
 
 : obey ( - )
-    \ cr tib #tib @ 2dup ?type  space
-    cr tib #tib @
-    2dup f" > %s" add-history 
-    hist[ ['] evaluate catch 0 #tib ! hist]
+    osp @ >r uiosp @ osp !    
+    s[ .prompt s] add-history 
+    cr tib #tib @ hist[ ['] evaluate catch 0 #tib ! hist]
+    osp @ uiosp ! r> osp !    
     dup .throw-catch if rs state off then ; \ throw ;
 
 : ?charkey ( - )
@@ -192,14 +189,10 @@ create hist-dev   0 , vectors ,
     dup 32 < over 127 = or if drop exit then
     tib #tib @ + c! 1 #tib +! ;
 
-borrow engineer~ fullscreen
-borrow engineer~ winmode
 : repl-events ( - )
     ALLEGRO_EVENT_KEY_DOWN happened? if
         the-key <tab> = if
-            ide toggle
-            ide @ repl !
-            ide @ if fullscreen winmode then
+            repl toggle
         then
         the-key <`> = if
             ide @ not if
@@ -214,18 +207,26 @@ borrow engineer~ winmode
         active on
     then
     repl @ if
-        osp @ >r uiosp @ osp !
         ALLEGRO_EVENT_KEY_CHAR happened? if
-            the-char ?charkey
+            the-char ?charkey    
         then
-        osp @ uiosp ! r> osp !
     then ;
 
 \ =============================================================================
 \ Public Words
 \ =============================================================================
 
+borrow engineer~ w/f
+borrow engineer~ -keys
+
 public
+
+: ?w/f ( - )
+    <enter> pressed?  alt? and if
+        w/f -keys
+        fullscreen? ide !
+        ide @ repl ! 
+    then ;
 
 : ide-events ( - )
     debug @ if
@@ -241,7 +242,7 @@ public
     pen 2@ 2>r ide-layout 2r> at ;
 
 : init-ide ( - )
-    init-history
+    init-history 
     fullscreen winmode ;
 
 \ ???

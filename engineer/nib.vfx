@@ -139,7 +139,27 @@ m: destruct ( - ) ;
 : find-class ( a len - class | object% )
     >pad find if execute else drop object% then ;
 
+\ Validation
+: valid-class? ( a - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup /class + @ CLASS_MAGIC = r> and >r
+    then
+    drop r> ;
+
+: valid-object? ( a - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup @ ( class ) valid-class? r> and >r
+    then
+    drop r> ;
+
+\ IDE hook
+defer .me ( - ) ' noop is .me
+
 \ Initialization
 : init-nib ( - )
     [ /obj ] literal to /obj
     [ /static ] literal to /static ;
+
+

@@ -424,11 +424,10 @@ magic-id TWEAK_MAGIC TWK
 : restore-kb
     kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
 
-|| : ?lock repl @ if save-kb then ; 
-|| : ?unlock repl @ if restore-kb then ;
+|| : ?kb-lock repl @ if save-kb then ; 
+|| : ?kb-unlock repl @ if restore-kb then ;
     
 || : -keys  reset-keyboard ;
-|| : ?w/f  <enter> pressed?  alt? and if w/f -keys then ;
 || : ?quit  <esc> pressed? debug @ and if going off >vfx quit then ;
 || : ?bye  <f4> pressed?  alt? and if bye then ;
 
@@ -450,7 +449,9 @@ magic-id TWEAK_MAGIC TWK
 || : draw-game ( - ) 
     pen 2@ 2>r
     cls
+    ?kb-lock 
     'show @ catch ?throw
+    ?kb-unlock 
     2r> at
     pump ;
 
@@ -521,7 +522,7 @@ magic-id TWEAK_MAGIC TWK
     then ; 
 
 || : draw-tv ( - )
-    ?lock ?border draw-game ?unlock ;
+    ?border draw-game ;
 
 \ =============================================================================
 \ Interface Module
@@ -725,6 +726,7 @@ bye-chain link 0 ,
     ."  ~~~ Engineer v1 ~~~ "
     cr ;
     
+:noname me valid-object? if me .name then ; is .me
 assign engineer.cold to-do .cold   \ .cold is a VFX thing
 marker gild
 
