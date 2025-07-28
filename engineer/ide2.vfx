@@ -57,10 +57,10 @@ borrow engineer~ draw-game
 
 borrow engineer~ func[]
 : .hotkeys ( - )
-    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Exit" type cr
+    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Exit  " type cr
     12 for
         i func[] c@ if
-            i func[] count 2dup upper i 1 + f" F%n=%s " type
+            i func[] count 2dup upper i 1 + f" F%n=%s  " type
         then
     loop ;
 
@@ -77,6 +77,9 @@ borrow engineer~ func[]
 : .state ( - )
     state @ if ." COMPILING" else ." INTERPRETING" then ;
 
+: .unused ( - )
+    unused .comma ."  bytes" ;
+
 : .watch ( - )
     watch-xt @ -exit
     watch$ count ?type cr
@@ -92,12 +95,13 @@ borrow engineer~ func[]
         ." Context: " context @ .name ."  Current: " current @ .name cr
         ." Honing: " .honing cr
         ." State: " .state cr
+        ." Dict free: " .unused cr
         ." Watch: " .watch cr
     s] 12 print2 ;
 
 : user-area ( - )
     1. 2. scaled>
-    0 600 9 lines + scaled-at
+    0 600 10 lines + scaled-at
     s" (User Area)" print ;
 
 : command-history ( - )
@@ -200,7 +204,7 @@ create hist-dev   0 , vectors ,
     osp @ uiosp ! r> osp !    
     dup .throw-catch if rs state off then ; \ throw ;
 
-: ?charkey ( - )
+: ?char ( n - )
     alt? if drop exit then
     case
         ( bksp ) 8 of #tib @ -exit -1 #tib +! exit endof
@@ -210,6 +214,23 @@ create hist-dev   0 , vectors ,
     dup-endcase
     dup 32 < over 127 = or if drop exit then
     tib #tib @ + c! 1 #tib +! ;
+
+: ?key ( n - )
+    case
+        <up> of scroll-up endof
+        <down> of scroll-down endof
+        <pad8> of scroll-up endof
+        <pad2> of scroll-down endof
+        <pgup> of page-up endof
+        <pgdn> of page-down endof
+        <pad9> of page-up endof
+        <pad3> of page-down endof
+        <home> of scroll-to-top endof
+        <end> of scroll-to-bottom endof
+        <pad7> of scroll-to-top endof
+        <pad1> of scroll-to-bottom endof
+        drop
+    end-case ;
 
 : repl-events ( - )
     ALLEGRO_EVENT_KEY_DOWN happened? if
@@ -230,7 +251,8 @@ create hist-dev   0 , vectors ,
     then
     repl @ if
         ALLEGRO_EVENT_KEY_CHAR happened? if
-            the-char ?charkey    
+            the-char ?char
+            the-key ?key
         then
     then ;
 

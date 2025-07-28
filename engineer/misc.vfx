@@ -168,3 +168,28 @@ aka file-exists? fileexists?
     create here 0 ,
     bl parse drop @ swap !
     does> @ ;
+
+: .-  (.) type ;
+
+: .comma ( n - )
+    \ Format number with commas e.g. 100000000 -> 100,000,000
+    \ By Claude Sonnet 4
+    dup 0< if ." -" abs then
+    dup 1000000000 >= if
+        dup 1000000000 / .- ." ,"
+        1000000000 mod
+        dup 1000000 / 0 <# # # # #> type ." ,"
+        1000000 mod
+        dup 1000 / 0 <# # # # #> type ." ,"
+        1000 mod 0 <# # # # #> type
+    else dup 1000000 >= if
+        dup 1000000 / .- ." ,"
+        1000000 mod
+        dup 1000 / 0 <# # # # #> type ." ,"
+        1000 mod 0 <# # # # #> type
+    else dup 1000 >= if
+        dup 1000 / .- ." ,"
+        1000 mod 0 <# # # # #> type
+    else
+        .-
+    then then then ;

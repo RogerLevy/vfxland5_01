@@ -1,5 +1,5 @@
 \ ------------------------------------------------------------------------------
-\ Dynamic Command History with ALLOCATE/RESIZE
+\ Command History
 \ Uses cell-counted strings with dynamic memory management
 \ Mostly by Claude Sonnet 4
 \ ------------------------------------------------------------------------------
@@ -176,13 +176,17 @@ variable visible-lines     \ how many lines fit in display area
 : scroll-to-top ( - )
     0 scroll-pos ! ;
 
+: .line ( n - )
+    dup 0 line-count @ within? not if drop exit then
+    line-text type cr ;
+
 : render-history ( - )
     \ Render visible lines of history
     {: | line-num :}
     visible-lines @ 0 ?do
         scroll-pos @ i + to line-num
         line-num line-count @ < if
-            line-num line-text type cr
+            line-num .line
         else
             leave
         then
