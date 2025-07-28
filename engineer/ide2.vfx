@@ -83,19 +83,21 @@ borrow engineer~ func[]
     s[ watch-xt @ catch drop s] ?type ;
 
 : info-box ( - )
+    1. 2. scaled>
     0 600 scaled-at
     s[
         .hotkeys cr
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
-        ." Context: " context @ .name ." Current: " current @ .name cr
+        ." Context: " context @ .name ."  Current: " current @ .name cr
         ." Honing: " .honing cr
         ." State: " .state cr
         ." Watch: " .watch cr
     s] 12 print2 ;
 
 : user-area ( - )
-    0 600 8 lines + scaled-at
+    1. 2. scaled>
+    0 600 9 lines + scaled-at
     s" (User Area)" print ;
 
 : command-history ( - )
