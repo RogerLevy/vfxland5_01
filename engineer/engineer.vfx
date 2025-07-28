@@ -407,6 +407,11 @@ magic-id TWEAK_MAGIC TWK
     al_set_display_flag 0= if cr ." WINMODE >> al_set_display_flag failed!" then
     !delta !delta ;
     
+|| : w/f ( - )
+    \ Display mode switching for release builds
+    fullscreen? if windowed else fullscreen then
+    winmode ;
+        
 \ =============================================================================
 \ Main Loop Support
 \ =============================================================================
@@ -577,6 +582,11 @@ load-bitmaps
 
 || : ?idle ( - ) debug @ if EmptyIdle then ;
 || : ?reload-shift ( - ) shift? to reload-shift? ;
+|| : ?w/f ( - )
+    debug @ if ide-?w/f exit then
+    <enter> pressed?  alt? and if
+        w/f -keys
+    then ;    
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
