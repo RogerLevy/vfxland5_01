@@ -32,6 +32,6 @@
 || create strdev   0 , string-vectors ,
 || 0 value old-dev
 : z[  0 to >str  op-handle @ to old-dev  strdev op-handle ! ;
-: ]z  0 emit  str  old-dev op-handle ! ;
+: z]  0 emit  str  old-dev op-handle ! ;
 : s[  z[ ;
-: s]  ]z >str 1 - ;
+: s]  z] >str 1 - ;

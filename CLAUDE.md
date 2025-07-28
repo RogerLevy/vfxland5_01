@@ -62,6 +62,7 @@ Custom Forth OOP implementation
 - **Output formatting**: `cr` goes at the beginning of line outputs, not the end
 - **Backup files**: naming convention `original-filename-backup-YYYYMMDD-HHMMSS.ext`
 - When referring to Forth words outside of code, write them in ALL-CAPS to help distinguish them.
+- Don't use the classic "1" and "2" words like 1- 1+ 2+ 2- 2* 2/ . They should be considered useless legacy words.
 
 ## Error Handling
 - When code doesn't work, first check for simple typos (wrong function names, missing parameters, etc.) before launching into technical analysis

@@ -1,5 +1,5 @@
 \ ------------------------------------------------------------------------------
-\ Engineer IDE v1
+\ Engineer v1
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
@@ -23,6 +23,9 @@ variable bye-chain
 cstring home-path$
 create funcs 256 12 * allot&erase
 0 value reload-shift?
+variable repl  repl on   \ enable commandline
+variable ide   ide on    \ enable IDE mode (enables commandline automatically)
+defer pump ' noop is pump
 
 \ =============================================================================
 \ System Integration
@@ -313,6 +316,7 @@ include %idir%/print.vfx
     sdelta f>p to pdelta ;
 
 4 value zoom
+synonym z zoom
 
 \ : resize-display ( w h - )
 \     2dup to apph to appw  2dup to winh to winw
@@ -330,12 +334,6 @@ include %idir%/print.vfx
 : the-mouse ( - n ) e MOUSE_EVENT.x 2@ ; 
 : the-walt ( - n ) e MOUSE_EVENT.dx 2@ ; 
 : the-mbutton ( - n ) e MOUSE_EVENT.button @ ;
-
-\ =============================================================================
-\ REPL
-\ =============================================================================
-
-include %idir%/repl.vfx
 
 \ =============================================================================
 \ Function Keys
@@ -404,12 +402,15 @@ magic-id TWEAK_MAGIC TWK
     fullscreen? if fullscreen else windowed then
     create-display  ?corner ;
 
-|| : w/f
-    fullscreen? if windowed else fullscreen then
+|| : winmode ( - )
     display ALLEGRO_FULLSCREEN_WINDOW fullscreen? 1 and
     al_set_display_flag 0= if cr ." w/f Fail!" then
     ?corner !delta !delta ;
 
+|| : w/f ( - )
+    fullscreen? if windowed else fullscreen then
+    winmode ;
+    
 \ =============================================================================
 \ Main Loop Support
 \ =============================================================================
@@ -446,8 +447,6 @@ magic-id TWEAK_MAGIC TWK
 || : cls ( - )
     0e 0e 0e 1e al_clear_to_color ;
 
-defer pump
-
 || : draw-game ( - ) 
     pen 2@ 2>r
     cls
@@ -473,13 +472,65 @@ defer pump
     ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
 
 \ =============================================================================
+\ TV
+\ =============================================================================
+
+: refit ( - )  \ find biggest integer scaling that fits display
+    monw monh 2s>f f/
+    320 240 2s>f f/
+    f> if
+        monh 240 /
+    else
+        monw 320 /
+    then
+    to zoom ;
+
+: fs-w  320 z * ;
+: fs-h  240 z * ;
+: fs-wh  fs-w fs-h ;
+: border-xy  monw monh 2 2 2/ fs-wh 2 2 2/ 2- ;
+: tv-xy  border-xy `` 2 z * dup `` 2- ;
+: tv-xy2  border-xy `` 2 z * dup `` 2+ fs-wh 2+ ;
+
+: clip-screen ( - )
+    border-xy fs-wh al_set_clipping_rectangle ;
+
+: border ( - )
+    identity
+    0 0 winw winh al_set_clipping_rectangle
+    cls
+
+    tv-xy 2s>f `` tv-xy2 2s>f ``
+        0.25e 0.25e 0.25e 1e ```` al_draw_filled_rectangle
+
+    6e f>ds >r
+    border-xy 2s>f `` fs-wh 1 1 2+ border-xy 2+ 2s>f ``
+        0e 0e 0e 1e ```` r> ` al_draw_rectangle
+    
+    border-xy 2s>f `` z z 2s>f `` 0e ` transform
+    clip-screen ;
+
+: ?border
+    identity 
+    fullscreen? if
+        refit border
+    else
+        2 to zoom
+        0e 0e 2e 2e 0e transform
+        0 0 winw winh al_set_clipping_rectangle
+    then ; 
+
+|| : draw-tv ( - )
+    ?lock ?border draw-game ?unlock ;
+
+\ =============================================================================
 \ Interface Module
 \ =============================================================================
 
 load-bitmaps
 
 ' engineer~ public-xt !
-include %idir%/ide1.vfx
+    include %idir%/ide2.vfx
 ' forth public-xt !
 
 \ =============================================================================
@@ -527,10 +578,10 @@ include %idir%/ide1.vfx
 \ Main Loop
 \ =============================================================================
 
-|| : ?idle ( - ) debug @ if EmptyIdle ( yield ) then ;
+|| : ?idle ( - ) debug @ if EmptyIdle then ;
 || : ?reload-shift ( - ) shift? to reload-shift? ;
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
-|| : screen ( - ) debug @ if draw-ide else draw-game then ;
+|| : screen ( - ) debug @ ide @ and if draw-ide else draw-tv then ;
 
 : frame ( - )
     screen refresh controls ;
@@ -555,7 +606,8 @@ include %idir%/ide1.vfx
     init-allegro
     *display
     init-vga-font
-    0 0 to ustime ;
+    0 0 to ustime
+    init-ide ;
 
 || create bye-chain-root
 bye-chain link 0 ,
@@ -566,7 +618,7 @@ bye-chain link 0 ,
 || : cleanup ( - )
     bye-chain-root bye-chain !
     destroy-bitmaps
-    ['] desktop 'show !
+    ['] noop 'show !
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn

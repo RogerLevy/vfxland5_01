@@ -1,0 +1,39 @@
+[undefined] vfxcore [if]
+    include engineer/vfxcore.vfx
+[then]
+include engineer/history_dynamic.vfx
+
+init-history
+10 visible-lines !
+
+cr ." Starting mega stress test..."
+
+: mega-stress ( n - )
+    cr dup f" Adding %n lines..." type
+    0 do 
+        i 100000 mod 0= if
+            cr i . ." lines added so far..."
+        then
+        i f" Line %n" add-history 
+    loop ;
+
+1000000 mega-stress
+
+cr ." Final results:"
+cr ." Lines added: " line-count @ .
+cr ." Buffer used: " current-history-length .
+cr ." Buffer size: " history-size @ .
+cr ." Max lines capacity: " max-lines @ .
+
+cr ." Testing access to random lines:"
+500000 line-text cr type
+750000 line-text cr type
+999999 line-text cr type
+
+cr ." Testing scrolling:"
+scroll-to-bottom
+cr ." Last 5 lines:"
+render-history
+
+cr ." Mega stress test complete!"
+bye

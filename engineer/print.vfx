@@ -7,13 +7,14 @@ include vga13h.vfx
 
 \ Backend
 || variable rmargin
-|| 8 constant fonth
 || create bg.png here
     s" builtin\gfx\vga2_8x8_allegro5.png" file,
 || here swap - constant /bg.png
 || 0 value vga-8x8 \ font
 || create range(s) 0 , 255 ,
+
 : font@  vga-8x8 ;
+
 || create fg  1e sf, 1e sf, 1e sf, 1e sf, 
 || : sf-!  cell- dup sf! ;
 || : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
@@ -26,16 +27,28 @@ include vga13h.vfx
 \ Rendering
 : color ( n - )
     255 and cells vga13h + @ 8 << $ff or (color) ;
-|| create zstr 4096 allot
-: mltext ( a n w - )
+
+|| create zstr 65536 allot
+
+variable line-spacing  8 line-spacing !
+
+: mltext ( a len w - )
     over 0= if 3drop exit then 
     >r zstr zplace  zstr r> s>f f>ds   
-    fonth s>f f>ds | lh w z | 
+    line-spacing @ s>f f>ds | lh w z | 
     font@  fg 4f@  at@f w lh 0 z al_draw_multiline_text ;
-: print ( a n - )
-    320 pen x@ - mltext ;
+
+: print ( a len - )
+    winw pen x@ - mltext ;
+
+: print2 ( a len line-spacing - )
+    line-spacing @ >r line-spacing !
+    print
+    r> line-spacing ! ;
+
 : textw ( a n - n )
     zstr zplace  zstr  font@  swap  al_get_text_width ;  
+
 : glyph ( n - )
     >r  font@ fg 4f@ at@f  r> al_draw_glyph ;
 

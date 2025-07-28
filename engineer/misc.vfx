@@ -19,11 +19,13 @@ aka cd cwd
 : 2-  rot swap - >r - r> ;
 : for  s" 0 ?do" evaluate ; immediate
 : @+  dup cell+ swap @ ;
+: >lower ( c -- c' ) dup 65 91 within if 32 + then ;
+: ltype for dup c@ >lower emit 1 + loop drop ;  
 : .name ( xt - )
     \ Smart name print
     \ NOTE: Slow!
     dup body> inForth? if
-        body> >name count type space
+        body> >name count ltype space
     else . then ;
 : f>ds  0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
@@ -158,9 +160,9 @@ aka file-exists? fileexists?
 ;
 
 : abort"
-    ?comp   
+    ?comp
     postpone s"         \ syntax-highlighting guard: "
-    postpone .abort
+    postpone .abort  discard-sinline
 ; immediate
 
 : magic-id ( - <name> <id> )

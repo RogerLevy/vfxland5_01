@@ -1,3 +1,4 @@
+-1 constant vfxcore
 include %idir%/misc.vfx
 include %idir%/scope.vfx
 include %idir%/fixed.vfx
