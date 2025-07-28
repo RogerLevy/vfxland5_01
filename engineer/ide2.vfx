@@ -55,6 +55,15 @@ borrow engineer~ draw-game
     draw-game
     0 0 winw winh al_set_clipping_rectangle ;
 
+borrow engineer~ func[]
+: .hotkeys ( - )
+    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Exit" type cr
+    12 for
+        i func[] c@ if
+            i func[] count 2dup upper i 1 + f" F%n=%s " type
+        then
+    loop ;
+
 : .honing ( - )
     honing @ 0= if ." OFF " exit then
     honing @ if
@@ -76,6 +85,7 @@ borrow engineer~ draw-game
 : info-box ( - )
     0 600 scaled-at
     s[
+        .hotkeys cr
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
         ." Context: " context @ .name ." Current: " current @ .name cr
