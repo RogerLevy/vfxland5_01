@@ -408,10 +408,6 @@ magic-id TWEAK_MAGIC TWK
     display ALLEGRO_FULLSCREEN_WINDOW fullscreen? 1 and
     al_set_display_flag 0= if cr ." w/f Fail!" then
     ?corner !delta !delta ;
-
-|| : w/f ( - )
-    fullscreen? if windowed else fullscreen then
-    winmode ;
     
 \ =============================================================================
 \ Main Loop Support
@@ -584,7 +580,7 @@ load-bitmaps
 || : ?idle ( - ) debug @ if EmptyIdle then ;
 || : ?reload-shift ( - ) shift? to reload-shift? ;
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
-|| : screen ( - ) debug @ ide @ and if draw-ide else draw-tv then ;
+|| : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
 : frame ( - )
     screen refresh controls ;
