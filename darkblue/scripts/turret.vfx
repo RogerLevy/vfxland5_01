@@ -198,12 +198,14 @@ charge-levels #items cell array bars
 : ?charge ( - )
     automatic @ ?exit
     dir-buttons #items for
-        i dir-key@ pressed? if 
-            charging on
-            -1 level ! 
+        i dir-key@ pressed? if
+            charging @ not if
+                charging on
+                -1 level !
+            then
             i dir-key@ charge-key !
         then
-    loop 
+    loop
     charging @ if
         owner @ 's flash-ctr @ 0 >= if  \ -1 = not flashing
             cancel-charge exit
@@ -230,8 +232,8 @@ charge-levels #items cell array bars
 : ?aim-normal ( - )
     dir-buttons #items for
         i dir-key@ pressed? if 
-            cancel-charge
-            i dir-ang@ aim ! shooting on
+            i dir-ang@ aim ! 
+            shooting on
         then
     loop ;
 
