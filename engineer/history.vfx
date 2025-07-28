@@ -1,9 +1,8 @@
 \ ------------------------------------------------------------------------------
 \ Dynamic Command History with ALLOCATE/RESIZE
 \ Uses cell-counted strings with dynamic memory management
+\ Mostly by Claude Sonnet 4
 \ ------------------------------------------------------------------------------
-
-include %idir%/../lib/wstring.vfx
 
 \ History storage
 variable history-buffer    \ allocated memory for history string

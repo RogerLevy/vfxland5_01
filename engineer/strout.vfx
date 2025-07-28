@@ -1,6 +1,20 @@
-|| create str 32768 allot
-|| 0 value >str
-|| : Emit-string  drop  str >str + c!  1 +to >str ;
+|| 4 constant #buffers
+|| 32768 constant /buffer
+|| #buffers /buffer array buffers 
+|| variable buffer-index
+
+|| : str ( - a )
+    buffer-index @ buffers [] ;
+
+|| : buf+ ( - )
+    buffer-index @ 1 + #buffers umod buffer-index !
+    s" " str wplace ;
+
+|| : buf- ( - )
+    buffer-index @ 1 - #buffers umod buffer-index ! ;
+
+|| variable cbuf
+|| : Emit-string  drop  cbuf c!  cbuf 1 str wappend ;
 || : Type-string  drop  bounds ?do  i c@ 0 emit-string  loop ;
 || : CR-string    drop  10 0 emit-string ;
 || create string-vectors
@@ -31,7 +45,7 @@
   ' drop ,
 || create strdev   0 , string-vectors ,
 || 0 value old-dev
-: z[  0 to >str  op-handle @ to old-dev  strdev op-handle ! ;
-: z]  0 emit  str  old-dev op-handle ! ;
+: z[  buf+  op-handle @ to old-dev  strdev op-handle ! ;
+: z]  0 emit  str  old-dev op-handle !  buf- ;
 : s[  z[ ;
-: s]  z] >str 1 - ;
+: s]  z] wcount 1 - ;

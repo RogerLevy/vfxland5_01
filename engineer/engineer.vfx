@@ -26,6 +26,8 @@ create funcs 256 12 * allot&erase
 variable repl  repl on   \ enable commandline
 variable ide   ide on    \ enable IDE mode (enables commandline automatically)
 defer pump ' noop is pump
+cstring watch$
+variable watch-xt
 
 \ =============================================================================
 \ System Integration
@@ -58,11 +60,11 @@ debug @ 0= [if]
     validations off  \ Speeds up performance by 85%-90%
 [then]
 
-
 \ =============================================================================
 \ Additional Facilities
 \ =============================================================================
 
+include %idir%/../lib/wstring.vfx
 include %idir%/strout.vfx  \ TODO: maybe deprecate/remove
 include %idir%/error2.vfx  \ TODO: Make platform-agnostic
 
@@ -715,6 +717,11 @@ bye-chain link 0 ,
     200 ms
     prj prj f" save-release ..\..\rel\%s\%s" cr 2dup type evaluate
     prj prj f" save-debug ..\..\rel\%s\%s-debug" cr 2dup type evaluate ;
+
+: watch ( - <code> )
+    0 parse 2dup f" :noname %s ;" evaluate watch-xt !
+    context @ body> >name count
+    f" %s > %s" watch$ place ;
 
 \ =============================================================================
 \ Kickoff
