@@ -94,10 +94,19 @@ borrow engineer~ func[]
 : .unused ( - )
     unused .comma ."  bytes" ;
 
+: .hold ( - )
+    hold @ if ." ON" else ." OFF" then ;
+
 : .watch ( - )
     watch-xt @ -exit
+    watch-context @ .name
+    ." > "
     watch$ count ?type cr
-    s[ watch-xt @ catch drop s] ?type ;
+    push-order
+    only forth watch-context @ +order
+    s[ watch-xt @ catch drop s] ?type
+    pop-order
+    ;
 
 : info-box ( - )
     1. 2. scaled>
@@ -110,7 +119,8 @@ borrow engineer~ func[]
         ." Honing: " .honing cr
         ." State: " .state cr
         ." Dict free: " .unused cr
-        ." Watch: " .watch cr
+        ." Hold: " .hold cr
+        ." Watch: " cr .watch cr
     s] 12 print2 ;
 
 : user-area ( - )
@@ -163,7 +173,7 @@ borrow engineer~ func[]
     \ title-bar
     game-window     command-history
     info-box        stack-display
-    user-area       command-line ;
+    ( user-area )   command-line ;
 
 \ =============================================================================
 \ History I/O device

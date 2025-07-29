@@ -28,6 +28,8 @@ variable ide   ide on    \ enable IDE mode (enables commandline automatically)
 defer pump ' noop is pump
 cstring watch$
 variable watch-xt
+variable watch-context
+variable hold            \ HOLD ON / HOLD OFF to stop/resume logic updates
 
 \ =============================================================================
 \ System Integration
@@ -725,14 +727,15 @@ bye-chain link 0 ,
 
 : turnkey ( - )
     prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" cr 2dup type shellcmd
-    200 ms
+    500 ms
     prj prj f" save-release ..\..\rel\%s\%s" cr 2dup type evaluate
     prj prj f" save-debug ..\..\rel\%s\%s-debug" cr 2dup type evaluate ;
 
 : watch ( - <code> )
+    context @ watch-context !
     0 parse 2dup f" :noname %s ;" evaluate watch-xt !
-    context @ body> >name count
-    f" %s > %s" watch$ place ;
+    ( context @ body> >name count
+    f" %s > %s" ) watch$ place ;
 
 \ =============================================================================
 \ Kickoff

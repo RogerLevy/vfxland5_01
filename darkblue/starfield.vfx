@@ -21,7 +21,7 @@ variable ctr
 public
 
 : starfield ( - )
-    hold>
+    batch>
         seeds #stars for @+ star loop drop
         starfield-speed ctr +! ;
 

@@ -29,8 +29,7 @@ include pathtest2.vfx
 \ pathtest
 
 : start
-    just game test2 pathtest
-    go ;
+    just game test2 pathtest ;
 
 
 require scripts\ship.vfx

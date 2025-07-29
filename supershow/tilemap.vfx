@@ -64,7 +64,7 @@ variable pile
 || : tile+  pile @ + put gap 0 +at ;
 
 : lay ( a - )
-    hold> tmh for tmw for @+ tile+ loop nr loop drop ;
+    batch> tmh for tmw for @+ tile+ loop nr loop drop ;
 
 : spot ( col row a - a )
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;

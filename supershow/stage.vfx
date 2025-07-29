@@ -137,7 +137,7 @@ m: peeked ( - ) ;
     (behave) (move) (+time) ;
 
 : step ( - )
-    ['] (step) catch .throw-catch ;
+    hold @ ?exit ['] (step) catch .throw-catch ;
 
 \ =============================================================================
 \ Find actor
@@ -169,10 +169,10 @@ m: peeked ( - ) ;
     x 2@ 2p>s at bmp @ cput ;
 
 : backsprites ( - )
-    hold> actives> prio @ ?exit sprite ?pillory ;
+    batch> actives> prio @ ?exit sprite ?pillory ;
 
 : sprites ( - )
-    hold> actives> prio @ -exit sprite ?pillory ;
+    batch> actives> prio @ -exit sprite ?pillory ;
 
 \ =============================================================================
 \ Actor management

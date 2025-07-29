@@ -11,6 +11,10 @@
 
 include %idir%\checks.vfx
 
+\ =============================================================================
+\ Constants and Variables
+\ =============================================================================
+
 20 ?constant gap  
 320 gap / ?constant tmw
 240 gap / ?constant tmh
@@ -38,7 +42,7 @@ require %idir%\waveplay.vfx
 : at@  pen 2@ ;
 : toggle dup @ 0= swap ! ;
 : cput ( n - ) dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
-: hold>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;
+: batch>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;
 : h|  $1000000 or ;
 : v|  $2000000 or ;
 : hv|  h| v| ;
@@ -127,7 +131,7 @@ var a.ofs var a.done var a.flp
     a.spd @ a.ofs @ + a.len @ s>p mod a.ofs !
     !bmp ?done ;
 : animate ( - )
-    actives> +animation ;
+    hold @ ?exit actives> +animation ;
 
 \ =============================================================================
 \ Create classes from bitmaps automatically
@@ -174,6 +178,7 @@ var a.ofs var a.done var a.flp
 \ =============================================================================
 
 : init-supershow ( - )
+    hold off
     init-tilesets
     load-samples
     init-crt
