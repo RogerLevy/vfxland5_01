@@ -64,7 +64,12 @@ borrow engineer~ draw-game
 
     1e f>ds >r
     -1e -1e appw 2 * 1 + apph 2 * 1 + 2s>f 
-    1e 1e 1e 1e r> al_draw_rectangle
+    repl @ if 
+        1e 1e 1e 1e
+    else
+        0e 1e 0.5e 1e
+    then
+    r> al_draw_rectangle
     
     -m
     0 0 monw monh al_set_clipping_rectangle ;

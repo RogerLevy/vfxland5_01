@@ -99,8 +99,10 @@ aka hone update
 : [testing] ( - )
     \ Conditionally compile test code - active only in honing mode
     \ And only with actor classes
-    honing @ ['] hone-class <>
-    update-name$ count
-    currsourcename -path -ext s= not and
+    honing @ ['] hone-class =
+    update-name$ count 
+    currsourcename -path -ext
+    cr 2over type cr 2dup type
+    s= and not
     if postpone \\ exit then
-    public ;
+    private ;
