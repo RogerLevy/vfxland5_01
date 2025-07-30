@@ -187,9 +187,9 @@ borrow engineer~ func[]
 create str 32768 allot
 0 value >str
 
-: hist-emit  drop  str >str + c!  1 +to >str ;
+: hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
 : hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
-: hist-cr    drop  10 0 hist-emit ;
+: hist-cr    drop  10 0 hist-emit  0 out ! ;
 
 create vectors
   ' drop ,
@@ -229,9 +229,16 @@ create hist-dev   0 , vectors ,
 : obey ( - )
     osp @ >r uiosp @ osp !    
     s[ .prompt s] add-history 
-    hist[ tib #tib @ ['] evaluate catch 0 #tib ! hist]
-    osp @ uiosp ! r> osp !    
-    dup .throw-catch if rs state off then ; \ throw ;
+    hist[
+        tib #tib @ to-source
+        -1 to source-id
+        0 >in !
+        'SourceFile off
+        ['] interpret catch
+        ?dup if .throw rs state off then
+        0 #tib ! 
+    hist]
+    osp @ uiosp ! r> osp ! ; 
 
 : ?char ( n - )
     alt? if drop exit then
