@@ -109,13 +109,17 @@ m: peeked ( - ) ;
 : !sp ( a - )
     \ Restore SP. If debug mode is on, report stack imbalances.
     debug @ if
-        dup sp@ cell+ cell+ <> if
+        \ Compare SP to previous SP.
+        \ The data stack grows downward.
+        dup sp@ cell+ cell+ > if  
             cr
-            s[
-                ." Stack imbalance in logic for actor " 
-                me peek
-            s] log-warning
-            .s
+            s[ ." Positive stack imbalance in logic for actor " me peek
+            s] log-warning .s
+        then
+        dup sp@ cell+ cell+ < if
+            cr
+            s[ ." Negative stack imbalance in logic for actor " me peek
+            s] log-warning .s
         then
     then
     sp! ;

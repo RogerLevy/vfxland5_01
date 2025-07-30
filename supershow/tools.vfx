@@ -48,6 +48,8 @@ cstring update-name$
     class init-by-class
     update-name$ count f" %s~" $private ;
 
+aka hone update
+
 : .actors ( - )
     actives> cr me peek ;
 
@@ -68,8 +70,7 @@ cstring update-name$
             n[ count has-image? if
                 n[ count f"     %s.png bmp !" line,
             then
-            s"     act>" line,
-            s"         ;" line,
+            s"     act> ;" line,
         file]
         n[ count f" scripts\%s.vfx" included
     else
@@ -93,4 +94,13 @@ cstring update-name$
     2dup f" %s~" evaluate
     f" locate %s%%" evaluate ;
 
-    
+|| : s= compare 0= ;
+
+: [testing] ( - )
+    \ Conditionally compile test code - active only in honing mode
+    \ And only with actor classes
+    honing @ ['] hone-class <>
+    update-name$ count
+    currsourcename -path -ext s= not and
+    if postpone \\ exit then
+    public ;
