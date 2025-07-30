@@ -11,7 +11,9 @@ actor-class tri%
 aka bounced n1
 
 : repel
-    player me 75e 2.5e repelling-force
+    player  -exit
+    player me 75e 2.5e 0e repelling-force
+    cr 2dup 2p.
     vx 2@ 2+ 1. clamplen vx 2! ;
 
 : ang>bmp ( ts n. - n )
@@ -41,6 +43,14 @@ aka bounced n1
         ?cull
     then ;
 
+: move-tri
+    repel
+    vang @ ang +!
+    ?bounce/cull ;
+
+: !bmp
+    tri.ts ang @ ang>bmp ( ?flicker ) bmp ! ;
+
 tri% :: init
     tri.ts 0 tile bmp !
     4. r !
@@ -48,9 +58,6 @@ tri% :: init
     360. rnd ang !
     9. 2 rnd if negate then vang !
     act>
-        repel
-        vang @ ang +!
-        tri.ts ang @ ang>bmp ( ?flicker ) bmp !
-        ?bounce/cull
-        ;
+        move-tri
+        !bmp ;
         

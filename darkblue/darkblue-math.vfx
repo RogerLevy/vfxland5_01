@@ -159,11 +159,13 @@ var l \ length
     2f>p
 ;
 
-: near? ( radius. x. y. x. y. - f )
-    ( 2swap ) ;
+: near? ( obj obj dist. - f )
+    {: o1 o2 d :} 
+    o1 exists? o2 exists? and not if 0 exit then
+    o1 pos@ o2 pos@ dist d <= ;
 
 : rhit? ( obj obj - f )
-    over free? over free? or if 2drop 0 exit then
+    over exists? over exists? and not if 2drop 0 exit then
     {: o1 o2 | rd :}
     o1 's r @
     o2 's r @
@@ -255,8 +257,8 @@ var l \ length
        f: ex f: ey f: er f: lx1 f: ly1 f: lx2 f: ly2
        f: dx f: dy f: t f: closest-x f: closest-y f: distance f: half-width :}
     
-    \ Check if enemy is free
-    enemy free? if 0 exit then
+    \ Check if enemy exists
+    enemy exists? not if 0 exit then
     
     \ Get enemy properties
     enemy 's x 2@ 2p>f to ey to ex
@@ -299,5 +301,48 @@ var l \ length
 : laser-hit?  ( actor beam - f )
     dup 's en @ 0= if 2drop 0 exit then
     [[ x 2@ a @ l @ w @ ]] seg-hit? ;
+
+: bubble-constraint-force ( center-obj trapped-obj f: bubble-radius f: damping -- x-force. y-force. )
+    {: center trapped f: bubble-radius f: damping |
+       f: dx f: dy f: distance f: excess f: force-magnitude
+       f: trapped-vx f: trapped-vy f: vel-toward-center
+       f: normal-x f: normal-y :}
+
+    \ Calculate distance from center to trapped object
+    trapped 's x 2@ center 's x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ If inside bubble, no constraint needed
+    distance
+    bubble-radius
+    trapped 's r @ p>f f-
+    f<= if
+        0. 0. exit
+    then
+
+    \ Calculate how far outside the bubble
+    distance bubble-radius trapped 's r @ p>f f- f- to excess
+
+    \ Get trapped object's velocity
+    trapped 's vx 2@ 2p>f to trapped-vy to trapped-vx
+
+    \ Calculate velocity component toward center
+    distance 0e f= if
+        0e to vel-toward-center
+        1e to normal-x
+        0e to normal-y
+    else
+        dx distance f/ to normal-x
+        dy distance f/ to normal-y
+        trapped-vx normal-x f* trapped-vy normal-y f* f+ fnegate to vel-toward-center
+    then
+
+    \ Force proportional to how far outside + velocity damping
+    excess 0.1e f* vel-toward-center damping f* f+ to force-magnitude
+
+    \ Apply force toward center
+    normal-x force-magnitude f* fnegate
+    normal-y force-magnitude f* fnegate
+    2f>p ;
 
 validations !

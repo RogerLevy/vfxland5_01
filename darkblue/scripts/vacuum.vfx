@@ -1,0 +1,85 @@
+require scripts\tri.vfx
+require scripts\bubble.vfx
+require darkblue-math.vfx
+
+enemy-class vacuum%
+    0 i/attack-rate ! 
+    aka my-bubble n1
+
+    var owner   
+
+
+0 value bub
+\ : blowout-r  bub 's r @ 2. p* p>f  ;
+: blowout-r  100e ;
+
+: blowout-tris
+    actives>
+        me tri% is? -exit
+        owner @ bub = if
+            floating  \ disable bubble constraint physics
+        else
+            bub me blowout-r 100e 100e repelling-force
+                cr 2dup 2p. vx 2!
+        then ;
+
+vacuum% :: _die
+    my-bubble @ to bub
+    blowout-tris
+    my-bubble @ out
+    unload ;
+
+: constraint-physics
+    owner @ ` me ` owner @ 's r @ p>f ` 0e ` bubble-constraint-force
+    vx 2+!
+    vx 2@ x 2+! ;
+
+: capture ( tri - )
+    {: | bub :} 
+    my-bubble @ to bub
+    1 bounty +!
+    0.25 bub 's r +! 
+    [[
+        bub owner !
+        bub 's x 2@ bub 's r @ + 6. - x 2!   \ reposition at bubble "entrance"
+        ['] constraint-physics phys !
+        90. rnd 225. + 1. vec vx 2!  \ randomized upward velocity 
+        \ 6. r !
+    ]] ;
+
+: suck
+    act>
+        actives>
+            me tri% is? -exit
+            owner @ ?exit
+            you me 150e 40e attracting-force vx 2+!
+            you me 2. near? if me you [[ capture ]] then ;
+
+: embody
+    \ Position the bubble above the vacuum enemy's head
+    [[ x 2@  0 r @  2-  vx 2@ 2+ ]] ``
+    0 ` r @ negate 1. - ` 2+
+    x 2! ;
+
+: bubble-act
+    act> owner @ embody ;
+
+vacuum% :: _post-init ( - )
+    suck ;
+
+\ testing 
+
+public
+: somewhere  gamew gameh 2rnd ;
+
+: sprinkle  for somewhere at tri% one drop loop ;
+
+: cleanup  actives> me tri% is? -exit unload ;
+
+: *vacuum
+    vacuum% one [[
+        me *bubble [[ owner ! bubble-act me ]] my-bubble ! 
+    me ]] ;
+
+just 200 150 at *vacuum as
+200 sprinkle

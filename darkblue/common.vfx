@@ -1,11 +1,14 @@
-\ Vars
+\ Common Vars
 var hp
 var r \ radius 
 var m \ mass
 var atk
+var owner
 
 \ Messages
-m: damage ( n - ) drop ;
+m: damage ( n - ) negate hp +! ;
+m: _die ( - ) unload ;
+: die  me _die ;
  
 \ Global variables
 0 value player

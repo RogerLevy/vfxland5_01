@@ -41,6 +41,7 @@ honing @ not [if]
     static i/mass
     static i/atk
     static i/bounty
+    static i/attack-rate
     
     static is-player-projectile
     
@@ -55,7 +56,7 @@ honing @ not [if]
    
 : post-init  me _post-init ;
 : burst  me _burst ;
-    
+
 \ : is-enemy?  [[ is-enemy @ ]] ;
 
 actor-class enemies%
@@ -66,12 +67,14 @@ actor-class enemies%
     5. i/mass !
     30 i/atk !
     20 i/bounty !
+    80 i/attack-rate !
     public
         var hp
         var r
         var m
         var atk
         var bounty
+        var attack-rate
     private
     
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
@@ -95,7 +98,7 @@ enemies% :: _burst ( n - )
     \ next# @ tris-next# !
     r> next# ! ;
 
-: die
+enemies% :: _die
     me 0 0 from bounty @ burst
     unload 
     ; \ regen ;
@@ -103,7 +106,8 @@ enemies% :: _burst ( n - )
 \ variable orbs-next#  4096 orbs-next# !
 
 : ?shoot
-    gamelife @ 80 mod ?exit
+    attack-rate @ -exit
+    gamelife @ attack-rate @ mod ?exit
     next# @ >r
     4096 512 + next# !
     me 0 0 from s" orb%" find-class one [[
@@ -141,6 +145,7 @@ enemies% :: damage ( n - )
     i/mass @ m !
     i/atk @ atk !
     i/bounty @ bounty !
+    i/attack-rate @ attack-rate !
     ['] enemy-physics phys !
     act> ?shoot ;
 
@@ -176,6 +181,7 @@ enemies% :: init
 : gold:  val i/bounty ! ;
 : mass:  val i/mass ! ;
 : rad:  val i/rad ! ;
+: bmp:  val i/bmp ! ;
 
 public
 
@@ -191,10 +197,11 @@ public
     c auto-bitmap
     0 c 's _post-init ! ;
 
-\ id            hp          atk         gold        rad         spd         path
-for: enemy1     hp: 1       atk: 10     gold: 20                \ spd: 1.0    path: path1 
-for: enemy2     hp: 5       atk: 20     gold: 30                \ spd: 2.0    path: path2
-for: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.    \ spd: 2.0    path: path2
+\ id            hp          atk         gold        rad         bmp                 spd         path
+for: enemy1     hp: 1       atk: 10     gold: 20                                    \ spd: 1.0    path: path1 
+for: enemy2     hp: 5       atk: 20     gold: 30                                    \ spd: 2.0    path: path2
+for: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.                        \ spd: 2.0    path: path2
+for: vacuum     hp: 1       atk: 5      gold: 5                 bmp: enemy23.png
 
 honing @ [if]
     hot-reload-enemies

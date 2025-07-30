@@ -28,13 +28,13 @@ include path.vfx
 include pathtest2.vfx
 \ pathtest
 
-: start
+: start ( - )
     just game test2 pathtest ;
 
 
-require scripts\ship.vfx
-: die ( - )
-    ship~ player [[ eval" die" ;
+\ require scripts\ship.vfx
+: kill-player ( - )
+    player as die ;
 
 
 

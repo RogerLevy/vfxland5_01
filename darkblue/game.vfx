@@ -1,14 +1,16 @@
 require title.vfx
 require-event test1
 require laser.vfx
+require scripts\bubble.vfx
 \ require death.vfx
 \ require subscreen.vfx
 \ require savegame.vfx
 \ require %idir%\..\supershow\ui\ui.vfx
 
 \ Global commands
+
 : *ship ( - )
-    ship% one [[ me turret% one 's n1 ! ]] ;
+    ship% one [[ me turret% one 's owner ! ]] ;
 
 : *player ( - )
     *ship ;
@@ -28,7 +30,7 @@ require laser.vfx
 
 \ Gameplay main loop 
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
-: render  backdrop ( .75 .75 scale> ) starfield hud sprites laser animate ;
+: render  backdrop ( .75 .75 scale> ) starfield hud bubbles sprites laser animate ;
 : think  step ;
 : game  show> think render ;
 

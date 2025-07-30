@@ -18,7 +18,7 @@ actor-class turret%
     var atk
     var a
 
-aka owner n1 \ ship tracking pointer
+    var owner \ ship tracking pointer
 
 borrow ship~ flash-ctr \ ship's recovery counter
 

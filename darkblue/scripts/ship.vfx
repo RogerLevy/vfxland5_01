@@ -65,7 +65,7 @@ aka flash-ctr n1
     loop
     unload ;
 
-: die ( - )
+ship% :: _die ( - )
     hush
     0 energy !
     62 flash-ctr !

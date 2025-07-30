@@ -1,6 +1,6 @@
-: repelling-force ( obj1 obj2 f: repel-radius f: force-strength. -- x. y. )
-    {: obj1 obj2 f: repel-radius f: force-strength
-        | f: dx f: dy f: distance f: force-magnitude :}
+: repelling-force ( obj1 obj2 f: repel-radius f: force-strength f: edge-strength -- x. y. )
+    {: obj1 obj2 f: repel-radius f: force-strength f: edge-strength
+        | f: dx f: dy f: distance f: force-magnitude f: force-ratio :}
 
     \ Calculate distance between objects
     obj2 's x 2@ obj1 's x 2@ 2- 2p>f to dy to dx
@@ -11,8 +11,34 @@
        0. 0. exit
     then
 
-    \ Calculate repulsion force (inverse square law)
+    \ Calculate repulsion force (inverse square law) 
     force-strength distance f/ distance f/ to force-magnitude
+    
+    \ Blend with edge strength based on distance
+    distance repel-radius f/ to force-ratio
+    force-magnitude 1e force-ratio f- f* edge-strength force-ratio f* f+ to force-magnitude
+
+    \ Normalize direction and apply force
+    dx distance f/ force-magnitude f*
+    dy distance f/ force-magnitude f*
+    2f>p ;
+
+: repelling-force2 ( obj1 obj2 f: repel-radius f: force-strength f: edge-strength. -- x. y. )
+    {: obj1 obj2 f: repel-radius f: force-strength f: edge-strength
+        | f: dx f: dy f: distance f: force-magnitude f: force-ratio :}
+
+    \ Calculate distance between objects
+    obj2 's x 2@ obj1 's x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ Check if outside radius or at same position
+    distance repel-radius f>= distance 0e f= or if
+       0. 0. exit
+    then
+
+    \ Calculate force using linear interpolation from center to edge  
+    distance repel-radius f/ to force-ratio
+    force-strength 1e force-ratio f- f* edge-strength force-ratio f* f+ to force-magnitude
 
     \ Normalize direction and apply force
     dx distance f/ force-magnitude f*
@@ -34,4 +60,25 @@
 
 : clamplen ( x. y. len. -- x. y. )
     -rot 2p>f p>f fclamplen 2f>p ;
+
+: attracting-force ( obj1 obj2 f: attract-radius f: force-strength. -- x. y. )
+    {: obj1 obj2 f: attract-radius f: force-strength
+        | f: dx f: dy f: distance f: force-magnitude :}
+
+    \ Calculate distance between objects
+    obj1 's x 2@ obj2 's x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ Check if outside radius or at same position
+    distance attract-radius f>= distance 0e f= or if
+       0. 0. exit
+    then
+
+    \ Calculate attraction force (inverse square law)
+    force-strength distance f/ distance f/ to force-magnitude
+
+    \ Normalize direction and apply force (toward obj1)
+    dx distance f/ force-magnitude f*
+    dy distance f/ force-magnitude f*
+    2f>p ;
 

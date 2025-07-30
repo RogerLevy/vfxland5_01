@@ -7,6 +7,16 @@ actor-class laser%
 : create-actor ( class - )
     create here /actor allot&erase swap >object drop ;
 
+: draw-laser ( - )
+    w @ p>f f>ds >r
+    x 2@ 2p>f
+    a @ l @ vec x 2@ 2+ 2p>f
+    1e 1e 1e 1e 
+    r> al_draw_line ;
+
+: step-laser ( - )
+    hold @ ?exit behave physics +time ;
+
 public
 
 laser% create-actor beam
@@ -18,9 +28,5 @@ laser% create-actor beam
 : laser ( - )
     beam as>
         en @ -exit
-        behave physics +time
-        w @ p>f f>ds >r
-        x 2@ 2p>f
-        a @ l @ vec x 2@ 2+ 2p>f
-        1e 1e 1e 1e 
-        r> al_draw_line ;
+        step-laser
+        draw-laser ;
