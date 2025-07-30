@@ -148,10 +148,10 @@ borrow engineer~ func[]
     1. 2. scaled>
     split-x 6 lines from-bottom scaled-at
     s[  
+        names ?.s
         ints ?.s
         fixes ?.s
         hexes ?.s
-        names ?.s
         \ f.s
     s] 12 print2 ;
 
@@ -269,9 +269,11 @@ create hist-dev   0 , vectors ,
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         active off
+        display-mode @ 0= ide @ and if hold on then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
         active on
+        display-mode @ 0= ide @ and if hold off then
     then
     repl @ if
         ALLEGRO_EVENT_KEY_CHAR happened? if
