@@ -159,7 +159,7 @@ When creating status.txt files, follow the format established in doc/engineer/st
 - Build artifacts and temporary files excluded via `.gitignore`
 - Git credentials configured:
   - user.name: "Roger"
-  - user.email: "roger@example.com"
+  - user.email: "roger.levy@gmail.com"
 
 ## Codebase Backups
 
