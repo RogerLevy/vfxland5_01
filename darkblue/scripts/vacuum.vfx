@@ -78,14 +78,7 @@ vacuum% :: _post-init ( - )
     suck
     ;
 
-[testing]
-
-: somewhere  gamew gameh 2rnd ;
-
-: sprinkle  for somewhere at tri% one drop loop ;
-
-: cleanup  actives> me tri% is? -exit unload ;
-
+public
 
 path[ infinity-path
     segments[
@@ -109,6 +102,14 @@ path]
         0.5 pb1 path-speed
         1.5 2. pb1 path-scale
     me ]] ;
+
+[testing]
+
+: somewhere  gamew gameh 2rnd ;
+
+: sprinkle  for somewhere at tri% one drop loop ;
+
+: cleanup  actives> me tri% is? -exit unload ;
 
 just 200 150 at *vacuum as
 200 sprinkle

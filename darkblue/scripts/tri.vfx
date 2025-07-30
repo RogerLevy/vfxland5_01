@@ -60,3 +60,4 @@ tri% :: init
         move-tri
         !bmp ;
         
+public

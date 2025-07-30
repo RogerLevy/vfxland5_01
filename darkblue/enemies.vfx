@@ -46,7 +46,6 @@ honing @ not [if]
     static is-player-projectile
     
     m: _post-init ( - ) ;
-    m: _burst ( n - ) drop ;
 
     dictionary enemy-classes
 
@@ -55,7 +54,6 @@ honing @ not [if]
 [then]
    
 : post-init  me _post-init ;
-: burst  me _burst ;
 
 \ : is-enemy?  [[ is-enemy @ ]] ;
 
@@ -78,28 +76,28 @@ actor-class enemies%
     private
     
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
-: tri-speed 0.2 rnd 0.05 + ;
-: bias  me pos@ dist 160 / ;
-: towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
-: p/c  4 5 chance if player-pos else center-pos then ;
 
-enemies% :: _burst ( n - )
+\ : tri-speed 0.2 rnd 0.05 + ;
+\ : bias  me pos@ dist 160 / ;
+\ : towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
+\ : p/c  4 5 chance if player-pos else center-pos then ;
+
+: burst ( n - )
     {: | c :}
     s" tri%" find-class to c
-    \ *snd-09*
-    next# @ >r
-    512 next# !
-    for
-        c one [[
-            \ p/c towards vx 2!
-            360. rnd .5 rnd .5 + vec vx 2+!
-        ]]
-    loop
-    \ next# @ tris-next# !
+    next# @ >r 512 next# !
+    for c one [[ 360. rnd .5 rnd .5 + vec vx 2+! ]] loop
+    r> next# ! ;
+
+: burst-ring ( n - )
+    {: | c :}
+    s" tri%" find-class to c
+    next# @ >r 512 next# !
+    for c one [[ 360. rnd .05 rnd .95 + vec vx 2+! ]] loop
     r> next# ! ;
 
 enemies% :: _die
-    me 0 0 from bounty @ burst
+    me 0 0 from bounty @ burst-ring
     unload 
     ; \ regen ;
 
@@ -166,7 +164,7 @@ enemies% :: init
 
 : (include-enemy-class) ( -1 key$ a:val - -1 )
     rot >r drop count -% f" scripts\%s.vfx"
-    cr 2dup type ?included r> ;
+    ?included r> ;
 
 : hot-reload-enemies ( - )
     ['] (include-enemy-class) enemy-classes walk-dictionary
@@ -201,7 +199,7 @@ public
 for: enemy1     hp: 1       atk: 10     gold: 20                                    \ spd: 1.0    path: path1 
 for: enemy2     hp: 5       atk: 20     gold: 30                                    \ spd: 2.0    path: path2
 for: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.                        \ spd: 2.0    path: path2
-for: vacuum     hp: 1       atk: 5      gold: 5                 bmp: enemy23.png
+for: vacuum     hp: 20      atk: 5      gold: 0                 bmp: enemy23.png
 
 honing @ [if]
     hot-reload-enemies
