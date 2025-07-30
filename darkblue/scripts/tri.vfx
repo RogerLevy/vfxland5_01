@@ -12,9 +12,8 @@ aka bounced n1
 
 : repel
     player  -exit
-    player me 75e 2.5e 0e repelling-force
-    cr 2dup 2p.
-    vx 2@ 2+ 1. clamplen vx 2! ;
+    player me 75e 2.5e 0e repelling-force vx 2+!
+    ; \ vx 2@ 2+ 1. clamplen vx 2! ;
 
 : ang>bmp ( ts n. - n )
     360. umod dup >r
@@ -44,7 +43,7 @@ aka bounced n1
     then ;
 
 : move-tri
-    repel
+    \ repel
     vang @ ang +!
     ?bounce/cull ;
 

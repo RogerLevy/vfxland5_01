@@ -6,11 +6,11 @@
 \ rptest3
 
 : test1
-    50 50 at *ship
+    50 50 at *player
     100 100 at enemy1% one drop ;
 
 : test2
-    50 50 at *ship
+    50 50 at *player
     object% one as> act>
         begin
             0.408 passed? -exit
@@ -24,7 +24,7 @@
 \ test2 
 
 \ Path Test
-include path.vfx
+require path.vfx
 include pathtest2.vfx
 \ pathtest
 
