@@ -148,8 +148,13 @@ borrow engineer~ func[]
     fgc fg-buf >cbuf cells + !
     bgc bg-buf >cbuf cells + !
     1 +to >cbuf ;
+
 : >rgb ( n - n )
     cells vga13h + @ 8 lshift $ff or ;
+
+: @attr
+    attr @ dup $ff and >rgb to fgc
+    8 rshift $ff and >rgb to bgc ;
 
 : command-history ( - )
     1. 2. scaled>
@@ -169,8 +174,12 @@ borrow engineer~ func[]
         1 to skip 
         c case
             10 of  monw 8 / 2 / +to >row  >row to >cbuf  endof
-            254 of  2 to skip  i 1 + c@ >rgb to fgc  endof  \ foreground code
-            255 of  2 to skip  i 1 + c@ >rgb to bgc  endof  \ background code
+            ATTR_PUSH of  save-attribute  endof
+            ATTR_POP of  restore-attribute  @attr endof
+            ATTR_FG of  2 to skip  i 1 + c@ dup >rgb to fgc
+                        attr @ $ff00 and or attr !  endof
+            ATTR_BG of  2 to skip  i 1 + c@ dup >rgb to bgc  8 lshift
+                        attr @ $ff and or attr !  endof
             write
         end-case
     skip +loop 
@@ -228,7 +237,7 @@ create str 32768 allot
 
 : hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
 : hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
-: hist-cr    drop  10 emit  textmode-refresh-attribute  0 out ! ;
+: hist-cr    drop  10 emit  refresh-attribute  0 out ! ;
 
 create vectors
   ' drop ,
@@ -258,7 +267,7 @@ create vectors
   ' drop ,
 create hist-dev   0 , vectors ,
 0 value old-dev
-: hist[  0 to >str  op-handle @ to old-dev  hist-dev op-handle !  textmode-refresh-attribute ;
+: hist[  0 to >str  op-handle @ to old-dev  hist-dev op-handle !  refresh-attribute ;
 : hist]  old-dev op-handle !  str >str add-history ;
 
 \ =============================================================================
@@ -268,7 +277,7 @@ create hist-dev   0 , vectors ,
 : obey ( - )
     textmode on
     osp @ >r uiosp @ osp !    
-    s[ textmode-refresh-attribute  .tib s] add-history 
+    s[ refresh-attribute  .tib s] add-history 
     tib #tib @ to-source
     -1 to source-id
     0 >in !
@@ -404,7 +413,8 @@ public
     +m identity cls draw-display-mode -m ;
 
 : init-ide ( - )
-    init-history 
+    init-history
+    textmode on hist[ 15 attribute hist] textmode off
     0 display-mode !
     enact-display-mode ;
 

@@ -1,0 +1,47 @@
+variable attr
+variable textmode 
+
+250 constant ATTR_PUSH
+251 constant ATTR_POP
+254 constant ATTR_FG
+255 constant ATTR_BG  
+
+: attribute ( n - )
+    \ $0000BBFF = F = foreground, B = background
+    \ If textmode is off, don't emit control characters.
+    \ This prevents issues with normal terminal output.
+    dup attr !
+    textmode @ 0= if drop exit then
+    ATTR_FG emit  dup $ff and emit
+    ATTR_BG emit  8 rshift $ff and emit ;
+
+: tm-emit ( n - )
+    textmode @ 0= if drop exit then
+    emit ;
+
+: refresh-attribute ( - )
+    attr @ attribute ;
+
+create attr-stack 16 cells allot
+variable attr-sp
+
+: save-attribute ( -- )
+    attr @ attr-stack attr-sp @ cells + !
+    attr-sp @ 1 + 15 and attr-sp ! ;
+
+: restore-attribute ( -- )
+    attr-sp @ 1 - 15 and attr-sp !
+    attr-stack attr-sp @ cells + @ attr ! ;
+
+: push-attribute ( n - )
+    save-attribute 
+    ATTR_PUSH tm-emit
+    attribute ;
+    
+: pop-attribute ( - )
+    restore-attribute
+    ATTR_POP tm-emit ;
+    
+\ Initialize everything to 15 (white)
+15 attr !
+:noname 16 for save-attribute loop ; execute

@@ -22,33 +22,17 @@ aka cd cwd
 : >lower ( c -- c' ) dup 65 91 within if 32 + then ;
 : ltype for dup c@ >lower emit 1 + loop drop ;  
 
-
-variable attr
-15 attr !
-
-variable textmode 
-
-: attribute ( n - )
-    \ $0000BBFF = F = foreground, B = background
-    \ If textmode is off, don't emit control characters.
-    \ This prevents issues with normal terminal output.
-    dup attr !
-    textmode @ 0= if drop exit then
-    254 emit dup $ff and emit
-    255 emit 8 rshift $ff and emit ;
-
-: textmode-refresh-attribute ( - )
-    textmode @ if attr @ attribute then ;
-
+include %idir%\..\textmode\textmode-tools.vfx
 
 : .name ( xt - )
     \ Smart name print
     \ NOTE: Slow!
     dup body> inForth? if
-        attr @ >r 14 attribute
+        14 push-attribute
         body> >name count ltype space
-        r> attribute
+        pop-attribute
     else . then ;
+
 : f>ds  0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 

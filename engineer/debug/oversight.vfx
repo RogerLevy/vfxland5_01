@@ -10,7 +10,7 @@
 
 public
 
-: log  attribute type 15 attribute ;
+: log  push-attribute type pop-attribute ;
 
 : log-warning ( addr:string len:string -- )
     cr f" [WARN] %s" 11 log ;
