@@ -78,9 +78,9 @@ m: peeked ( - ) ;
     en @ 0= if ." (FREE) " then ;
 
 || : (peek) ( - )
-    as> ." #" me actor# . cla @ .name .status
-    ." at: " x 2@ 2p>s swap . .
-    me peeked ;
+    as> ." [ #" me actor# . cla @ .name .status
+    ." at: " x 2@ 2p>s swap . . 
+    ( me peeked ) ." ] " ;
 
 : peek ( actor - )
     (peek) ; \ ['] (peek) catch drop ;

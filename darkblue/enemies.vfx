@@ -122,7 +122,7 @@ enemies% :: damage ( n - )
     
 : ?bullets
     me beam laser-hit? if
-        beam 's atk @ me damage
+        beam [[ atk @ you damage ]]
         exit
     then
     actives>
