@@ -229,15 +229,13 @@ create hist-dev   0 , vectors ,
 : obey ( - )
     osp @ >r uiosp @ osp !    
     s[ .prompt s] add-history 
-    hist[
-        tib #tib @ to-source
-        -1 to source-id
-        0 >in !
-        'SourceFile off
-        ['] interpret catch
-        ?dup if .throw rs state off then
-        0 #tib ! 
-    hist]
+    tib #tib @ to-source
+    -1 to source-id
+    0 >in !
+    'SourceFile off
+    ['] interpret catch
+    ?dup if .throw rs state off then
+    0 #tib ! 
     osp @ uiosp ! r> osp ! ; 
 
 : ?char ( n - )
@@ -321,7 +319,7 @@ display-mode jumptable enact-display-mode
     ' windowed-mode ,
 
 : ide-mode-draw ( - )
-    pen 2@ 2>r ide-layout 2r> at ;
+    hist[ pen 2@ 2>r ide-layout 2r> at hist] ;
 
 : full-mode-draw ( - )
     draw-tv

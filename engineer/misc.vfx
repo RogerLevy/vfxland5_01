@@ -89,7 +89,7 @@ aka cd cwd
 : >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lpc swap c! loop ;
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
-: h. ." $" base @ swap hex . base ! ;
+: h. ." $" base @ swap hex u. base ! ;
 variable saved-dp
 : d[ ( a - ) dp @ saved-dp ! dp ! ;
 : d] ( - ) saved-dp @ dp ! ;

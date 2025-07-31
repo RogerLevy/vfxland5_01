@@ -36,5 +36,5 @@ validations !
 \ Assign system hooks
 \ -------------------
 
-' null-catch-save ' debug-catch-restore extends-catch
+\ ' null-catch-save ' debug-catch-restore extends-catch
 ' null-debugger to-callback debugger
