@@ -126,7 +126,7 @@ ship% :: damage ( n - )
         me enemy1% is? if hit-enemy exit then
         me orb% is? if hit-orb exit then
         recovering? ?exit
-        me tri% is? if hit-tri exit then ;
+        worth @ if hit-tri exit then ;
 
 : collisions
     &screen &objects ;

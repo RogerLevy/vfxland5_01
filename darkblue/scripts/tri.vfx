@@ -56,6 +56,7 @@ tri% :: init
     0. m !
     360. rnd ang !
     9. 2 rnd if negate then vang !
+    1 worth !
     act>
         move-tri
         !bmp ;

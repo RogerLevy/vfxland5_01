@@ -18,7 +18,9 @@ enemy-class vacuum%
 : blowout-tris
     actives>
         me tri% is? -exit
+        
         owner @ bub = if
+            1 worth ! \ restore worth
             4. r !    \ restore normal tri radius
             floating  \ disable bubble constraint physics
         else
@@ -44,6 +46,7 @@ vacuum% :: _die
     1 bounty +!
     0.25 bub 's r +! 
     [[
+        0 worth !
         bub owner !
         bub 's x 2@ bub 's r @ + 6. - x 2!   \ reposition at bubble "entrance"
         ['] constraint-physics phys !

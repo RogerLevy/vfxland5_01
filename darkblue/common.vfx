@@ -4,6 +4,7 @@ var r \ radius
 var m \ mass
 var atk
 var owner
+var worth \ when non-zero, makes object a collectible source of energy
 
 \ Messages
 m: damage ( n - ) negate hp +! ;
