@@ -1,0 +1,11 @@
+library: textmode_renderer.dll  
+extern "C" bool draw_textmode_buffers( void * font, void * chars,
+    void * fg_colors, void * bg_colors, int cols, int rows, float x, float y );  \ "
+
+create char-buf  80 24 * allot&erase
+create fg-buf  80 24 * cells allot&erase
+create bg-buf  80 24 * cells allot&erase
+
+: draw-textmode
+    builtin-font char-buf fg-buf bg-buf 80 24 at@f draw_textmode_buffers
+        abort" draw_textmode_buffers err" ;
