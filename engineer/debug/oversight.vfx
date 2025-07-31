@@ -13,13 +13,13 @@ public
 : log  push-attribute type pop-attribute ;
 
 : log-warning ( addr:string len:string -- )
-    cr f" [WARN] %s" 11 log ;
+    cr f" [WARN] %s" 6 log ;
 : log-error ( addr:string len:string -- )
     cr f" [ERROR] %s" 4 log ;
 : log-debug ( addr:string len:string -- )
-    cr f" [DEBUG] %s" 11 log ;
+    cr f" [DEBUG] %s" 3 log ;
 : log-info ( addr:string len:string -- )
-    cr f" [INFO] %s" 11 log ;
+    cr f" [INFO] %s" 7 log ;
     
 \ =============================================================================
 \ Other private utilities

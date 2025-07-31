@@ -78,9 +78,12 @@ m: peeked ( - ) ;
     en @ 0= if ." (FREE) " then ;
 
 || : (peek) ( - )
-    as> ." [ #" me actor# . cla @ .name .status
+    as>
+    11 push-attribute
+    ." [ #" me actor# . cla @ .name .status
     ." at: " x 2@ 2p>s swap . . 
-    ( me peeked ) ." ] " ;
+    ( me peeked ) ." ] "
+    pop-attribute ;
 
 : peek ( actor - )
     (peek) ; \ ['] (peek) catch drop ;

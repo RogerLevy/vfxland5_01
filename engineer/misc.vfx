@@ -45,7 +45,7 @@ include %idir%\..\textmode\textmode-tools.vfx
 : .s
     cr depth 8 min | d |
     d 0< -4 ?throw
-    11 attribute
+    3 push-attribute
     d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
     d if
         d 0 ?do d 1 - i - pick . loop 
@@ -53,11 +53,11 @@ include %idir%\..\textmode\textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    15 attribute ;
+    pop-attribute ;
 : f.s 
     cr fdepth | d |
     d 0< -400 ?throw
-    11 attribute
+    3 push-attribute
     ."     FS:[ " 
     d if
         d 0 ?do d 1 - i - fpick f. loop 
@@ -65,7 +65,7 @@ include %idir%\..\textmode\textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    15 attribute ;
+    pop-attribute ;
 : rs reset-stacks ;
 : ending ( a n c - a n )
    >r begin  2dup r@ scan
@@ -107,8 +107,8 @@ variable saved-dp
 \ r0 @ constant .rsbase
 : (.rs) ( a -- )
     {: rp :}
-    11 attribute
-    cr ."     RS:[ " 
+    cr 3 push-attribute
+    ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 5 cells + min  ?do
         i @ .name                    \ Print return address
@@ -117,7 +117,7 @@ variable saved-dp
         \ then
     cell negate +loop
     ." ] "
-    15 attribute ;
+    pop-attribute ;
 
 : .rs ( -- )
     rp@ (.rs) ;

@@ -137,8 +137,9 @@ borrow engineer~ func[]
 
 : command-history ( - )
     1. 2. scaled>
-    split-x s>f 0e 1e 1e 0e transform
-    monh 7 lines - 24 / visible-lines ! 
+    \ split-x s>f 0e 1e 1e 0e transform
+    monh 7 lines - 24 / visible-lines !
+    split-x 0 at
     s[ render-history s] print-colorful ;
 
 : ints  0 stackmode ! ;
@@ -274,6 +275,7 @@ create hist-dev   0 , vectors ,
     ALLEGRO_EVENT_KEY_DOWN happened? if
         the-key <tab> = if
             repl toggle
+            repl @ not if hold off then
         then
         the-key <`> = if
             ide @ not if
