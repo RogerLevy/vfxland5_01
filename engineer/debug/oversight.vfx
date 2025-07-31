@@ -240,14 +240,14 @@ cstring wordname$
     caller-rp @ ip>nfa caller-name !
     res 0= if
         val 's validator @ >name count
-        f" VALIDATION FAILED: %s" log-error
+        c 's word-name$ count f" %s >> VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
         .s
         -999 throw
     then
     res 1 = if
         val 's validator @ >name count 
-        f" VALIDATION NOTE: %s" log-warning
+        c 's word-name$ count f" %s >> VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
         .s ." <-- Data stack AFTER the validation ran"
     then ;
