@@ -60,7 +60,9 @@ borrow engineer~ draw-game
     gamewin-h 2 / apph - 2 +
     2s>f 1e 1e 0e transform
 
+    textmode on 
     (2x-game)
+    textmode off 
 
     1e f>ds >r
     -1e -1e appw 2 * 1 + apph 2 * 1 + 2s>f 
@@ -133,11 +135,48 @@ borrow engineer~ func[]
     0 gamewin-h 10 lines + scaled-at
     s" (User Area)" print ;
 
+0 value >row  \ row offset
+0 value >cbuf \ char-buf offset
+0 value c     \ char
+0 value fgc   
+0 value bgc
+0 value skip
+
+\ : skip ( n - ) r> swap r> swap r> + >r >r >r ;
+: write ( n - )
+    char-buf >cbuf + c!  
+    fgc fg-buf >cbuf cells + !
+    bgc bg-buf >cbuf cells + !
+    1 +to >cbuf ;
+: >rgb ( n - n )
+    cells vga13h + @ 8 lshift $ff or ;
+
 : command-history ( - )
     1. 2. scaled>
-    split-x 0 at
+    split-x s>f 0e 1e 1e 0e transform
     monh 7 lines - 24 / visible-lines !
-    s[ render-history s] 12 print2 ;
+    
+    \ write history window to textmode buffers
+    char-buf /char-buf erase
+    fg-buf /char-buf cells erase
+    bg-buf /char-buf cells erase
+    0 dup to >row to >cbuf
+    15 >rgb to fgc
+    0 >rgb to bgc
+    s[ render-history s] 
+    bounds ?do
+        i c@ to c
+        1 to skip 
+        c case
+            10 of  monw 8 / 2 / +to >row  >row to >cbuf  endof
+            254 of  2 to skip  i 1 + c@ >rgb to fgc  endof  \ foreground code
+            255 of  2 to skip  i 1 + c@ >rgb to bgc  endof  \ background code
+            write
+        end-case
+    skip +loop 
+
+    monw 8 / 2 / ` visible-lines @ ` at@f draw-textmode
+    ; \ s[ render-history s] 12 print2 ;
 
 : ints  0 stackmode ! ;
 : fixes  1 stackmode ! ;
@@ -160,7 +199,7 @@ borrow engineer~ func[]
         \ f.s
     s] 12 print2 ;
 
-: .prompt ( - ) 
+: .tib ( - ) 
     context @ .name
     ." > "  tib #tib @ ?type ;
 
@@ -168,7 +207,7 @@ borrow engineer~ func[]
     1. 2. scaled>
     split-x 1 lines from-bottom scaled-at
     s[
-        .prompt
+        .tib
         active @ repl @ and if
             counter 20 / 8 and if ." _" then
         then
@@ -181,7 +220,7 @@ borrow engineer~ func[]
     ( user-area )   command-line ;
 
 \ =============================================================================
-\ History I/O device
+\ History I/O device (Textmode)
 \ =============================================================================
 
 create str 32768 allot
@@ -189,7 +228,7 @@ create str 32768 allot
 
 : hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
 : hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
-: hist-cr    drop  10 0 hist-emit  0 out ! ;
+: hist-cr    drop  10 emit  textmode-refresh-attribute  0 out ! ;
 
 create vectors
   ' drop ,
@@ -219,7 +258,7 @@ create vectors
   ' drop ,
 create hist-dev   0 , vectors ,
 0 value old-dev
-: hist[  0 to >str  op-handle @ to old-dev  hist-dev op-handle ! ;
+: hist[  0 to >str  op-handle @ to old-dev  hist-dev op-handle !  textmode-refresh-attribute ;
 : hist]  old-dev op-handle !  str >str add-history ;
 
 \ =============================================================================
@@ -227,8 +266,9 @@ create hist-dev   0 , vectors ,
 \ =============================================================================
 
 : obey ( - )
+    textmode on
     osp @ >r uiosp @ osp !    
-    s[ .prompt s] add-history 
+    s[ textmode-refresh-attribute  .tib s] add-history 
     tib #tib @ to-source
     -1 to source-id
     0 >in !
@@ -236,7 +276,8 @@ create hist-dev   0 , vectors ,
     ['] interpret catch
     ?dup if .throw rs state off then
     0 #tib ! 
-    osp @ uiosp ! r> osp ! ; 
+    osp @ uiosp ! r> osp !
+    textmode off ; 
 
 : ?char ( n - )
     alt? if drop exit then

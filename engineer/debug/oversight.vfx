@@ -10,14 +10,16 @@
 
 public
 
+: log  attribute type 15 attribute ;
+
 : log-warning ( addr:string len:string -- )
-    cr ." [WARN] " type ;
+    cr f" [WARN] %s" 11 log ;
 : log-error ( addr:string len:string -- )
-    cr ." [ERROR] " type ;
+    cr f" [ERROR] %s" 4 log ;
 : log-debug ( addr:string len:string -- )
-    cr ." [DEBUG] " type ;
+    cr f" [DEBUG] %s" 11 log ;
 : log-info ( addr:string len:string -- )
-    cr ." [INFO] " type ;
+    cr f" [INFO] %s" 11 log ;
     
 \ =============================================================================
 \ Other private utilities

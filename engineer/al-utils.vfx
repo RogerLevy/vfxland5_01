@@ -113,7 +113,7 @@ public
     else
         2dup to apph to appw
         zoom * to winh zoom * to winw
-        display winw winh .s al_resize_display 0= if
+        display winw winh al_resize_display 0= if
             cr ." RESIZE-DISPLAY >> al_resize_display failed!"
         then 
     then 

@@ -91,7 +91,8 @@ __declspec( dllexport ) int __cdecl draw_textmode_buffers(
     int num_cols,
     int num_rows,
     float x,
-    float y
+    float y,
+    float line_spacing
  ) {
     OutputDebugStringA("draw_textmode_buffers: Starting...\n");
     
@@ -185,7 +186,7 @@ __declspec( dllexport ) int __cdecl draw_textmode_buffers(
     
     // Draw background bitmap scaled up to full size
     int bitmap_width = num_cols * char_width;
-    int bitmap_height = num_rows * char_height;
+    int bitmap_height = num_rows * (char_height + line_spacing);
     al_draw_scaled_bitmap( bg_bitmap, 0, 0, num_cols, num_rows, x, y, bitmap_width, bitmap_height, 0 );
     
     // Clean up background bitmap
@@ -204,7 +205,7 @@ __declspec( dllexport ) int __cdecl draw_textmode_buffers(
                 unpack_rgba( fg_color, &r, &g, &b, &a );
                 
                 float glyph_x = x + col * char_width;
-                float glyph_y = y + row * char_height;
+                float glyph_y = y + row * (char_height + line_spacing) + (line_spacing / 2);
                 
                 al_draw_glyph( font, r, g, b, a, glyph_x, glyph_y, character );
             }

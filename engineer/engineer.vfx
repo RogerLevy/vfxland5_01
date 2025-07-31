@@ -281,10 +281,11 @@ create pen 0 , 0 , \ int
     bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
 
 \ =============================================================================
-\ Print text
+\ Text rendering
 \ =============================================================================
 
 include %idir%/print.vfx
+include %idir%/../textmode/textmode.vfx
 
 \ =============================================================================
 \ Input

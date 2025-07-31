@@ -21,11 +21,33 @@ aka cd cwd
 : @+  dup cell+ swap @ ;
 : >lower ( c -- c' ) dup 65 91 within if 32 + then ;
 : ltype for dup c@ >lower emit 1 + loop drop ;  
+
+
+variable attr
+15 attr !
+
+variable textmode 
+
+: attribute ( n - )
+    \ $0000BBFF = F = foreground, B = background
+    \ If textmode is off, don't emit control characters.
+    \ This prevents issues with normal terminal output.
+    dup attr !
+    textmode @ 0= if drop exit then
+    254 emit dup $ff and emit
+    255 emit 8 rshift $ff and emit ;
+
+: textmode-refresh-attribute ( - )
+    textmode @ if attr @ attribute then ;
+
+
 : .name ( xt - )
     \ Smart name print
     \ NOTE: Slow!
     dup body> inForth? if
+        attr @ >r 14 attribute
         body> >name count ltype space
+        r> attribute
     else . then ;
 : f>ds  0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
@@ -39,23 +61,27 @@ aka cd cwd
 : .s
     cr depth 8 min | d |
     d 0< -4 ?throw
+    11 attribute
     d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
     d if
         d 0 ?do d 1 - i - pick . loop 
     else
         ." Empty! "
     then
-    ." ] ";
+    ." ] "
+    15 attribute ;
 : f.s 
     cr fdepth | d |
     d 0< -400 ?throw
+    11 attribute
     ."     FS:[ " 
     d if
         d 0 ?do d 1 - i - fpick f. loop 
     else
         ." Empty! "
     then
-    ." ] ";
+    ." ] "
+    15 attribute ;
 : rs reset-stacks ;
 : ending ( a n c - a n )
    >r begin  2dup r@ scan
@@ -97,6 +123,7 @@ variable saved-dp
 \ r0 @ constant .rsbase
 : (.rs) ( a -- )
     {: rp :}
+    11 attribute
     cr ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 5 cells + min  ?do
@@ -105,7 +132,8 @@ variable saved-dp
         \     ." > "                   \ Print separator
         \ then
     cell negate +loop
-    ." ] " ;
+    ." ] "
+    15 attribute ;
 
 : .rs ( -- )
     rp@ (.rs) ;
@@ -149,9 +177,11 @@ aka file-exists? fileexists?
     
 : .abort ( err a:msg len:msg - )
     rot if
+        4 attribute
         cr ." ABORT: " type
         rp@ cell+ (.rs)
         .s
+        15 attribute
         -1 throw
     else
         2drop
