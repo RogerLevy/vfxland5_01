@@ -41,7 +41,8 @@ variable attr-sp
 : pop-attribute ( - )
     restore-attribute
     ATTR_POP tm-emit ;
-    
+
 \ Initialize everything to 15 (white)
+\ -----------------------------------
 15 attr !
 :noname 16 for save-attribute loop ; execute
