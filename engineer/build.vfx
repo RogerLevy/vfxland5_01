@@ -10,7 +10,7 @@ include engineer.vfx
 \ 0 to InitSupport? \ don't need windows constants
 256 1024 * 1024 * set-size  \ of dictionary
 
-: switch ( - <path> )
+: ld ( - <path> )
     bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
         -1 abort" Project doesn't exist or is not a project!"
     then
@@ -27,7 +27,7 @@ include engineer.vfx
     home-path$ count $cwd
     bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
     200 ms
-    switch
+    ld
 ;
 
 marker gild
