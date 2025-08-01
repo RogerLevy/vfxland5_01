@@ -43,9 +43,11 @@
   ' drop ,
   ' drop ,
   ' drop ,
+
+|| 8 cell stack op-stack 
 || create strdev   0 , string-vectors ,
-|| 0 value old-dev
-: z[  buf+  op-handle @ to old-dev  strdev op-handle ! ;
-: z]  0 emit  str  old-dev op-handle !  buf- ;
+
+: z[  buf+  op-handle @ op-stack push  strdev op-handle ! ;
+: z]  0 emit  str  op-stack pop op-handle !  buf- ;
 : s[  z[ ;
 : s]  z] wcount 1 - ;

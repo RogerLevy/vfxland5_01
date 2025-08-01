@@ -12,6 +12,7 @@ variable max-lines         \ maximum number of lines
 variable line-count        \ current number of lines
 variable scroll-pos        \ current top visible line (0-based)
 variable visible-lines     \ how many lines fit in display area
+variable last-line-start
 
 : free-history ( - )
     \ Free allocated memory
@@ -19,27 +20,6 @@ variable visible-lines     \ how many lines fit in display area
     line-offsets @ ?dup if free drop then
     0 history-buffer !
     0 line-offsets ! ;
-
-: init-history ( - )
-    \ Initialize history with dynamic allocation
-    
-    \ Start with reasonable defaults - both will grow as needed
-    262144 max-lines !  \ 256K lines initially (1MB / 4 bytes per cell)
-    
-    \ Allocate 1MB history buffer
-    1048576 dup >r allocate abort" Failed to allocate history buffer"
-    history-buffer !
-    r> history-size !
-    
-    \ Clear history string (cell-counted)
-    0 history-buffer @ !
-    
-    \ Allocate line offset cache for 256K lines (1MB)
-    max-lines @ cells allocate abort" Failed to allocate line offsets"
-    line-offsets !
-    
-    0 line-count !
-    0 scroll-pos ! ;
 
 : resize-history ( new-size - )
     {: new-size :} 
@@ -129,34 +109,21 @@ variable visible-lines     \ how many lines fit in display area
 
 : add-history ( addr len - )
     \ Add string to history, handling embedded CRs
-    {: addr len | start-pos lf-char[ 1 ] :}
+    {: addr len | char[ 1 ] :}
     len -exit
-    
-    10 lf-char[ c!
-    
-    addr len 
-    begin
-        10 csplit
-        to len to addr
-
-        len if 
-            len 2 + ensure-space
-            current-history-length to start-pos
-            addr len history-buffer @ wappend
-            
-            addr len + 1 - c@ 10 <> if
-                lf-char[ 1 history-buffer @ wappend
-            then
-            
-            start-pos add-line-offset
+    addr len bounds do
+        i c@ dup char[ c!
+        1 ensure-space
+        char[ 1 history-buffer @ wappend
+        10 = if
+            last-line-start @ add-line-offset
+            current-history-length last-line-start !
             1 line-count +!
-            
-            line-count @ visible-lines @ - 0 max scroll-pos !
+            visible-lines @ if
+                line-count @ visible-lines @ - 0 max scroll-pos !
+            then
         then
-        
-        1 /string
-    dup -1 = until
-    2drop ; 
+    loop  ; 
 
 : scroll-up ( - )
     scroll-pos @ 0> if -1 scroll-pos +! then ;
@@ -192,11 +159,6 @@ variable visible-lines     \ how many lines fit in display area
         then
     loop ;
 
-: clear-history ( - )
-    0 history-buffer @ !
-    0 line-count !
-    0 scroll-pos ! ;
-
 : history-stats ( - )
     cr ." History Stats:"
     cr ."   Lines: " line-count @ .
@@ -204,3 +166,26 @@ variable visible-lines     \ how many lines fit in display area
     cr ."   Used: " current-history-length .
     cr ."   Scroll pos: " scroll-pos @ .
     cr ."   Visible: " visible-lines @ . ;
+    
+: init-history ( - )
+    \ Initialize history with dynamic allocation
+    
+    \ Start with reasonable defaults - both will grow as needed
+    262144 max-lines !  \ 256K lines initially (1MB / 4 bytes per cell)
+    
+    \ Allocate 1MB history buffer
+    1048576 dup >r allocate abort" Failed to allocate history buffer"
+    history-buffer !
+    r> history-size !
+    
+    \ Clear history string (cell-counted)
+    0 history-buffer @ !
+    
+    \ Allocate line offset cache for 256K lines (1MB)
+    max-lines @ cells allocate abort" Failed to allocate line offsets"
+    line-offsets !
+    
+    0 line-count !
+    0 scroll-pos !
+    0 last-line-start !
+    0 add-line-offset ;    

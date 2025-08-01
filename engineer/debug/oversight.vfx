@@ -10,16 +10,16 @@
 
 public
 
-: log  push-attribute type pop-attribute ;
+: log  push-attribute type pop-attribute cr ;
 
 : log-warning ( addr:string len:string -- )
-    cr f" [WARN] %s" 6 log ;
+    f" [WARN] %s" 6 log ;
 : log-error ( addr:string len:string -- )
-    cr f" [ERROR] %s" 4 log ;
+    f" [ERROR] %s" 4 log ;
 : log-debug ( addr:string len:string -- )
-    cr f" [DEBUG] %s" 3 log ;
+    f" [DEBUG] %s" 3 log ;
 : log-info ( addr:string len:string -- )
-    cr f" [INFO] %s" 7 log ;
+    f" [INFO] %s" 7 log ;
     
 \ =============================================================================
 \ Other private utilities

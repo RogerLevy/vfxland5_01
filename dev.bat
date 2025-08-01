@@ -3,4 +3,4 @@
 
 set "PATH=%~dp0\bin;%~dp0\bin\dll\;%~dp0\bin\engineer\;%PATH%"
 @REM engineer.exe cd darkblue frigid
-engineer.exe frigid include supershow/supershow.vfx
+engineer.exe ." Hello world" cr ." asdlfkajsdlfkasdjlfj" cr

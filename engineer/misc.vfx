@@ -207,3 +207,25 @@ aka file-exists? fileexists?
     else
         .-
     then then then ;
+
+: >interpret ( a len - res )
+    to-source
+    -1 to source-id
+    0 >in !
+    'SourceFile off
+    ['] interpret catch ;
+
+: strip-exe   \ c-addr u -- 'c-addr 'u
+  dup 0= if  exit  then
+
+  bl skip               \ c-addr u --
+  dup if
+    over c@ [char] " = if
+      1 /string
+      [char] " scan
+    else
+      bl scan
+    then
+    1 /string bl skip
+  then
+;
