@@ -587,7 +587,7 @@ load-bitmaps
     screen refresh controls ;
 
 : go ( - )
-    going @ ?exit
+    \ going @ ?exit
     >display pre going on begin frame again ;
 
 \ =============================================================================
@@ -596,6 +596,7 @@ load-bitmaps
 
 || : /console
     debug @ -exit
+    -1 line# !
     hWndMain to vfx-hwnd
     vfx-hwnd z" Engineer Dev Console" SetWindowText drop
     >vfx ;
@@ -735,8 +736,7 @@ bye-chain link 0 ,
 : watch ( - <code> )
     context @ watch-context !
     0 parse 2dup f" :noname %s ;" evaluate watch-xt !
-    ( context @ body> >name count
-    f" %s > %s" ) watch$ place ;
+    watch$ place ;
 
 \ =============================================================================
 \ Kickoff
@@ -746,7 +746,8 @@ bye-chain link 0 ,
     /console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
-    cr ;
+    cr
+    cold ;
     
 :noname me valid-object? if me .name then ; is .me
 assign engineer.cold to-do .cold   \ .cold is a VFX thing

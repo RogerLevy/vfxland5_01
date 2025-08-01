@@ -42,7 +42,7 @@ variable attr-sp
     restore-attribute
     ATTR_POP tm-emit ;
 
-\ Initialize everything to 15 (white)
+\ Initialize everything to 7 (light grey)
 \ -----------------------------------
-15 attr !
+7 attr !
 :noname 16 for save-attribute loop ; execute

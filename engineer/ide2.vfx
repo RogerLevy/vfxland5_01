@@ -107,7 +107,7 @@ borrow engineer~ func[]
 : .watch ( - )
     watch-xt @ -exit
     watch-context @ .name
-    ." > "
+    ." >> "
     watch$ count ?type cr
     push-order
     only forth watch-context @ +order
@@ -165,7 +165,7 @@ borrow engineer~ func[]
 
 : .tib ( - ) 
     context @ .name
-    ." > "  tib #tib @ ?type ;
+    ." >> "  tib #tib @ ?type ;
 
 : command-line ( - )
     1. 2. scaled>
@@ -220,25 +220,56 @@ create vectors
   ' drop ,
   ' drop ,
   ' drop ,
+
 create hist-dev   0 , vectors ,
 0 value old-dev
-: hist[  0 to >str  op-handle @ to old-dev  hist-dev op-handle !  refresh-attribute ;
-: hist]  old-dev op-handle !  str >str add-history ;
+
+: hist[
+    0 to >str  op-handle @ to old-dev  hist-dev op-handle !  refresh-attribute ;
+
+: hist]
+    old-dev op-handle !  str >str add-history ;
 
 \ =============================================================================
 \ IDE Logic
 \ =============================================================================
 
+: ide-redef	
+  6 push-attribute CR LastNameFound .NAME ." is redefined " pop-attribute ;
+' ide-redef is redefhook  
+
+: .error ( - )
+    4 push-attribute
+    dup Err$ nip if			\ if text available
+        .ErrDef				\ generate error message
+    else
+        cr ." No text available for THROW code "
+        base @ >r  decimal 0 .r ." (10)"  r> base !
+    then
+    ShowErrorLine
+    ShowSourceOnError
+    pop-attribute
+    EditOnError ;
+
+: .throw ( n - )
+  case
+     0 of  endof				\ not an error
+    -1 of  endof				\ quiet
+    -2 of  'AbortText @ DoAbortMessage  endof	\ ABORT" ..."
+           .error
+  end-case
+;
+
 : obey ( - )
     textmode on
-    osp @ >r uiosp @ osp !    
+    osp @ >r uiosp @ osp !
     s[ refresh-attribute  .tib s] add-history 
     tib #tib @ to-source
     -1 to source-id
     0 >in !
     'SourceFile off
     ['] interpret catch
-    ?dup if .throw rs state off then
+    ?dup if s[ .throw s] add-history ( rs state off ) then 
     0 #tib ! 
     osp @ uiosp ! r> osp !
     textmode off ; 
@@ -370,7 +401,7 @@ public
 
 : init-ide ( - )
     init-history
-    textmode on hist[ 15 attribute hist] textmode off
+    textmode on hist[ 7 attribute hist] textmode off
     0 display-mode !
     enact-display-mode ;
 
