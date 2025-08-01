@@ -4,6 +4,11 @@
 gamew to appw
 gameh to apph
 
+gamew s>p constant gamew.
+gameh s>p constant gameh.
+gamew s>f fconstant f-gamew
+gameh s>f fconstant f-gameh
+
 8192 constant #actors
 #actors constant #temps
 32 constant #elements
