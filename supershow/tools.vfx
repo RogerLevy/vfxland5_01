@@ -102,7 +102,6 @@ aka hone update
     honing @ ['] hone-class =
     update-name$ count 
     currsourcename -path -ext
-    cr 2over type cr 2dup type
     s= and not
     if postpone \\ exit then
     private ;

@@ -54,7 +54,7 @@ variable current-enemy
     s" \ id            hp      atk         gold        spd         path" #1 write-line drop
     (save)
     #1 close-file drop
-    cr ." Bestiary saved to enemies.vfx" ;
+    ." Bestiary saved to enemies.vfx" cr ;
     
 \ test
 \ for: asdf hp: 1 path: asdfasdf

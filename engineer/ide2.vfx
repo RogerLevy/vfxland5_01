@@ -2,6 +2,9 @@
 \ IDE2 - Next-Level Development Interface  
 \ ------------------------------------------------------------------------------
 
+public
+defer draw-ide
+
 private   
 include %idir%/history.vfx   \ private to this file's vocabulary
 
@@ -13,13 +16,78 @@ variable display-mode  \ 0 = IDE, 1 = Fullscreen (game), 2 = Windowed (game)
 
 : ?type ?dup 0= if drop else type then ;
 
-create scalexy
+create scalexy 0 , 0 ,
 
 : scaled>  ( x. y. - <code> ; )
     2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> execute -m ;
 
 : scaled-at ( x y - )
     scalexy 2@ 2p/ at ;
+
+\ =============================================================================
+\ History I/O device
+\ =============================================================================
+
+create str 32768 allot
+0 value >str
+
+\ : ?+out  dup $80 and ?exit 1 out +! ;
+: hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
+: hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
+
+borrow engineer~ frame 
+borrow engineer~ draw-ide
+borrow engineer~ refresh
+
+: hist-cr
+    drop
+    10 emit
+    refresh-attribute
+    str >str add-history
+    0 to >str
+    0 out !
+    ;
+    
+create vectors
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' hist-emit ,
+  ' drop ,
+  ' hist-type ,
+  ' hist-cr ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+
+create hist-dev   0 , vectors ,
+16 cell stack hist-stack 
+
+: hist[ ( - )
+    textmode @ hist-stack push textmode on 
+    op-handle @ hist-stack push
+    >str out !
+    hist-dev op-handle ! ;
+
+: hist] ( - ) 
+    hist-stack pop op-handle !
+    hist-stack pop textmode ! 
+    str >str add-history ;
 
 \ =============================================================================
 \ IDE Components Display
@@ -60,9 +128,12 @@ borrow engineer~ draw-game
     gamewin-h 2 / apph - 2 +
     2s>f 1e 1e 0e transform
 
-    textmode on 
+    
+    hist[
     (2x-game)
-    textmode off 
+    >str if cr then
+    hist]
+  
 
     1e f>ds >r
     -1e -1e appw 2 * 1 + apph 2 * 1 + 2s>f 
@@ -78,7 +149,7 @@ borrow engineer~ draw-game
 
 borrow engineer~ func[]
 : .hotkeys ( - )
-    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Exit  " type cr
+    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  " type cr
     12 for
         i func[] c@ if
             i func[] count 2dup upper i 1 + f" F%n=%s  " type
@@ -178,65 +249,15 @@ borrow engineer~ func[]
     s] print ;
     
 : ide-layout ( - )
+    textmode off
     \ title-bar
     game-window     command-history
     info-box        stack-display
     ( user-area )   command-line ;
-
-\ =============================================================================
-\ History I/O device (Textmode)
-\ =============================================================================
-
-create str 32768 allot
-0 value >str
-
-: hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
-: hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
-: hist-cr    drop  10 emit  refresh-attribute  0 out ! ;
-
-create vectors
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' hist-emit ,
-  ' drop ,
-  ' hist-type ,
-  ' hist-cr ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-
-create hist-dev   0 , vectors ,
-0 value old-dev
-
-: hist[
-    0 to >str  op-handle @ to old-dev  hist-dev op-handle !  refresh-attribute ;
-
-: hist]
-    old-dev op-handle !  str >str add-history ;
-
+    
 \ =============================================================================
 \ IDE Logic
 \ =============================================================================
-
-: ide-redef	
-  6 push-attribute CR LastNameFound .NAME ." is redefined " pop-attribute ;
-' ide-redef is redefhook  
 
 : .error ( - )
     4 push-attribute
@@ -261,20 +282,15 @@ create hist-dev   0 , vectors ,
 ;
 
 : obey ( - )
-    textmode on
     osp @ >r uiosp @ osp !
-    s[ refresh-attribute  .tib s] add-history 
-    tib #tib @ to-source
-    -1 to source-id
-    0 >in !
-    'SourceFile off
-    ['] interpret catch
-    ?dup if s[ .throw s] add-history ( rs state off ) then 
+    .tib cr 
+    tib #tib @ >interpret
+    >str if cr then
+    ?dup if .throw cr rs state off then 
     0 #tib ! 
-    osp @ uiosp ! r> osp !
-    textmode off ; 
+    osp @ uiosp ! r> osp ! ;
 
-: ?char ( n - )
+: ide-char ( n - )
     alt? if drop exit then
     case
         ( bksp ) 8 of #tib @ -exit -1 #tib +! exit endof
@@ -285,7 +301,7 @@ create hist-dev   0 , vectors ,
     dup 32 < over 127 = or if drop exit then
     tib #tib @ + c! 1 #tib +! ;
 
-: ?key ( n - )
+: ide-key ( n - )
     case
         <up> of scroll-up endof
         <down> of scroll-down endof
@@ -324,8 +340,8 @@ create hist-dev   0 , vectors ,
     then
     repl @ if
         ALLEGRO_EVENT_KEY_CHAR happened? if
-            the-char ?char
-            the-key ?key
+            the-char ide-char
+            the-key ide-key
         then
     then ;
 
@@ -340,7 +356,7 @@ borrow engineer~ draw-tv
 
 : ide-mode ( - )
     fullscreen winmode
-    ide on repl on ;
+    ide on ;
 
 : full-mode ( - )
     fullscreen winmode
@@ -356,7 +372,7 @@ display-mode jumptable enact-display-mode
     ' windowed-mode ,
 
 : ide-mode-draw ( - )
-    hist[ pen 2@ 2>r ide-layout 2r> at hist] ;
+    at@ 2>r ide-layout 2r> at ;
 
 : full-mode-draw ( - )
     draw-tv
@@ -389,22 +405,41 @@ public
     then ;
 
 : ide-events ( - )
+    hist[
     debug @ if
         ALLEGRO_EVENT_KEY_DOWN happened? if
-            the-key ?func
+            the-key <f1> - 0 12 within? if
+                the-key ?func
+            then
         then
-        repl-events
-    then ;
+        repl-events        
+    then
+    hist] ;
 
-: draw-ide ( - )
+:noname ( - )
     +m identity cls draw-display-mode -m ;
+is draw-ide
+
+: restart-ide ( - )
+    hist[ 7 attribute hist]
+    0 display-mode !
+    enact-display-mode ;
 
 : init-ide ( - )
     init-history
-    textmode on hist[ 7 attribute hist] textmode off
-    0 display-mode !
-    enact-display-mode ;
+    restart-ide ;
+
+: ide-interpret ( a len - res )
+    hist[ >interpret hist] ;
 
 \ ???
 ' noop is boot
 ' noop is onSwitchIn
+
+: ide2-quit
+    textmode off
+    consoledev setio
+    hist-stack vacate
+    ((quit))
+;
+' ide2-quit is quit

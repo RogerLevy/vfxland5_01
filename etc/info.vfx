@@ -9,7 +9,7 @@ public
     act>
         debug @ -exit
         x 2@ 2p>s at
-        at@f pen 2@ 50 16 2+ 2s>f 0e 0e 0e 1e al_draw_filled_rectangle
+        at@f at@ 50 16 2+ 2s>f 0e 0e 0e 1e al_draw_filled_rectangle
         12 color s[ logictime ? s] print nr
         10 color s[ rendertime ? s] print ;
 50 50 at *actor to info

@@ -5,11 +5,11 @@ private
 
 \ ------------------------------------------------------------------------------
 
-: at@f pen 2@ 2s>f ;
+: at@f at@ 2s>f ;
 
 : box  ( w h - )
     0.5e f>ds >r
-    at@f pen 2@ 2+ 2s>f 1e 1e 1e 1e r>
+    at@f at@ 2+ 2s>f 1e 1e 1e 1e r>
     al_draw_rectangle ;
 
 : nr  0  pen y@ 8 +  at ;

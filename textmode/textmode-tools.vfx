@@ -46,3 +46,7 @@ variable attr-sp
 \ -----------------------------------
 7 attr !
 :noname 16 for save-attribute loop ; execute
+
+: textmode-redef	
+  6 push-attribute LastNameFound .NAME ." is redefined " pop-attribute cr ;
+' textmode-redef is redefhook  

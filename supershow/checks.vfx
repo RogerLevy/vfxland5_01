@@ -9,7 +9,7 @@ charmful test: check-vector-params ( deg len -- deg len n:result )
     dup 0= if s" Zero-length vector" log-warning 1 exit then
     -1 ;
 
-before vec check-vector-params
+\ before vec check-vector-params
 
 crucial test: check-cycle-animation ( anim spd -- anim spd n:result )
     {: anim spd | anim-result :}

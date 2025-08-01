@@ -27,7 +27,7 @@ magic-id WMESSAGE_MAGIC WMSG
     state on
     begin
         0 parse 2dup 2>r evaluate 
-        2r> s" ;" search nip nip
+        2r> s" ;" strin?
     until
     state off
     lastbody >name count f" wrap-word %s" evaluate

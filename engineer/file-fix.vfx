@@ -25,7 +25,7 @@ create temp-path-buf$ 256 allot
     EmptyIdle
     expand
     normalize                   \ Get canonical filename
-    cr ." Including " 2dup type
+    ." Including " 2dup type cr 
     2dup AddSourceFile -rot           \ Store canonical name
     2dup r/o ?Relative-Open-File 
     #-258 ?throw

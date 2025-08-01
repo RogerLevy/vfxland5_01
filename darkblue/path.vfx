@@ -437,7 +437,7 @@ variable drift-error-y
 : meander ( -- vx. vy. )
     0 0  3 for i pb [[ active @ if velstep 2+ then ]] loop ;
     
-: path-move ( path playback - )
+: path-follow ( path playback - )
     {: p pb :}
     x 2@
     pb [[

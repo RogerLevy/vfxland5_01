@@ -45,7 +45,7 @@
     \ Pad out an array being built, to given max-items
     | n a w | a w n * + here - allot&erase w a ;
 
-: *array ( max width - <name> )
+: *array ( max width - array )
     \ Create a unnamed, zero'd array
     swap >r array[ r> pad-array array] ;
 
@@ -63,9 +63,11 @@
     swap >r array: r> pad-array array;
     0 lastbody >cnt ! ;
 
+: range? ( n array - b )
+    max-items 0 swap within? ;
+    
 : ?range
-    2dup max-items >= abort" Index out of range."
-    over 0< abort" Index out of range." ;
+    2dup range? 0= abort" Index out of range." ;
 
 : vacate ( array - )
     0 swap >cnt ! ;
@@ -82,13 +84,13 @@
     | a |
     a >items - a /item /  ; \ a ?range drop ;
 
-: each ( ... xt array - ... ) ( ... a - ... f )
+: each ( ... xt array - ... ) ( ... a - ... b )
     | a xt |
     a >items a #items a /item * bounds ?do
         i xt execute 0= if unloop exit then
     a /item +loop ;
 
-: each@ ( ... xt array - ... ) ( ... ? - ... f )
+: each@ ( ... xt array - ... ) ( ... ? - ... b )
     | a xt |
     a >items a #items a /item * bounds ?do
         i @ xt execute 0= if unloop exit then

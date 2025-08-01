@@ -41,7 +41,7 @@ honing @ not [if]
     static i/mass
     static i/atk
     static i/bounty
-    static i/attack-rate
+    static i/firing-rate
     
     static is-player-projectile
     
@@ -65,14 +65,14 @@ actor-class enemies%
     5. i/mass !
     30 i/atk !
     20 i/bounty !
-    80 i/attack-rate !
+    80 i/firing-rate !
     public
         var hp
         var r
         var m
         var atk
         var bounty
-        var attack-rate
+        var firing-rate
     private
     
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
@@ -104,8 +104,8 @@ enemies% :: _die
 \ variable orbs-next#  4096 orbs-next# !
 
 : ?shoot
-    attack-rate @ -exit
-    gamelife @ attack-rate @ mod ?exit
+    firing-rate @ -exit
+    gamelife @ firing-rate @ mod ?exit
     next# @ >r
     4096 512 + next# !
     me 0 0 from s" orb%" find-class one [[
@@ -143,7 +143,7 @@ enemies% :: damage ( n - )
     i/mass @ m !
     i/atk @ atk !
     i/bounty @ bounty !
-    i/attack-rate @ attack-rate !
+    i/firing-rate @ firing-rate !
     ['] enemy-physics phys !
     act> ?shoot ;
 

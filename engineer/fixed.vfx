@@ -25,7 +25,7 @@
 \ ** If conversion is successful, flag is returned true, and a floating
 \ ** number is returned on the float stack, otherwise flag is returned
 \ ** false and the float stack is unchanged.
-  { c-addr u | dlo dhi u' fsgn flag nshift obase -- flag }
+  {: c-addr u | dlo dhi u' fsgn flag nshift obase -- flag :}
   
   u 2 < IF false exit THEN       \ must have at least one significand digit and decimal
   base @ -> obase  decimal		\ preserve and force base ; SFP028

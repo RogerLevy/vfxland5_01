@@ -4,11 +4,10 @@ require darkblue-math.vfx
 require path.vfx
 
 enemy-class vacuum%
-    0 i/attack-rate ! 
+    0 i/firing-rate ! 
     aka my-bubble n1
 
     var owner   
-
 
 0 value bub
 \ : blowout-r  bub 's r @ 100. p* p>f  ;
@@ -101,7 +100,7 @@ path]
 : *vacuum
     vacuum% one [[
         me *bubble [[ owner ! bubble-act me ]] my-bubble !
-        infinity-path pb1 path-move
+        infinity-path pb1 path-follow
         0.5 pb1 path-speed
         1.5 2. pb1 path-scale
     me ]] ;

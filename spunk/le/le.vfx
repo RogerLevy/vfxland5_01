@@ -76,7 +76,7 @@ create cb-p /screen allot
 : w?  w@ . ;
 
 : tcursor ( - )
-    -1 -1 +at  at@f  pen 2@ gap dup 2+ 2s>f 0e 0e 0e 1e
+    -1 -1 +at  at@f  at@ gap dup 2+ 2s>f 0e 0e 0e 1e
     al_draw_filled_rectangle
     t @ t0 @ + put
     life @ 2 mod if -8 -8 +at s[ t w? s] print then ;

@@ -1,8 +1,13 @@
-427 constant gamew
-320 constant gameh
+460 constant gamew
+345 constant gameh
 
 gamew to appw
 gameh to apph
+
+gamew s>p constant gamew.
+gameh s>p constant gameh.
+gamew s>f fconstant f-gamew
+gameh s>f fconstant f-gameh
 
 8192 constant #actors
 #actors constant #temps

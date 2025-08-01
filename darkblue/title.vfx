@@ -89,7 +89,7 @@ variable skipped
 : ?skip
     skipped @ ?exit
     <start> pressed? if
-        cr ." SKIP"
+        ." SKIP" cr 
         skipped on part3
     then ;
 : skippable

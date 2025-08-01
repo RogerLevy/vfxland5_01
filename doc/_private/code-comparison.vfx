@@ -1,8 +1,8 @@
 100 100 at enemy9 one constant test2
 test2 [[
-\    test-path pb1 path-move
-\    infinity-path pb1 path-move  3.0 pb1 path-speed
-    angular-path pb1 path-move  1.0 pb1 path-speed
+\    test-path pb1 path-follow
+\    infinity-path pb1 path-follow  3.0 pb1 path-speed
+    angular-path pb1 path-follow  1.0 pb1 path-speed
     0. n1 !
     :noname act> meander x 2+! \ cr x 2p? 
         <[> pressed? if -1 bmp +! then

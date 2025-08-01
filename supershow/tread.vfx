@@ -11,7 +11,7 @@
 || 0 value ly2
 || 0 value xt
 
-|| : pen-colrow  pen 2@ gap dup 2/ ;
+|| : pen-colrow  at@ gap dup 2/ ;
 
 : tread> ( x y w h a - code ; ) ( pen=xy a - )
      to a  to lh to lw to ly to lx  r> to xt

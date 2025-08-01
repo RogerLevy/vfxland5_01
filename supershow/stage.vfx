@@ -217,7 +217,7 @@ default [[
 
 : 1actor ( - )
     default cell+ me cell+ /actor cell- move
-    pen 2@ 2s>p x 2! ;
+    at@ 2s>p x 2! ;
 
 validations dup @ swap off
 \ Need to circumvent validation for speed and because
@@ -396,3 +396,9 @@ static autoclass
     ['] actor-oexec-error-handler swap 's oexec-error-handler ! ;
     
 :noname me valid-object? if me peek else me . then ; is .me
+
+: actor, ( class - )
+    here /actor allot&erase swap >object [[ 1actor ]] ;
+
+: create-actor ( class - ) ( - actor )
+    create actor, ;

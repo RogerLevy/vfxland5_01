@@ -197,8 +197,8 @@ var l \ length
         then
     then
     
-    \ Check right edge (x > 320 - radius)
-    obj-x 426e obj-radius f- f> if
+    \ Check right edge (x > gamew - radius)
+    obj-x f-gamew obj-radius f- f> if
         obj-vx 0e f> if  \ moving right
             obj-vx -2e f* damping f* to fx  \ reverse + damping
             true to screen-bounced?
@@ -213,8 +213,8 @@ var l \ length
         then
     then
     
-    \ Check bottom edge (y > 240 - radius)
-    obj-y 320e obj-radius f- f> if
+    \ Check bottom edge (y > gameh - radius)
+    obj-y f-gameh obj-radius f- f> if
         obj-vy 0e f> if  \ moving down
             obj-vy -2e f* damping f* to fy  \ reverse + damping
             true to screen-bounced?

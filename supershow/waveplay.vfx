@@ -111,7 +111,7 @@ defer voice? ( smp - f )
     0 next-smp# ! ;
 
 || : destroy-samples ( - )
-    cr ." Destroying samples"  
+    ." Destroying samples" cr 
     #samples for
         i sample[] @ al_destroy_sample  
     loop

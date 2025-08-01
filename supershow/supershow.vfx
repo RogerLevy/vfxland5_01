@@ -39,7 +39,6 @@ require %idir%\waveplay.vfx
 : 4s>p  2s>p 2>r 2s>p 2r> ;
 : 2?  2@ swap . . ;
 : h.  hex . decimal ;
-: at@  pen 2@ ;
 : toggle dup @ 0= swap ! ;
 : cput ( n - ) dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
 : batch>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;

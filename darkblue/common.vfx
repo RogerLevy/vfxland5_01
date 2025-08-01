@@ -31,11 +31,15 @@ aka <start> <enter>
     charge @ energy @ f" %n   %n" print
     357 0 at secs mins hrs f" %02n:%02n:%02n" print ;
 
+\ Common accessors
+: radius r @ ;
+: -radius radius negate ;
+
 \ Scripting helpers
 : pos@ 's x 2@ ;
 : in? ( - f )
-    x @ 0. r @ 2 * - 426. r @ 2 * + within?
-    y @ 0. r @ 2 * - 320. r @ 2 * + within? and ;
+    x @ 0. r @ 2 * - gamew. r @ 2 * + within?
+    y @ 0. r @ 2 * - gameh. r @ 2 * + within? and ;
 : ?cull in? ?exit unload ;
 : center-pos  160. 120. ;
 : player-pos  player pos@ ;
@@ -53,5 +57,12 @@ aka <start> <enter>
         '"' parse >syspad evaluate
     then ; immediate
 
+: from-top ( xratio. y. -- x. y. )
+    >r gamew *  r> ;
+
+: from-bottom ( xratio. y. -- x. y. )
+    >r gamew *  r> gameh >. + ;
+
 \ Music
 bgm *bgm1* softice.ogg
+

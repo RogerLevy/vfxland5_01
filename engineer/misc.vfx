@@ -43,7 +43,7 @@ include %idir%\..\textmode\textmode-tools.vfx
     begin @ ?dup while dup cell+ @ execute repeat ;
 
 : .s
-    cr depth 8 min | d |
+    depth 8 min | d |
     d 0< -4 ?throw
     3 push-attribute
     d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
@@ -53,9 +53,9 @@ include %idir%\..\textmode\textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    pop-attribute ;
+    pop-attribute cr ;
 : f.s 
-    cr fdepth | d |
+    fdepth | d |
     d 0< -400 ?throw
     3 push-attribute
     ."     FS:[ " 
@@ -65,7 +65,7 @@ include %idir%\..\textmode\textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    pop-attribute ;
+    pop-attribute cr ;
 : rs reset-stacks ;
 : ending ( a n c - a n )
    >r begin  2dup r@ scan
@@ -107,7 +107,7 @@ variable saved-dp
 \ r0 @ constant .rsbase
 : (.rs) ( a -- )
     {: rp :}
-    cr 3 push-attribute
+    3 push-attribute
     ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 5 cells + min  ?do
@@ -117,7 +117,7 @@ variable saved-dp
         \ then
     cell negate +loop
     ." ] "
-    pop-attribute ;
+    pop-attribute cr ;
 
 : .rs ( -- )
     rp@ (.rs) ;
@@ -140,16 +140,16 @@ aka se" s\"
 
 aka file-exists? fileexists?
 
-: write ( a n path n - )
+: write ( src len path len - )
     2dup file-exists? if 2dup delete-file throw then
     w/o create-file throw >r
     r@ write-file throw
     r> close-file drop ;
 
-: read ( a n path n - )
+: read ( dest len path len - )
     2dup file-exists? not if 2drop 2drop exit then
     r/o open-file throw >r
-    ( a n ) r@ read-file throw drop 
+    ( dest len ) r@ read-file throw drop 
     r> close-file drop ;
 
 : walk-order ( xt - ) ( thread# nfa - f )
@@ -162,7 +162,7 @@ aka file-exists? fileexists?
 : .abort ( err a:msg len:msg - )
     rot if
         4 push-attribute
-        ." ABORT: " type
+        ." ABORT: " type cr
         rp@ cell+ (.rs)
         .s
         pop-attribute
@@ -207,3 +207,27 @@ aka file-exists? fileexists?
     else
         .-
     then then then ;
+
+: >interpret ( a len - res )
+    to-source
+    -1 to source-id
+    0 >in !
+    'SourceFile off
+    ['] interpret catch ;
+
+: strip-exe   \ c-addr u -- 'c-addr 'u
+  dup 0= if  exit  then
+
+  bl skip               \ c-addr u --
+  dup if
+    over c@ [char] " = if
+      1 /string
+      [char] " scan
+    else
+      bl scan
+    then
+    1 /string bl skip
+  then
+;
+
+: strin?  search nip nip ;

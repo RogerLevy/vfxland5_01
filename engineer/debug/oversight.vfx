@@ -10,16 +10,16 @@
 
 public
 
-: log  push-attribute type pop-attribute ;
+: log  push-attribute type pop-attribute cr ;
 
 : log-warning ( addr:string len:string -- )
-    cr f" [WARN] %s" 6 log ;
+    f" [WARN] %s" 6 log ;
 : log-error ( addr:string len:string -- )
-    cr f" [ERROR] %s" 4 log ;
+    f" [ERROR] %s" 4 log ;
 : log-debug ( addr:string len:string -- )
-    cr f" [DEBUG] %s" 3 log ;
+    f" [DEBUG] %s" 3 log ;
 : log-info ( addr:string len:string -- )
-    cr f" [INFO] %s" 7 log ;
+    f" [INFO] %s" 7 log ;
     
 \ =============================================================================
 \ Other private utilities
@@ -50,7 +50,7 @@ private
             len allot                \ Advance by line length
             10 c,                    \ Add newline (LF)
             \ Check if line contains semicolon
-            a len s" ;" search nip nip if
+            a len s" ;" strin? if
                 \ Found semicolon, we're done
                 start-addr  here start-addr - exit
             then
@@ -251,7 +251,7 @@ cstring wordname$
         val 's validator @ >name count 
         c 's word-name$ count f" %s >> VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
-        .s ." <-- Data stack AFTER the validation ran"
+        .s
     then ;
     
 || : validated-word ( wrapper -- )
@@ -309,7 +309,7 @@ cstring wordname$
 
 : (each-contract) ( thread# nfa - f )
     nip
-    dup count s" .CONTRACT" search nip nip if
+    dup count s" .CONTRACT" strin? if
         name> >body
         each-contract-xt execute
     else
@@ -543,14 +543,18 @@ public
     \ Clean up contract system on exit
     \ TODO but Maybe not needed
     ;
-
-\ =============================================================================
-\ Validator Writing Utilities
-\ =============================================================================
-
 \ =============================================================================
 \ Automatic Contract Wrapping - Redefined : and ;
 \ =============================================================================
+
+|| : wrap-redef ( - ) ;
+    
+|| : $create-wrapped ( $ -- )
+    ['] redefhook >body @ >r
+    ['] wrap-redef is redefhook
+    14 push-attribute dup count type 6 attribute ."  has been wrapped by Oversight" pop-attribute cr 
+    $create
+    r> is redefhook ;
 
 : : ( -- <word-name> )
     \ Note that contracts do not support immediate words
@@ -563,7 +567,7 @@ public
     c if                            \ Contract exists? ( contract | <nothing> )
         c assure-validators         \ Compile validators if needed
         \ Create wrapper word with create...does> pattern
-        bl parse >$ $create         \ Create word header with original name
+        bl parse >$ $create-wrapped  \ Create word header with original name
         c pending-contract !
         \ Store data structure: [ implementation-xt , contract , immediate flag ] 
         0 ,                         \ Reserve space for internal XT (filled by ;)
@@ -606,7 +610,7 @@ public
         bl preparse
         \ cr ." Wrapping " 2dup type
         >$ find ?undef      \ Get XT of original word
-        bl parse >$ $create             \ Create word header with original name
+        bl parse >$ $create-wrapped     \ Create word header with original name
         does-wrapper
         \ Store data structure: [ implementation-xt , contract , immediate-flag ] 
         dup ,                           \ Store internal XT (saving a copy for immediate?)

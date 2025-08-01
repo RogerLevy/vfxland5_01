@@ -6,7 +6,7 @@
 \ Core System Components
 \ =============================================================================
 
-include %idir%\vfxcore.vfx  \ assumes cwd is ../
+include %idir%\vfxcore.vfx
 
 \ =============================================================================
 \ Engineer Variables
@@ -67,7 +67,7 @@ debug @ 0= [if]
 \ =============================================================================
 
 include %idir%/../lib/wstring.vfx
-include %idir%/strout.vfx  \ TODO: maybe deprecate/remove
+include %idir%/strout.vfx
 include %idir%/error2.vfx  \ TODO: Make platform-agnostic
 
 \ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
@@ -153,7 +153,9 @@ wordlist constant honing-wl
     honing @ -1 0 within? if
         retry-filepath$ count >try 
     else
+        honing @ if honing-wl +order then
         honing @ execute
+        honing @ if honing-wl -order then
     then ;
 
 : try ( - <file-noext> )
@@ -194,14 +196,29 @@ variable next-bmp# 1 next-bmp# !
 include %idir%/matrix.vfx
 create pen 0 , 0 , \ int
 
+: at ( x y - )
+    pen 2! ;
+
+: at@ ( - x y )
+    pen 2@ ;
+
 : at@f ( - f:x f:y )
-    pen 2@ 2s>f ;
+    at@ 2s>f ;
+
+: +at ( x y - )
+    pen 2+! ;
 
 || : draw-bitmap ( bmp n - )
     over if at@f al_draw_bitmap else 2drop then ;
 
+: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
+    dup bitmap@ swap 24 rshift draw-bitmap ;
+
 || : abmpw  dup if al_get_bitmap_width then ;
 || : abmph  dup if al_get_bitmap_height then ;
+
+: bmpwh ( n - w h )
+    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
 
 \ =============================================================================
 \ Automatic bitmap loader
@@ -259,26 +276,10 @@ create pen 0 , 0 , \ int
     s" gfx" >datadir ['] (reload-bitmap) each-file ;
 
 : destroy-bitmaps ( - )
-    cr ." Destroying bitmaps"
+    ." Destroying bitmaps" cr 
     65536 1 do
         i bitmap[] dup @ ?dup if al_destroy_bitmap then off
     loop  1 next-bmp# ! ;
-
-\ =============================================================================
-\ Drawing primitives
-\ =============================================================================
-
-: at ( x y - )
-    pen 2! ;
-
-: +at ( x y - )
-    pen 2+! ;
-
-: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
-    dup bitmap@ swap 24 rshift draw-bitmap ;
-
-: bmpwh ( n - w h )
-    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
 
 \ =============================================================================
 \ Text rendering
@@ -349,8 +350,15 @@ synonym z zoom
     s" ?reload" <f5> func ;
 
 : ?func ( n - )
-    <f1> - dup 0 12 within if
-        ( postpone [ ) func[] count cr 2dup type evaluate else drop then ;
+    <f1> - dup 0 12 within? if
+        func[] count dup if
+            state off
+            evaluate
+        else
+            2drop
+            ." Unassigned function key." cr
+        then
+    else drop then ;
 
 \ =============================================================================
 \ Persistent variable control
@@ -389,10 +397,10 @@ magic-id TWEAK_MAGIC TWK
 \ =============================================================================
 
 || : fullscreen ( - )
-    cr ." FULLSCREEN"  -1 to fullscreen? ;
+    ." FULLSCREEN" cr -1 to fullscreen? ;
 
 || : windowed ( - )
-    cr ." WINDOWED"  0 to fullscreen? ;
+    ." WINDOWED" cr 0 to fullscreen? ;
 
 || : *display ( - )
     \ fullscreen? if fullscreen else windowed then
@@ -433,7 +441,7 @@ magic-id TWEAK_MAGIC TWK
 
 || : pre ( - )
     0 #tib ! postpone \\ 
-    ['] noop is EditOnError
+    \ ['] noop is EditOnError
     !delta !delta ;
     
 || : ?throw ( n - ) 
@@ -444,13 +452,12 @@ magic-id TWEAK_MAGIC TWK
     0e 0e 0e 1e al_clear_to_color ;
 
 || : draw-game ( - ) 
-    pen 2@ 2>r
+    at@ 2>r
     cls
     ?kb-lock 
     'show @ catch ?throw
     ?kb-unlock 
-    2r> at
-    pump ;
+    2r> at ;
 
 : show> ( - ) ( - )
     r> dup 'show ! cls execute ; 
@@ -524,6 +531,8 @@ magic-id TWEAK_MAGIC TWK
 
 load-bitmaps
 
+defer frame ( - ) ' noop is frame
+
 ' engineer~ public-xt !
     include %idir%/ide2.vfx
 ' forth public-xt !
@@ -544,8 +553,7 @@ load-bitmaps
     then
     ALLEGRO_EVENT_DISPLAY_RESIZE happened? if
         display al_acknowledge_resize
-    then
-    ide-events ;
+    then ;
 
 \ =============================================================================
 \ Global Event Handler
@@ -553,7 +561,8 @@ load-bitmaps
 
 || : ?event ( - f )
     alqueue e al_get_next_event 0<>
-        dup -exit >r global-events r> ;
+    dup -exit
+    >r global-events ide-events r> ;
 
 || variable need-pump
     
@@ -583,12 +592,13 @@ load-bitmaps
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
-: frame ( - )
-    screen refresh controls ;
+:noname ( - )
+    screen refresh controls pump ;
+is frame
 
 : go ( - )
     \ going @ ?exit
-    >display pre going on begin frame again ;
+    .rs >display pre going on begin frame again ;
 
 \ =============================================================================
 \ Entry Points  
@@ -612,7 +622,7 @@ load-bitmaps
 || create bye-chain-root
 bye-chain link 0 ,
 
-|| : debug-cold ( - )
+|| : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
     [ ' EntryPoint >body @ compile, ] ;
 
 || : cleanup ( - )
@@ -675,6 +685,7 @@ bye-chain link 0 ,
 \ =============================================================================
 
 : reload ( - )
+    honing off
     cartridge
     repl on ;
 
@@ -697,12 +708,12 @@ bye-chain link 0 ,
             repl off
             debug off
             fullscreen
-            save
+            save cr
         debug ! repl ! ide !
     if fullscreen else windowed then ;
 
 : save-debug ( - <path> )
-    ['] debug-cold is EntryPoint
+    ['] vfxforth-entrypoint is EntryPoint
     fullscreen?
         ide @ repl @ debug @
             ide off
@@ -710,18 +721,17 @@ bye-chain link 0 ,
             debug off \ This disables Engineer-only initialization.
                       \ Counter-intuitive because we want to debug the game not Engineer.
             windowed
-            save
+            save cr
         debug ! repl ! ide !
     if fullscreen else windowed then ;
 
 : save-dev ( - <path> )
-    ['] debug-cold is EntryPoint
     fullscreen?
         ide @ repl @
             ide on
             repl on
             windowed
-            save
+            save cr
         repl ! ide !
     if fullscreen else windowed then ;
 
@@ -742,14 +752,28 @@ bye-chain link 0 ,
 \ Kickoff
 \ =============================================================================
 
+create zcommand 65536 allot 
+
+: engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
+    over zcount zcommand zplace
+    vfxforth-entrypoint ;
+
+borrow ide2~ history-stats
+borrow ide2~ visible-lines
 : engineer.cold
     /console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
     cr
-    cold ;
+    frigid
+    \ 20 visible-lines !
+    zcommand zcount strip-exe ide-interpret
+    \ history-stats 
+    dup 0= if drop go else .throw then ;
     
 :noname me valid-object? if me .name then ; is .me
-assign engineer.cold to-do .cold   \ .cold is a VFX thing
+
+' engineer-entrypoint is EntryPoint
+assign engineer.cold to-do .cold
 marker gild
 

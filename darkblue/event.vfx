@@ -37,17 +37,18 @@
 actor-class event%
     var delay-xt
     var delay-secs
+    var starting-xt
+    var curves         \ array
     
 : (suicidal) ( - )
-    act> cr ." Event finished: " unload me peek ;   
+    act> ." Event finished: " unload me peek cr ;   
 
-: start-event ( xt - )
+: start-event ( - )
     at@ 2>r
+    at@ 2s>p x 2! 
     (suicidal)
-    sp@ cell+ >r execute r> !sp
+    sp@ cell+ >r starting-xt @ execute r> !sp
     2r> at ;
-
-
 
 public
 
@@ -89,7 +90,7 @@ public
     event$ count f" run %s" evaluate ;
 
 : run ( - <event> )
-    \ Development tool; clear the stage, load and execute an event.
+    \ Development tool; find, load and execute an event.
     \ Turns on honing, so everything it depends on is reloaded and f5 runs it
     \ again via honing as an xt.
     \ TODO: support saving the data stack in TRY for TRY-AGAIN to recreate in
@@ -113,16 +114,40 @@ public
     0 0 at
     actives> me you = ?exit me event% is? -exit unload ;
 
+|| : my-curve? ( fn len - )
+    {: fn len :} 
+    fn len me body> >name count strin?
+    fn len s" curve" strin? and
+    fn len '.' ending s" dat" compare 0= and ;
+
+|| : ?load-curve ( fn len - )
+    {: fn len :} 
+    fn len my-curve? if
+        cr fn len type
+        2 cells fn len array[ file, array] curves @ push
+    then ;
+
+|| : count-curve ( fn len - )
+    my-curve? if 1 + then ;
+    
+: count-curves ( - n )
+    0 s" events" ['] count-curve each-file ;
+
+: load-curves ( - )
+    count-curves cell *stack curves !
+    s" events" ['] ?load-curve each-file ;
+
 || : does-event ( - )
-    does> @ event% one [[ start-event ]] ;
+    does> ( template ) event% one copy [[ start-event ]] ;
 
 : :event ( - ) ( ... - )
     \ Create executable event named after the file being included.
     public
     currsourcename -path -ext >pad $create
-    0 ,
-    does-event
-    :noname lastbody ! ;
-    
-\ todo: automated event file creation
-\ : event ( - <name> )  
+    here event% actor, [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
+
+\ : event ( - <name> )   \ TODO: automated event file creation
+
+: curve ( n - )
+    dup curves @ range? not if drop exit then
+    curves @ [] @ #items ? ;
