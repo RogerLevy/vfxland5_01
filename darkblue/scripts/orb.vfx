@@ -18,6 +18,11 @@ actor-class orb%
     var r
     var m
 
+: ?laser
+    0.1 passed? -exit
+    me beam laser-hit? -exit
+    unload ;
+
 orb% :: init
     orb2.png bmp !
     0.5 r !
@@ -26,5 +31,5 @@ orb% :: init
     act>
         \ gamelife @ 4 / 2 mod if orb2.png else orb3.png then bmp !
         gamelife @ 1.75 p/ orb-anim #items mod orb-anim [] @ bmp !
-        ?cull ;
+        ?cull ?laser ;
         
