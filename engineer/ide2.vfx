@@ -356,7 +356,7 @@ borrow engineer~ draw-tv
 
 : ide-mode ( - )
     fullscreen winmode
-    ide on repl on ;
+    ide on ;
 
 : full-mode ( - )
     fullscreen winmode
