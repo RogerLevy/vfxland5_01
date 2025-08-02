@@ -146,7 +146,7 @@ borrow engineer~ draw-game
 
 borrow engineer~ func[]
 : .hotkeys ( - )
-    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Exit  " type cr
+    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  " type cr
     12 for
         i func[] c@ if
             i func[] count 2dup upper i 1 + f" F%n=%s  " type
