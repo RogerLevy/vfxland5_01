@@ -3,5 +3,7 @@
 \ ------------------------------------------------------------------------------
 
 include %idir%\..\spunk\loader.vfx
-turnkey
-include %idir%\..\spunk\tools.vfx
+debug @ [if]
+    include %idir%\..\spunk\tools.vfx
+    include %idir%\testing.vfx
+[then]

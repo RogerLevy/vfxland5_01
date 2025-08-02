@@ -14,9 +14,3 @@ s" common.vfx" ?included
 s" modules.vfx" ?included
 load-scripts
 s" game.vfx" ?included
-
-\ =============================================================================
-\ Testing harness
-\ =============================================================================
-
-s" testing.vfx" ?included

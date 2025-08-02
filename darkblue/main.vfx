@@ -3,3 +3,4 @@
 \ ------------------------------------------------------------------------------
 
 include %idir%\..\spunk\loader.vfx
+include %idir%\testing.vfx
