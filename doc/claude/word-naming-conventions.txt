@@ -6,24 +6,39 @@ Direct action verbs: Choose immediate, active names
 
 Prefix Conventions
 
-h: Handles (hlog for log file handle)
-$: Hexadecimal literal
-#: Counts (#errors for error counter)
-+: Increment, increase, add, push
--: Decrement, negate, clear, undo, pop
-*: Instantiate, generate
-!: Set, calculate, generate (the following word is destination)
-@: Retrieve from (the following word is source)
+h - Handles (hlog for log file handle)
+$ - Take a string (address/length pair)
+# - Counts (#errors for error counter)
++ - Increment, increase, add, push
+- - Decrement, negate, clear, undo, pop
+* - Instantiate, generate
+! - Set, calculate, generate (the following word is destination)
+@ - Retrieve from (the following word is source)
+s/ - Size of
+/ - Initialize/setup
+? - Conditional execution, can return a boolean or not
+> - "To" (send, convert, transform, calculate address), offset value
+: - Define a nameless function
+' - XT pointer (for variables, not values, which should look like THING-XT)
+. - print (specific item)
 
 Suffix Conventions
 
-#: Current index
-$: Counted strings (logfile$ for filename buffer, returns address only)
-%: Class
--: Increment, increase, 
-!: Store (the preceding word qualifies what is on the stack)
-@: Fetch (the preceding word qualifies what will be left on the stack)
-,: Compile (into dictionary)
+# - Current index, identifier
+$ - Counted strings (logfile$ for filename buffer, returns address only)
+% - Class
+~ - File vocabulary/scope
+- - Subtract data type on stack
++ - Add data type on stack
+! - Store (the preceding word qualifies what is on the stack)
+@ - Fetch (the preceding word qualifies what will be left on the stack)
+, - Compile (into dictionary)
+? - Returns a boolean
+/ - Deinitialize/teardown
+> - Continuation
+: - Define a named function, begin (paired with WORD;)
+; - End (paired with WORD:)
+. - print (data type on stack)
 
 Naming Patterns
 

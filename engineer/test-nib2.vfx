@@ -1,0 +1,37 @@
+\ Test basic compatibility of nib2.vfx with existing functionality
+include engineer/nib2.vfx
+
+\ Test basic object creation and messaging
+c" test-class%" create-class
+test-class% statics:
+    m: test-message ( - n ) 42 ;
+]]
+
+\ Test object instantiation  
+variable test-obj
+test-obj test-class% >object
+
+\ Test message dispatch
+test-obj test-message
+42 = if
+    cr ." Phase 1 compatibility test: PASSED"
+else
+    cr ." Phase 1 compatibility test: FAILED"
+then
+
+\ Test new constants are available
+#max-classifiers 1024 = if
+    cr ." Classifier constant test: PASSED"
+else
+    cr ." Classifier constant test: FAILED"
+then
+
+\ Test expanded class size
+/class 4096 = if
+    cr ." Class size expansion test: PASSED"
+else
+    cr ." Class size expansion test: FAILED"
+then
+
+\ Test /static-base functionality
+/static-base dup . cr ." /static-base value: " . cr

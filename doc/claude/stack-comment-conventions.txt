@@ -1,12 +1,12 @@
 # Stack notation conventions
 
-These are current. Some older code might be inconsistent.
+These are current. Some older code might still have obsolete conventions.
 
 a = address
 c = count
 n = integer
 u = unsigned integer
-f = flag (0 or -1)
+b = flag (0 or -1) NOTE: f in old code
 ? = unknown type
 xt = execution token
 $ = byte-counted string (can be used as a suffix)
