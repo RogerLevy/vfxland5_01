@@ -166,7 +166,7 @@ aka file-exists? fileexists?
         rp@ cell+ (.rs)
         .s
         pop-attribute
-        -1 throw
+        -2 throw
     else
         2drop
     then

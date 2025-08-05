@@ -64,6 +64,27 @@ cstring name$
     >r 8 /mod ( bit-ofs byte-ofs )
     r> + c@ 1 rot lshift and 0<> ;
 
+: add-to ( item list - )
+    \ list (head): [ next-node , item , count , ]
+    \ node: [ next-node , item , ]
+    {: item head :}
+    head cell+ cell+ @ 0= if
+        item head cell+ !
+    else
+        head
+        begin dup @ while @ repeat 
+        here swap ! 0 , item , 
+    then
+    1 head cell+ cell+ +! ;
+
+: @next ( node - next-node item )
+    dup @ swap cell+ @ ;
+
+: list-count ( list - c )
+    cell+ cell+ @ ;
+
+3 cells constant /list
+
 \ ==============================================================================
 \ Object stack
 \ ==============================================================================
@@ -99,8 +120,8 @@ constant /magical-base
     cell field field-space-size
     cell field classifier#
     #max-classifiers 8 / field bit-table    \ Classification table
-    cell field first-property
-    cell field first-protocol
+    /list field property-list
+    /list field protocol-list
 to /static
 
 || : (classifier) ( class - class )
@@ -127,10 +148,10 @@ class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
 : create-object ( class <name> - ) ( - object )
     bl parse $create-object ;
 
-class% create-object var% [[
+class% create-object property% [[
     /magical-base
         cell field offset
-        cell field magic
+        cell field next-property
     dup instance-size ! next-ofs !
 ]]
 
@@ -164,11 +185,6 @@ class% create-object var% [[
 : is? ( object classifier - bool )
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
 
-class% create-object property% [[
-    var% 's instance-size @
-    dup instance-size ! next-ofs !
-]]
-
 : allocate-static-offset ( - )
     /static offset !
     cell +to /static ;
@@ -180,18 +196,37 @@ class% create-object property% [[
     me ]]
     does> 's offset @ cla @ + @ me + ;
 
+: defining-a-trait? ( - b )
+    classifier 's cla @ trait% = ;
+
+: add-property ( property - )
+    classifier 's property-list add-to ;
+
+: is-property-mapped? ( property - b )
+    's offset @ classifier + @ 0<> ;
+
+: map-property ( property - )
+    \ map property for current class
+    [[
+        classifier 's next-ofs @ offset @ classifier + !
+        cell classifier 's next-ofs +!
+    ]] ;
+
 : property ( <name> - ) ( - a )
     property% already? if ' >body else create-property then
-    [[
-        classifier 's next-ofs @  classifier offset @ + !
-        cell classifier 's next-ofs +!
+    dup is-property-mapped? if
+        drop \ -1 abort" PROPERTY >> Property already mapped!"
+    else
+        dup add-property
+        map-property
+        
         classifier has-field-space? not if            
             classifier [[ next-ofs @ instance-size ! ]]
         then
-    ]] ;
+    then ;
 
 class% create-object static% [[
-    var% 's instance-size @
+    property% 's instance-size @
     dup instance-size ! next-ofs !
 ]]
 
@@ -215,21 +250,9 @@ class% create-object protocol% [[
         cell field next-protocol
     dup instance-size ! next-ofs !
 ]]
-
-: defining-a-trait? ( - b )
-    classifier 's cla @ trait% = ;
     
 : add-protocol ( protocol - )
-    {: protocol :}
-    classifier 's first-protocol @ 0= if
-        protocol classifier 's first-protocol !
-    else
-        classifier 's first-protocol @
-        begin
-            dup 's next-protocol @ ?dup 0=
-        until
-        protocol swap 's next-protocol !
-    then ;
+    classifier 's protocol-list add-to ;
 
 : does-protocol ( - )
     does> swap [[
@@ -242,7 +265,7 @@ class% create-object protocol% [[
             r> body> >name count
             f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
         then
-        ( xt ) .s execute
+        ( xt ) execute
     ]] ;
     
 : protocol: ( <name> - ) ( ... object - ... )
@@ -254,24 +277,17 @@ class% create-object protocol% [[
     does-protocol ;
 
 : is-a ( <trait> - )
-    {: | trait protocol :} 
+    {: | trait :} 
     ' >body to trait
     trait 's classifier# @ classifier 's bit-table set-bit
-    trait 's first-protocol @ to protocol
-    begin protocol while
-        protocol [[ default-xt @ offset @ ]] classifier + !
-        protocol 's next-protocol @ to protocol
-    repeat
-    
-    \ trait 's first-property to property
-    \ begin property while
-        \ classifier 's next-ofs @ property 's offset @ classifier + !
-        \ cell classifier 's next-ofs +!
-        \ protocoly 's next-property @ to property
-    
-    \ repeat
-    
-    ;
+    trait 's protocol-list dup list-count for
+        @next
+        ( protocol ) [[ default-xt @ offset @ ]] classifier + !
+    loop drop
+    trait 's property-list dup list-count for
+        @next dup is-property-mapped? if drop else map-property then
+    loop drop
+;
 
 \ 
 \ : extension:
@@ -297,9 +313,19 @@ trait: thinker%
     protocol: think  me .name ." think " cr ;
 trait;
 
+trait: physics%
+    property mass
+    property rad
+    property x
+    property y
+    property vx
+    property vy
+trait;
+
 class: actor%
     is-a object%
     is-a thinker%
+    is-a physics%
     property x
     property y
     property vx
@@ -334,4 +360,20 @@ actor [[ x me - . ]]
 actor init
 
 actor think
-waypoint think
+\ waypoint think
+
+actor [[
+    me dup . .name
+    ." &mass=" mass .
+    ." &x=" x .
+    ." &vx=" vx .
+    cr
+]]
+
+\ waypoint [[
+\     me dup . .name
+\     mass .
+\     vx .
+\     cr
+\ ]]
+
