@@ -1,0 +1,228 @@
+Nib 2.0 Feature Implementation Status
+=====================================
+
+This document tracks all features required by the Nib 2.0 design specification
+and their current implementation status in engineer/nib2.vfx.
+
+Status Legend:
+[x] - Fully implemented and working
+[-] - Partially implemented or basic version exists
+[ ] - Not yet implemented
+[SKIP] - Decided not to implement or replaced by alternative
+
+1. CORE INFRASTRUCTURE
+======================
+
+1.1 Object Runtime Fundamentals [x] 
+   [x] ME variable for current object context
+   [x] [[ and ]] object scoping with object stack
+   [x] 'S field access syntax (immediate word)
+   [x] Object stack management (osp, os, pagealign)
+   [x] Object validation framework (magic numbers)
+
+1.2 Classifier Bit Allocation System [x]
+   [x] 1024-bit classifier capacity (#max-classifiers)
+   [x] Simple incrementing counter allocation (next-classifier#)
+   [x] Bitfield operations (set-bit, test-bit)
+   [x] Per-classifier bit tables in static structure
+   [x] Classifier bit assignment during creation
+
+1.3 Basic Data Structures [x]
+   [x] 4096-byte classifier size (/classifier)
+   [x] Static structure layout with bit-table field
+   [x] Magic number validation system (CLASS_MAGIC, MAGIC_FIELD)
+   [x] Core field structure (cla, magic, instance-size, next-ofs)
+
+2. FIELD DEFINITION SYSTEM [x]
+===========================
+
+2.1 Core Field Types [x]
+   [x] field - Direct offset allocation for performance-critical fields
+   [x] property - Dynamic offset resolution for flexible field allocation
+   [SKIP] var - Eliminated in favor of properties-only approach
+   [x] static - Class-level storage in static area
+
+2.2 Field Infrastructure [x]
+   [x] Field magic number validation
+   [x] Field offset calculation and storage
+   [x] Field redefinition checking (already?, ?already)
+   [x] Static offset allocation system (/static management)
+
+2.3 Property System [x]
+   [x] Dynamic offset resolution via static storage
+   [x] Property creation and registration
+   [x] Property access through double indirection
+   [x] Automatic class instance size management
+
+3. CLASSIFIER SYSTEM [-]
+====================
+
+3.1 Basic Classifier Infrastructure [x]
+   [x] Classifier creation framework (create-classifier)
+   [x] Current classifier tracking (classifier variable)
+   [x] Classifier scoping (begin-classifier, end-classifier)
+   [x] Base classifier types (class%, trait%)
+
+3.2 Class Definition [x]
+   [x] class: ... class; syntax
+   [x] Class-specific property definition
+   [x] Class instance size management
+   [x] Class static area allocation
+
+3.3 Trait Definition [ ]
+   [ ] trait: ... trait; syntax (infrastructure exists, not enabled)
+   [ ] Trait property definition
+   [ ] Trait protocol definition
+   [ ] Trait static area management
+
+3.4 Extension Definition - REMOVED [SKIP]
+   [SKIP] extension: ... extension; syntax (infrastructure exists, not enabled)
+   [SKIP] Extension property definition for specific classes
+   [SKIP] Extension protocol definition
+   [SKIP] Extension parent class validation
+
+3.5 Inheritance and Composition [ ]
+   [ ] derive - Copy class template and static structure
+   [ ] is-a - Add trait to classifier's bit table
+   [ ] on-derive: - Post-derivation hooks
+   [ ] Multiple trait composition support
+
+4. PROTOCOL SYSTEM [ ]
+==================
+
+4.1 Protocol Definition [ ]
+   [ ] protocol: ... ; syntax for method signatures
+   [ ] Stack diagram storage and validation
+   [ ] Default protocol implementations
+   [ ] Protocol association with traits/extensions
+
+4.2 Method Implementation [ ]
+   [ ] :: syntax for implementing protocols
+   [ ] Stack diagram validation between protocol and implementation
+   [ ] Method dispatch table management
+   [ ] Late-bound method resolution
+
+4.3 Message System Integration [ ]
+   [ ] Enhanced message dispatch with classifier checks
+   [ ] Protocol-based method lookup
+   [ ] Fallback to default implementations
+
+5. OBJECT INSTANTIATION [-]
+=======================
+
+5.1 Basic Object Creation [x]
+   [x] object - Create object from class
+   [x] create-object - Create named object with parsing
+   [x] $create-object - Create object with string name
+   [x] Object header initialization (class pointer)
+
+5.2 Advanced Object Creation [ ]
+   [ ] setup: - Parameterized object construction
+   [ ] <object - Assign class to user-allocated memory
+   [ ] <setup - Setup instance in user-allocated memory
+   [ ] Object validation during creation
+
+5.3 Template and Default Management [ ]
+   [ ] defaults - Get/create template object for class
+   [ ] >defaults - Template object access
+   [ ] Template copying during object creation
+
+6. RUNTIME QUERY SYSTEM [-]
+========================
+
+6.1 Type Checking [-]
+   [x] is? - Runtime type/trait/extension checking via bit tables
+   [x] Basic classifier validation (valid-classifier?)
+   [ ] Advanced object validation (valid-object?)
+   [ ] Field validation and bounds checking
+
+6.2 Introspection [ ]
+   [ ] Classifier capability enumeration
+   [ ] Field enumeration and metadata access
+   [ ] Protocol implementation checking
+   [ ] Runtime type information queries
+
+7. LIFECYCLE MANAGEMENT [ ]
+=======================
+
+7.1 Object Lifecycle Protocols [ ]
+   [ ] object% trait - Base trait for all objects
+   [ ] init protocol - Object initialization
+   [ ] deinit protocol - Object cleanup
+   [ ] Automatic lifecycle protocol calls
+
+7.2 System Lifecycle [-]
+   [x] init-nib - System initialization and hot-reload support
+   [ ] Hot-reload integration with existing games
+
+8. VALIDATION AND ERROR HANDLING [-]
+=================================
+
+8.1 Design-time Validation [-]
+   [x] Magic number checking for type safety
+   [x] Field redefinition prevention
+   [ ] Stack diagram validation for protocols
+   [ ] Trait/extension compatibility checking
+
+8.2 Runtime Validation [-]
+   [x] Object and classifier validation
+   [ ] Protocol implementation validation
+   [ ] Field access bounds checking
+   [ ] Runtime contract enforcement
+
+8.3 Error Reporting [-]
+   [x] Descriptive abort messages for common errors
+   [ ] Enhanced error context for protocol mismatches
+   [ ] Development-mode validation vs production optimization
+
+9. INTEGRATION AND COMPATIBILITY [ ]
+=================================
+
+9.1 Backwards Compatibility [ ]
+   [ ] Migration from current nib.vfx message system
+   [ ] Existing game code compatibility layer
+   [ ] Performance parity with original system
+
+9.2 System Integration [ ]
+   [ ] Integration with supershow actor system
+   [ ] Integration with existing field-space pools
+   [ ] Integration with oversight validation system
+
+IMPLEMENTATION PRIORITY
+========================
+
+Phase 1: Core Infrastructure [x]
+- Object runtime, bit allocation, basic classifiers
+
+Phase 2: Field System [x] 
+- Properties, statics, field infrastructure
+
+Phase 3: Classifier Enhancement [IN PROGRESS]
+- Traits, extensions, derive, is-a
+
+Phase 4: Protocol System [ ]
+- Protocol definition, method implementation, dispatch
+
+Phase 5: Advanced Features [ ]
+- Setup system, lifecycle management, advanced validation
+
+CURRENT STATUS SUMMARY
+=======================
+
+Overall Completion: ~40%
+
+Core systems working:
+- Object runtime and scoping
+- Property-based field system  
+- Basic class definition
+- Runtime type queries (is?)
+- Object creation infrastructure
+
+Major systems pending:
+- Trait and extension systems
+- Protocol definition and implementation
+- Inheritance system (derive, is-a)
+- Lifecycle management
+- Advanced validation
+
+The foundation is solid and ready for trait/extension implementation.

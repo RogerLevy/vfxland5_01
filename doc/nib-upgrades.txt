@@ -58,13 +58,6 @@ protocol: deinit ( - )
     \ only definable for traits.
     \ always public.
     
-: var ( - <name> ) ( - field ) ( object - field )
-    \ define a shared instance accessor (cell) and offset calculator (>NAME) if they have not been already defined.
-    \ adds a shared field to the current field space.
-    \ the current field space is determined by the current object's class.
-    \ if a field space is not defined for the object's class, throw an error.
-    \ always public.
-
 : static ( - <name> ) ( - field ) ( class - field )
     \ define a shared class accessor (cell) and offset calculator (>NAME) if they have not been already defined.
     \ statics are global across classes (every class is a fixed size).
@@ -96,39 +89,28 @@ protocol: deinit ( - )
     \ traits cannot "inherit" other traits.
     \ always public
     
-: is-a ( - <classifier> )
-    \ adds trait or extension to current class.
+: is-a ( - <trait> )
+    \ adds trait to current class.
     \ if a wrong data type is given, throw an error.
     \ sets a bit in a 1024-bit static for validation and logic.
-    \ if the classifier is an extension, checks that the current class is derived from a related class and throws an error if not.
 
 : is? ( object classifier - b )
-    \ check object for class, trait, or extension.
+    \ check object for class or trait.
 
 : derive ( class - )
     \ copy the given class (statics and defaults template) to the current class.
     \ if given item is any other data type, throw an error.
     
 : protocol: ( - <name> <default-code> ; ) ( ... object - ... )
-    \ define a trait or extension method (takes up a static) if it has not already been defined.
+    \ define a trait method (takes up a static) if it has not already been defined.
     \ must have a stack diagram, which gets stored in the protocol.
-    \ is associated with the current trait/extension's bit offset.
+    \ is associated with the current trait's bit offset.
     \ always public.
     
 : :: ( class - <name> <code> ; ) ( ... object - ... )
     \ define given class's method implementation.
     \ the stack diagram is validated against the protocol's stored one.
     \ the class is validated against the protocol.
-
-: extension: ( extended-class - <name> ) ( - extension )
-    \ define an extension for a specific class - if it has not already been defined.
-    \ set as current extension for defining members (vars, protocols).
-    \ if it has not been defined, allocate a bit in a 1024-bit bitfield for runtime queries.
-    \ paired with EXTENSION;
-    \ extensions are class-specific feature modules that add capabilities to a single class hierarchy.
-    \ vars defined in extensions are added to the extended class's field space.
-    \ protocols defined in extensions can be implemented by classes that enable the extension via IS-A.
-    \ always public.
 
 : on-derive: ( - <code> ; ) ( original-class derived-class - )
     \ define post-derive behavior for the current class.
@@ -178,7 +160,7 @@ array% :: each ( xt - ) ( a - ) \ stack diagram(s) must match the protocol's exa
     ... ; 
 
 
-\ example 2: actors with shared field space
+\ example 2: actors
 -------------------------------------------
 
 trait: drawable%
@@ -189,11 +171,11 @@ trait;
 class: actor%
     is-a drawable%
     512 field-space
-    var x
-    var y
-    var vx
-    var vy
-    var bmp
+    property x
+    property y
+    property vx
+    property vy
+    property bmp
     \ ...
     static oexec-error-handler ( xt n - )
     on-derive: ( original-class derived-class - )
@@ -209,18 +191,18 @@ actor% :: draw ( - )
 
 class: ship%
     actor% derive
-    var energy
-    var lives
+    property energy
+    property lives
 class;
 
 \ kinetic.vfx
-actor% extension: kinetic%
-    var rad
-    var mass
-    var ang
+actor% trait: kinetic%
+    property rad
+    property mass
+    property ang
     protocol: on-bounce ( object - )
         drop ;
-extension;
+trait;
 
 \ enemy1.vfx
 require kinetic.vfx  \ more likely to be in common.vfx to avoid repetition and false cross-app modularity, but this is just an example
@@ -248,8 +230,7 @@ conversation notes
   concepts:
 
   Complexity factors:
-  - Multiple field types (field, property, var, static) with different allocation rules
-  - Dual capability system (traits vs extensions) with same syntax (is-a) but different semantics
+  - Multiple field types (field, property, static) with different allocation rules
   - Field spaces - shared offset allocation across object instances
   - Protocol validation with stack diagram matching
   - Deferred property allocation based on field space presence
@@ -257,15 +238,12 @@ conversation notes
   However, I think Claude could handle it with proper documentation because:
 
   1. Consistent patterns - Once you understand is-a/is? and the field types, the system is quite regular
-  2. Clear separation of concerns - Each concept has a distinct purpose (traits = interfaces, extensions = class
-   features, field spaces = shared layout)
-  3. Good analogies - Extensions are like C# partial classes, traits are like interfaces, field spaces are like
-  C structs
+  2. Clear separation of concerns - Each concept has a distinct purpose (traits = interfaces/features, field spaces = fixed size)
+  3. Good analogies - traits are like interfaces, field spaces are like C structs
   4. Stack comments help - The protocol validation makes method signatures explicit
 
   Key would be comprehensive examples showing:
   - When to use each field type
-  - Trait vs extension decision criteria
   - How is-a works differently for each
   - Common patterns and idioms
 
@@ -276,22 +254,18 @@ conversation notes
   The bigger risk might be Claude overthinking simple cases where basic classes would suffice.
 
 
-● | Data Structure | field | property | var  | static | protocol: | Notes                              |
-  |----------------|-------|----------|------|--------|-----------|------------------------------------|
-  | class:         | Yes   | No       | Yes* | Yes    | No        | *var only if class has field-space |
-  | trait:         | No    | Yes      | No   | Yes    | Yes       | Cross-class behavioral interfaces  |
-  | extension:     | No    | No       | Yes  | Yes    | Yes       | Class-specific feature modules     |
-  | Private blocks | Yes   | No       | No   | No     | No        | Implementation hiding only         |
+● | Data Structure | field | property | static | protocol: | Notes                              |
+  |----------------|-------|----------|--------|-----------|------------------------------------|
+  | class:         | Yes   | Yes      | Yes    | No        |                                    |
+  | trait:         | No    | Yes      | Yes    | Yes       | Cross-class behavioral interfaces  |
+  | Private blocks | Yes   | No       | No     | No        | Implementation hiding only         |
 
   Key constraints:
-  - property - Traits only (dynamic offset resolution for cross-class compatibility)
-  - var - Classes with field-space or extensions only (shared field space required)
   - field - Classes or private blocks only (direct offset allocation)
-  - static - Classes, traits, extensions (class-level data, universally useful)
-  - protocol: - Traits and extensions only (behavioral contracts)
+  - static - Classes, traits (class-level data, universally useful)
+  - protocol: - Traits only (behavioral contracts)
 
   Design rationale:
   - Traits focus on flexible interfaces (properties + protocols)
-  - Extensions focus on performance features (vars + protocols)
   - Classes get full flexibility for concrete implementations
   - Private blocks only for encapsulated utility components

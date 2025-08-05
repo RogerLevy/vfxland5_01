@@ -20,11 +20,13 @@ validations off
 
 variable next-classifier#
 
+magic-id MAGIC_FIELD FIEL
+magic-id CLASS_MAGIC CLAS
+
 \ ==============================================================================
 \ Low-level stuff
 \ ==============================================================================
 
-magic-id MAGIC_FIELD FIEL
 : field ( ofs size <name> - n ) ( a - a )
     create 0 , MAGIC_FIELD , over , +
     does> 2 cells + @ me + ;
@@ -106,8 +108,6 @@ to /static
 || : create-classifier ( class - <name> class )
     create (classifier) ;
 
-magic-id CLASS_MAGIC CLAS
-
 create class% class% (classifier) [[ CLASS_MAGIC magic ! ]]
 class% create-classifier trait% [[ CLASS_MAGIC magic ! ]]
 class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
@@ -135,30 +135,11 @@ class% create-object var% [[
 || : has-field-space? ( class - b )
     's field-space-size @ 0<> ;
     
-|| : ?no-field-space ( - b )
-    classifier has-field-space? not dup if bl word drop then ;
-
 : field-space ( n - )
     classifier [[
         field-space-size !
         field-space-size @ instance-size !
-    ]] ;
-        
-: var ( - <name> ) ( - a )
-    ?no-field-space if
-        -1 abort" VAR >> Class has no field space defined."
-    then
-    var% ?already ?exit
-    var% create-object [[
-        classifier 's next-ofs @ offset !
-        cell classifier 's next-ofs +!
-        classifier has-field-space? not if            
-            classifier [[ next-ofs @ instance-size ! ]]
-        then
-        MAGIC_FIELD magic !
-    ]]
-    does> 's offset @ me + ;  
-
+    ]] ;       
 
 : begin-classifier ( class - )
     create-object to classifier
@@ -186,10 +167,13 @@ class% create-object property% [[
     dup instance-size ! next-ofs !
 ]]
 
+: allocate-static-offset ( - )
+    /static offset !
+    cell +to /static ;
+    
 : create-property ( - <name> property ) 
     property% create-object [[
-        /static offset !
-        cell +to /static
+        allocate-static-offset
         MAGIC_FIELD magic !
     me ]]
     does> 's offset @ cla @ + @ me + ;
@@ -197,9 +181,11 @@ class% create-object property% [[
 : property ( - <name> ) ( - a )
     property% already? if ' >body else create-property then
     [[
-        classifier 's next-ofs @   classifier offset @ + !
+        classifier 's next-ofs @  classifier offset @ + !
         cell classifier 's next-ofs +!
-        classifier [[ next-ofs @ instance-size ! ]]
+        classifier has-field-space? not if            
+            classifier [[ next-ofs @ instance-size ! ]]
+        then
     ]] ;
 
 class% create-object static% [[
@@ -210,12 +196,12 @@ class% create-object static% [[
 : static ( - <name> ) ( - a )
     static% ?already ?exit    
     static% create-object [[
-        /static offset !
-        cell +to /static
+        allocate-static-offset
         MAGIC_FIELD magic !
     ]]
     does> 's offset @ cla @ + ;
-    
+
+
 \ : trait:
 \     trait% create-object to classifier ;
 \ 
@@ -235,14 +221,6 @@ class% create-object static% [[
 
 \ Tests
 \ -----
-
-\ class: actor%
-\     512 field-space
-\     var x
-\     var y
-\     var vx
-\     var vy
-\ class;
 
 class: actor%
     property x
