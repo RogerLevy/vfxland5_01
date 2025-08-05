@@ -14,6 +14,7 @@ validations off
 0 value me
 0 value classifier
 1024 constant #max-classifiers
+4096 constant /classifier
 variable next-classifier#
 
 \ ==============================================================================
@@ -43,6 +44,20 @@ cstring name$
 : >$ ( a len - $ )
     name$ place name$ ;
 
+: set-bit ( bit# addr - )
+    {: bit# addr | byte-ofs bit-ofs :}
+    bit# 8 / to byte-ofs
+    bit# 8 mod to bit-ofs
+    addr byte-ofs +
+    dup c@ 1 bit-ofs lshift or swap c! ;
+
+: test-bit ( bit# addr - b )
+    {: bit# addr | byte-ofs bit-ofs :}
+    bit# 8 / to byte-ofs
+    bit# 8 mod to bit-ofs
+    addr byte-ofs + c@
+    1 bit-ofs lshift and 0<> ;
+
 \ ==============================================================================
 \ Object stack
 \ ==============================================================================
@@ -66,8 +81,6 @@ variable osp   os osp ! \ object stack pointer
 \ Classes
 \ ==============================================================================
 
-4096 constant /classifier
-
 0
     cell field cla
 dup constant /object-base
@@ -78,7 +91,8 @@ constant /magical-base
     cell field instance-size                   \ Size of this class
     cell field next-ofs                     \ Next field offset for this class
     cell field field-space-size
-    #max-classifiers 8 / field bit-table    \ 128 bytes for 1024-bit classification table
+    cell field classifier#
+    #max-classifiers 8 / field bit-table    \ Classification table
 value /static                               \ next static field offset
 
    
@@ -152,9 +166,14 @@ class% create-object var% [[
         MAGIC_FIELD magic !
     ]]
     does> 's offset @ me + ;  
+    
+: begin-classifier ( class - )
+    create-object to classifier
+    next-classifier# @ classifier 's bit-table set-bit
+    1 next-classifier# +! ;
 
 : class:
-    class% create-object to classifier
+    class% begin-classifier
     classifier [[
         /object-base instance-size !
         /object-base next-ofs !
@@ -162,6 +181,9 @@ class% create-object var% [[
 
 : class;
     0 to classifier ;
+    
+: is? ( object classifier - bool )
+    's classifier# @ swap 's cla @ 's bit-table test-bit ;
     
 \ : trait:
 \     trait% create-object to classifier ;
