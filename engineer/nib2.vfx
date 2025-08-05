@@ -2,8 +2,8 @@
 \ Engineer OOP extension - Nib 2.0 Foundation
 \ ------------------------------------------------------------------------------
 \ ==============================================================================
-\ [ ] Phase 1: Foundation infrastructure 
-\ [ ] Phase 2: Classifier bit allocation system
+\ [x] Phase 1: Foundation infrastructure 
+\ [x] Phase 2: Classifier bit allocation system
 \ [ ] Phase 3: Field type registry and protocols
 \ [ ] Phase 4: Enhanced message dispatch with classifier checks
 \ [ ] Phase 5: Advanced object creation with type validation
@@ -11,10 +11,13 @@
 
 validations off
 
-0 value me
-0 value classifier
 1024 constant #max-classifiers
 4096 constant /classifier
+
+0 value me              \ current object
+0 value classifier      \ current classifier
+0 value /static         \ next static field offset
+
 variable next-classifier#
 
 \ ==============================================================================
@@ -52,11 +55,8 @@ cstring name$
     dup c@ 1 bit-ofs lshift or swap c! ;
 
 : test-bit ( bit# addr - b )
-    {: bit# addr | byte-ofs bit-ofs :}
-    bit# 8 / to byte-ofs
-    bit# 8 mod to bit-ofs
-    addr byte-ofs + c@
-    1 bit-ofs lshift and 0<> ;
+    >r 8 /mod ( bit-ofs byte-ofs )
+    r> + c@ 1 rot lshift and 0<> ;
 
 \ ==============================================================================
 \ Object stack
@@ -88,14 +88,13 @@ dup constant /object-base
 constant /magical-base
 
 /magical-base
-    cell field instance-size                   \ Size of this class
+    cell field instance-size                \ Size of this class
     cell field next-ofs                     \ Next field offset for this class
     cell field field-space-size
     cell field classifier#
     #max-classifiers 8 / field bit-table    \ Classification table
-value /static                               \ next static field offset
+to /static
 
-   
 || : (classifier) ( class - class )
     here swap , /classifier cell- allot&erase
     [[ /classifier instance-size ! me ]] ;
@@ -117,21 +116,10 @@ class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
     here over , swap 's instance-size @ cell- allot&erase ;
 
 : $create-object ( class name len - object ) ( - object ) 
-    >$ $create object
-    \ does-xt if 
-    \     postpone does>
-    \     does-xt compile,
-    \     postpone ;
-    \ then
-;
+    >$ $create object ;
 
 : create-object ( class - <name> ) ( - object )
     bl parse $create-object ;
-    
-\ : static ( - <name> ) ( - a )
-\     static% ?already ?exit    
-\     /static  cell field  to /static
-\     does> @ me >statics + ;
 
 class% create-object var% [[
     /magical-base
@@ -172,6 +160,9 @@ class% create-object var% [[
     next-classifier# @ classifier 's bit-table set-bit
     1 next-classifier# +! ;
 
+: end-classifier ( - )
+    0 to classifier ;
+    
 : class:
     class% begin-classifier
     classifier [[
@@ -180,31 +171,41 @@ class% create-object var% [[
     ]] ;
 
 : class;
-    0 to classifier ;
+    end-classifier ;
     
 : is? ( object classifier - bool )
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
+
+class% create-object static% [[
+    var% 's instance-size @
+    dup instance-size ! next-ofs !
+]]
+
+: static ( - <name> ) ( - a )
+    static% ?already ?exit    
+    static% create-object [[
+        /static offset !
+        cell +to /static
+        MAGIC_FIELD magic !
+    ]]
+    does> 's offset @ cla @ + ;
     
 \ : trait:
 \     trait% create-object to classifier ;
 \ 
 \ : trait;
-\     0 to classifier ;
+\     end-classifier ;
 \ 
 \ : extension:
 \     extension% create-object to classifier ;
 \ 
 \ : extension;
-\     0 to classifier ;
-
-|| : >statics ( object - class )
-    's cla @ ;
+\     end-classifier ;
 
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 
-    [ /static ] literal to /static ;
-
-
+    [ /static ] literal to /static
+    0 to classifier ;
 
 \ Tests
 \ -----
@@ -222,4 +223,8 @@ actor% create-object test [[
     x .
     y .
     me 's y .
+    me actor% is? .
+    cr
+    static i/hp
+    i/hp . actor% 's i/hp .
 ]]
