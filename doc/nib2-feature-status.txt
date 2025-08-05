@@ -81,8 +81,8 @@ Status Legend:
    [SKIP] Extension protocol definition
    [SKIP] Extension parent class validation
 
-3.5 Inheritance and Composition [-]
-   [ ] derive - Copy class template and static structure
+3.5 Inheritance and Composition [x]
+   [x] derive - Copy class structure, static area, and member lists
    [x] is-a - Add trait to classifier's bit table and copy properties/protocols
    [ ] on-derive: - Post-derivation hooks
    [x] Multiple trait composition support
@@ -230,8 +230,8 @@ Phase 1: Core Infrastructure [x]
 Phase 2: Field System [x] 
 - Properties, statics, field infrastructure
 
-Phase 3: Classifier Enhancement [-]
-- Traits (complete), is-a (complete), derive (pending), scope enforcement (pending)
+Phase 3: Classifier Enhancement [x]
+- Traits (complete), is-a (complete), derive (complete), scope enforcement (pending)
 
 Phase 4: Protocol System [x]
 - Protocol definition (complete), method implementation (complete), dispatch (complete)
@@ -245,7 +245,7 @@ Phase 6: Object% Integration [ ]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~50%
+Overall Completion: ~55%
 
 Core systems working:
 - Object runtime and scoping  
@@ -259,10 +259,11 @@ Core systems working:
 - Protocol dispatch with fallback behavior
 - Multiple trait composition support
 - Method overrides and late-bound dispatch
+- Class inheritance with derive
 
 Major systems pending:
-- Class inheritance (derive)
 - Lifecycle management (object%, setup:, init/deinit)
+- Template system (defaults, >defaults)
 - Scope enforcement (public/private validation)
 - Advanced validation and error handling
 - Enhanced object creation (does-xt, SETUP execution)

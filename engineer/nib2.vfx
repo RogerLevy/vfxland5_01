@@ -13,6 +13,7 @@ validations off
 
 1024 constant #max-classifiers
 4096 constant /classifier
+#max-classifiers 8 / constant /bit-table
 
 0 value me              \ current object
 0 value classifier      \ current classifier
@@ -85,6 +86,13 @@ cstring name$
 
 3 cells constant /list
 
+: copy-list ( src dest - )
+    {: src dest :}
+    dest /list erase  \ re-initialize head
+    src dup list-count for
+        @next dest add-to
+    loop drop ;
+
 \ ==============================================================================
 \ Object stack
 \ ==============================================================================
@@ -119,9 +127,10 @@ constant /magical-base
     cell field next-ofs                     \ Next field offset for this class
     cell field field-space-size
     cell field classifier#
-    #max-classifiers 8 / field bit-table    \ Classification table
+    /bit-table field bit-table    \ Classification table
     /list field property-list
     /list field protocol-list
+dup constant /classifier-base
 to /static
 
 || : (classifier) ( class - class )
@@ -300,12 +309,27 @@ class% create-object protocol% [[
         here ( xt ) class offset @ + !
     ]] ;
 
-\ 
-\ : extension:
-\     extension% create-object to classifier ;
-\ 
-\ : extension;
-\     end-classifier ;
+: derive ( class - )
+    {: source-class :}
+    
+    \ Copy size fields
+    source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
+    classifier [[ field-space-size ! next-ofs ! instance-size ! ]]
+    
+    \ Copy statics
+    source-class /classifier-base +
+    classifier /classifier-base +   
+    /classifier /classifier-base - move
+    
+    \ Copy member lists
+    source-class 's protocol-list  classifier 's protocol-list copy-list
+    source-class 's property-list  classifier 's property-list copy-list
+    
+    \ Copy parent's bit-table (trait relationships)
+    source-class 's bit-table classifier 's bit-table /bit-table move
+    
+    \ Set parent bit for inheritance queries
+    source-class 's classifier# @ classifier 's bit-table set-bit ;
 
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 
@@ -341,6 +365,11 @@ class: actor%
     property y
     property vx
     property vy
+class;
+
+class: enemy%
+    actor% derive
+    property atk
 class;
 
 class: waypoint%
@@ -383,6 +412,20 @@ actor [[
     ." &vx=" vx .
     cr
     me think
+]]
+
+enemy% create-object enemy [[
+    me dup . .name
+    ." &mass=" mass .
+    ." &x=" x .
+    ." &vx=" vx .
+    ." &atk=" atk .
+    cr
+    me think
+    me actor% is? .
+    me enemy% is? .
+    me physics% is? .
+    me object% is? .
 ]]
 
 \ waypoint [[
