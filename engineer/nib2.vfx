@@ -130,6 +130,7 @@ constant /magical-base
     /bit-table field bit-table    \ Classification table
     /list field property-list
     /list field protocol-list
+    cell field template
 dup constant /classifier-base
 to /static
 
@@ -147,9 +148,24 @@ class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
 \ TODO: implement SETUP TEARDOWN INIT DEINIT with OBJECT% trait added to every object
 \ trait% create-classifier object% [[ ]] 
 
+: sizeof ( object - n )
+    's cla @ 's instance-size @ ;
+
+: !defaults ( object - )
+    dup 's cla @ 's template @ ?dup if
+        \ dup .name ." template copying" cr
+        \ over >r 
+        cell+ over dup cell+ swap sizeof cell- .s move
+        \ r> dup sizeof dump
+    else
+        dup cell+ over sizeof cell- erase
+    then
+    drop ;
+
 : object ( class - object )
     \ TODO: validate class
-    here over , swap 's instance-size @ cell- allot&erase ;
+    here over , swap 's instance-size @ cell- allot
+    dup !defaults ;
 
 : $create-object ( class name len - object ) ( - object ) 
     >$ $create object ;
@@ -219,7 +235,10 @@ class% create-object property% [[
     [[
         classifier 's next-ofs @ offset @ classifier + !
         cell classifier 's next-ofs +!
-    ]] ;
+    ]]
+    classifier has-field-space? not if            
+        classifier [[ next-ofs @ instance-size ! ]]
+    then ;
 
 : property ( <name> - ) ( - a )
     property% already? if ' >body else create-property then
@@ -228,10 +247,6 @@ class% create-object property% [[
     else
         dup add-property
         map-property
-        
-        classifier has-field-space? not if            
-            classifier [[ next-ofs @ instance-size ! ]]
-        then
     then ;
 
 class% create-object static% [[
@@ -309,6 +324,21 @@ class% create-object protocol% [[
         here ( xt ) class offset @ + !
     ]] ;
 
+: defaults ( - a )
+    classifier 's cla @ trait% = if
+        -1 abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
+    then
+    classifier 's template @ ?dup if else
+        classifier object classifier 's template !
+        classifier 's template @
+    then ;
+
+: >defaults ( class - a )
+    's template @ ?dup if else
+        dup object over 's template !
+        's template @
+    then ;
+
 : derive ( class - )
     {: source-class :}
     
@@ -329,7 +359,13 @@ class% create-object protocol% [[
     source-class 's bit-table classifier 's bit-table /bit-table move
     
     \ Set parent bit for inheritance queries
-    source-class 's classifier# @ classifier 's bit-table set-bit ;
+    source-class 's classifier# @ classifier 's bit-table set-bit
+    
+    \ Copy template if it exists
+    source-class 's template @ ?dup if
+        defaults source-class 's instance-size @ move
+    then
+;
 
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 
@@ -365,7 +401,14 @@ class: actor%
     property y
     property vx
     property vy
+    defaults [[
+        me .
+        1. mass !
+        rad .
+        10. rad !
+    ]]
 class;
+actor% >defaults [[ rad ]] p? cr
 
 class: enemy%
     actor% derive
@@ -382,7 +425,7 @@ class;
 
 waypoint% create-object waypoint drop
 
-actor% create-object actor [[
+actor% create-object actor .s [[
     me .
     x .
     y .
@@ -426,6 +469,9 @@ enemy% create-object enemy [[
     me enemy% is? .
     me physics% is? .
     me object% is? .
+    cr
+    ." mass=" mass p?
+    ." rad=" rad p?
 ]]
 
 \ waypoint [[
