@@ -289,6 +289,17 @@ class% create-object protocol% [[
     loop drop
 ;
 
+: :: ( class <protocol> - )
+    {: class | name[ 256 ] :}
+    ' >body [[
+        me body> >name count name[ place
+        name[ count
+            class body> >name count 1 -
+            f" : %s::%s" 2dup upper evaluate
+        state on
+        here ( xt ) class offset @ + !
+    ]] ;
+
 \ 
 \ : extension:
 \     extension% create-object to classifier ;
@@ -362,12 +373,16 @@ actor init
 actor think
 \ waypoint think
 
+actor% :: think
+    ." I try to think but nothing happens!" cr ;
+
 actor [[
     me dup . .name
     ." &mass=" mass .
     ." &x=" x .
     ." &vx=" vx .
     cr
+    me think
 ]]
 
 \ waypoint [[
