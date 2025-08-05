@@ -1,210 +1,203 @@
 \ ------------------------------------------------------------------------------
 \ Engineer OOP extension - Nib 2.0 Foundation
 \ ------------------------------------------------------------------------------
-\ Author: Foundation-Updater Agent
-\ Purpose: Phase 1 foundation updates for Nib 2.0 
-\          Adds 1024-bit classifier infrastructure while preserving all existing functionality
+\ ==============================================================================
+\ [ ] Phase 1: Foundation infrastructure 
+\ [ ] Phase 2: Classifier bit allocation system
+\ [ ] Phase 3: Field type registry and protocols
+\ [ ] Phase 4: Enhanced message dispatch with classifier checks
+\ [ ] Phase 5: Advanced object creation with type validation
+\ ==============================================================================
 
-\ ==============================================================================
-\ PHASE 1: FOUNDATION INFRASTRUCTURE 
-\ ==============================================================================
-\ This phase adds:
-\ - 1024-bit classifier constant
-\ - Expanded class size (1024 -> 4096 bytes)  
-\ - Bit table field in static structure
-\ - /static-base support for hot-reload restoration
-\ - Foundation for future classifier system
-\
-\ FUTURE PHASES (not implemented yet):
-\ - Phase 2: Classifier bit allocation system
-\ - Phase 3: Field type registry and protocols
-\ - Phase 4: Enhanced message dispatch with classifier checks
-\ - Phase 5: Advanced object creation with type validation
-\ ==============================================================================
+validations off
 
 0 value me
-0 value /obj    \ next field offset
-
-\ ==============================================================================
-\ PHASE 1 ADDITION: Enhanced static structure with bit table
-\ ==============================================================================
+0 value classifier
 1024 constant #max-classifiers
+variable next-classifier#
 
-\ Static structure layout for classes:
-0 
-#max-classifiers 8 / field bit-table    \ 128 bytes for 1024-bit classifier table
-cell field class-size                   \ Size of this class
-cell field next-field-offset            \ Next field offset for this class
-constant /static-base
+\ ==============================================================================
+\ Low-level stuff
+\ ==============================================================================
 
-/static-base value /static \ next static field offset
-
-magic-id FIELD_MAGIC FIEL
+magic-id MAGIC_FIELD FIEL
 : field ( ofs size - <name> n ) ( a - a )
-    create over , + FIELD_MAGIC , does> @ + ;
+    create 0 , MAGIC_FIELD , over , +
+    does> 2 cells + @ me + ;
 
-: ?already ( n - f )
+: 's ( object - <name> a )
+    ' >body 2 cells + @ ?literal s" +" evaluate ; immediate 
+
+: ?already ( ? - b )
     {: n :}
     preword find if
-        >body cell+ @ n = dup if bl word drop then
+        >body @ n = dup if bl word drop then
     else drop 0 then ; 
 
-|| : ?literal
-    state @ if postpone literal then ;
+|| : ?literal  state @ if postpone literal then ;
 
+: -% ( a c -- a c' )
+    dup -exit 2dup + 1 - c@ '%' = -exit 1 - ;
+
+cstring name$
+: >$ ( a len - $ )
+    name$ place name$ ;
+
+\ ==============================================================================
 \ Object stack
+\ ==============================================================================
+
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot constant ;
 aligned-page os
 variable osp   os osp ! \ object stack pointer
 
-\ Addressing
-: [[ ( a - ) me osp @ !  4 osp c+!  to me ;
+\ ==============================================================================
+\ Object scoping
+\ ==============================================================================
+
+: [[ ( object - ) me osp @ !  4 osp c+!  to me ;
 : unsafe-[[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
-: you  osp @ cell- @ ;
-: that osp @ @ ;
+: you ( - object ) osp @ cell- @ ;
+: that ( - object ) osp @ @ ;
 
-: ofield ( size - <name> n ) ( - a )
-    /obj swap field to /obj 
-    does> @ me + ;
-
-: 's ( a - <name> a )
-    ' >body @ ?literal s" +" evaluate ; immediate 
-
+\ ==============================================================================
 \ Classes
-cell ofield cla
-
-|| : >static ( obj - class )
-    's cla @ ;
-
-|| : preword ( - a len )
-    >in @ swap word swap >in ! ;
-
-magic-id MESSAGE_MAGIC MSG
-|| : message?  3 cells + @ MESSAGE_MAGIC = ;
-
-|| : ?message ( - )
-    >in @
-    ' >body message? not if
-        cr
-        -1 abort" Word is not a message!  (Did you forget an underscore?)"
-    then
-    >in ! ;
-
 \ ==============================================================================
-\ PHASE 1 CHANGE: Expanded class size (1024 -> 4096 bytes)
-\ ==============================================================================
-\ FUTURE ENHANCEMENT POINT: This will support expanded field registries, 
-\ classifier tables, and protocol definitions in later phases
-4096 constant /class
+
+4096 constant /classifier
+
+0
+    cell field cla
+dup constant /object-base
+    cell field magic
+constant /magical-base
+
+/magical-base
+    cell field instance-size                   \ Size of this class
+    cell field next-ofs                     \ Next field offset for this class
+    cell field field-space-size
+    #max-classifiers 8 / field bit-table    \ 128 bytes for 1024-bit classification table
+value /static                               \ next static field offset
+
+   
+|| : (classifier) ( class - class )
+    here swap , /classifier cell- allot&erase
+    [[ /classifier instance-size ! me ]] ;
+    
+|| : create-classifier ( class - <name> class )
+    create (classifier) ;
 
 magic-id CLASS_MAGIC CLAS
-create class% here , /class cell- allot&erase CLASS_MAGIC , 
 
-: create-class ( $ - ) ( - ) 
-    $create class% , /class cell- allot&erase CLASS_MAGIC ,
-    lastbody , \ false object for convenient static assignments
+create class% class% (classifier) [[ CLASS_MAGIC magic ! ]]
+class% create-classifier trait% [[ CLASS_MAGIC magic ! ]]
+class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
+
+\ TODO: implement SETUP TEARDOWN INIT DEINIT with OBJECT% trait added to every object
+\ trait% create-classifier object% [[ ]] 
+
+: object ( class - object )
+    \ TODO: validate class
+    here over , swap 's instance-size @ cell- allot&erase ;
+
+: $create-object ( class name len - object ) ( - object ) 
+    >$ $create object
+    \ does-xt if 
+    \     postpone does>
+    \     does-xt compile,
+    \     postpone ;
+    \ then
 ;
 
-: statics: ( class - )
-    /class + cell+ [[ ;
+: create-object ( class - <name> ) ( - object )
+    bl parse $create-object ;
+    
+\ : static ( - <name> ) ( - a )
+\     static% ?already ?exit    
+\     /static  cell field  to /static
+\     does> @ me >statics + ;
 
-: -% ( a c -- a c' )
-    dup -exit 2dup + 1 - c@ '%' = -exit 1 - ;
+class% create-object var% [[
+    /magical-base
+        cell field offset
+        cell field magic
+    dup instance-size ! next-ofs !
+]]
 
-: static ( - <name> ) ( - a )
-    /static  cell field  to /static  does> @ me >static + ;
+|| : has-field-space? ( class - b )
+    's field-space-size @ 0<> ;
+    
+|| : ?no-field-space ( - b )
+    classifier has-field-space? not dup if bl word drop then ;
 
-\ Messages
-
-static oexec-error-handler ( xt n - )
-
-: oexec ( ... xt - ... )
-    ?dup -exit
-    {: xt :}
-    xt catch ?dup if
-        oexec-error-handler @ if
-            xt swap oexec-error-handler @ execute
-        else
-            throw
+: field-space ( n - )
+    classifier [[
+        field-space-size !
+        field-space-size @ instance-size !
+    ]] ;
+        
+: var ( - <name> ) ( - a )
+    ?no-field-space if
+        -1 abort" VAR >> Class has no field space defined."
+    then
+    var% ?already ?exit
+    var% create-object [[
+        classifier 's next-ofs @ offset !
+        cell classifier 's next-ofs +!
+        classifier has-field-space? not if            
+            next-ofs @ classifier 's instance-size !
         then
-    then ;
+        MAGIC_FIELD magic !
+    ]]
+    does> 's offset @ me + ;  
 
-|| : do-message ( ... message actor - ... )
-    [[
-        dup @ me >static + @ ?dup if
-            nip
-        else
-            cell+ cell+ @
-        then
-        ( xt ) oexec
+: class:
+    class% create-object to classifier
+    classifier [[
+        /object-base instance-size !
+        /object-base next-ofs !
     ]] ;
 
-|| : does-message  does> swap do-message ;
+: class;
+    0 to classifier ;
+    
+\ : trait:
+\     trait% create-object to classifier ;
+\ 
+\ : trait;
+\     0 to classifier ;
+\ 
+\ : extension:
+\     extension% create-object to classifier ;
+\ 
+\ : extension;
+\     0 to classifier ;
 
-: dispatch,  here 0 , MESSAGE_MAGIC , :noname swap ! ;
+|| : >statics ( object - class )
+    's cla @ ;
 
-: m: ( - <name> <code> ; ) ( ... obj - ... ) 
-    \ Declare a message and its default behavior
-    static does-message dispatch, ;
-
-: >:: ( class message - <code> ; ) ( ... obj - ... ) 
-    \ Define the response of a given class to a given message (passed on stack)
-    \ Expects message to be a message
-    {: c msg | name[ 256 ] ofs :}
-    msg body> >name count name[ place
-    msg @ to ofs
-    name[ count
-        c body> >name count 1 -
-        f" : %s::%s" 2dup upper evaluate
-    state on
-    here ( xt ) c ofs + ! ;
-
-: :: ( class - <msg> <code> ; ) ( ... obj - ... ) 
-    \ Define the response of a given class to a given message (read-ahead word)
-    \ Checks if the given name is actually a message
-    \ FUTURE ENHANCEMENT POINT: Will add classifier validation in later phases
-    ?message ' >body >:: ;   
-
-\ Instantiation
-: >object ( a class - class:object )
-    over 's cla ! ;
-
-\ Defaults
-c" object%" create-class
-m: init ( - ) ;
-m: destruct ( - ) ;
-
-: find-class ( a len - class | object% )
-    >pad find if execute else drop object% then ;
-
-\ Validation
-: valid-class? ( a - n:res )
-    dup firstname here within  >r  \ in dictionary
-    r@ 0< if
-        dup /class + @ CLASS_MAGIC = r> and >r
-    then
-    drop r> ;
-
-: valid-object? ( a - n:res )
-    dup firstname here within  >r  \ in dictionary
-    r@ 0< if
-        dup @ ( class ) valid-class? r> and >r
-    then
-    drop r> ;
-
-\ IDE hook
-defer .me ( - ) ' noop is .me
-
-\ ==============================================================================
-\ PHASE 1 ADDITION: Enhanced initialization with /static-base support
-\ ==============================================================================
 : init-nib ( - )
-    [ /obj ] literal to /obj
+    [ next-classifier# @ ] literal next-classifier# ! 
     [ /static ] literal to /static ;
 
-\ Hot-reload restoration support - restore /static to base value
-: restore-static-base ( - )
-    [ /static-base ] literal to /static ;
 
+
+\ Tests
+\ -----
+
+class: actor%
+    512 field-space
+    var x
+    var y
+    var vx
+    var vy
+class;
+
+actor% create-object test [[
+    me .
+    x .
+    y .
+    me 's y .
+]]
