@@ -12,7 +12,8 @@ xt = execution token
 $ = byte-counted string (can be used as a suffix)
 z$ = zero-terminated string
 d = double int
-. = fixed-point number (binary format is 16.16, usually used as a suffix) 
+p = fixed-point number (binary format is 16.16, usually used as a suffix) 
+f = float
 ... = any number of items of any time
 
 other parameter types are given as struct names or class names, or descriptive such as src and dest and you need to infer the type (usually addresses)

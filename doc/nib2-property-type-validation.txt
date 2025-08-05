@@ -1,0 +1,190 @@
+Nib 2.0 Property Type Validation
+=================================
+
+Overview
+--------
+
+Property type validation is a proposed compile-time feature that would enforce 
+type consistency across property definitions using stack comment annotations.
+This provides early error detection and enables future serialization/validation
+capabilities while maintaining the flexibility of property name reuse.
+
+Concept
+-------
+
+When defining properties, developers can optionally include type annotations
+in stack comments:
+
+class: actor%
+    property x    \ p     (fixed-point position)
+    property y    \ p     (fixed-point position)  
+    property hp   \ n     (integer health points)
+class;
+
+class: waypoint%
+    property x    \ p     (same type as actor% - OK)
+    property y    \ p     (same type as actor% - OK)
+    property id   \ n     (integer identifier)
+class;
+
+class: button%
+    property x    \ n     (ERROR: conflicts with actor% x which is .)
+class;
+
+Implementation Strategy
+-----------------------
+
+1. Parse property definitions for type annotations during compilation
+2. Maintain global property registry mapping names to declared types
+3. Validate type consistency when same property name is defined elsewhere
+4. Abort compilation on type conflicts with descriptive error messages
+
+Supported type annotations follow standard stack comment conventions:
+- n = integer
+- p = fixed-point number
+- $ = byte-counted string
+- z$ = zero-terminated string
+- a = address
+- b = boolean flag
+- xt = execution token
+- d = double integer
+- c = count
+- u = unsigned integer
+- sf = 32-bit float
+- df = 64-bit float
+- o = object
+- classname = object of specific class
+- traitname = object with specific trait
+
+Benefits
+--------
+
+Type Safety:
+- Catches type mismatches at compile time
+- Prevents subtle bugs from inconsistent property usage
+- Self-documenting code through meaningful type annotations
+
+Design Consistency:
+- Enforces consistent interfaces across related classes
+- Encourages thoughtful property naming
+- Supports trait-based design patterns
+
+Future Capabilities:
+- Automatic serialization code generation
+- Runtime type validation infrastructure
+- Enhanced debugging and introspection tools
+
+Constraints
+-----------
+
+No Property Overloading:
+- Same property name must have same type across entire codebase
+- Cannot have actor.damage (n) and spell.damage (.) simultaneously
+- Encourages more specific naming conventions
+
+Optional Validation:
+- Properties without type annotations are not validated
+- Mixed annotated/unannotated properties disable validation for that name
+- Provides migration path for existing code
+
+Conflict Resolution Strategies
+------------------------------
+
+When existing components have type conflicts, developers have several options:
+
+1. Rename Conflicting Properties
+   Most common solution - use more specific names:
+   
+   class: spell%  
+       property spell-damage    \ p    (was: damage)
+   class;
+
+2. Remove Type Annotations
+   Temporary solution to disable validation:
+   
+   class: actor%
+       property damage    (no type comment)
+   class;
+
+3. Standardize on One Type
+   Convert all uses to consistent type:
+   
+   class: actor%
+       property damage    \ p    (changed from n)
+   class;
+
+4. Use Wrapper Functions
+   Keep different internal types with conversion:
+   
+   class: actor%
+       property damage-points    \ n    (internal storage)
+       
+       : damage ( - p )  damage-points @ n>f ;
+       : damage! ( p - )  f>n damage-points ! ;
+   class;
+
+5. Compiler Directives (potential)
+   Escape hatch for legacy code:
+   
+   ignore-property-types
+   class: legacy-actor%
+       property damage    \ n    (conflicts ignored)
+   class;
+   check-property-types
+
+Integration with Nib 2.0
+-------------------------
+
+This feature would integrate naturally with the existing property system:
+
+- Extend property creation infrastructure to parse and store type info
+- Build on protocol validation patterns already established
+- Fit into Phase 4 or 5 implementation timeline
+- Leverage existing stack comment parsing utilities
+
+The validation would occur during property definition, similar to how 
+property name conflicts are currently detected and resolved.
+
+Design Philosophy
+-----------------
+
+This feature follows Nib 2.0's core principles:
+
+Consistency: Same property names have same semantics across the system
+Flexibility: Validation is optional and can be disabled as needed  
+Clarity: Type annotations serve as both validation and documentation
+Compatibility: Existing code continues to work without modification
+
+The constraint against property overloading actually encourages better design
+by forcing developers to use more specific, meaningful property names when
+different types are truly needed.
+
+Future Considerations
+---------------------
+
+Serialization Support:
+With standardized type annotations, automatic serialization becomes possible:
+
+: serialize-properties ( object - data len )
+    \ Automatically pack all typed properties based on their annotations
+
+Runtime Validation:
+Type information could enable runtime checks:
+
+: validate-property-types ( object - )
+    \ Verify all property values match their declared types
+
+Enhanced Tooling:
+Type information enables better development tools:
+- IDE autocompletion based on property types
+- Static analysis of property usage patterns
+- Automatic documentation generation
+
+Conclusion
+----------
+
+Property type validation represents a natural evolution of Nib 2.0's design,
+providing compile-time safety while maintaining the system's flexibility and
+expressiveness. The constraint against property overloading, while initially
+limiting, ultimately leads to clearer, more maintainable code with consistent
+interfaces across the entire system.

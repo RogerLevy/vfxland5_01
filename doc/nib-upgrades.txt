@@ -69,7 +69,7 @@ protocol: deinit ( - )
 
 : class: ( - <name> )
     \ define a class if it has not already been defined.
-    \ set as current class for defining members.
+    \ set as current classifier for defining members.
     \ paired with CLASS;
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
     \ always public?
@@ -83,7 +83,7 @@ protocol: deinit ( - )
 
 : trait: ( - <name> )
     \ define a trait - if it has not already been defined - which is a class that can be mixed into other classes.
-    \ set as current class for defining members.
+    \ set as current classifier for defining members.
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
     \ paired with TRAIT;
     \ traits cannot "inherit" other traits.

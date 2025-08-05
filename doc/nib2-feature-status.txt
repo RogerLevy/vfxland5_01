@@ -118,9 +118,11 @@ Status Legend:
 
 5.2 Advanced Object Creation [ ]
    [ ] setup: - Parameterized object construction
+   [ ] does-xt parameter support in $create-object and create-object
    [ ] <object - Assign class to user-allocated memory
    [ ] <setup - Setup instance in user-allocated memory
    [ ] Object validation during creation
+   [ ] SETUP execution in object creation
 
 5.3 Template and Default Management [ ]
    [ ] defaults - Get/create template object for class
@@ -131,8 +133,8 @@ Status Legend:
 ========================
 
 6.1 Type Checking [-]
-   [x] is? - Runtime type/trait/extension checking via bit tables
-   [x] Basic classifier validation (valid-classifier?)
+   [x] is? - Runtime type/trait checking via bit tables
+   [ ] Basic classifier validation (valid-classifier?)
    [ ] Advanced object validation (valid-object?)
    [ ] Field validation and bounds checking
 
@@ -165,13 +167,13 @@ Status Legend:
    [ ] Trait/extension compatibility checking
 
 8.2 Runtime Validation [-]
-   [x] Object and classifier validation
+   [-] Object and classifier validation (basic magic number checks only)
    [ ] Protocol implementation validation
    [ ] Field access bounds checking
    [ ] Runtime contract enforcement
 
 8.3 Error Reporting [-]
-   [x] Descriptive abort messages for common errors
+   [-] Descriptive abort messages for common errors
    [ ] Enhanced error context for protocol mismatches
    [ ] Development-mode validation vs production optimization
 
@@ -188,6 +190,37 @@ Status Legend:
    [ ] Integration with existing field-space pools
    [ ] Integration with oversight validation system
 
+10. SCOPE AND VISIBILITY ENFORCEMENT [ ]
+======================================
+
+10.1 Public Scope Requirements [ ]
+   [ ] property - Always public enforcement
+   [ ] static - Always public enforcement  
+   [ ] trait: - Always public enforcement
+   [ ] class: - Always public enforcement (specification unclear)
+   [ ] protocol: - Always public enforcement
+
+10.2 Context-Dependent Scope [ ]
+   [ ] field - Public or private depending on CURRENT
+
+11. MISSING SPECIFICATION FEATURES [ ]
+====================================
+
+11.1 Object% System Trait [ ]
+   [ ] object% trait creation and automatic assignment
+   [ ] teardown protocol in object%
+   [ ] init protocol in object%
+   [ ] deinit protocol in object%
+
+11.2 Enhanced Object Creation [ ]
+   [ ] Automatic SETUP execution in object creation
+   [ ] Automatic init protocol execution
+
+11.3 Enhanced Classifier Definition [ ]
+   [ ] Class redefinition prevention ("if it has not already been defined")
+   [ ] Trait redefinition prevention
+   [ ] PUBLIC enforcement during trait/class definition
+
 IMPLEMENTATION PRIORITY
 ========================
 
@@ -198,7 +231,7 @@ Phase 2: Field System [x]
 - Properties, statics, field infrastructure
 
 Phase 3: Classifier Enhancement [IN PROGRESS]
-- Traits, extensions, derive, is-a
+- Traits, derive, is-a, scope enforcement
 
 Phase 4: Protocol System [ ]
 - Protocol definition, method implementation, dispatch
@@ -206,23 +239,36 @@ Phase 4: Protocol System [ ]
 Phase 5: Advanced Features [ ]
 - Setup system, lifecycle management, advanced validation
 
+Phase 6: Object% Integration [ ]
+- System trait, lifecycle protocols, automatic execution
+
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~40%
+Overall Completion: ~30%
 
 Core systems working:
 - Object runtime and scoping
 - Property-based field system  
 - Basic class definition
 - Runtime type queries (is?)
-- Object creation infrastructure
+- Basic object creation infrastructure
 
 Major systems pending:
-- Trait and extension systems
+- Trait system implementation
 - Protocol definition and implementation
 - Inheritance system (derive, is-a)
-- Lifecycle management
-- Advanced validation
+- Lifecycle management (object%, setup:, init/deinit)
+- Scope enforcement (public/private validation)
+- Advanced validation and error handling
+- Enhanced object creation (does-xt, SETUP execution)
 
-The foundation is solid and ready for trait/extension implementation.
+Critical missing features from specification:
+- object% system trait with lifecycle protocols
+- Automatic SETUP/init execution in object creation
+- Public scope enforcement for traits, properties, statics
+- Redefinition prevention for classes and traits
+- Enhanced $create-object and create-object signatures
+
+The foundation provides basic functionality but requires significant work
+to match the full specification requirements.

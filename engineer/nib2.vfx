@@ -69,7 +69,7 @@ cstring name$
 \ ==============================================================================
 
 : pagealign ( - )  here $ff and 256 swap - allot ;
-: aligned-page ( - <name> )  pagealign here $100 allot constant ;
+: aligned-page ( <name> - )  pagealign here $100 allot constant ;
 aligned-page os
 variable osp   os osp ! \ object stack pointer
 
@@ -99,13 +99,15 @@ constant /magical-base
     cell field field-space-size
     cell field classifier#
     #max-classifiers 8 / field bit-table    \ Classification table
+    cell field first-property
+    cell field first-protocol
 to /static
 
 || : (classifier) ( class - class )
     here swap , /classifier cell- allot&erase
     [[ /classifier instance-size ! me ]] ;
     
-|| : create-classifier ( class - <name> class )
+|| : create-classifier ( class <name> - class )
     create (classifier) ;
 
 create class% class% (classifier) [[ CLASS_MAGIC magic ! ]]
@@ -122,7 +124,7 @@ class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
 : $create-object ( class name len - object ) ( - object ) 
     >$ $create object ;
 
-: create-object ( class - <name> ) ( - object )
+: create-object ( class <name> - ) ( - object )
     bl parse $create-object ;
 
 class% create-object var% [[
@@ -149,14 +151,14 @@ class% create-object var% [[
 : end-classifier ( - )
     0 to classifier ;
     
-: class:
+: class: ( <name> - ) 
     class% begin-classifier
     classifier [[
         /object-base instance-size !
         /object-base next-ofs !
     ]] ;
 
-: class;
+: class; ( - )
     end-classifier ;
     
 : is? ( object classifier - bool )
@@ -171,14 +173,14 @@ class% create-object property% [[
     /static offset !
     cell +to /static ;
     
-: create-property ( - <name> property ) 
+: create-property ( <name> - property ) 
     property% create-object [[
         allocate-static-offset
         MAGIC_FIELD magic !
     me ]]
     does> 's offset @ cla @ + @ me + ;
 
-: property ( - <name> ) ( - a )
+: property ( <name> - ) ( - a )
     property% already? if ' >body else create-property then
     [[
         classifier 's next-ofs @  classifier offset @ + !
@@ -193,7 +195,7 @@ class% create-object static% [[
     dup instance-size ! next-ofs !
 ]]
 
-: static ( - <name> ) ( - a )
+: static ( <name> - ) ( - a )
     static% ?already ?exit    
     static% create-object [[
         allocate-static-offset
@@ -201,12 +203,76 @@ class% create-object static% [[
     ]]
     does> 's offset @ cla @ + ;
 
+: trait: ( <name> - )
+    trait% begin-classifier ;
 
-\ : trait:
-\     trait% create-object to classifier ;
-\ 
-\ : trait;
-\     end-classifier ;
+: trait;
+    end-classifier ;
+
+class% create-object protocol% [[
+    static% 's instance-size @
+        cell field default-xt
+        cell field next-protocol
+    dup instance-size ! next-ofs !
+]]
+
+: defining-a-trait? ( - b )
+    classifier 's cla @ trait% = ;
+    
+: add-protocol ( protocol - )
+    {: protocol :}
+    classifier 's first-protocol @ 0= if
+        protocol classifier 's first-protocol !
+    else
+        classifier 's first-protocol @
+        begin
+            dup 's next-protocol @ ?dup 0=
+        until
+        protocol swap 's next-protocol !
+    then ;
+
+: does-protocol ( - )
+    does> swap [[
+        dup 's offset @ cla @ + @ ?dup if
+            nip
+        else
+            >r
+            -1
+            cla @ >name count
+            r> body> >name count
+            f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
+        then
+        ( xt ) .s execute
+    ]] ;
+    
+: protocol: ( <name> - ) ( ... object - ... )
+    protocol% create-object [[
+        me add-protocol
+        allocate-static-offset 
+        :noname default-xt !
+    ]]
+    does-protocol ;
+
+: is-a ( <trait> - )
+    {: | trait protocol :} 
+    ' >body to trait
+    trait 's classifier# @ classifier 's bit-table set-bit
+    trait 's first-protocol @ to protocol
+    begin protocol while
+        protocol [[ default-xt @ offset @ ]] classifier + !
+        protocol 's next-protocol @ to protocol
+    repeat
+    
+    \ trait 's first-property to property
+    \ begin property while
+        \ classifier 's next-ofs @ property 's offset @ classifier + !
+        \ cell classifier 's next-ofs +!
+        \ protocoly 's next-property @ to property
+    
+    \ repeat
+    
+    ;
+
 \ 
 \ : extension:
 \     extension% create-object to classifier ;
@@ -222,7 +288,18 @@ class% create-object static% [[
 \ Tests
 \ -----
 
+trait: object%
+    protocol: init  me .name ." init " cr ;
+    protocol: deinit  me .name ." deinit " cr ;
+trait;
+
+trait: thinker%
+    protocol: think  me .name ." think " cr ;
+trait;
+
 class: actor%
+    is-a object%
+    is-a thinker%
     property x
     property y
     property vx
@@ -230,6 +307,7 @@ class: actor%
 class;
 
 class: waypoint%
+    is-a object%
     property id          \ unique identifier for pathfinding
     property x           \ world position
     property y           \ world position
@@ -252,3 +330,8 @@ actor% create-object actor [[
 cr
 waypoint [[ x me - . ]]
 actor [[ x me - . ]]
+
+actor init
+
+actor think
+waypoint think
