@@ -25,14 +25,18 @@ variable next-classifier#
 \ ==============================================================================
 
 magic-id MAGIC_FIELD FIEL
-: field ( ofs size - <name> n ) ( a - a )
+: field ( ofs size <name> - n ) ( a - a )
     create 0 , MAGIC_FIELD , over , +
     does> 2 cells + @ me + ;
 
-: 's ( object - <name> a )
+: 's ( object <name> - a )
     ' >body 2 cells + @ ?literal s" +" evaluate ; immediate 
 
-: ?already ( ? - b )
+: already? ( ? <name> - b <name> )
+    {: n :}
+    preword find if >body @ n = else drop 0 then ;
+
+: ?already ( ? <name> - 1 | <name> 0 )
     {: n :}
     preword find if
         >body @ n = dup if bl word drop then
@@ -149,12 +153,13 @@ class% create-object var% [[
         classifier 's next-ofs @ offset !
         cell classifier 's next-ofs +!
         classifier has-field-space? not if            
-            next-ofs @ classifier 's instance-size !
+            classifier [[ next-ofs @ instance-size ! ]]
         then
         MAGIC_FIELD magic !
     ]]
     does> 's offset @ me + ;  
-    
+
+
 : begin-classifier ( class - )
     create-object to classifier
     next-classifier# @ classifier 's bit-table set-bit
@@ -175,6 +180,27 @@ class% create-object var% [[
     
 : is? ( object classifier - bool )
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
+
+class% create-object property% [[
+    var% 's instance-size @
+    dup instance-size ! next-ofs !
+]]
+
+: create-property ( - <name> property ) 
+    property% create-object [[
+        /static offset !
+        cell +to /static
+        MAGIC_FIELD magic !
+    me ]]
+    does> 's offset @ cla @ + @ me + ;
+
+: property ( - <name> ) ( - a )
+    property% already? if ' >body else create-property then
+    [[
+        classifier 's next-ofs @   classifier offset @ + !
+        cell classifier 's next-ofs +!
+        classifier [[ next-ofs @ instance-size ! ]]
+    ]] ;
 
 class% create-object static% [[
     var% 's instance-size @
@@ -210,21 +236,41 @@ class% create-object static% [[
 \ Tests
 \ -----
 
+\ class: actor%
+\     512 field-space
+\     var x
+\     var y
+\     var vx
+\     var vy
+\ class;
+
 class: actor%
-    512 field-space
-    var x
-    var y
-    var vx
-    var vy
+    property x
+    property y
+    property vx
+    property vy
 class;
 
-actor% create-object test [[
+class: waypoint%
+    property id          \ unique identifier for pathfinding
+    property x           \ world position
+    property y           \ world position
+    property connections \ bitfield of connected waypoints
+class;
+
+waypoint% create-object waypoint drop
+
+actor% create-object actor [[
     me .
     x .
     y .
-    me 's y .
+    \ me 's y .
     me actor% is? .
     cr
     static i/hp
     i/hp . actor% 's i/hp .
 ]]
+
+cr
+waypoint [[ x me - . ]]
+actor [[ x me - . ]]
