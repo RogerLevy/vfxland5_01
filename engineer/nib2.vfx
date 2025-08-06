@@ -39,10 +39,12 @@ dup constant /object-base
     cell field magic
 constant /magical-base
 
+: ?prop ( n - n )
+    dup 0= abort" ?PROP >> Property offset is 0 - property not mapped for this class!" ;
 
 ' cla >body 2 cells + @ constant cla-offset
 : prop+ ( object offset - a )
-    s" over cla-offset + @ + @ +" evaluate ; immediate
+    s" over cla-offset + @ + @ ?prop +" evaluate ; immediate
 
 : 's ( object <name> - a )
     preword find not abort" 'S >> field name not found!"
@@ -284,7 +286,7 @@ create protocol%  class% *object [[
         MAGIC_PROPERTY magic !
     me ]]
     pop-order
-    does> 's offset @ cla @ + @ me + ;
+    does> 's offset @ cla @ + @ ?prop me + ;
 
 : defining-a-trait? ( - b )
     classifier 's cla @ trait% = ;
