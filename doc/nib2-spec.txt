@@ -36,12 +36,6 @@ protocol: deinit ( - )
 : object ( ... class <name> - ) ( - object )
     \ create named dictionary instance (convenience word for BL PARSE $OBJECT DROP).
     \ executes constructor.
-    
-: <object ( a size class - object )
-    \ assign class to user-allocated memory - size provided for validation.
-
-: <construct ( a size class - object )
-    \ construct instance in user-allocated memory - size provided for validation.
 
 \ Field definition
 \ ----------------

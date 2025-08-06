@@ -122,8 +122,8 @@ Status Legend:
    [x] constructor: - Parameterized object construction 
    [x] Constructor execution in object creation
    [x] Parameter validation and stack diagram support
-   [ ] <object - Assign class to user-allocated memory
-   [ ] <construct - Construct instance in user-allocated memory
+   [SKIP] <object - Assign class to user-allocated memory
+   [SKIP] <construct - Construct instance in user-allocated memory
 
 5.3 Template and Default Management [x]
    [x] defaults - Get/create template object for class
@@ -139,7 +139,7 @@ Status Legend:
    [x] is? - Runtime type/trait checking via bit tables
    [ ] Basic classifier validation (valid-classifier?)
    [ ] Advanced object validation (valid-object?)
-   [ ] Field validation and bounds checking
+   [-] Field validation and bounds checking
 
 6.2 Introspection [ ]
    [ ] Classifier capability enumeration
@@ -198,20 +198,20 @@ Status Legend:
    [ ] Integration with existing field-space pools
    [ ] Integration with oversight validation system
 
-10. SCOPE AND VISIBILITY ENFORCEMENT [ ]
-======================================
+10. SCOPE AND VISIBILITY ENFORCEMENT [x]
+========================================
 
-10.1 Public Scope Requirements [ ]
-   [ ] property - Always public enforcement
-   [ ] static - Always public enforcement  
-   [ ] trait: - Always public enforcement
-   [ ] class: - Always public enforcement (specification unclear)
-   [ ] protocol: - Always public enforcement
+10.1 Public Scope Requirements [x]
+   [x] property - Always public enforcement
+   [x] static - Always public enforcement  
+   [x] trait: - Always public enforcement
+   [x] class: - Always public enforcement (specification unclear)
+   [x] protocol: - Always public enforcement
 
-10.2 Context-Dependent Scope [ ]
-   [ ] field - Public or private depending on CURRENT
+10.2 Context-Dependent Scope [x]
+   [x] field - Public or private depending on CURRENT
 
-11. REMAINING FEATURES FOR SPEC COMPLIANCE [-]
+11. REMAINING FEATURES FOR SPEC COMPLIANCE [x]
 ============================================
 
 11.1 Object% System Trait [x]
@@ -223,10 +223,10 @@ Status Legend:
 11.2 Enhanced Object Creation [x]
    [x] Automatic constructor execution in object creation
 
-11.3 Enhanced Classifier Definition [ ]
-   [ ] Class redefinition prevention ("if it has not already been defined")
-   [ ] Trait redefinition prevention
-   [ ] PUBLIC enforcement during trait/class definition
+11.3 Enhanced Classifier Definition [x]
+   [x] Class redefinition prevention ("if it has not already been defined")
+   [x] Trait redefinition prevention
+   [x] PUBLIC enforcement during trait/class definition
 
 IMPLEMENTATION PRIORITY
 ========================
@@ -252,7 +252,7 @@ Phase 6: Object% Integration [x]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~75%
+Overall Completion: ~85%
 
 Core systems working:
 - Object runtime and scoping  
@@ -286,8 +286,6 @@ Major systems pending:
 - inner-protocol: for factored scoped operations (designed but not implemented)
 
 Remaining features for full spec compliance:
-- Public scope enforcement for traits, properties, statics
-- Redefinition prevention for classes and traits
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
 
