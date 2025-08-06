@@ -22,8 +22,8 @@ validations off
 variable next-classifier#
 
 magic-id MAGIC_FIELD FIEL
-magic-id MAGIC_CLASS CLAS
-magic-id MAGIC_TRAIT TRAI
+magic-id MAGIC_PROPERTY PROP
+magic-id MAGIC_CLASSIFIER CLAS
 
 \ ==============================================================================
 \ Low-level stuff
@@ -33,8 +33,22 @@ magic-id MAGIC_TRAIT TRAI
     create 0 , MAGIC_FIELD , over , +
     does> 2 cells + @ me + ;
 
+0
+    cell field cla
+dup constant /object-base
+    cell field magic
+constant /magical-base
+
+: prop+ ( object offset - a )
+    over [ ' cla >body 2 cells + @ ] literal + @ + @ + ;
+
 : 's ( object <name> - a )
-    ' >body 2 cells + @ ?literal s" +" evaluate ; immediate 
+    preword find not abort" 'S >> field name not found!"
+    >body cell+ @ MAGIC_PROPERTY = if
+        ' >body 2 cells + @ ?literal s" prop+" evaluate
+    else
+        ' >body 2 cells + @ ?literal s" +" evaluate
+    then ; immediate 
 
 : already? ( ? <name> - b <name> )
     {: n :}
@@ -117,12 +131,6 @@ variable osp   os osp ! \ object stack pointer
 \ Classes
 \ ==============================================================================
 
-0
-    cell field cla
-dup constant /object-base
-    cell field magic
-constant /magical-base
-
 /magical-base
     cell field instance-size                \ Size of this class
     cell field next-ofs                     \ Next field offset for this class
@@ -151,7 +159,7 @@ to /static
     me ]]  ;
     
 : (init-class) ( - )
-    MAGIC_CLASS magic ! ;
+    MAGIC_CLASSIFIER magic ! ;
     
 create class% class% (classifier) [[ (init-class) ]]
 
@@ -159,7 +167,7 @@ create class% class% (classifier) [[ (init-class) ]]
     create class% (classifier) dup [[ (init-class) ]] ;
 
 : (init-trait) ( - )
-    MAGIC_TRAIT magic ! ;
+    MAGIC_CLASSIFIER magic ! ;
 
 create object% 0 (classifier) [[
     (init-trait)
@@ -248,7 +256,7 @@ create protocol%  class% object [[
 : create-property ( <name> - property ) 
     create property% object [[
         allocate-static-offset
-        MAGIC_FIELD magic !
+        MAGIC_PROPERTY magic !
     me ]]
     does> 's offset @ cla @ + @ me + ;
 
