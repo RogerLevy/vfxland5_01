@@ -173,4 +173,6 @@ Location: ../01_backups
 
 ## User Preferences
 
-- The user does not like "screen shake". Do not suggest it as a game enhancement or interpret anything referred to by the term "shake" or "shaking" as "screen shake" unless it is explicitly describe as such.
+- The user does not like "screen shake". Do not suggest it as a game enhancement or interpret anything referred to by the term "shake" or "shaking" as "screen shake" unless it is explicitly described as such.
+
+**IMPORTANT**: Omit the Claude attribution text from commit summaries and descriptions.
