@@ -268,21 +268,18 @@ Core systems working:
 - Complete lifecycle management system
 - Extensible object% base trait with reset capability
 - Context validation for static definitions (must be in classifier blocks)
+- on-derive: hook system for class inheritance customization
 
 Major systems pending:
 - Scope enforcement (public/private validation)  
 - Advanced validation and error handling
-- Stack diagram validation for protocols
 - Custom VFX Forth parser for offset calculators (>field pattern)
-- on-derive: hook system for class inheritance customization
 
 Remaining features for full spec compliance:
 - Public scope enforcement for traits, properties, statics
 - Redefinition prevention for classes and traits
-- Stack diagram validation for protocols
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
-- on-derive: hook system for class inheritance customization
 
 Nib 2.0 now provides a complete, working object-oriented programming
 system with traits, protocols, inheritance, and lifecycle management.

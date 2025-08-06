@@ -144,6 +144,7 @@ variable osp   os osp ! \ object stack pointer
     cell field template
     cell field constructor-xt
     cell field constructor-#params
+    cell field on-derive-xt 
 dup constant /classifier-base
 to /static
 
@@ -449,7 +450,20 @@ create protocol%  class% object [[
     source-class 's template @ ?dup if
         defaults source-class 's instance-size @ move
     then
+    
+    \ Execute on-derive if set
+    source-class 's on-derive-xt @ ?dup if
+        source-class classifier rot execute  \ ( source-class derived-class - )
+    then 
 ;
+
+: on-derive: ( class - ) ( source-class derived-class - )
+    classifier 0= abort" ON-DERIVE: >> Can't define on-derive outside of a classifier block."
+    classifier [[ :noname on-derive-xt ! ]] ;
+
+\ ==============================================================================
+\ Init/Reset
+\ ==============================================================================
 
 : reset-object-trait ( - )
     object% 's protocol-list /list erase
@@ -495,6 +509,8 @@ class: actor%
         rad .
         10. rad !
     ]]
+    on-derive: ( source-class derived-class - )
+        2drop cr ." Actor derived!!!" cr ;
 class;
 actor% >defaults [[ rad ]] p? cr
 
