@@ -168,6 +168,10 @@ create class% class% (classifier) [[ (init-class) ]]
 || : create-class ( <name> - class )
     create class% (classifier) dup [[ (init-class) ]] ;
 
+\ ==============================================================================
+\ Traits
+\ ==============================================================================
+
 : (init-trait) ( - )
     MAGIC_CLASSIFIER magic ! ;
 
@@ -181,6 +185,10 @@ create object% 0 (classifier) [[
 create-class trait% [[
     (add-object-system-trait)
 ]]
+
+\ ==============================================================================
+\ Object instantiation
+\ ==============================================================================
 
 object% [[
     trait% cla !
@@ -215,6 +223,10 @@ object% [[
 : create-object ( ... class <name> - ) ( - object )
     bl parse $create-object drop ;
 
+\ ==============================================================================
+\ Members
+\ ==============================================================================
+
 create property%  class% object [[
     (add-object-system-trait)
     /magical-base
@@ -245,8 +257,10 @@ create protocol%  class% object [[
     ]] ;       
 
 : begin-classifier ( class - )
+    push-order public
     create object to classifier
-    allocate-classifier-bit ;
+    allocate-classifier-bit
+    pop-order ;
 
 : end-classifier ( - )
     0 to classifier ;
@@ -255,11 +269,13 @@ create protocol%  class% object [[
     /static offset !
     cell +to /static ;
     
-: create-property ( <name> - property ) 
+: create-property ( <name> - property )
+    push-order public
     create property% object [[
         allocate-static-offset
         MAGIC_PROPERTY magic !
     me ]]
+    pop-order
     does> 's offset @ cla @ + @ me + ;
 
 : defining-a-trait? ( - b )
@@ -293,9 +309,16 @@ create protocol%  class% object [[
     loop drop ;
 
 : is-a ( <trait> - )
+    classifier 0= abort" IS-A >> Can't use IS-A outside of a class block."
+    classifier 's cla @ class% <> abort" IS-A >> Can only use IS-A in a class block."
     ' >body add-trait ;
+
+\ ==============================================================================
+\ Classifier definition
+\ ==============================================================================
     
-: class: ( <name> - ) 
+: class: ( <name> - )
+    class% ?already ?exit
     class% begin-classifier
     classifier [[
         (init-class) 
@@ -310,6 +333,7 @@ create protocol%  class% object [[
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
 
 : property ( <name> - ) ( - a )
+    classifier 0= abort" PROPERTY >> Can't define a property outside of a classifier block."
     property% already? if ' >body else create-property then
     dup is-property-mapped? if
         drop \ -1 abort" PROPERTY >> Property already mapped!"
@@ -319,14 +343,18 @@ create protocol%  class% object [[
     then ;
 
 : static ( <name> - ) ( - a )
-    static% ?already ?exit    
+    classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
+    static% ?already ?exit
+    push-order public
     create static% object [[
         allocate-static-offset
         MAGIC_FIELD magic !
     ]]
+    pop-order
     does> 's offset @ cla @ + ;
 
 : trait: ( <name> - )
+    trait% ?already ?exit
     trait% begin-classifier
     classifier [[ (init-trait) ]] ;
 
@@ -351,6 +379,9 @@ create protocol%  class% object [[
     ]] ;
     
 : protocol: ( <name> - ) ( ... object - ... )
+    classifier 0= abort" PROTOCOL: >> Can't define a protocol outside of a classifier block."
+    classifier 's cla @ trait% <> abort" PROTOCOL: >> Can only define a protocol in a trait block."
+    protocol% ?already ?exit    
     create protocol% object [[
         me add-protocol
         allocate-static-offset 
@@ -359,6 +390,7 @@ create protocol%  class% object [[
     does-protocol ;
 
 : :: ( class <protocol> - )
+    classifier abort" :: >> Can only define a method outside of a classifier block."
     {: class | name[ 256 ] :}
     ' >body [[
         me body> >name count name[ place
@@ -376,9 +408,8 @@ create protocol%  class% object [[
     ]] ;
 
 : defaults ( - a )
-    classifier 's cla @ trait% = if
-        -1 abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
-    then
+    classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
+    classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
     classifier 's template @ ?dup if else
         classifier object classifier 's template !
         classifier 's template @
@@ -392,6 +423,8 @@ create protocol%  class% object [[
 
 : derive ( class - )
     {: source-class :}
+    
+    source-class 's cla @ class% <> abort" DERIVE >> Can only derive from classes."
     
     \ Copy size fields
     source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
@@ -428,8 +461,9 @@ create protocol%  class% object [[
     0 to classifier
     reset-object-trait ;
 
+\ ==============================================================================
 \ Tests
-\ -----
+\ ==============================================================================
 
 trait: thinker%
     protocol: init  me .name ." init " cr ;
@@ -447,6 +481,7 @@ trait: physics%
 trait;
 
 class: actor%
+    static i/hp
     is-a object%
     is-a thinker%
     is-a physics%
@@ -485,7 +520,6 @@ create actor actor% object [[
     \ me 's y .
     me actor% is? .
     cr
-    static i/hp
     i/hp . actor% 's i/hp .
 ]]
 
