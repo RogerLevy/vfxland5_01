@@ -39,8 +39,10 @@ dup constant /object-base
     cell field magic
 constant /magical-base
 
+
+' cla >body 2 cells + @ constant cla-offset
 : prop+ ( object offset - a )
-    over [ ' cla >body 2 cells + @ ] literal + @ + @ + ;
+    s" over cla-offset + @ + @ +" evaluate ; immediate
 
 : 's ( object <name> - a )
     preword find not abort" 'S >> field name not found!"
