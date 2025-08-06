@@ -49,6 +49,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
 \ Extend include words to preserve the search order
 : preserve-order ( a:file len:file xt - )
     push-order
+    only forth definitions
     depth >r execute
     r> depth 2 + <> if
         -1 abort" Stack depth changed in file!"
