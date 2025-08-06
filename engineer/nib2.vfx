@@ -22,7 +22,8 @@ validations off
 variable next-classifier#
 
 magic-id MAGIC_FIELD FIEL
-magic-id CLASS_MAGIC CLAS
+magic-id MAGIC_CLASS CLAS
+magic-id MAGIC_TRAIT TRAI
 
 \ ==============================================================================
 \ Low-level stuff
@@ -61,7 +62,7 @@ cstring name$
     addr byte-ofs +
     dup c@ 1 bit-ofs lshift or swap c! ;
 
-: test-bit ( bit# addr - b )
+: test-bit ( bit# adr - b )
     >r 8 /mod ( bit-ofs byte-ofs )
     r> + c@ 1 rot lshift and 0<> ;
 
@@ -131,22 +132,50 @@ constant /magical-base
     /list field property-list
     /list field protocol-list
     cell field template
+    cell field constructor-xt
+    cell field constructor-#params
 dup constant /classifier-base
 to /static
 
+: allocate-classifier-bit ( - )
+    next-classifier# @ classifier 's bit-table set-bit
+    next-classifier# @ classifier 's classifier# !
+    1 next-classifier# +! ;
+
 || : (classifier) ( class - class )
     here swap , /classifier cell- allot&erase
-    [[ /classifier instance-size ! me ]] ;
+    dup to classifier
+    [[
+        /classifier instance-size !
+        allocate-classifier-bit
+    me ]]  ;
     
-|| : create-classifier ( class <name> - class )
-    create (classifier) ;
+: (init-class) ( - )
+    MAGIC_CLASS magic ! ;
+    
+create class% class% (classifier) [[ (init-class) ]]
 
-create class% class% (classifier) [[ CLASS_MAGIC magic ! ]]
-class% create-classifier trait% [[ CLASS_MAGIC magic ! ]]
-class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
+|| : create-class ( <name> - class )
+    create class% (classifier) dup [[ (init-class) ]] ;
 
-\ TODO: implement SETUP TEARDOWN INIT DEINIT with OBJECT% trait added to every object
-\ trait% create-classifier object% [[ ]] 
+: (init-trait) ( - )
+    MAGIC_TRAIT magic ! ;
+
+create object% 0 (classifier) [[
+    (init-trait)
+]]
+
+: (add-object-system-trait) ( - )
+    object% 's classifier# @ bit-table set-bit ;
+
+create-class trait% [[
+    (add-object-system-trait)
+]]
+
+object% [[
+    trait% cla !
+    (add-object-system-trait)
+]]
 
 : sizeof ( object - n )
     's cla @ 's instance-size @ ;
@@ -155,28 +184,44 @@ class% create-classifier extension% [[ CLASS_MAGIC magic ! ]]
     dup 's cla @ 's template @ ?dup if
         \ dup .name ." template copying" cr
         \ over >r 
-        cell+ over dup cell+ swap sizeof cell- .s move
+        cell+ over dup cell+ swap sizeof cell- move
         \ r> dup sizeof dump
     else
         dup cell+ over sizeof cell- erase
     then
     drop ;
 
-: object ( class - object )
+: object ( ... class - object )
     \ TODO: validate class
     here over , swap 's instance-size @ cell- allot
-    dup !defaults ;
+    dup !defaults
+    [[
+        cla @ 's constructor-xt @ ?dup if execute then
+    me ]] ;
 
-: $create-object ( class name len - object ) ( - object ) 
+: $create-object ( ... class name len - object ) ( - object ) 
     >$ $create object ;
 
-: create-object ( class <name> - ) ( - object )
-    bl parse $create-object ;
+: create-object ( ... class <name> - ) ( - object )
+    bl parse $create-object drop ;
 
-class% create-object property% [[
+create property%  class% object [[
+    (add-object-system-trait)
     /magical-base
         cell field offset
         cell field next-property
+    dup instance-size ! next-ofs !
+]]
+
+create static%  class% object [[
+    property% 's instance-size @
+    dup instance-size ! next-ofs !
+]]
+
+create protocol%  class% object [[
+    static% 's instance-size @
+        cell field default-xt
+        cell field next-protocol
     dup instance-size ! next-ofs !
 ]]
 
@@ -190,32 +235,18 @@ class% create-object property% [[
     ]] ;       
 
 : begin-classifier ( class - )
-    create-object to classifier
-    next-classifier# @ classifier 's bit-table set-bit
-    1 next-classifier# +! ;
+    create object to classifier
+    allocate-classifier-bit ;
 
 : end-classifier ( - )
     0 to classifier ;
-    
-: class: ( <name> - ) 
-    class% begin-classifier
-    classifier [[
-        /object-base instance-size !
-        /object-base next-ofs !
-    ]] ;
-
-: class; ( - )
-    end-classifier ;
-    
-: is? ( object classifier - bool )
-    's classifier# @ swap 's cla @ 's bit-table test-bit ;
 
 : allocate-static-offset ( - )
     /static offset !
     cell +to /static ;
     
 : create-property ( <name> - property ) 
-    property% create-object [[
+    create property% object [[
         allocate-static-offset
         MAGIC_FIELD magic !
     me ]]
@@ -240,6 +271,34 @@ class% create-object property% [[
         classifier [[ next-ofs @ instance-size ! ]]
     then ;
 
+: add-trait ( trait - )
+    {: trait :}
+    trait 's classifier# @ classifier 's bit-table set-bit
+    trait 's protocol-list dup list-count for
+        @next
+        ( protocol ) [[ default-xt @ offset @ ]] classifier + !
+    loop drop
+    trait 's property-list dup list-count for
+        @next dup is-property-mapped? if drop else map-property then
+    loop drop ;
+
+: is-a ( <trait> - )
+    ' >body add-trait ;
+    
+: class: ( <name> - ) 
+    class% begin-classifier
+    classifier [[
+        (init-class) 
+        /object-base instance-size !
+        /object-base next-ofs !
+    ]] ;
+
+: class; ( - )
+    end-classifier ;
+    
+: is? ( object classifier - bool )
+    's classifier# @ swap 's cla @ 's bit-table test-bit ;
+
 : property ( <name> - ) ( - a )
     property% already? if ' >body else create-property then
     dup is-property-mapped? if
@@ -249,32 +308,21 @@ class% create-object property% [[
         map-property
     then ;
 
-class% create-object static% [[
-    property% 's instance-size @
-    dup instance-size ! next-ofs !
-]]
-
 : static ( <name> - ) ( - a )
     static% ?already ?exit    
-    static% create-object [[
+    create static% object [[
         allocate-static-offset
         MAGIC_FIELD magic !
     ]]
     does> 's offset @ cla @ + ;
 
 : trait: ( <name> - )
-    trait% begin-classifier ;
+    trait% begin-classifier
+    classifier [[ (init-trait) ]] ;
 
 : trait;
     end-classifier ;
 
-class% create-object protocol% [[
-    static% 's instance-size @
-        cell field default-xt
-        cell field next-protocol
-    dup instance-size ! next-ofs !
-]]
-    
 : add-protocol ( protocol - )
     classifier 's protocol-list add-to ;
 
@@ -293,25 +341,12 @@ class% create-object protocol% [[
     ]] ;
     
 : protocol: ( <name> - ) ( ... object - ... )
-    protocol% create-object [[
+    create protocol% object [[
         me add-protocol
         allocate-static-offset 
         :noname default-xt !
     ]]
     does-protocol ;
-
-: is-a ( <trait> - )
-    {: | trait :} 
-    ' >body to trait
-    trait 's classifier# @ classifier 's bit-table set-bit
-    trait 's protocol-list dup list-count for
-        @next
-        ( protocol ) [[ default-xt @ offset @ ]] classifier + !
-    loop drop
-    trait 's property-list dup list-count for
-        @next dup is-property-mapped? if drop else map-property then
-    loop drop
-;
 
 : :: ( class <protocol> - )
     {: class | name[ 256 ] :}
@@ -322,6 +357,12 @@ class% create-object protocol% [[
             f" : %s::%s" 2dup upper evaluate
         state on
         here ( xt ) class offset @ + !
+    ]] ;
+
+: constructor: ( #params class - )
+    [[
+        :noname constructor-xt !
+        constructor-#params !
     ]] ;
 
 : defaults ( - a )
@@ -367,20 +408,22 @@ class% create-object protocol% [[
     then
 ;
 
+: reset-object-trait ( - )
+    object% 's protocol-list /list erase
+    object% 's property-list /list erase ;
+
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 
     [ /static ] literal to /static
-    0 to classifier ;
+    0 to classifier
+    reset-object-trait ;
 
 \ Tests
 \ -----
 
-trait: object%
+trait: thinker%
     protocol: init  me .name ." init " cr ;
     protocol: deinit  me .name ." deinit " cr ;
-trait;
-
-trait: thinker%
     protocol: think  me .name ." think " cr ;
 trait;
 
@@ -423,9 +466,9 @@ class: waypoint%
     property connections \ bitfield of connected waypoints
 class;
 
-waypoint% create-object waypoint drop
+create waypoint waypoint% object drop
 
-actor% create-object actor .s [[
+create actor actor% object [[
     me .
     x .
     y .
@@ -435,6 +478,7 @@ actor% create-object actor .s [[
     static i/hp
     i/hp . actor% 's i/hp .
 ]]
+
 
 cr
 waypoint [[ x me - . ]]
@@ -457,7 +501,7 @@ actor [[
     me think
 ]]
 
-enemy% create-object enemy [[
+create enemy enemy% object [[
     me dup . .name
     ." &mass=" mass .
     ." &x=" x .
@@ -472,6 +516,7 @@ enemy% create-object enemy [[
     cr
     ." mass=" mass p?
     ." rad=" rad p?
+    cr
 ]]
 
 \ waypoint [[
@@ -480,4 +525,16 @@ enemy% create-object enemy [[
 \     vx .
 \     cr
 \ ]]
+
+
+class: tileset%
+    property bmp
+    property tw
+    property th
+class;
+
+3 tileset% constructor: ( bmp tw th - )
+    th ! tw ! bmp ! ;
+
+1 16 16 tileset% create-object tileset
 

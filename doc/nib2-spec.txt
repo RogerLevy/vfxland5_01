@@ -6,8 +6,8 @@ trait: object%
 \ Compile-time object life-cycle methods
 \ --------------------------------------
 
-: setup: ( #params class - <code> ; ) ( ... - )
-    \ special object% method with variable number of params
+: constructor: ( #params class - <code> ; ) ( ... - )
+    \ special constructor method with variable number of params
 
 protocol: teardown ( - )
     \ object% method
@@ -26,39 +26,37 @@ protocol: deinit ( - )
 
 : object ( class - object )
     \ compile dictionary instance.
-    \ executes SETUP.
+    \ executes constructor.
     
-: $create-object ( class does-xt|0 name len - object ) ( - object ) 
+: $create-object ( class name len - object ) ( - object ) 
     \ create named dictionary instance.
-    \ executes SETUP.
-    \ does-xt supplies optional DOES> behavior that overrides the secondary stack diagram .
+    \ executes constructor.
 
-: create-object ( class does-xt|0 - <name> ) ( - object )
-    \ create named dictionary instance (convenience word for BL PARSE $CREATE-OBJECT).
-    \ executes SETUP.
-    \ does-xt supplies optional DOES> behavior that overrides the secondary stack diagram .
+: create-object ( class <name> - ) ( - object )
+    \ create named dictionary instance (convenience word for BL PARSE $CREATE-OBJECT DROP).
+    \ executes constructor.
     
 : <object ( a size class - object )
     \ assign class to user-allocated memory - size provided for validation.
 
-: <setup ( a size class - object )
-    \ SETUP instance in user-allocated memory - size provided for validation.
+: <construct ( a size class - object )
+    \ construct instance in user-allocated memory - size provided for validation.
 
 \ Field definition
 \ ----------------
 
-: field ( n size - <name> n+size ) ( - field ) ( object - field )
+: field ( n size <name> - n+size ) ( - field ) ( object - field )
     \ define an instance accessor (any size) and offset calculator (>NAME).
     \ also defines an external address.
     \ public or private depending on CURRENT.
     
-: property ( - <name> ) ( - field ) ( object - field )
+: property ( <name> - ) ( - field ) ( object - field )
     \ define an instance accessor (cell) and offset calculator (>NAME).
     \ dynamic offset resolution (uses a static to store the offset, 0 = invalid).
     \ only definable for traits.
     \ always public.
     
-: static ( - <name> ) ( - field ) ( class - field )
+: static ( <name> - ) ( - field ) ( class - field )
     \ define a shared class accessor (cell) and offset calculator (>NAME) if they have not been already defined.
     \ statics are global across classes (every class is a fixed size).
     \ the class accessor references the current object's class, while the offset calculator takes a class on the stack.
@@ -67,7 +65,7 @@ protocol: deinit ( - )
 \ Class definition
 \ ----------------
 
-: class: ( - <name> )
+: class: ( <name> - )
     \ define a class if it has not already been defined.
     \ set as current classifier for defining members.
     \ paired with CLASS;
@@ -81,7 +79,7 @@ protocol: deinit ( - )
 : field-space ( n - )
     \ create a field space for the current class, fixing the class to the given size.
 
-: trait: ( - <name> )
+: trait: ( <name> - )
     \ define a trait - if it has not already been defined - which is a class that can be mixed into other classes.
     \ set as current classifier for defining members.
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
@@ -101,18 +99,18 @@ protocol: deinit ( - )
     \ copy the given class (statics and defaults template) to the current class.
     \ if given item is any other data type, throw an error.
     
-: protocol: ( - <name> <default-code> ; ) ( ... object - ... )
+: protocol: ( <name> - ) ( ... object - ... )
     \ define a trait method (takes up a static) if it has not already been defined.
     \ must have a stack diagram, which gets stored in the protocol.
     \ is associated with the current trait's bit offset.
     \ always public.
     
-: :: ( class - <name> <code> ; ) ( ... object - ... )
+: :: ( class <name> - ) ( ... object - ... )
     \ define given class's method implementation.
     \ the stack diagram is validated against the protocol's stored one.
     \ the class is validated against the protocol.
 
-: on-derive: ( - <code> ; ) ( original-class derived-class - )
+: on-derive: ( - ) ( original-class derived-class - )
     \ define post-derive behavior for the current class.
 
 \ example 1: arrays with collection trait
@@ -147,10 +145,10 @@ class;
     2dup item-size ! max-items !
     align here items ! * allot&erase ;
 
-2 stack% setup: ( max-count item-size - )
+2 stack% constructor: ( max-count item-size - )
     /stack ;
 
-2 array% setup: ( max-count item-size - )
+2 array% constructor: ( max-count item-size - )
     /stack max-items @ item-count ! ;
 
 : #items ( collection - n )

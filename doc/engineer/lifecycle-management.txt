@@ -1,0 +1,172 @@
+Engineer Lifecycle Management
+============================
+
+This document describes the complete object lifecycle system built on top of
+Nib 2.0's trait and protocol infrastructure. The lifecycle system provides
+hooks for proper resource management throughout an object's existence.
+
+Object Lifecycle Phases
+=======================
+
+The complete object lifecycle consists of four distinct phases:
+
+1. **Construction** - Compile-time object creation and parameter setup
+2. **Initialization** - Runtime startup and resource acquisition  
+3. **Runtime** - Normal object operation and method calls
+4. **Destruction** - Cleanup and resource release before deallocation
+
+Phase 1: Construction
+====================
+
+**When**: During object creation (object, create-object, $create-object)
+**Mechanism**: constructor: syntax in class definitions
+**Purpose**: Set up object with required parameters
+
+Example:
+```forth
+class: file-handle%
+    property filename
+    property handle
+    
+    1 constructor: ( filename-addr - )
+        filename ! ;
+class;
+
+s" data.txt" file-handle% create-object my-file
+```
+
+The constructor: hook executes immediately after memory allocation and
+default value copying, allowing parameterized object setup.
+
+Phase 2: Initialization  
+=======================
+
+**When**: Explicit runtime initialization (typically after construction)
+**Mechanism**: init protocol from object% trait
+**Purpose**: Acquire resources, open connections, start processes
+
+Example:
+```forth
+file-handle% :: init ( object - )
+    filename count open-file drop handle ! ;
+
+my-file init  \ Opens the file, stores handle
+```
+
+Initialization is separate from construction to allow objects to be
+created at compile time but initialized later when resources are available.
+
+Phase 3: Runtime Operation
+==========================
+
+**When**: During normal object usage
+**Mechanism**: Regular protocols and methods
+**Purpose**: Perform object's intended functionality
+
+Objects operate normally using their defined protocols and methods.
+The lifecycle system does not interfere with regular operation.
+
+Phase 4: Destruction
+====================
+
+**When**: Before object deallocation (EMPTY, garbage collection, etc.)
+**Mechanism**: dispose protocol from disposable% trait (planned)
+**Purpose**: Release resources, close handles, clean up state
+
+TODO: Implement disposable% trait
+-------------------------------
+
+Create a disposable% trait that provides resource cleanup capabilities:
+
+```forth
+trait: disposable%
+    protocol: dispose ( object - )
+        \ Override this protocol to clean up resources
+        \ Called automatically by EMPTY before deallocation
+        drop ;  \ Default: no cleanup needed
+trait;
+```
+
+Classes that manage resources (files, memory, network connections) should
+use disposable% and implement the dispose protocol:
+
+```forth
+class: file-handle%
+    is-a disposable%
+    property handle
+    
+    file-handle% :: dispose ( object - )
+        handle @ ?dup if 
+            close-file drop 
+            0 handle !
+        then ;
+class;
+```
+
+The engine's EMPTY word should be enhanced to automatically call dispose
+on objects that implement disposable% before deallocating their memory.
+
+Benefits of disposable%:
+- Automatic resource cleanup prevents leaks
+- Opt-in design - only objects that need cleanup pay the cost
+- Consistent cleanup pattern across the engine
+- Integrates with existing memory management
+
+Integration with Existing Systems
+=================================
+
+Runtime Protocols (object%)
+---------------------------
+
+The object% trait provides runtime lifecycle protocols:
+
+- init: Called explicitly to initialize object state
+- deinit: Called explicitly to shut down object cleanly  
+- teardown: Called during controlled shutdown sequences
+
+These complement the construction/destruction phases by handling
+runtime state management.
+
+Memory Management
+----------------
+
+The lifecycle system integrates with the engine's memory management:
+
+1. OBJECT allocates memory and calls constructor
+2. User calls init when ready to use the object
+3. Object operates normally during its lifetime
+4. User calls deinit when shutting down (optional)
+5. EMPTY calls dispose (if disposable%) then deallocates memory
+
+Error Handling
+--------------
+
+Lifecycle hooks should handle errors gracefully:
+
+- constructor: Should validate parameters and abort on invalid input
+- init: Should handle resource acquisition failures appropriately  
+- dispose: Should never abort - cleanup must always succeed
+- deinit: Should log errors but continue shutdown process
+
+Best Practices
+==============
+
+Constructor Guidelines:
+- Keep constructors simple - just store parameters
+- Validate critical parameters and abort on errors
+- Don't acquire resources in constructors
+
+Initialization Guidelines:
+- Acquire resources in init, not constructor
+- Make init idempotent (safe to call multiple times)
+- Handle resource acquisition failures gracefully
+
+Destruction Guidelines:
+- Always implement dispose for resource-managing objects
+- Make dispose idempotent and error-safe
+- Release resources in reverse order of acquisition
+- Never abort from dispose - log errors and continue
+
+The lifecycle system provides a robust foundation for resource management
+while maintaining the simplicity and performance characteristics of the
+underlying Forth system.
