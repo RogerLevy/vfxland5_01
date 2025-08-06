@@ -162,6 +162,7 @@ wordlist constant honing-wl
     bl preparse nip 0= if
         bl parse 2drop try-again exit
     then
+    honing on
     bl parse f" %s.vfx" >try ;
 
 honing-wl +order definitions
@@ -632,8 +633,7 @@ bye-chain link 0 ,
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn
-    honing off
-    retry-filepath$ 256 erase ;
+    honing off ;
 
 ' cleanup bye-chain-root cell+ !
 
