@@ -1,13 +1,6 @@
 \ ------------------------------------------------------------------------------
-\ Engineer OOP extension - Nib 2.0 Foundation
+\ Engineer OOP extension - NIBS (NIBS Interactive Behavior System) a.k.a Nib 2.0
 \ ------------------------------------------------------------------------------
-\ ==============================================================================
-\ [x] Phase 1: Foundation infrastructure 
-\ [x] Phase 2: Classifier bit allocation system
-\ [ ] Phase 3: Field type registry and protocols
-\ [ ] Phase 4: Enhanced message dispatch with classifier checks
-\ [ ] Phase 5: Advanced object creation with type validation
-\ ==============================================================================
 
 validations off
 
@@ -57,12 +50,6 @@ constant /magical-base
 : already? ( ? <name> - b <name> )
     {: n :}
     preword find if >body @ n = else drop 0 then ;
-
-: ?already ( ? <name> - 1 | <name> 0 )
-    {: n :}
-    preword find if
-        >body @ n = dup if bl word drop then
-    else drop 0 then ; 
 
 || : ?literal  state @ if postpone literal then ;
 
@@ -307,28 +294,43 @@ create protocol%  class% *object [[
         classifier [[ next-ofs @ instance-size ! ]]
     then ;
 
-: add-trait ( trait - )
-    {: trait :}
-    trait 's classifier# @ classifier 's bit-table set-bit
+: supports-protocol? ( protocol class - bool )
+    swap 's offset @ + @ 0<> ;
+
+: add-trait ( trait class - )
+    {: trait class :}
+    \ Set classifier bit
+    trait 's classifier# @ class 's bit-table set-bit
+    
+    \ Merge protocols
     trait 's protocol-list dup list-count for
         @next
-        ( protocol ) [[ default-xt @ offset @ ]] classifier + !
+        ( protocol )
+        dup class supports-protocol? if
+            drop
+        else
+            [[ default-xt @ offset @ ]] class + !
+        then
     loop drop
+    
+    \ Merge properties
     trait 's property-list dup list-count for
         @next dup is-property-mapped? if drop else map-property then
     loop drop ;
 
-: is-a ( <trait> - )
-    classifier 0= abort" IS-A >> Can't use IS-A outside of a class block."
-    classifier 's cla @ class% <> abort" IS-A >> Can only use IS-A in a class block."
-    ' >body add-trait ;
+: is-a ( class <trait> - )
+    dup 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
+    ' >body swap add-trait ;
 
 \ ==============================================================================
 \ Classifier definition
 \ ==============================================================================
     
 : class: ( <name> - )
-    class% ?already ?exit
+    class% already? if
+        ' >body to classifier
+        exit
+    then
     class% begin-classifier
     classifier [[
         (init-class) 
@@ -370,7 +372,7 @@ create protocol%  class% *object [[
 
 : static ( <name> - ) ( - a )
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
-    static% ?already ?exit
+    static% already? if ' drop exit then
     push-order public
     create static% *object [[
         allocate-static-offset
@@ -380,15 +382,18 @@ create protocol%  class% *object [[
     does> 's offset @ cla @ + ;
 
 : trait: ( <name> - )
-    trait% ?already ?exit
+    trait% already? if
+        ' >body to classifier
+        exit
+    then
     trait% begin-classifier
     classifier [[ (init-trait) ]] ;
 
 : trait;
     end-classifier ;
 
-: add-protocol ( protocol - )
-    classifier 's protocol-list add-to ;
+: add-protocol ( protocol trait - )
+    's protocol-list add-to ;
 
 : does-protocol ( - )
     does> swap [[
@@ -404,23 +409,30 @@ create protocol%  class% *object [[
         ( xt ) execute
     ]] ;
     
-: protocol: ( <name> - ) ( ... object - ... )
-    classifier 0= abort" PROTOCOL: >> Can't define a protocol outside of a classifier block."
-    classifier 's cla @ trait% <> abort" PROTOCOL: >> Can only define a protocol in a trait block."
-    protocol% ?already ?exit    
-    create protocol% *object [[
-        me add-protocol
-        allocate-static-offset 
+: (protocol:) ( trait <name> - ) ( ... object - ... )
+    {: trait :}
+    protocol% already? if
+        ' >body
+    else
+        create protocol% *object
+        does-protocol 
+        [[
+            me trait add-protocol
+            allocate-static-offset 
+        me ]]
+    then
+    [[
         :noname default-xt !
-    ]]
-    does-protocol ;
+    ]] ;
 
-: :: ( class <protocol> - )
-    classifier abort" :: >> Can only define a method outside of a classifier block."
-    \ TODO: check that <protocol> is a protocol
-    \ TODO: check that the class supports that protocol (static offset != 0)
-    {: class | name[ 256 ] :}
-    ' >body [[
+: :: ( classifier <protocol> - )
+    {: class | name[ 256 ] protocol :}
+    classifier abort" :: >> Can only define a protocol outside of a classifier block."
+    class 's cla @ trait% = if class (protocol:) exit then
+    class 's cla @ class% <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+    ' >body to protocol
+    protocol class supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
+    protocol [[
         me body> >name count name[ place
         name[ count
             class body> >name count 1 -
@@ -487,8 +499,8 @@ create protocol%  class% *object [[
 ;
 
 : on-derive: ( class - ) ( source-class derived-class - )
-    classifier 0= abort" ON-DERIVE: >> Can't define on-derive outside of a classifier block."
-    classifier [[ :noname on-derive-xt ! ]] ;
+    dup 's cla @ class% <> abort" ON-DERIVE: >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+    [[ :noname on-derive-xt ! ]] ;
 
 \ ==============================================================================
 \ Init/Reset
@@ -508,11 +520,10 @@ create protocol%  class% *object [[
 \ Tests
 \ ==============================================================================
 
-trait: thinker%
-    protocol: init  me .name ." init " cr ;
-    protocol: deinit  me .name ." deinit " cr ;
-    protocol: think  me .name ." think " cr ;
-trait;
+trait: thinker% trait;
+thinker% :: init  me .name ." init " cr ;
+thinker% :: deinit  me .name ." deinit " cr ;
+thinker% :: think  me .name ." think " cr ;
 
 trait: physics%
     property mass
@@ -525,9 +536,9 @@ trait;
 
 class: actor%
     static i/hp
-    is-a object%
-    is-a thinker%
-    is-a physics%
+    actor% is-a object%
+    actor% is-a thinker%
+    actor% is-a physics%
     property x
     property y
     property vx
@@ -538,10 +549,13 @@ class: actor%
         rad .
         10. rad !
     ]]
-    on-derive: ( source-class derived-class - )
-        2drop cr ." Actor derived!!!" cr ;
 class;
-actor% >defaults [[ rad ]] p? cr
+
+
+actor% on-derive: ( source-class derived-class - )
+    2drop cr ." Actor derived!!!" cr ;
+
+actor% >defaults 's rad p? cr
 
 class: enemy%
     actor% derive
@@ -549,7 +563,7 @@ class: enemy%
 class;
 
 class: waypoint%
-    is-a object%
+    waypoint% is-a object%
     property id          \ unique identifier for pathfinding
     property x           \ world position
     property y           \ world position

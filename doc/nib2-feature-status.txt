@@ -87,22 +87,26 @@ Status Legend:
    [x] derive - Copy class structure, static area, and member lists
    [x] is-a - Add trait to classifier's bit table and copy properties/protocols
    [x] on-derive: - Post-derivation hooks
+   [x] Stateless on-derive: definition outside blocks
    [x] Multiple trait composition support
 
 4. PROTOCOL SYSTEM [x]
 ==================
 
-4.1 Protocol Definition [-]
-   [x] protocol: ... ; syntax for method signatures
+4.1 Protocol Definition [x]
+   [SKIP] protocol: ... ; syntax (replaced by unified ::)
+   [x] :: syntax for unified protocol definition/implementation
    [ ] Stack diagram storage and validation
    [x] Default protocol implementations
    [x] Protocol association with traits
+   [x] Stateless protocol definition outside blocks
 
-4.2 Method Implementation [-]
-   [x] :: syntax for implementing protocols
+4.2 Method Implementation [x]
+   [x] :: syntax for unified definition/implementation
    [ ] Stack diagram validation between protocol and implementation
    [x] Method dispatch table management (basic)
    [x] Late-bound method resolution
+   [x] Stateless implementation outside blocks
 
 4.3 Message System Integration [-]
    [ ] Enhanced message dispatch with classifier checks
@@ -252,7 +256,7 @@ Phase 6: Object% Integration [x]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~85%
+Overall Completion: ~90%
 
 Core systems working:
 - Object runtime and scoping  
@@ -280,7 +284,7 @@ Core systems working:
 - Hot-reload safety with property size change detection and clear error messages
 
 Major systems pending:
-- Scope enforcement (public/private validation)  
+- Stack diagram storage and validation
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
 - inner-protocol: for factored scoped operations (designed but not implemented)

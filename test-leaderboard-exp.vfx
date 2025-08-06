@@ -1,0 +1,207 @@
+\ ------------------------------------------------------------------------------
+\ Test leaderboard with networking trait - Nib 2.0 Demo
+\ ------------------------------------------------------------------------------
+
+include engineer/nib2.vfx
+\ include engineer/array.vfx  \ system component, no need to load
+
+\ This is commented out because Oversight doesn't currently work with Nib2:
+\ validations on  
+
+include lib/wstring.vfx
+
+create buf 65536 allot&erase
+create crlfbuf 13 c, 10 c,
+: +buf  buf wappend  ; \ crlfbuf 2 buf wappend ;
+
+aka nprop nproperty
+aka prop property
+
+\ ==============================================================================
+\ Player record 
+\ ==============================================================================
+
+class: player%
+    256 nprop handle     \ byte-counted string (256 bytes max)
+    prop score      \ 32-bit score
+    \ No constructor needed - server script initializes directly
+class;
+
+\ ==============================================================================
+\ Networking trait - HTTP placeholder
+\ ==============================================================================
+
+trait: networking%
+    256 nprop server-url  \ byte-counted string for server URL
+trait;
+
+networking% :: init-url ( server-url-addr server-url-len - )
+    server-url place ;
+
+: sample-datascript ( - a len )
+    0 buf !
+    se" 0 players @ [] @ [[ s\" Champion\" handle place 2500 score ! ]] " +buf
+    se" 1 players @ [] @ [[ s\" ProGamer\" handle place 2200 score ! ]] " +buf
+    se" 2 players @ [] @ [[ s\" Speedrun\" handle place 1950 score ! ]] " +buf
+    se" 3 players @ [] @ [[ s\" NightHawk\" handle place 1800 score ! ]] " +buf
+    se" 4 players @ [] @ [[ s\" Phoenix\" handle place 1750 score ! ]] " +buf
+    se" 5 players @ [] @ [[ s\" Shadow\" handle place 1600 score ! ]] " +buf
+    se" 6 players @ [] @ [[ s\" Lightning\" handle place 1500 score ! ]] " +buf
+    se" 7 players @ [] @ [[ s\" Thunder\" handle place 1400 score ! ]] " +buf
+    se" 8 players @ [] @ [[ s\" Mystic\" handle place 1300 score ! ]] " +buf
+    se" 9 players @ [] @ [[ s\" Vortex\" handle place 1200 score ! ]] " +buf
+    se" 10 players @ [] @ [[ s\" Cyber\" handle place 1100 score ! ]] " +buf
+    se" 11 players @ [] @ [[ s\" Raven\" handle place 1000 score ! ]] " +buf
+    se" 12 players @ [] @ [[ s\" Storm\" handle place 950 score ! ]] " +buf
+    se" 13 players @ [] @ [[ s\" Blade\" handle place 900 score ! ]] " +buf
+    se" 14 players @ [] @ [[ s\" Frost\" handle place 850 score ! ]] " +buf
+    se" 15 players @ [] @ [[ s\" Nova\" handle place 800 score ! ]] " +buf
+    se" 16 players @ [] @ [[ s\" Apex\" handle place 750 score ! ]] " +buf
+    se" 17 players @ [] @ [[ s\" Titan\" handle place 700 score ! ]] " +buf
+    se" 18 players @ [] @ [[ s\" Ghost\" handle place 650 score ! ]] " +buf
+    se" 19 players @ [] @ [[ s\" Omega\" handle place 600 score ! ]] " +buf
+    buf wcount ;
+
+networking% :: fetch-leaderboard ( - forth-code-addr forth-code-len )
+    cr ." HTTP GET: " server-url count type ." /leaderboard" cr
+    sample-datascript ;
+
+: *cstring  here 256 allot&erase ; 
+
+\ Trait initializer pattern
+\ No longer needed in this case since server-url is now an embbeded cstring
+\ : /networking
+\     *cstring server-url ! ;
+
+\ Scrapped idea: Trait constructors
+\ We decided that it was not feasible to support.
+\ 0 networking% constructor: ( - )
+\     *cstring server-url ! ;
+
+\ ==============================================================================
+\ Utility for creating object arrays
+\ ==============================================================================
+
+: fill-objects ( count class array - )
+    {: count class array :}
+    count 0 do
+        class *object i array [] !
+    loop ;
+
+\ ==============================================================================
+\ Leaderboard class
+\ ==============================================================================
+
+class: leaderboard%
+    leaderboard% is-a networking%
+    prop players        \ array of player objects
+    256 nprop last-error     \ byte-counted string for error messages        
+class;
+
+leaderboard% on-derive: ( source-class derived-class - )
+    2drop cr ." Leaderboard system initialized!" cr ;
+
+\ Constructor defined outside class block
+0 leaderboard% constructor: ( - )
+    \ /networking
+    20 player% sizeof *array players !
+    20 player% players @ fill-objects ;
+
+\ ==============================================================================
+\ Leaderboard functions
+\ ==============================================================================
+
+: refresh-data ( leaderboard - success? )
+    as>
+    s" Refreshing leaderboard data..." last-error place
+    
+    \ Fetch data from server
+    me ['] fetch-leaderboard catch if
+        s" Network error: Could not connect to server" last-error place
+        cr ." ERROR: " last-error count type cr
+        0 exit
+    then
+    
+    \ 2dup type
+    
+    \ Execute the returned Forth code to populate players
+    ['] evaluate catch if
+        s" Parse error: Invalid data from server" last-error place  
+        cr ." ERROR: " last-error count type cr
+        0 exit
+    then
+    
+    s" Data refresh successful" last-error place
+    -1 ;
+
+: print-top20 ( leaderboard - )
+    as>
+    cr
+    ." ===================================================" cr
+    ."    TOP 20 LEADERBOARD" cr  
+    ." ===================================================" cr
+    ." Rank  Player                     Score" cr
+    ." ---------------------------------------------------" cr
+    
+    players @ #items for
+        i 1 + 3 .r ."    "
+        i players @ [] @ [[
+            handle count type
+            32 out @ - 0 max for space loop
+            score @ 6 .r
+        ]]
+        cr
+    loop
+    
+    ." ---------------------------------------------------" cr
+    ." Last update: " last-error count type cr ;
+
+: get-player-rank ( handle-addr handle-len leaderboard - rank | -1 )
+    {: addr len board :}
+    board [[
+    players @ #items for
+        i players @ [] @ 's handle count
+        addr len compare 0= if
+            i 1 + unloop ]] exit  \ Return 1-based rank
+        then
+    loop
+    -1
+    ]] ;  \ Player not found
+
+
+\ ==============================================================================
+\ Demo
+\ ==============================================================================
+
+leaderboard% object board
+
+s" https://api.gameserver.example.com" board init-url 
+\ ." Leaderboard URL: " board [[ server-url dup . count type cr ]] 
+
+cr ." Testing leaderboard system..." cr
+
+board refresh-data [if]
+    board print-top20
+[else]
+    cr ." Failed to refresh leaderboard data" cr
+    \\
+[then]
+
+cr ." Looking up player ranks:" cr
+s" Champion" board get-player-rank dup -1 = [if]
+    drop ." Champion: Not found"
+[else]
+    ." Champion: Rank #" .
+[then] cr
+
+s" Mystic" board get-player-rank dup -1 = [if]
+    drop ." Mystic: Not found"
+[else]
+    ." Mystic: Rank #" .
+[then] cr
+
+s" NotThere" board get-player-rank 0< [if]
+    ." NotThere: Not found" 
+[else]
+    ." NotThere: Rank #" .
+[then] cr

@@ -7,20 +7,14 @@ trait: object%
 \ --------------------------------------
 
 : constructor: ( #params class - )
-    \ defines constructor for class (defined outside class blocks)
+    \ defines constructor for class
+    \ stateless - always defined outside class blocks
     \ constructor code follows and is executed during object creation
 
-protocol: teardown ( - )
-    \ object% method
-
-\ Run-time object life-cycle methods
-\ ----------------------------------
-
-protocol: init ( - )
-    \ object% method
-
-protocol: deinit ( - )
-    \ object% method
+\ These would be defined outside blocks with :: syntax:
+\ object% :: teardown ( - )
+\ object% :: init ( - )
+\ object% :: deinit ( - )
 
 \ Instantiation
 \ -------------
@@ -68,10 +62,10 @@ protocol: deinit ( - )
 
 : class: ( <name> - )
     \ define a class if it has not already been defined.
-    \ set as current classifier for defining members.
+    \ used ONLY for data definition (properties, statics).
     \ paired with CLASS;
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
-    \ always public?
+    \ always public.
 
 : defaults ( - a )
 : >defaults ( class - a )
@@ -82,14 +76,15 @@ protocol: deinit ( - )
 
 : trait: ( <name> - )
     \ define a trait - if it has not already been defined - which is a class that can be mixed into other classes.
-    \ set as current classifier for defining members.
+    \ used ONLY for data definition (properties).
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
     \ paired with TRAIT;
     \ traits cannot "inherit" other traits.
     \ always public
     
-: is-a ( - <trait> )
-    \ adds trait to current class.
+: is-a ( class <trait> )
+    \ adds trait to given class.
+    \ must be used inside class block.
     \ if a wrong data type is given, throw an error.
     \ sets a bit in a 1024-bit static for validation and logic.
 
@@ -100,19 +95,18 @@ protocol: deinit ( - )
     \ copy the given class (statics and defaults template) to the current class.
     \ if given item is any other data type, throw an error.
     
-: protocol: ( <name> - ) ( ... object - ... )
-    \ define a trait method (takes up a static) if it has not already been defined.
-    \ must have a stack diagram, which gets stored in the protocol.
-    \ is associated with the current trait's bit offset.
-    \ always public.
-    
-: :: ( class <name> - ) ( ... object - ... )
-    \ define given class's method implementation.
-    \ the stack diagram is validated against the protocol's stored one.
+: :: ( classifier <name> - ) ( ... object - ... )
+    \ unified protocol definition and implementation.
+    \ when used with a trait, creates protocol if it doesn't exist.
+    \ when used with a class, implements/overrides the protocol.
+    \ stateless - can be used anywhere, not just in classifier blocks.
+    \ stack diagram is stored and validated for consistency.
     \ the class is validated against the protocol.
+    \ always public.
 
-: on-derive: ( - ) ( original-class derived-class - )
-    \ define post-derive behavior for the current class.
+: on-derive: ( class - ) ( original-class derived-class - )
+    \ define post-derive behavior for given class.
+    \ stateless - always defined outside class blocks.
     \ executed after DERIVE copies structure and members.
     
 : sizeof ( class|object - n )
@@ -138,22 +132,22 @@ trait: collection%
     property item-size
     property item-count
     property items
-    
-    protocol: each ( xt - ) ( a - )
-        drop ;
-    
 trait;
 
+\ Protocols defined outside trait block for statelessness
+collection% :: each ( xt - ) ( a - )
+    drop ;
+
 class: array%
-    is-a collection%
+    array% is-a collection%
 class;
 
 class: slice% 
-    is-a collection%
+    slice% is-a collection%
 class;
 
 class: stack%
-    is-a collection%
+    stack% is-a collection%
 class;
 
 || : /stack ( count item-size - )
@@ -169,7 +163,8 @@ class;
 : #items ( collection - n )
     's item-count @ ;
 
-array% :: each ( xt - ) ( a - ) \ stack diagram(s) must match the protocol's exactly
+\ Class implementation of protocol (stack diagram must match)
+array% :: each ( xt - ) ( a - )
     ... ; 
 
 
@@ -177,12 +172,15 @@ array% :: each ( xt - ) ( a - ) \ stack diagram(s) must match the protocol's exa
 -------------------------------------------
 
 trait: drawable%
-    protocol: draw ( - )
-        ;
+    \ Properties only in trait block
 trait;
 
+\ Protocol defined outside for statelessness
+drawable% :: draw ( - )
+    drop ;
+
 class: actor%
-    is-a drawable%
+    actor% is-a drawable%
     512 field-space
     property x
     property y
@@ -191,10 +189,12 @@ class: actor%
     property bmp
     \ ...
     static oexec-error-handler ( xt n - )
-    on-derive: ( original-class derived-class - )
-        2drop 
-        private ;  \ set up private vocabulary
 class;
+
+\ on-derive hook defined outside class block
+actor% on-derive: ( original-class derived-class - )
+    2drop 
+    private ;  \ set up private vocabulary
 
 \ set static; DERIVE carries it over 
 ' actor-oexec-error-handler actor% 's oexec-error-handler !
@@ -209,26 +209,28 @@ class: ship%
 class;
 
 \ kinetic.vfx
-actor% trait: kinetic%
+trait: kinetic%
     property rad
     property mass
     property ang
-    protocol: on-bounce ( object - )
-        drop ;
 trait;
+
+kinetic% :: on-bounce ( object - )
+    drop ;
 
 \ enemy1.vfx
 require kinetic.vfx  \ more likely to be in common.vfx to avoid repetition and false cross-app modularity, but this is just an example
 
 class: enemy1%
     actor% derive
-    is-a kinetic%   
-
-    on-derive: ( original-class derived-class - )
-        nip
-        dup register-enemy-class
-        auto-bitmap ;
+    enemy1% is-a kinetic%   
 class;
+
+\ on-derive hook defined outside
+enemy1% on-derive: ( original-class derived-class - )
+    nip
+    dup register-enemy-class
+    auto-bitmap ;
 
 
 
@@ -270,13 +272,13 @@ conversation notes
 ● | Data Structure | field | property | static | protocol: | Notes                              |
   |----------------|-------|----------|--------|-----------|------------------------------------|
   | class:         | Yes   | Yes      | Yes    | No        |                                    |
-  | trait:         | No    | Yes      | Yes    | Yes       | Cross-class behavioral interfaces  |
+  | trait:         | No    | Yes      | No     | No        | Cross-class behavioral interfaces  |
   | Private blocks | Yes   | No       | No     | No        | Implementation hiding only         |
 
   Key constraints:
   - field - Classes or private blocks only (direct offset allocation)
-  - static - Classes, traits (class-level data, universally useful)
-  - protocol: - Traits only (behavioral contracts)
+  - static - Classes only (class-level data)
+  - :: - Traits for definition, classes for implementation (behavioral contracts)
 
   Design rationale:
   - Traits focus on flexible interfaces (properties + protocols)
