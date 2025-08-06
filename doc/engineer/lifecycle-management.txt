@@ -18,8 +18,8 @@ The complete object lifecycle consists of four distinct phases:
 Phase 1: Construction
 ====================
 
-**When**: During object creation (object, create-object, $create-object)
-**Mechanism**: constructor: syntax in class definitions
+**When**: During object creation (*object, object, $object)
+**Mechanism**: constructor: syntax defined outside class blocks
 **Purpose**: Set up object with required parameters
 
 Example:
@@ -27,12 +27,13 @@ Example:
 class: file-handle%
     property filename
     property handle
-    
-    1 constructor: ( filename-addr - )
-        filename ! ;
 class;
 
-s" data.txt" file-handle% create-object my-file
+\ Constructor defined outside class block
+1 file-handle% constructor: ( filename-addr - )
+    filename ! ;
+
+s" data.txt" file-handle% object my-file
 ```
 
 The constructor: hook executes immediately after memory allocation and

@@ -53,6 +53,8 @@ Status Legend:
    [x] Property creation and registration
    [x] Property access through double indirection
    [x] Automatic class instance size management
+   [x] Sized properties via nproperty (size <name> -)
+   [x] Hot-reload safety with property size change detection
 
 3. CLASSIFIER SYSTEM [-]
 ====================
@@ -84,7 +86,7 @@ Status Legend:
 3.5 Inheritance and Composition [x]
    [x] derive - Copy class structure, static area, and member lists
    [x] is-a - Add trait to classifier's bit table and copy properties/protocols
-   [ ] on-derive: - Post-derivation hooks
+   [x] on-derive: - Post-derivation hooks
    [x] Multiple trait composition support
 
 4. PROTOCOL SYSTEM [x]
@@ -173,7 +175,9 @@ Status Legend:
    [ ] Protocol implementation validation
    [ ] Field access bounds checking
    [ ] Runtime contract enforcement
-   [x] 'S property support with MAGIC_PROPERTY detection
+   [x] 'S property support with MAGIC_PROPERTY detection and prop+ optimization
+   [x] Hot-reload property size validation with clear error messages
+   [x] sizeof smart query supporting both objects and classes
    [ ] Property validation in engineer/checks.vfx
 
 8.3 Error Reporting [-]
@@ -269,11 +273,17 @@ Core systems working:
 - Extensible object% base trait with reset capability
 - Context validation for static definitions (must be in classifier blocks)
 - on-derive: hook system for class inheritance customization
+- Smart sizeof supporting both objects and classes  
+- Renamed object creation: *object (unnamed), object (named) for clarity
+- Enhanced 'S syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
+- Sized properties with nproperty (size <name> -) supporting embedded data structures
+- Hot-reload safety with property size change detection and clear error messages
 
 Major systems pending:
 - Scope enforcement (public/private validation)  
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
+- inner-protocol: for factored scoped operations (designed but not implemented)
 
 Remaining features for full spec compliance:
 - Public scope enforcement for traits, properties, statics

@@ -6,8 +6,9 @@ trait: object%
 \ Compile-time object life-cycle methods
 \ --------------------------------------
 
-: constructor: ( #params class - <code> ; ) ( ... - )
-    \ special constructor method with variable number of params
+: constructor: ( #params class - )
+    \ defines constructor for class (defined outside class blocks)
+    \ constructor code follows and is executed during object creation
 
 protocol: teardown ( - )
     \ object% method
@@ -24,16 +25,16 @@ protocol: deinit ( - )
 \ Instantiation
 \ -------------
 
-: object ( class - object )
-    \ compile dictionary instance.
+: *object ( ... class - object )
+    \ create unnamed dictionary instance.
     \ executes constructor.
     
-: $create-object ( class name len - object ) ( - object ) 
+: $object ( ... class name len - object ) ( - object ) 
     \ create named dictionary instance.
     \ executes constructor.
 
-: create-object ( class <name> - ) ( - object )
-    \ create named dictionary instance (convenience word for BL PARSE $CREATE-OBJECT DROP).
+: object ( ... class <name> - ) ( - object )
+    \ create named dictionary instance (convenience word for BL PARSE $OBJECT DROP).
     \ executes constructor.
     
 : <object ( a size class - object )
@@ -50,10 +51,16 @@ protocol: deinit ( - )
     \ also defines an external address.
     \ public or private depending on CURRENT.
     
+: nproperty ( size <name> - ) ( - field ) ( object - field )
+    \ define an instance accessor (any size) and offset calculator (>NAME).
+    \ dynamic offset resolution (uses a static to store the offset, 0 = invalid).
+    \ supports hot-reload safety - detects size changes and aborts with clear error.
+    \ always public.
+    
 : property ( <name> - ) ( - field ) ( object - field )
     \ define an instance accessor (cell) and offset calculator (>NAME).
+    \ convenience word equivalent to "CELL NPROPERTY".
     \ dynamic offset resolution (uses a static to store the offset, 0 = invalid).
-    \ only definable for traits.
     \ always public.
     
 : static ( <name> - ) ( - field ) ( class - field )
@@ -112,6 +119,20 @@ protocol: deinit ( - )
 
 : on-derive: ( - ) ( original-class derived-class - )
     \ define post-derive behavior for the current class.
+    \ executed after DERIVE copies structure and members.
+    
+: sizeof ( class|object - n )
+    \ smart size query supporting both objects and classes
+    \ for objects: gets class then returns instance-size
+    \ for classes: directly returns instance-size
+    
+\ Enhanced Property Access
+\ ------------------------
+
+: 'S ( object <name> - a )
+    \ enhanced field/property access with performance optimization
+    \ detects MAGIC_PROPERTY and generates optimized assembly with prop+
+    \ generates simple + for regular fields
 
 \ example 1: arrays with collection trait
 \ ---------------------------------------

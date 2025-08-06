@@ -128,6 +128,7 @@ variable osp   os osp ! \ object stack pointer
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
+: as> ( actor - ) ( - ) [[ r> execute ]] ;
 
 \ ==============================================================================
 \ Classes
@@ -169,6 +170,10 @@ create class% class% (classifier) [[ (init-class) ]]
 || : create-class ( <name> - class )
     create class% (classifier) dup [[ (init-class) ]] ;
 
+: sizeof ( class|object - n )
+    dup 's cla @ class% = if 's instance-size @
+    else 's cla @ 's instance-size @ then ;
+
 \ ==============================================================================
 \ Traits
 \ ==============================================================================
@@ -196,21 +201,21 @@ object% [[
     (add-object-system-trait)
 ]]
 
-: sizeof ( object - n )
+: (sizeof) ( object - n )
     's cla @ 's instance-size @ ;
 
 : !defaults ( object - )
     dup 's cla @ 's template @ ?dup if
         \ dup .name ." template copying" cr
         \ over >r 
-        cell+ over dup cell+ swap sizeof cell- move
-        \ r> dup sizeof dump
+        cell+ over dup cell+ swap (sizeof) cell- move
+        \ r> dup (sizeof) dump
     else
-        dup cell+ over sizeof cell- erase
+        dup cell+ over (sizeof) cell- erase
     then
     drop ;
 
-: object ( ... class - object )
+: *object ( ... class - object )
     \ TODO: validate class
     here over , swap 's instance-size @ cell- allot
     dup !defaults
@@ -218,30 +223,31 @@ object% [[
         cla @ 's constructor-xt @ ?dup if execute then
     me ]] ;
 
-: $create-object ( ... class name len - object ) ( - object ) 
-    >$ $create object ;
+: $object ( ... class name len - object ) ( - object ) 
+    >$ $create *object ;
 
-: create-object ( ... class <name> - ) ( - object )
-    bl parse $create-object drop ;
+: object ( ... class <name> - ) ( - object )
+    bl parse $object drop ;
 
 \ ==============================================================================
 \ Members
 \ ==============================================================================
 
-create property%  class% object [[
+create property%  class% *object [[
     (add-object-system-trait)
     /magical-base
         cell field offset
         cell field next-property
+        cell field property-size
     dup instance-size ! next-ofs !
 ]]
 
-create static%  class% object [[
+create static%  class% *object [[
     property% 's instance-size @
     dup instance-size ! next-ofs !
 ]]
 
-create protocol%  class% object [[
+create protocol%  class% *object [[
     static% 's instance-size @
         cell field default-xt
         cell field next-protocol
@@ -259,7 +265,7 @@ create protocol%  class% object [[
 
 : begin-classifier ( class - )
     push-order public
-    create object to classifier
+    create *object to classifier
     allocate-classifier-bit
     pop-order ;
 
@@ -270,9 +276,10 @@ create protocol%  class% object [[
     /static offset !
     cell +to /static ;
     
-: create-property ( <name> - property )
+: create-property ( size <name> - property )
     push-order public
-    create property% object [[
+    create property% *object [[
+        property-size !
         allocate-static-offset
         MAGIC_PROPERTY magic !
     me ]]
@@ -292,7 +299,7 @@ create protocol%  class% object [[
     \ map property for current class
     [[
         classifier 's next-ofs @ offset @ classifier + !
-        cell classifier 's next-ofs +!
+        property-size @ classifier 's next-ofs +!
     ]]
     classifier has-field-space? not if            
         classifier [[ next-ofs @ instance-size ! ]]
@@ -333,21 +340,37 @@ create protocol%  class% object [[
 : is? ( object classifier - bool )
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
 
-: property ( <name> - ) ( - a )
+: ?size-changed ( size property - property )
+    {: size property :}
+    property 's property-size @ size <> if
+        -1
+        size
+        property 's property-size @
+        property body> >name count
+        f" NPROPERTY >> %s changed from %n to %n bytes - reload/restart required."
+        .abort
+    then
+    property ;
+
+: nproperty ( size <name> - ) ( - a )
     classifier 0= abort" PROPERTY >> Can't define a property outside of a classifier block."
-    property% already? if ' >body else create-property then
+    property% already? if ' >body ?size-changed else create-property then
+    ( property )
     dup is-property-mapped? if
         drop \ -1 abort" PROPERTY >> Property already mapped!"
     else
         dup add-property
         map-property
     then ;
+    
+: property ( <name> - ) ( - a )
+    cell nproperty ;
 
 : static ( <name> - ) ( - a )
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
     static% ?already ?exit
     push-order public
-    create static% object [[
+    create static% *object [[
         allocate-static-offset
         MAGIC_FIELD magic !
     ]]
@@ -383,7 +406,7 @@ create protocol%  class% object [[
     classifier 0= abort" PROTOCOL: >> Can't define a protocol outside of a classifier block."
     classifier 's cla @ trait% <> abort" PROTOCOL: >> Can only define a protocol in a trait block."
     protocol% ?already ?exit    
-    create protocol% object [[
+    create protocol% *object [[
         me add-protocol
         allocate-static-offset 
         :noname default-xt !
@@ -392,6 +415,8 @@ create protocol%  class% object [[
 
 : :: ( class <protocol> - )
     classifier abort" :: >> Can only define a method outside of a classifier block."
+    \ TODO: check that <protocol> is a protocol
+    \ TODO: check that the class supports that protocol (static offset != 0)
     {: class | name[ 256 ] :}
     ' >body [[
         me body> >name count name[ place
@@ -403,6 +428,8 @@ create protocol%  class% object [[
     ]] ;
 
 : constructor: ( #params class - )
+    classifier abort" CONSTRUCTOR: >> Constructors can only be defined outside of a classifier block."
+    dup 's cla @ class% <> abort" CONSTRUCTOR: >> Passed object is not a class - constructors can only be defined for classes."
     [[
         :noname constructor-xt !
         constructor-#params !
@@ -412,13 +439,13 @@ create protocol%  class% object [[
     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
     classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
     classifier 's template @ ?dup if else
-        classifier object classifier 's template !
+        classifier *object classifier 's template !
         classifier 's template @
     then ;
 
 : >defaults ( class - a )
     's template @ ?dup if else
-        dup object over 's template !
+        dup *object over 's template !
         's template @
     then ;
 
@@ -527,9 +554,9 @@ class: waypoint%
     property connections \ bitfield of connected waypoints
 class;
 
-create waypoint waypoint% object drop
+create waypoint waypoint% *object drop
 
-create actor actor% object [[
+create actor actor% *object [[
     me .
     x .
     y .
@@ -561,7 +588,7 @@ actor [[
     me think
 ]]
 
-create enemy enemy% object [[
+create enemy enemy% *object [[
     me dup . .name
     ." &mass=" mass .
     ." &x=" x .
@@ -596,5 +623,5 @@ class;
 3 tileset% constructor: ( bmp tw th - )
     th ! tw ! bmp ! ;
 
-1 16 16 tileset% create-object tileset
+1 16 16 tileset% object tileset
 
