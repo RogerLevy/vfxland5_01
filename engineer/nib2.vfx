@@ -297,8 +297,10 @@ create protocol%  class% *object [[
 : supports-protocol? ( protocol class - bool )
     swap 's offset @ + @ 0<> ;
 
-: add-trait ( trait class - )
+: apply-trait ( trait class - )
     {: trait class :}
+    class 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
+    
     \ Set classifier bit
     trait 's classifier# @ class 's bit-table set-bit
     
@@ -306,11 +308,14 @@ create protocol%  class% *object [[
     trait 's protocol-list dup list-count for
         @next
         ( protocol )
-        dup class supports-protocol? if
-            drop
-        else
+        \ I thought that this was correct for some reason,
+        \ but actually, the ability to overwrite protocols by adding traits at any time
+        \ could be very powerful.  Also, I think this is more hot-reload friendly.
+        \ dup class supports-protocol? if
+        \     drop
+        \ else
             [[ default-xt @ offset @ ]] class + !
-        then
+        \ then
     loop drop
     
     \ Merge properties
@@ -319,8 +324,7 @@ create protocol%  class% *object [[
     loop drop ;
 
 : is-a ( class <trait> - )
-    dup 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
-    ' >body swap add-trait ;
+    ' >body swap apply-trait ;
 
 \ ==============================================================================
 \ Classifier definition
@@ -413,6 +417,7 @@ create protocol%  class% *object [[
     {: trait :}
     protocol% already? if
         ' >body
+        \ TODO: check if the protocol belongs to another trait and throw error if it is
     else
         create protocol% *object
         does-protocol 
@@ -430,7 +435,8 @@ create protocol%  class% *object [[
     classifier abort" :: >> Can only define a protocol outside of a classifier block."
     class 's cla @ trait% = if class (protocol:) exit then
     class 's cla @ class% <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
-    ' >body to protocol
+    bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
+    >body to protocol
     protocol class supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
     protocol [[
         me body> >name count name[ place
@@ -440,6 +446,9 @@ create protocol%  class% *object [[
         state on
         here ( xt ) class offset @ + !
     ]] ;
+
+: stub ( - )
+    -1 r> >name count f" %s >> Not implemented" .abort ;
 
 : constructor: ( #params class - )
     classifier abort" CONSTRUCTOR: >> Constructors can only be defined outside of a classifier block."
@@ -502,6 +511,9 @@ create protocol%  class% *object [[
     dup 's cla @ class% <> abort" ON-DERIVE: >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
     [[ :noname on-derive-xt ! ]] ;
 
+aka nprop nproperty
+aka prop property
+
 \ ==============================================================================
 \ Init/Reset
 \ ==============================================================================
@@ -519,6 +531,7 @@ create protocol%  class% *object [[
 \ ==============================================================================
 \ Tests
 \ ==============================================================================
+honing @ 0= [if] \\ [then]
 
 trait: thinker% trait;
 thinker% :: init  me .name ." init " cr ;

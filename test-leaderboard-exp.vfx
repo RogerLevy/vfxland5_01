@@ -14,9 +14,6 @@ create buf 65536 allot&erase
 create crlfbuf 13 c, 10 c,
 : +buf  buf wappend  ; \ crlfbuf 2 buf wappend ;
 
-aka nprop nproperty
-aka prop property
-
 \ ==============================================================================
 \ Player record 
 \ ==============================================================================
