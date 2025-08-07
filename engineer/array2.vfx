@@ -76,17 +76,17 @@ iterable% :: contains? ( item - bool )
       
 \ Access helpers:
 \ For object/reference types:
-iterable% :: first ( - a )
+iterable% :: head ( - a )
     0 me ?bounds me [] ;
 
-iterable% :: last ( - a )
+iterable% :: tail ( - a )
     item-count @ 1 - me ?bounds me [] ;
 
 \ For value types:
-iterable% :: first@ ( - ? )
+iterable% :: head@ ( - ? )
     0 me ?bounds me deref-index ;
 
-iterable% :: last@ ( - ? )
+iterable% :: tail@ ( - ? )
     item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
@@ -154,19 +154,19 @@ class;
 
 stack% :: push ( item - )
     item-count @ max-items @ = abort" Overflow."
-    1 item-count +!  me last ! ;
+    1 item-count +!  me tail ! ;
 
 stack% :: pop ( - item )
     item-count @ 0= abort" Underflow."
-    me last @  -1 item-count +! ;
+    me tail @  -1 item-count +! ;
 
 stack% :: push-copy ( a - )
     item-count @ max-items @ = abort" Overflow."
-    1 item-count +!  ( a ) me last item-size @ move ;
+    1 item-count +!  ( a ) me tail item-size @ move ;
 
 stack% :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
-    me last  -1 item-count +! ;
+    me tail  -1 item-count +! ;
 
 \ ------------------------------------------------------------------------------
 

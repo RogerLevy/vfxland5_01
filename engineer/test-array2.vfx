@@ -142,10 +142,10 @@ create test-data 42 , 84 ,
         333 ,
     array] to acc-arr
     
-    acc-arr first @ 111 = s" First ref value should be 111" assert
-    acc-arr last @ 333 = s" Last ref value should be 333" assert
-    acc-arr first@ 111 = s" First value should be 111" assert
-    acc-arr last@ 333 = s" Last value should be 333" assert
+    acc-arr head @ 111 = s" Head ref value should be 111" assert
+    acc-arr tail @ 333 = s" Tail ref value should be 333" assert
+    acc-arr head@ 111 = s" Head value should be 111" assert
+    acc-arr tail@ 333 = s" Tail value should be 333" assert
     
     \ Test n[]
     0.5 acc-arr n[] @ 222 = s" Middle value should be 222" assert
