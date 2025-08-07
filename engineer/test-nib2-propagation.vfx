@@ -1,0 +1,138 @@
+\ Test suite for Nib 2.0 protocol propagation system
+
+require %idir%/nib2.vfx
+
+: assert ( flag msg-addr msg-len - )
+    2>r 0= 2r> .abort ;
+
+: .evaluate ( a len - )
+    2dup type cr evaluate
+    .s ;
+
+: bad-prop-test ( - )
+    s" trait: prop-trait% property bad-prop trait;" evaluate ;
+
+: test-protocol-propagation
+    cr ." Testing protocol propagation..." cr
+    
+    \ Create a trait
+    s" trait: test-trait% property test-prop trait;" .evaluate
+    
+    \ Create a class that uses the trait
+    s" class: test-class% test-class% is-a test-trait% class;" .evaluate
+    
+    \ Add a protocol to the trait after the class is created
+    se" test-trait% :: new-protocol .\" new protocol called\" cr ;" .evaluate
+    
+    \ Verify the class now supports the new protocol
+    s" test-trait% 's new-protocol test-class% supports-protocol?" .evaluate
+    s" Class should support new protocol after propagation" assert
+    
+    \ Implement the protocol on the class
+    se" test-class% :: new-protocol .\" class implementation\" cr ;" .evaluate
+    
+    \ Create an object and test the protocol
+    s" test-class% *object [[ me new-protocol ]]" .evaluate
+    
+    ." OK" cr ;
+
+: test-field-space-protection
+    cr ." Testing field-space protection..." cr
+    
+    \ Create a trait without field-space
+    s" trait: no-space-trait% trait;" .evaluate
+    
+    \ Create a class that uses it
+    s" class: no-space-class% no-space-class% is-a no-space-trait% class;" .evaluate
+    
+    \ Try to add a property to the reopened trait - should fail
+    s" trait: no-space-trait% cell nproperty bad-prop trait;" .evaluate
+    ." OK (manual verification: should have aborted above)" ;
+
+: test-trait-property-protection
+    cr ." Testing trait property protection..." cr
+    
+    \ Create a trait without properties first
+    s" trait: prop-trait% trait;" .evaluate
+    
+    \ Create a class that uses it  
+    s" class: prop-class% prop-class% is-a prop-trait% class;" .evaluate
+    
+    \ Try to add property to trait with dependents - should fail  
+    ['] bad-prop-test catch 0<>
+    s" Should abort when adding properties to trait with dependents" assert
+    
+    ." OK" cr ;
+
+: test-trait-without-properties
+    cr ." Testing trait without properties can be applied to any class..." cr
+    
+    \ Create a behavior-only trait
+    s" trait: behavior-trait% trait;" .evaluate
+    se" behavior-trait% :: do-something .\" doing something\" cr ;" .evaluate
+    
+    \ Create a class without field-space
+    s" class: any-class% property some-prop class;" .evaluate
+    
+    \ Apply the behavior trait - should work
+    s" any-class% is-a behavior-trait%" .evaluate
+    
+    \ Verify it worked
+    s" behavior-trait% 's do-something any-class% supports-protocol?" .evaluate
+    s" Class should support behavior trait protocol" assert
+    
+    ." OK" cr ;
+
+: test-reopened-class-with-field-space
+    cr ." Testing reopened class with field-space..." cr
+    
+    \ Create a class with field-space
+    s" class: field-class% 32 field-space property initial-prop class;" .evaluate
+    
+    \ Reopen and add property - should work
+    s" class: field-class% property added-prop class;" .evaluate
+    
+    \ Verify the property was added by creating an object
+    s" field-class% *object [[ me 's added-prop 0<> ]]" .evaluate
+    s" Object should have the added property" assert
+    
+    ." OK" cr ;
+
+: test-dynamic-protocol-names
+    cr ." Testing dynamic protocol creation..." cr
+    
+    \ Create trait and class
+    s" trait: dynamic-trait% trait;" .evaluate
+    s" class: dynamic-class% dynamic-class% is-a dynamic-trait% class;" .evaluate
+    
+    \ Create protocol with dynamic name
+    s" test-protocol" fe" dynamic-trait%% :: %s .\" dynamic protocol\" cr ;" .evaluate
+    
+    \ Verify class supports it
+    s" dynamic-trait% 's test-protocol dynamic-class% supports-protocol?" .evaluate
+    s" Class should support dynamically created protocol" assert
+    
+    \ Implement on class
+    s" test-protocol" fe" dynamic-class%% :: %s .\" class dynamic\" cr ;" .evaluate
+    
+    \ Test it
+    s" dynamic-class% *object [[ me test-protocol ]]" .evaluate
+    
+    ." OK" cr ;
+
+: run-propagation-tests
+    cr ." Running Nib 2.0 propagation tests..." cr
+    .s cr ." Before test-protocol-propagation" cr
+    test-protocol-propagation
+    .s cr ." After test-protocol-propagation" cr
+    test-trait-property-protection  
+    .s cr ." After test-trait-property-protection" cr
+    test-trait-without-properties
+    .s cr ." After test-trait-without-properties" cr
+    test-reopened-class-with-field-space
+    .s cr ." After test-reopened-class-with-field-space" cr
+    test-dynamic-protocol-names
+    .s cr ." After test-dynamic-protocol-names" cr
+    cr ." Most tests passed! (field-space protection requires manual verification)" cr ;
+
+run-propagation-tests

@@ -90,6 +90,10 @@ cstring name$
 : list-count ( list - c )
     cell+ cell+ @ ;
 
+: list-count! ( c list - )
+    cell+ cell+ ! ;
+
+
 3 cells constant /list
 
 : copy-list ( src dest - )
@@ -134,7 +138,9 @@ variable osp   os osp ! \ object stack pointer
     cell field template
     cell field constructor-xt
     cell field constructor-#params
-    cell field on-derive-xt 
+    cell field on-derive-xt
+    /list field dependents       \ trait dependents (classes that applied the trait)
+    cell field #openings
 dup constant /classifier-base
 to /static
 
@@ -164,7 +170,7 @@ create class% class% (classifier) [[ (init-class) ]]
     else 's cla @ 's instance-size @ then ;
 
 \ ==============================================================================
-\ Traits
+\ TRAIT% and OBJECT%
 \ ==============================================================================
 
 : (init-trait) ( - )
@@ -174,21 +180,21 @@ create object% 0 (classifier) [[
     (init-trait)
 ]]
 
-: (add-object-system-trait) ( - )
+: (add-object-system-trait-bit) ( - )
     object% 's classifier# @ bit-table set-bit ;
 
 create-class trait% [[
-    (add-object-system-trait)
+    (add-object-system-trait-bit)
+]]
+
+object% [[
+    trait% cla !
+    (add-object-system-trait-bit)
 ]]
 
 \ ==============================================================================
 \ Object instantiation
 \ ==============================================================================
-
-object% [[
-    trait% cla !
-    (add-object-system-trait)
-]]
 
 : (sizeof) ( object - n )
     's cla @ 's instance-size @ ;
@@ -223,7 +229,7 @@ object% [[
 \ ==============================================================================
 
 create property%  class% *object [[
-    (add-object-system-trait)
+    (add-object-system-trait-bit)
     /magical-base
         cell field offset
         cell field next-property
@@ -247,6 +253,7 @@ create protocol%  class% *object [[
     's field-space-size @ 0<> ;
     
 : field-space ( n - )
+    classifier 's cla @ trait% = abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
     classifier [[
         field-space-size !
         field-space-size @ instance-size !
@@ -259,7 +266,11 @@ create protocol%  class% *object [[
     pop-order ;
 
 : end-classifier ( - )
+    1 classifier 's #openings +!
     0 to classifier ;
+    
+: reopened? ( class - b )
+    's #openings @ 0<> ;
 
 : allocate-static-offset ( - )
     /static offset !
@@ -297,56 +308,17 @@ create protocol%  class% *object [[
 : supports-protocol? ( protocol class - bool )
     swap 's offset @ + @ 0<> ;
 
-: apply-trait ( trait class - )
-    {: trait class :}
-    class 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
-    
-    \ Set classifier bit
-    trait 's classifier# @ class 's bit-table set-bit
-    
-    \ Merge protocols
-    trait 's protocol-list dup list-count for
-        @next
-        ( protocol )
-        \ I thought that this was correct for some reason,
-        \ but actually, the ability to overwrite protocols by adding traits at any time
-        \ could be very powerful.  Also, I think this is more hot-reload friendly.
-        \ dup class supports-protocol? if
-        \     drop
-        \ else
-            [[ default-xt @ offset @ ]] class + !
-        \ then
-    loop drop
-    
-    \ Merge properties
+: support-protocol ( protocol class - )
+    >r [[ default-xt @ offset @ ]] r> + ! ;
+
+: has-unmapped-properties? ( trait - bool )
+    {: trait :}
     trait 's property-list dup list-count for
-        @next dup is-property-mapped? if drop else map-property then
-    loop drop ;
-
-: is-a ( class <trait> - )
-    ' >body swap apply-trait ;
-
-\ ==============================================================================
-\ Classifier definition
-\ ==============================================================================
-    
-: class: ( <name> - )
-    class% already? if
-        ' >body to classifier
-        exit
-    then
-    class% begin-classifier
-    classifier [[
-        (init-class) 
-        /object-base instance-size !
-        /object-base next-ofs !
-    ]] ;
-
-: class; ( - )
-    end-classifier ;
-    
-: is? ( object classifier - bool )
-    's classifier# @ swap 's cla @ 's bit-table test-bit ;
+        @next ( property ) is-property-mapped? not if
+            -1 leave
+        then
+    loop drop
+    0 ;
 
 : ?size-changed ( size property - property )
     {: size property :}
@@ -361,8 +333,35 @@ create protocol%  class% *object [[
     property ;
 
 : nproperty ( size <name> - ) ( - a )
-    classifier 0= abort" PROPERTY >> Can't define a property outside of a classifier block."
-    property% already? if ' >body ?size-changed else create-property then
+    classifier 0= abort" NPROPERTY >> Can't define a property outside of a classifier block."
+
+    property% already? if
+        ' >body ?size-changed
+    else
+        \ Property doesn't exist - check rules
+        classifier 's cla @ trait% = if
+            \ Trait rules
+            classifier reopened? if
+                classifier 's dependents list-count 0<>
+                abort" NPROPERTY >> Cannot add new properties to reopened traits with dependents."
+            then
+            \ New trait or reopened trait with no dependents - okay
+        else
+            \ Class rules
+            classifier reopened? if
+                \ Reopened class without a field-space - abort
+                \ (Probably won't ever happen because CLASS: redefines
+                \ classes without field-spaces instead of re-opening them)
+                classifier has-field-space? not
+                abort" NPROPERTY >> Cannot add properties to an existing class without a field-space."
+                \ Reopened class with a field-space - okay
+            then
+            \ New class - okay
+        then
+        create-property
+    then
+    
+    \ Map the property
     ( property )
     dup is-property-mapped? if
         drop \ -1 abort" PROPERTY >> Property already mapped!"
@@ -385,13 +384,72 @@ create protocol%  class% *object [[
     pop-order
     does> 's offset @ cla @ + ;
 
+\ ==============================================================================
+\ Classifier definition
+\ ==============================================================================
+
+: apply-trait ( trait class - )
+    {: trait class :}
+    class 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
+    
+    \ Check if trait has NEW properties that class can't handle
+    class reopened? if
+        class has-field-space? not if
+            classifier >r class to classifier
+            trait has-unmapped-properties? 
+            r> to classifier
+            abort" APPLY-TRAIT >> Cannot add trait with new properties to reopened class without field-space."
+        then
+    then
+    
+    \ Set classifier bit
+    trait 's classifier# @ class 's bit-table set-bit
+    
+    \ Merge protocols
+    trait 's protocol-list dup list-count for
+        @next dup .name
+        ( protocol ) class support-protocol 
+    loop drop
+    
+    \ Merge properties
+    trait 's property-list dup list-count for
+        @next dup is-property-mapped? if drop else map-property then
+    loop drop
+    
+    \ Add class to dependents
+    class trait 's dependents add-to ;
+   
+: class: ( <name> - )
+    class% already? if
+        ' >body to classifier
+        exit
+    then
+    class% begin-classifier
+    classifier [[
+        (init-class) 
+        /object-base instance-size !
+        /object-base next-ofs !
+        object% classifier apply-trait 
+    ]] ;
+
+: class; ( - )
+    end-classifier ;
+
+: is-a ( class <trait> - )
+    ' >body swap apply-trait ;
+    
+: is? ( object classifier - bool )
+    's classifier# @ swap 's cla @ 's bit-table test-bit ;
+
 : trait: ( <name> - )
     trait% already? if
         ' >body to classifier
         exit
     then
     trait% begin-classifier
-    classifier [[ (init-trait) ]] ;
+    classifier [[
+        (init-trait)
+    ]] ;
 
 : trait;
     end-classifier ;
@@ -413,8 +471,19 @@ create protocol%  class% *object [[
         ( xt ) execute
     ]] ;
     
+: implement-protocol ( protocol class - )
+    {: protocol class | name[ 256 ] :} 
+    protocol [[
+        me body> >name count name[ place
+        name[ count
+            class body> >name count 1 -
+            f" : %s::%s" 2dup upper evaluate
+        state on
+        here ( xt ) class offset @ + !
+    ]] ;
+    
 : (protocol:) ( trait <name> - ) ( ... object - ... )
-    {: trait :}
+    {: trait | protocol class :}
     protocol% already? if
         ' >body
         \ TODO: check if the protocol belongs to another trait and throw error if it is
@@ -426,12 +495,20 @@ create protocol%  class% *object [[
             allocate-static-offset 
         me ]]
     then
-    [[
-        :noname default-xt !
-    ]] ;
+    to protocol
+    :noname protocol 's default-xt !
+    
+    \ Propagate the protocol to dependents
+    trait 's dependents dup list-count for
+        @next to class
+        protocol class supports-protocol? not if
+            protocol class support-protocol
+        then
+    loop drop
+    ;
 
 : :: ( classifier <protocol> - )
-    {: class | name[ 256 ] protocol :}
+    {: class | protocol :}
     classifier abort" :: >> Can only define a protocol outside of a classifier block."
     class 's cla @ trait% = if class (protocol:) exit then
     class 's cla @ class% <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
@@ -439,14 +516,7 @@ create protocol%  class% *object [[
     >body to protocol
     protocol 's cla @ protocol% <> abort" :: >> Word is not a protocol!"
     protocol class supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
-    protocol [[
-        me body> >name count name[ place
-        name[ count
-            class body> >name count 1 -
-            f" : %s::%s" 2dup upper evaluate
-        state on
-        here ( xt ) class offset @ + !
-    ]] ;
+    protocol class implement-protocol ;
 
 : stub ( - )
     -1 r> >name count f" %s >> Not implemented" .abort ;
@@ -538,12 +608,28 @@ aka prop property
 defer .me ( - ) ' noop is .me
 
 \ ==============================================================================
+\ Object% Base Protocols
+\ ==============================================================================
+
+0 to classifier
+
+object% :: info ( - )
+    \ Default inspection - show class name and address
+    me . me .name ;
+
+object% :: describe ( - )
+    \ Detailed inspection - override in subclasses for specific info
+    me info ;
+
+\ ==============================================================================
 \ Init/Reset
 \ ==============================================================================
 
 : reset-object-trait ( - )
-    object% 's protocol-list /list erase
-    object% 's property-list /list erase ;
+    [ object% 's protocol-list list-count ] literal
+    object% 's protocol-list list-count!
+    [ object% 's property-list list-count ] literal
+    object% 's property-list list-count! ;
 
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 

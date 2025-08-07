@@ -614,6 +614,7 @@ is frame
 
 || : setup
     \ Initialize runtime environment
+    rs 
     init-mersenne
     init-allegro
     *display
@@ -655,21 +656,19 @@ bye-chain link 0 ,
     load-bitmaps
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
-: dev-frigid
+: init-dev
     \ Development-only startup
     path home-path$ place
     +xrefs
     256 1024 * xref-kb
-    s" xref.xrf" fileexist? if load-xref then
-    rs
-    init-ide ;
+    s" xref.xrf" fileexist? if load-xref then ;
 
 : frigid ( - )
-    debug @ if dev-frigid then
-    setup cartridge ;
+    debug @ if init-dev then
+    setup ;
 
 : cold ( - )
-    frigid boot go ;
+    frigid cartridge boot go ;
 
 \ =============================================================================
 \ Debugging tools
@@ -765,7 +764,7 @@ borrow ide2~ visible-lines
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
     cr
-    frigid
+    frigid init-ide \ cartridge
     \ 20 visible-lines !
     zcommand zcount strip-exe ide-interpret
     \ history-stats 

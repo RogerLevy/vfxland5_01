@@ -12,23 +12,19 @@
 variable gamelife
 0 0 2value gametime
 
-: var ( - <name> ) ( - a )
-    FIELD_MAGIC ?already ?exit cell ofield ;  
-
-: private-var ( - <name> ) ( - a )
-    private cell ofield ;
-    
-var en
-var x var y
-var vx var vy
-var bmp
-var x1 var y1 var w1 var h1 \ hitbox 1 (objects)
-var beha
-var time  \ ms
-var n1 var n2 var n3 var n4 \ General purpose vars
-var phys
-var prio  \ 0 = behind BG, <>0 = in front of BG
-var benched  \ controls behavior and physics
+class: actor%
+    prop en
+    prop x prop y
+    prop vx prop vy
+    prop bmp
+    prop x1 prop y1 prop w1 prop h1 \ hitbox 1 (objects)
+    prop beha
+    prop time  \ ms
+    prop n1 prop n2 prop n3 prop n4 \ General purpose props
+    prop phys
+    prop prio  \ 0 = behind BG, <>0 = in front of BG
+    prop benched  \ controls behavior and physics    
+class;
 
 \ =============================================================================
 \ Actor Access Words
@@ -71,22 +67,16 @@ var benched  \ controls behavior and physics
 \ Actor Serialization
 \ =============================================================================
 
-m: peeked ( - ) ;
-
 || : .status ( - )
     benched @ if ." (BENCHED) " exit then
     en @ 0= if ." (FREE) " then ;
 
-|| : (peek) ( - )
-    as>
+actor% :: info ( actor - )
     11 push-attribute
     ." [ #" me actor# . cla @ .name .status
     ." at: " x 2@ 2p>s swap . . 
     ( me peeked ) ." ] "
     pop-attribute ;
-
-: peek ( actor - )
-    (peek) ; \ ['] (peek) catch drop ;
 
 : !" ( - <var>" )
     '"' parse 2dup 2>r
