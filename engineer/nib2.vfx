@@ -437,6 +437,7 @@ create protocol%  class% *object [[
     class 's cla @ class% <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol
+    protocol 's cla @ protocol% <> abort" :: >> Word is not a protocol!"
     protocol class supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
     protocol [[
         me body> >name count name[ place

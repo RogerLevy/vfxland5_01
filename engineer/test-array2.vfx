@@ -1,0 +1,213 @@
+\ Test suite for array2.vfx (NIBS arrays)
+
+require %idir%/nib2.vfx
+require %idir%/array2.vfx
+
+: assert ( flag msg-addr msg-len - )
+    2>r 0= 2r> .abort ;
+
+\ Declare values for test arrays
+0 value test-arr
+0 value nums
+0 value test-stack
+0 value small-arr
+0 value search-arr
+0 value acc-arr
+0 value vac-arr
+0 value idx-arr
+0 value padded
+
+variable sum
+create test-data 42 , 84 ,
+
+: sum+ ( n - ) sum +! ;
+: sum+@ ( a - ) @ sum +! ;
+: sum+check ( a - ) @ sum +! sum @ 6 = if enough then ;
+: gt25? ( a - flag ) @ 25 > ;
+: gt100? ( a - flag ) @ 100 > ;
+: bad-access-2 ( - ) 2 small-arr [] drop ;
+: bad-access-neg ( - ) -1 small-arr [] drop ;
+
+: test-basic-array
+    cr ." Testing basic array operations..."
+    
+    cell array[
+        10 ,
+        20 ,
+        30 ,
+    array] to test-arr
+    
+    test-arr #items 3 = s" Should have 3 items" assert
+    0 test-arr [] @ 10 = s" First item should be 10" assert
+    1 test-arr [] @ 20 = s" Second item should be 20" assert
+    2 test-arr [] @ 30 = s" Third item should be 30" assert
+    ." OK" ;
+
+: test-iteration
+    cr ." Testing iteration..."
+    
+    cell array[
+        1 ,
+        2 ,
+        3 ,
+        4 ,
+    array] to nums
+    
+    \ Test EACH
+    0 sum !
+    ['] sum+@ nums each
+    sum @ 10 = s" Sum should be 10" assert
+    
+    \ Test EACH@
+    0 sum !
+    ['] sum+ nums each@
+    sum @ 10 = s" Sum should be 10" assert
+    
+    \ Test ENOUGH
+    0 sum !
+    ['] sum+check nums each
+    sum @ 6 = s" Sum should be 6 after enough" assert
+    ." OK" ;
+
+: test-stack-operations
+    cr ." Testing stack operations..."
+    
+    10 cell stack% *object to test-stack
+    
+    test-stack empty? s" Stack should be empty" assert
+    
+    100 test-stack push
+    200 test-stack push
+    300 test-stack push
+    
+    test-stack #items 3 = s" Stack should have 3 items" assert
+    test-stack pop 300 = s" Should pop 300" assert
+    test-stack pop 200 = s" Should pop 200" assert
+    test-stack #items 1 = s" Stack should have 1 item" assert
+    
+    \ Test push-copy/pop-ref
+    test-data test-stack push-copy
+    test-stack pop-ref @ 42 = s" Should pop ref to 42" assert
+    
+    test-stack pop 100 = s" Should pop 100" assert
+    test-stack empty? s" Stack should be empty again" assert
+    ." OK" ;
+
+: test-bounds-checking
+    cr ." Testing bounds checking..."
+    
+    cell array[
+        10 ,
+        20 ,
+    array] to small-arr
+    
+    \ Valid access
+    0 small-arr [] @ 10 = s" First item should be 10" assert
+    1 small-arr [] @ 20 = s" Second item should be 20" assert
+    
+    \ Invalid access should abort
+    ['] bad-access-2 catch 0<> s" Out of bounds should abort" assert
+    ['] bad-access-neg catch 0<> s" Negative index should abort" assert
+    ." OK" ;
+
+: test-search-operations  
+    cr ." Testing search operations..."
+    
+    cell array[
+        10 ,
+        20 ,
+        30 ,
+        40 ,
+    array] to search-arr
+    
+    \ Test index-of
+    20 search-arr index-of 1 = s" Index of 20 should be 1" assert
+    99 search-arr index-of -1 = s" Index of 99 should be -1" assert
+    
+    \ Test contains?
+    30 search-arr contains? s" Should contain 30" assert
+    50 search-arr contains? not s" Should not contain 50" assert
+    
+    \ Test find-index
+    ['] gt25? search-arr find-index 2 = s" First >25 at index 2" assert
+    ['] gt100? search-arr find-index -1 = s" No items >100" assert
+    ." OK" ;
+
+: test-access-helpers
+    cr ." Testing access helpers..."
+    
+    cell array[
+        111 ,
+        222 ,
+        333 ,
+    array] to acc-arr
+    
+    acc-arr first @ 111 = s" First ref value should be 111" assert
+    acc-arr last @ 333 = s" Last ref value should be 333" assert
+    acc-arr first@ 111 = s" First value should be 111" assert
+    acc-arr last@ 333 = s" Last value should be 333" assert
+    
+    \ Test n[]
+    0.5 acc-arr n[] @ 222 = s" Middle value should be 222" assert
+    0.0 acc-arr n[] @ 111 = s" Start value should be 111" assert
+    1.0 acc-arr n[] @ 333 = s" End value should be 333" assert
+    ." OK" ;
+
+: test-vacate
+    cr ." Testing vacate..."
+    
+    cell array[
+        1 ,
+        2 ,
+        3 ,
+    array] to vac-arr
+    
+    vac-arr #items 3 = s" Should have 3 items initially" assert
+    vac-arr vacate
+    vac-arr #items 0 = s" Should have 0 items after vacate" assert
+    vac-arr empty? s" Should be empty" assert
+    ." OK" ;
+
+: test-array-index
+    cr ." Testing index operation..."
+    
+    cell array[
+        10 ,
+        20 ,
+        30 ,
+    array] to idx-arr
+    
+    1 idx-arr [] idx-arr index 1 = s" Index of item 1 should be 1" assert
+    2 idx-arr [] idx-arr index 2 = s" Index of item 2 should be 2" assert
+    ." OK" ;
+
+: test-pad-array
+    cr ." Testing pad-array..."
+    
+    cell array[
+        11 ,
+        22 ,
+        10 pad-array
+    array] to padded
+    
+    padded #items 10 = s" Padded array should have 10 items" assert
+    0 padded [] @ 11 = s" First item should be 11" assert
+    1 padded [] @ 22 = s" Second item should be 22" assert
+    2 padded [] @ 0 = s" Third item should be 0" assert
+    9 padded [] @ 0 = s" Last item should be 0" assert
+    ." OK" ;
+
+: run-tests
+    cr ." Running array2.vfx tests..." cr
+    test-basic-array
+    test-iteration
+    test-stack-operations
+    test-bounds-checking
+    test-search-operations
+    test-access-helpers
+    test-vacate
+    test-array-index
+    test-pad-array
+    cr ." All tests passed!" cr ;
+
+run-tests

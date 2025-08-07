@@ -6,71 +6,88 @@ trait: iterable%
     prop item-count
 trait;
 
-: #items ( iterable - n )
-    's item-count @ ;
+: #items ( iterable - n ) 's item-count @ ;
+iterable% :: vacate ( - ) 0 item-count ! ;
+iterable% :: index ( a - n ) stub ; 
+iterable% :: deref-index ( n - ? ) stub ;
+
+variable (enough)
+: enough  (enough) on ;
     
-iterable% :: vacate ( - )
-    0 item-count ! ;
-
-iterable% :: index ( a - n )
-    stub ; 
-
-iterable% :: each ( xt - ) ( a - )
-    {: xt :} 
-    item-count @ for
-        i me [] xt execute
-    loop ;
-
 iterable% :: [] ( n - a )
     \ pronounced "box"
     stub ;
+
+: (each) ( xt - ) ( ... a - ... )
+    {: xt :}
+    item-count @ for
+        i me [] xt execute
+        (enough) @ if unloop exit then
+    loop ;
+
+iterable% :: each ( xt - ) ( ... a - ... )
+    (enough) @ >r
+    (enough) off
+    ['] (each) catch
+    r> (enough) !
+    throw ;
+    
+: (each@) ( xt - ) ( ... a - ... )
+    {: xt :}
+    item-count @ for
+        i me deref-index xt execute
+        (enough) @ if unloop exit then
+    loop ;
+
+iterable% :: each@ ( xt - ) ( ... ? - ... )
+    (enough) @ >r
+    (enough) off
+    ['] (each@) catch
+    r> (enough) !
+    throw ;
 
 : n[] ( n. iterable - a )
     \ Index into iterable based on a value in range 0 ~ 1.0
     \ pronounced "n-box"
     dup >r 's item-count @ 1 - p* r> [] ;
 
-\ Begin Claude stuff -----------------------------------------------------------
 \ Essential queries:
 iterable% :: empty? ( - bool )
     item-count @ 0= ;
 
 iterable% :: ?bounds ( n - n )
-    dup 0 item-count @ within? not abort" ?BOUNDS >> Index out of range!" ;
+    dup 0 item-count @ 1 - within? not abort" ?BOUNDS >> Index out of range!" ;
 
 \ Search operations:
-iterable% :: find-index ( xt - n | -1 )
+iterable% :: find-index ( xt - n | -1 ) ( a - b )
     {: xt :}
     item-count @ for
         i me [] xt execute if i unloop exit then
     loop -1 ;
 
-iterable% :: deref-index ( n - ? )
-    stub ;
-
-iterable% :: index-of ( item - n | -1 )
+iterable% :: index-of ( item - n | -1 ) ( a - b )
     {: item :}
     item-count @ for
         i me deref-index item = if i unloop exit then
     loop -1 ;
 
 iterable% :: contains? ( item - bool )
-    me index-of 0>= ;
+    me index-of 0 >= ;
       
 \ Access helpers:
-\ For value types:
-iterable% :: first-value ( - value )
-    0 me ?bounds me [] @ ;
-
-iterable% :: last-value ( - value )
-    item-count @ 1 - me ?bounds me [] @ ;
-
 \ For object/reference types:
-iterable% :: first-ref ( - object )
+iterable% :: first ( - a )
     0 me ?bounds me [] ;
 
-iterable% :: last-ref ( - object )
+iterable% :: last ( - a )
     item-count @ 1 - me ?bounds me [] ;
+
+\ For value types:
+iterable% :: first@ ( - ? )
+    0 me ?bounds me deref-index ;
+
+iterable% :: last@ ( - ? )
+    item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
 \ iterable% :: map ( xt dest - )
@@ -88,23 +105,22 @@ iterable% :: last-ref ( - object )
 \             j 1+ to j
 \         else drop then
 \     loop j ;
-\ End Claude stuff -------------------------------------------------------------
 
 trait: lifo% trait;
 lifo% :: push ( item - ) stub ; 
 lifo% :: pop ( - item ) stub ; 
-lifo% :: push-data ( a - ) stub ; 
-lifo% :: pop-data ( - a ) stub ; 
+lifo% :: push-copy ( a - ) stub ; 
+lifo% :: pop-ref ( - a ) stub ; 
 lifo% :: peek ( - item ) stub ;
-lifo% :: peek-data ( - a ) stub ;
+lifo% :: peek-ref ( - a ) stub ;
 
 trait: fifo% trait;
 fifo% :: enqueue ( item - ) stub ;
 fifo% :: dequeue ( - item ) stub ;
-fifo% :: enqueue-data ( a - ) stub ;
-fifo% :: dequeue-data ( - a ) stub ;
+fifo% :: enqueue-copy ( a - ) stub ;
+fifo% :: dequeue-ref ( - a ) stub ;
 fifo% :: peek ( - item ) stub ;
-fifo% :: peek-data ( - item ) stub ;
+fifo% :: peek-ref ( - item ) stub ;
 
 class: array%
     array% is-a iterable%
@@ -112,6 +128,11 @@ class: array%
     prop item-size
     prop data
 class;
+
+2 array% constructor: ( max-items item-size - )
+    2dup item-size ! max-items !
+    max-items @ item-count !
+    here data ! * allot&erase ;
 
 array% :: index ( a - n )
     data @ - item-size @ / me ?bounds ;
@@ -122,15 +143,9 @@ array% :: [] ( n - a )
 array% :: deref-index ( n - ? )
     me [] @ ;
 
-2 array% constructor: ( max-items item-size - )
-    2dup item-size ! max-items !
-    max-items @ item-count !
-    here data ! * allot&erase ;
-
 class: stack%
-    stack% is-a lifo%
     array% derive
-    prop next-item#
+    stack% is-a lifo%
 class;
 
 2 stack% constructor: ( max-items item-size - )
@@ -139,34 +154,33 @@ class;
 
 stack% :: push ( item - )
     item-count @ max-items @ = abort" Overflow."
-    1 item-count +!  me first-ref ! ;
+    1 item-count +!  me last ! ;
 
 stack% :: pop ( - item )
     item-count @ 0= abort" Underflow."
-    me first-ref @  -1 item-count +! ;
+    me last @  -1 item-count +! ;
 
-stack% :: push-data ( a - )
-    {: src :}
-    1 item-count +!  src me first-ref item-size move ;
+stack% :: push-copy ( a - )
+    item-count @ max-items @ = abort" Overflow."
+    1 item-count +!  ( a ) me last item-size @ move ;
 
-stack% :: pop-data ( - a )
-    me first-ref  -1 item-count +! ;
+stack% :: pop-ref ( - a )
+    item-count @ 0= abort" Underflow."
+    me last  -1 item-count +! ;
 
-: array[ ( item-size - item-size source-a )
-    \ Begin building an unnamed prepopulated array
-    here ;
+\ ------------------------------------------------------------------------------
 
-: array] ( item-size source-a - array )
-    \ Complete building an unnamed prepopulated array
-    {: w srca | n :}
-    here srca - w / to n
-    array% object [[
-        src data @ n move
-    me ]] ;
+: array[ ( item-size - )
+    0 swap array% *object [[
+    here data ! ;  \ just to be sure
 
-: pad-array  ( item-size source-a max-items - item-size a )
-    \ Pad out an array being built, to given max-items
-    | n a w | a w n * + here - allot&erase w a ;
+: array] ( - array )
+    here data @ - item-size @ /
+    dup item-count ! max-items !   me ]] ;
+
+: pad-array  ( count - )
+    \ Pad out an array being built, to given count
+    data @ item-size @ rot * + here - allot&erase ;
 
 : array ( max width - <name> )
     array% object ;
@@ -174,4 +188,4 @@ stack% :: pop-data ( - a )
 : stack ( max width - <name> )
     stack% object ;
 
-    
+ 
