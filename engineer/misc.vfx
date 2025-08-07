@@ -162,7 +162,7 @@ aka file-exists? fileexists?
 : .abort ( err a:msg len:msg - )
     rot if
         4 push-attribute
-        ." ABORT: " type cr
+        cr ." ABORT: " type cr
         rp@ cell+ (.rs)
         .s
         pop-attribute
@@ -231,3 +231,26 @@ aka file-exists? fileexists?
 ;
 
 : strin?  search nip nip ;
+
+: evaluate-lines ( addr len -- )
+    {: addr len | line-start line-len pos :}
+    addr to line-start
+    0 to pos
+    begin
+        pos len < while
+        addr pos + c@ 10 = if           \ Found newline
+            addr pos + line-start - to line-len
+            line-len if
+                \ cr line-start line-len type
+                line-start line-len evaluate
+            then
+            addr pos + 1+ to line-start \ Start of next line
+        then
+        1 +to pos
+    repeat
+    \ Handle last line if no trailing newline
+    addr pos + line-start - to line-len
+    line-len if
+        cr line-start line-len type
+        line-start line-len evaluate
+    then ;

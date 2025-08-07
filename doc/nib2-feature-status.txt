@@ -66,13 +66,15 @@ Status Legend:
    [x] Base classifier types (class%, trait%)
 
 3.2 Class Definition [x]
-   [x] class: ... class; syntax
+   [x] class: ... class; syntax (block form)
+   [x] class: <name> [traits...] [props...] ; syntax (compact form)
    [x] Class-specific property definition
    [x] Class instance size management
    [x] Class static area allocation
 
 3.3 Trait Definition [x]
-   [x] trait: ... trait; syntax
+   [x] trait: ... trait; syntax (block form)
+   [x] trait: <name> [props...] ; syntax (compact form)
    [x] Trait property definition
    [x] Trait protocol definition (basic version without stack diagrams)
    [x] Trait static area management
@@ -282,12 +284,16 @@ Core systems working:
 - Enhanced 'S syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
 - Sized properties with nproperty (size <name> -) supporting embedded data structures
 - Hot-reload safety with property size change detection and clear error messages
+- Compact classifier syntax: class: name [traits...] [props...] ; and trait: name [props...] ;
+  Supporting sized properties in compact form (prop-name size)
+  Optional syntax that expands to block form internally
 
 Major systems pending:
 - Stack diagram storage and validation
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
 - inner-protocol: for factored scoped operations (designed but not implemented)
+- Implementation of compact classifier syntax parser
 
 Remaining features for full spec compliance:
 - Advanced validation and error handling

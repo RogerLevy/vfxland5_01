@@ -66,6 +66,14 @@ trait: object%
     \ paired with CLASS;
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
     \ always public.
+    
+    \ Compact syntax (optional):
+    \ class: <name> [parent-trait] [additional-traits...] [props...] [prop-name size...] ;
+    \ Examples:
+    \   class: point% x y ;                                    \ Simple class with two properties
+    \   class: array% iterable% max-items item-size data ;     \ Class with trait and properties
+    \   class: network% serializable% loggable% address 4 port 2 buffer 256 ;  \ Multiple traits, sized properties
+    \ The compact form expands internally to the block form.
 
 : defaults ( - a )
 : >defaults ( class - a )
@@ -76,6 +84,14 @@ trait: object%
 
 : trait: ( <name> - )
     \ define a trait - if it has not already been defined - which is a class that can be mixed into other classes.
+    
+    \ Compact syntax (optional):
+    \ trait: <name> [props...] [prop-name size...] ;
+    \ Examples:
+    \   trait: iterable% item-count ;                  \ Simple trait with one property
+    \   trait: drawable% x y bitmap flags 4 ;          \ Trait with multiple properties including sized
+    \ The compact form expands internally to the block form.
+    \ Note: traits cannot reference other traits in compact form (no is-a allowed)
     \ used ONLY for data definition (properties).
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
     \ paired with TRAIT;
