@@ -34,9 +34,10 @@ trait: object%
 \ Field definition
 \ ----------------
 
-: field ( n size <name> - n+size ) ( - field ) ( object - field )
-    \ define an instance accessor (any size) and offset calculator (>NAME).
-    \ also defines an external address.
+: field ( n size <name> - n+size ) ( - field ) ( struct-addr - field-addr )
+    \ define a struct field accessor (any size) and offset calculator (>NAME).
+    \ FOR PLAIN STRUCTS ONLY - NOT for classes.
+    \ Use with pattern: 0 cell field f1 cell field f2 constant /struct-size
     \ public or private depending on CURRENT.
     
 : nproperty ( size <name> - ) ( - field ) ( object - field )
@@ -292,7 +293,7 @@ conversation notes
   | Private blocks | Yes   | No       | No     | No        | Implementation hiding only         |
 
   Key constraints:
-  - field - Classes or private blocks only (direct offset allocation)
+  - field - Plain structs only (traditional Forth struct pattern, not for classes)
   - static - Classes only (class-level data)
   - :: - Traits for definition, classes for implementation (behavioral contracts)
 

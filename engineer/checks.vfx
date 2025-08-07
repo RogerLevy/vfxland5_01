@@ -21,57 +21,58 @@ wrap-word [[
 \     static does-validated-message dispatch, ;
 \ ------------------------------------------------------------------------------
 
-magic-id WMESSAGE_MAGIC WMSG
-: m: ( - <name> <code> ; ) ( ... obj - ... )
-    m:
-    state on
-    begin
-        0 parse 2dup 2>r evaluate 
-        2r> s" ;" strin?
-    until
-    state off
-    lastbody >name count f" wrap-word %s" evaluate
-    WMESSAGE_MAGIC , ;
+\ TODO: migrate :: to nib2
 
-borrow nib~ ?message
-: ?unwrap-message ( - <message> message )
-    {: | body :}
-    preword find not abort" Message not found" >body to body
-    body s/wrapper + @ WMESSAGE_MAGIC = if
-        bl parse 2drop
-        body @ ( internal xt ) >body 
-    else
-        ?message
-        ' >body 
-    then ;
-
-: :: ( class - <message> <code> ; ) ( ... obj - ... )
-    ?unwrap-message >:: ;
+\ magic-id WMESSAGE_MAGIC WMSG
+\ : m: ( - <name> <code> ; ) ( ... obj - ... )
+\     m:
+\     state on
+\     begin
+\         0 parse 2dup 2>r evaluate 
+\         2r> s" ;" strin?
+\     until
+\     state off
+\     lastbody >name count f" wrap-word %s" evaluate
+\     WMESSAGE_MAGIC , ;
+\ 
+\ borrow nib~ ?message
+\ : ?unwrap-message ( - <message> message )
+\     {: | body :}
+\     preword find not abort" Message not found" >body to body
+\     body s/wrapper + @ WMESSAGE_MAGIC = if
+\         bl parse 2drop
+\         body @ ( internal xt ) >body 
+\     else
+\         ?message
+\         ' >body 
+\     then ;
+\ 
+\ : :: ( class - <message> <code> ; ) ( ... obj - ... )
+\     ?unwrap-message >:: ;
 
 \ have to redefine these because it's not possible to wrap them ( :: crashes )
-cell to /static
-static oexec-error-handler ( xt n - )
-m: init ( - ) ;
-m: destruct ( - ) ;
+\ cell to /static
+\ static oexec-error-handler ( xt n - )
+\ m: init ( - ) ;
+\ m: destruct ( - ) ;
 
-: ?literal  state @ if postpone literal then ;
+\ TODO: migrate 'S to nib2
+\ TODO: properly support immediate word validations in Oversight to avoid this mess...
 
-\ TODO: properly support immediate word validations to avoid this mess...
-
-validations dup @ swap on
-    before ?object check-object
-    : ?object ;
-validations !
-
-: 's ( a - <name> a )
-    validations @ if
-        state @ if
-            s" ?object" evaluate 
-        else
-            [ validations dup @ swap on ] ?object [ validations ! ]
-        then
-    then
-    ' >body @ ?literal s" +" evaluate ; immediate 
+\ validations dup @ swap on
+\     before ?object check-object
+\     : ?object ;
+\ validations !
+\ 
+\ : 's ( a - <name> a )
+\     validations @ if
+\         state @ if
+\             s" ?object" evaluate 
+\         else
+\             [ validations dup @ swap on ] ?object [ validations ! ]
+\         then
+\     then
+\     ' >body @ ?literal s" +" evaluate ; immediate 
 
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )

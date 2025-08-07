@@ -254,3 +254,5 @@ aka file-exists? fileexists?
         cr line-start line-len type
         line-start line-len evaluate
     then ;
+    
+: ?literal  state @ if postpone literal then ;

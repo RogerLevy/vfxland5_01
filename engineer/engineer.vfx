@@ -1,12 +1,12 @@
 \ ------------------------------------------------------------------------------
-\ Engineer v1
+\ Engineer 1.0 internal version 2
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
 \ Core System Components
 \ =============================================================================
 
-include %idir%\vfxcore.vfx
+include %idir%\vfxcore2.vfx
 
 \ =============================================================================
 \ Engineer Variables
@@ -365,23 +365,23 @@ synonym z zoom
 \ Persistent variable control
 \ =============================================================================
 
-magic-id TWEAK_MAGIC TWK
+magic-id MAGIC_TWEAK TWK
 : tweak ( n - <name> )
     \ Define a variable with initial value n, but only if the name doesn't already exist
     \    in CURRENT.
     push-order
     only current @ +order
-    TWEAK_MAGIC ?already not if 
-        create , TWEAK_MAGIC ,
+    MAGIC_TWEAK already? not if 
+        create , MAGIC_TWEAK ,
     else
-        drop
+        drop ' drop
     then
     pop-order ;
 
 : (?.tweak) ( thread# nfa - f )
     nip
     {: nfa :} 
-    nfa name> >body cell+ @ TWEAK_MAGIC = if
+    nfa name> >body cell+ @ MAGIC_TWEAK = if
         cr
         ."     "
         nfa count type

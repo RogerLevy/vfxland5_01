@@ -30,10 +30,6 @@ private
 \ Get last CREATE'd word's body (System dependent)
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
 
-: prop ( size - <name> n ) ( - a )
-    create /obj , +to /obj 
-    does> @ me + ;
-
 : struct ( n - a )
     here swap allot&erase ;
 
@@ -108,34 +104,34 @@ variable #contracts         \ Total number of registered contracts
 private
 
 \ Contract struct - stores validation rules for a word
-0 to /obj
-    cell prop enabled       
-    cell prop pre-val        \ Precondition validation
-    cell prop post-val       \ Postcondition validation  
-    32 prop word-name$       \ Target word name (counted string)
-    256 prop pre-str$        \ Debug message before word execution
-    256 prop post-str$       \ Debug message after word execution
-/obj constant /contract
+0 
+    cell field enabled       
+    cell field pre-val        \ Precondition validation
+    cell field post-val       \ Postcondition validation  
+    32 field word-name$       \ Target word name (counted string)
+    256 field pre-str$        \ Debug message before word execution
+    256 field post-str$       \ Debug message after word execution
+constant /contract
 
 \ Validation instance struct - individual validation attached to a contract
-0 to /obj
-    \ Keep this as the first prop to allow `on` and `off`
-    cell prop enabled       
-    cell prop xt            \ Execution token of validation function
-    cell prop level         \ Validation type (crucial/charmful)
-    cell prop validator     \ Reference to original validator struct
-    256 prop test-name$
-/obj constant /validation
+0 
+    \ Keep this as the first field to allow `on` and `off`
+    cell field enabled       
+    cell field xt            \ Execution token of validation function
+    cell field level         \ Validation type (crucial/charmful)
+    cell field validator     \ Reference to original validator struct
+    256 field test-name$
+constant /validation
 
 \ Validator struct - stores cached source and compilation state
-0 to /obj
-    cell prop enabled       \ (currently unused)
-    cell prop xt            \ Execution token (0 if not compiled)
-    cell prop level         \ Validation type (crucial/charmful)
-    cell prop source-addr   \ Pointer to cached source text
-    cell prop source-len    \ Length of cached source
-    cell prop compiled?     \ Flag: has source been compiled?
-/obj constant /validator
+0
+    cell field enabled       \ (currently unused)
+    cell field xt            \ Execution token (0 if not compiled)
+    cell field level         \ Validation type (crucial/charmful)
+    cell field source-addr   \ Pointer to cached source text
+    cell field source-len    \ Length of cached source
+    cell field compiled?     \ Flag: has source been compiled?
+constant /validator
 
 \ =============================================================================
 \ Internal Implementation Support

@@ -1,0 +1,126 @@
+\ ==============================================================================
+\ Tests
+\ ==============================================================================
+honing @ 0= [if] \\ [then]
+
+trait: thinker% trait;
+thinker% :: init  me .name ." init " cr ;
+thinker% :: deinit  me .name ." deinit " cr ;
+thinker% :: think  me .name ." think " cr ;
+
+trait: physics%
+    property mass
+    property rad
+    property x
+    property y
+    property vx
+    property vy
+trait;
+
+class: actor%
+    static i/hp
+    actor% is-a object%
+    actor% is-a thinker%
+    actor% is-a physics%
+    property x
+    property y
+    property vx
+    property vy
+    defaults [[
+        me .
+        1. mass !
+        rad .
+        10. rad !
+    ]]
+class;
+
+
+actor% on-derive: ( source-class derived-class - )
+    2drop cr ." Actor derived!!!" cr ;
+
+actor% >defaults 's rad p? cr
+
+class: enemy%
+    actor% derive
+    property atk
+class;
+
+class: waypoint%
+    waypoint% is-a object%
+    property id          \ unique identifier for pathfinding
+    property x           \ world position
+    property y           \ world position
+    property connections \ bitfield of connected waypoints
+class;
+
+create waypoint waypoint% *object drop
+
+create actor actor% *object [[
+    me .
+    x .
+    y .
+    \ me 's y .
+    me actor% is? .
+    cr
+    i/hp . actor% 's i/hp .
+]]
+
+
+cr
+waypoint [[ x me - . ]]
+actor [[ x me - . ]]
+
+actor init
+
+actor think
+\ waypoint think
+
+actor% :: think
+    ." I try to think but nothing happens!" cr ;
+
+actor [[
+    me dup . .name
+    ." &mass=" mass .
+    ." &x=" x .
+    ." &vx=" vx .
+    cr
+    me think
+]]
+
+create enemy enemy% *object [[
+    me dup . .name
+    ." &mass=" mass .
+    ." &x=" x .
+    ." &vx=" vx .
+    ." &atk=" atk .
+    cr
+    me think
+    me actor% is? .
+    me enemy% is? .
+    me physics% is? .
+    me object% is? .
+    cr
+    ." mass=" mass p?
+    ." rad=" rad p?
+    cr
+]]
+
+\ waypoint [[
+\     me dup . .name
+\     mass .
+\     vx .
+\     cr
+\ ]]
+
+
+class: tileset%
+    property bmp
+    property tw
+    property th
+class;
+
+3 tileset% constructor: ( bmp tw th - )
+    th ! tw ! bmp ! ;
+
+1 16 16 tileset% object tileset
+
