@@ -6,8 +6,13 @@
 #actors 8 * ?constant #temps
 512 ?constant /actor
 
-#actors /actor array actors 
-#temps /actor array temps
+: object-array ( c class <name> - )
+    {: count class :}
+    create count class sizeof array% construct [[
+        count for
+            class i me [] construct!
+        loop
+    ]] ;
 
 variable gamelife
 0 0 2value gametime
@@ -25,14 +30,17 @@ class: actor%
     prop x prop y
     prop vx prop vy
     prop bmp
-    prop x1 prop y1 prop w1 prop h1 \ hitbox 1 (objects)
+    prop x1 prop y1 prop w1 prop h1 \ hitbox 1
     prop beha
-    prop time  \ ms
+    prop time                       \ ms
     prop n1 prop n2 prop n3 prop n4 \ General purpose props
     prop phys
-    prop prio  \ 0 = behind BG, <>0 = in front of BG
-    prop benched  \ controls behavior and physics    
+    prop prio                       \ 0 = behind BG, <>0 = in front of BG
+    prop benched                    \ controls behavior and physics    
 class;
+
+#actors actor% object-array actors 
+#temps actor% object-array temps
 
 \ =============================================================================
 \ Actor Access Words
@@ -53,7 +61,7 @@ class;
 
 : actives> ( - ) ( - )
     r> {: xt :}
-    0 actor unsafe-[[
+    0 actor [[
     #actors for
         en @ if xt execute then
         /actor +to me
@@ -202,17 +210,11 @@ actor% defaults [[
 0 actor% :construct ( - )
     at@ 2s>p x 2! ;
 
-validations dup @ swap off
-\ Need to circumvent validation for speed and because
-\ the pools start uninitialized.
-|| : unsafe-free?  's en @ 0= ;
-validations !
-
 : (one) ( class - actor )
     {: c | saved-me :} 
     me to saved-me
     #actors for
-        next# @ actor dup unsafe-free? if
+        next# @ actor dup free? if
             c over construct!
             unloop exit
         then  drop
@@ -309,7 +311,7 @@ class;
 : temp ( n - a ) temps [] ;
 : *temp ( - a )
     #temps for
-        tnext# @ temp dup unsafe-free? if
+        tnext# @ temp dup free? if
             unloop exit
         then
         drop
@@ -318,7 +320,7 @@ class;
 
 : temps> ( - ) ( - )
     r> #temps for
-        i swap >r temp unsafe-[[ r@ execute ]] r>
+        i swap >r temp [[ r@ execute ]] r>
     loop drop ;
 
 : clear-temps ( - )

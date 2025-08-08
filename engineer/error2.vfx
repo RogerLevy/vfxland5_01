@@ -2,6 +2,8 @@
 \ Better VFX error reporting
 \ ------------------------------------------------------------------------------
 
+validations dup @ swap off
+
 private
 
 0
@@ -69,6 +71,8 @@ create ds 16 cells allot
         dup ip>nfa dup count ltype
         name> - ?dup if
             ." +" .
+        else
+            space
         then
     else . then ;
 
@@ -77,6 +81,8 @@ create ds 16 cells allot
         dup ip>nfa dup count ltype
         name> >body - ?dup if
             ." +" .
+        else
+            space
         then
     else . then ;
 
@@ -110,6 +116,8 @@ create ds 16 cells allot
 
 : null-catch-save  0 ;
 
+public
+
 : .catch ( throw-code - )
     -exit
     cr ." Caught: "
@@ -122,14 +130,14 @@ create ds 16 cells allot
 : .throw-catch ( throw-code - )
     dup .throw .catch ;
 
-validations dup @ swap off
+private
+
 : debug-catch-restore  \ throw-code n -- throw-code
     drop
     \ dup -1 = if exit then \ silent throw
     \ dup 0= if exit then \ not an error
     exc0 @ excp @ - /es-frame / 1 = -exit
     dup .catch ;
-validations !
   
 : console-debugger ( err context - filter? )
     ( context ) context /context move
@@ -155,3 +163,5 @@ validations !
 
 \ ' null-catch-save ' debug-catch-restore extends-catch
 ' console-debugger to-callback debugger
+
+validations !

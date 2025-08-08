@@ -17,11 +17,9 @@ require %idir%\..\dltree.vfx
 : element ( n - a )  /actor * elements + ;
 || variable enext#
 
-borrow stage~ unsafe-free?
-
 || : alloc-element ( - a )
     #elements for
-        enext# @ element dup unsafe-free? if
+        enext# @ element dup free? if
             object% >object
             unloop exit
         then  drop

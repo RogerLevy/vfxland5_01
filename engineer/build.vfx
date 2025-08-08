@@ -3,7 +3,8 @@
 
 +xrefs 256 1024 * xref-kb
 optimising off
-include %idir%\engineer.vfx
+include %idir%/file-fix.vfx
+include %idir%/engineer.vfx
 frigid >vfx
 
 \ 0 to GenINI? \ don't save/load VFX INI file

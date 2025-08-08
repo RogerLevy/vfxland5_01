@@ -117,7 +117,6 @@ variable osp   os osp ! \ object stack pointer
 \ ==============================================================================
 
 : [[ ( object - ) me osp @ !  4 osp c+!  to me ;
-: unsafe-[[ ( a - ) me osp @ !  4 osp c+!  to me ;
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
@@ -463,19 +462,19 @@ create protocol%  class% construct [[
 : add-protocol ( protocol trait - )
     's protocol-list add-to ;
 
-defer (on-exec-error)
+defer (on-exec-error) ( xt err# obj - )
 
-debug @ [if]
-    : oexec ( ... xt - ... )
-        ?dup -exit
-        {: xt :}
-        xt catch ?dup if
-            xt swap (on-exec-error)
-        then ;
-[else]
+\ debug @ [if]
+\     : oexec ( ... xt - ... )
+\         ?dup -exit
+\         {: xt :}
+\         xt catch ?dup if
+\             xt swap me (on-exec-error)
+\         then ;
+\ [else]
     : oexec ( ... xt - ... )
         ?dup -exit >r ;
-[then]
+\ [then]
 
 : does-protocol ( - )
     does> swap [[
