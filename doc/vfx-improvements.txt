@@ -11,3 +11,6 @@ VFX Forth Improvement Suggestions
    - When QUIT is executed during file inclusion, the file handle should be closed
    - Currently leaves files open which can cause resource leaks
    - Important for interactive development with frequent restarts
+
+3. Enable showing error locations in EVALUATEd strings
+   - Include line numbers and context from evaluated strings in error messages

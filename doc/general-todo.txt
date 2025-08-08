@@ -1,0 +1,26 @@
+2025/08/08
+[ ] Pat head.
+    Test basic coordination ability.
+    [ ] Rub tummy.
+        Perform simultaneous belly rubbing motion.
+
+[ ] Consolidate .IP and .DATA into a single smart address-decoding word.
+    Detect if address is colon word or data word and display appropriately.
+
+2025/07/12
+[ ] Finish designing Asset system.
+[ ] Implement Asset system.
+[ ] Adapt paths to Asset system.
+[ ] Adapt tilemaps to Asset system.
+[ ] Adapt Rooms to Asset system.
+
+2025/06/24
+[x] Add `try`.
+[x] Darkblue: add tweening module and perfect logo animation.
+[x] Improve array defining syntax.
+[ ] Integrate logging.
+[ ] Stack underflow checks.
+[x] Add debug intercept system.
+[ ] Add debug-mode auto-namespace-scoping to [[ and ]].
+    [ ] Make classes store their namespace.
+[x] Improve the OOP system.
