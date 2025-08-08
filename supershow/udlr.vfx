@@ -7,7 +7,9 @@ public
 2 constant left
 3 constant down
 
-var fac
+class: actor%
+    prop fac
+class;
 
 : dirkeys? ( - f )
     <left> held? <right> held? or <up> held? or <down> held? or ;

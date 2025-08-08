@@ -109,8 +109,11 @@ include %idir%\tread.vfx
 \ Sprite animation
 \ =============================================================================
 
-var anm var a.ts var a.spd var a.len
-var a.ofs var a.done var a.flp
+class: actor%
+    prop anm prop a.ts prop a.spd prop a.len
+    prop a.ofs prop a.done prop a.flp
+class;
+
 || variable aspd \ pointer to len in animation header
 || : >frames ( anim - a ) cell+ cell+ ;
 || : ?baseid  a.ts @ dup if baseid@ then ;
@@ -141,8 +144,7 @@ var a.ofs var a.done var a.flp
     a n -ext f" %s%%" >pad find nip ?exit
     \ cr ." Creating auto-class from bitmap " a n type
     a n -ext f" %s%%" 2dup
-    >pad create-class  \ note: CREATE-CLASS doesn't create a vocabulary
-    lastbody 's autoclass on
+    f" class: %s autoclass on class;" evaluate 
     a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
 
 : load-autoclasses

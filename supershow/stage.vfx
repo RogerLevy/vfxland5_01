@@ -12,7 +12,15 @@
 variable gamelife
 0 0 2value gametime
 
+trait: thinker% trait;
+thinker% :: init  ." init called on" me .name cr ;
+thinker% :: deinit  ." deinit called on" me .name cr ;
+thinker% :: think  ." think called on" me .name cr ;
+
 class: actor%
+    is-a thinker%
+    /actor field-space
+    static autoclass
     prop en
     prop x prop y
     prop vx prop vy
@@ -106,12 +114,12 @@ actor% :: info ( actor - )
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if  
             cr
-            s[ ." Positive stack imbalance in logic for actor " me peek
+            s[ ." Positive stack imbalance in logic for actor " me info
             s] log-warning .s
         then
         dup sp@ cell+ cell+ < if
             cr
-            s[ ." Negative stack imbalance in logic for actor " me peek
+            s[ ." Negative stack imbalance in logic for actor " me info
             s] log-warning .s
         then
     then
@@ -182,13 +190,10 @@ actor% :: info ( actor - )
 
 variable next#
 
-create default /actor allot&erase
-default object% >object drop
-
 : floating ( - )
     physics> vx 2@ x 2+! ;
 
-default [[
+actor% defaults [[
     en on
     prio on
     -5 -5 x1 2!  10 10 w1 2!
@@ -205,8 +210,7 @@ default [[
     \ cr ." just >> All actors cleared!"
     0 next# !  actives>  unload ;
 
-: 1actor ( - )
-    default cell+ me cell+ /actor cell- move
+0 actor% :construct ( - )
     at@ 2s>p x 2! ;
 
 validations dup @ swap off
@@ -220,10 +224,7 @@ validations !
     me to saved-me
     #actors for
         next# @ actor dup unsafe-free? if
-            c >object to me
-            1actor
-            me
-            saved-me to me
+            c over construct!
             unloop exit
         then  drop
         next# @ 1 + #actors mod next# !
@@ -233,10 +234,9 @@ validations !
     (one) dup init ;
     
 : *actor ( - actor )
-    object% one ;
+    actor% one ;
 
-create dummy /actor allot&erase
-dummy object% >object drop
+actor% object dummy 
 
 \ =============================================================================
 \ Object collisions
@@ -276,15 +276,11 @@ aka .> p>s
     r> cla !
     vx 2! x 2! init ;
 
-: is? ( actor class - f )
-    swap 's cla @ = ;
-
 : out ( actor - )
     [[ unload ]] ;
 
 : vanish  y @ 16384. or y ! ;
 : appear  y @ 16384. invert and y ! ;
-: copy ( a1 a2 - a2 ) dup >r /actor move r> ;
 : expanded ( a1 n - a2 )
     swap dummy copy as>
         dup negate dup x1 2+! 2 * dup w1 2+!
@@ -303,7 +299,9 @@ aka .> p>s
 
 || synonym xt1 n2
 
-c" timer%" create-class
+class: timer%
+    actor% derive 
+class;
 
 : clear-timers ( -- )
     actives> me timer% is? -exit unload ;
@@ -343,29 +341,26 @@ c" timer%" create-class
 
 || cstring classname$
 
-: script-class ( - <name> class )
+: script-class ( parent-class - <name> )
+    {: parent-class :}
     \ Create a script class with its own private vocabulary (if it doesn't already exist)
-    \ Sets ME to a false object of the class for convenient static assignments
     only forth definitions
-    bl word count classname$ place
-    classname$ find not nip if
-        classname$ create-class
-    then
-    \ classname$ count -% f" %s~" $private
+    bl word count f" class: %s" evaluate
+    parent-class derive
     private
-    classname$ count evaluate
-    dup statics: ;
+    classifier defaults [[    \ allows both static and defaults assignments
+;
 
-: actor-oexec-error-handler ( xt n - )
+: actor-on-exec-error ( xt n - )
     {: xt err :} 
     err -exit
     me bench
-    cr xt .name ." >> Actor had an oopsie, disabling: " me ['] peek catch drop
+    cr xt .name ." >> Actor had an oopsie, disabling: " me ['] info catch drop
 \    cr ." (Stage) Throw:"
     .s
     err throw ;
-    
-static autoclass
+
+' actor-on-exec-error actor% 's on-exec-error !
     
 : ?hide-autoclass ( a len - )
     >pad find if
@@ -377,18 +372,6 @@ static autoclass
         else drop then 
     else drop then ;
 
-: (actor-class) ( - <name> class )
-    bl preparse ?hide-autoclass
-    script-class ;
-    
 : actor-class ( - <name> )
-    (actor-class)
-    ['] actor-oexec-error-handler swap 's oexec-error-handler ! ;
-    
-:noname me valid-object? if me peek else me . then ; is .me
-
-: actor, ( class - )
-    here /actor allot&erase swap >object [[ 1actor ]] ;
-
-: create-actor ( class - ) ( - actor )
-    create actor, ;
+    bl preparse ?hide-autoclass 
+    actor% script-class ; 
