@@ -134,18 +134,18 @@ variable osp   os osp ! \ object stack pointer
 \ ==============================================================================
 
 /magical-base
-    cell field instance-size                \ Size of this class
-    cell field next-ofs                     \ Next field offset for this class
+    cell field instance-size            \ Size of this class
+    cell field next-ofs                 \ Next field offset for this class
     cell field field-space-size
     cell field classifier#
-    /bit-table field bit-table    \ Classification table
+    /bit-table field bit-table          \ Classification table
     /list field property-list
     /list field protocol-list
     cell field template
     cell field constructor-xt
     cell field constructor-#params
     cell field on-derive-xt
-    /list field dependents       \ trait dependents (classes that applied the trait)
+    /list field dependents              \ trait dependents (classes that applied the trait)
     cell field #openings
 dup constant /classifier-base
 to /static
@@ -659,11 +659,11 @@ object% :: on-exec-error ( xt error# - )
 \ Init/Reset
 \ ==============================================================================
 
+trait% object object%-fresh  
+object% object%-fresh copy drop
+
 : reset-object-trait ( - )
-    [ object% 's protocol-list list-count ] literal
-    object% 's protocol-list list-count!
-    [ object% 's property-list list-count ] literal
-    object% 's property-list list-count! ;
+    object%-fresh object% copy drop ;
 
 : init-nib ( - )
     [ next-classifier# @ ] literal next-classifier# ! 
