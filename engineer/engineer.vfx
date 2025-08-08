@@ -597,8 +597,9 @@ defer frame ( - ) ' noop is frame
 is frame
 
 : go ( - )
+    \ Main engine loop - enter IDE if debug mode, otherwise run normally
     \ going @ ?exit
-    debug @ if init-ide then
+    debug @ if >ide then
     .rs >display pre going on begin frame again ;
 
 \ =============================================================================
@@ -612,14 +613,6 @@ is frame
     vfx-hwnd z" Engineer Dev Console" SetWindowText drop
     >vfx ;
 
-|| : setup
-    \ Initialize runtime environment
-    rs 
-    init-mersenne
-    init-allegro
-    *display
-    init-vga-font
-    0 0 to ustime ;
 
 || create bye-chain-root
 bye-chain link 0 ,
@@ -657,18 +650,27 @@ bye-chain link 0 ,
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
 : init-dev
-    \ Development-only startup
+    \ Development-only initialization
     path home-path$ place
     +xrefs
     256 1024 * xref-kb
     s" xref.xrf" fileexist? if load-xref then ;
 
 : frigid ( - )
+    \ Initialize runtime environment
+    rs
     debug @ if init-dev then
-    setup ;
+    init-mersenne
+    init-allegro
+    *display
+    init-vga-font
+    0 0 to ustime ;
 
 : cold ( - )
-    frigid cartridge boot go ;
+    \ Release cold start sequence - initialize all systems and begin execution
+    frigid
+    debug @ if init-ide then
+    cartridge boot go ;
 
 \ =============================================================================
 \ Debugging tools
@@ -759,15 +761,14 @@ create zcommand 65536 allot
 
 borrow ide2~ history-stats
 borrow ide2~ visible-lines
-: engineer.cold
+: engineer.cold ( - )
+    \ Main Engineer entry point - initialize and run with command line args
     /console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
     cr
-    frigid
-    \ 20 visible-lines !
+    frigid init-ide
     zcommand zcount strip-exe ide-interpret
-    \ history-stats 
     dup 0= if drop go else .throw then ;
 
 ' engineer-entrypoint is EntryPoint

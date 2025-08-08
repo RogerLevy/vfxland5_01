@@ -186,7 +186,9 @@ borrow engineer~ func[]
     pop-order
     ;
 
-: .me  me valid-object? -exit me info ;
+: .me ( - )
+    \ Display current object info if valid, used in REPL debugging
+    me valid-object? -exit me info ;
 
 : info-box ( - )
     1. 2. scaled>
@@ -422,21 +424,18 @@ public
     +m identity cls draw-display-mode -m ;
 is draw-ide
 
-: restart-ide ( - )
+: >ide ( - )
+    \ Switch to IDE mode with proper visual formatting
     hist[ 7 attribute hist]
-    0 display-mode !
     enact-display-mode ;
 
 : init-ide ( - )
     init-history
-    restart-ide ;
+    0 display-mode !
+    >ide ;
 
 : ide-interpret ( a len - res )
     hist[ >interpret hist] ;
-
-\ ???
-' noop is boot
-' noop is onSwitchIn
 
 : ide2-quit
     textmode off
@@ -444,4 +443,8 @@ is draw-ide
     hist-stack vacate
     ((quit))
 ;
+
 ' ide2-quit is quit
+' noop is boot
+' noop is onSwitchIn
+init-history

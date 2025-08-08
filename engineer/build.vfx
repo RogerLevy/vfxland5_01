@@ -3,8 +3,8 @@
 
 +xrefs 256 1024 * xref-kb
 optimising off
-include file-fix.vfx
-include engineer.vfx
+include %idir%\engineer.vfx
+frigid >vfx
 
 \ 0 to GenINI? \ don't save/load VFX INI file
 \ 0 to InitSupport? \ don't need windows constants

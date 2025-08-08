@@ -20,25 +20,34 @@ create temp-path-buf$ 256 allot
 : normalize ( c-addr u -- c-addr2 u2 )
     >abspath ;           \ Convert to canonical absolute path
 
+\ : .s
+\     depth 8 min locals| d |
+\     d 0< -4 ?throw
+\     d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
+\     d if
+\         d 0 ?do d 1 - i - pick . loop 
+\     else
+\         ." Empty! "
+\     then
+\     ." ] " cr ;
+
 \ Fixed file loading words
 : included      \ c-addr u --
+    {: fn len | file sfstruct :}
     EmptyIdle
-    expand
-    normalize                   \ Get canonical filename
-    ." Including " 2dup type cr 
-    2dup AddSourceFile -rot           \ Store canonical name
-    2dup r/o ?Relative-Open-File 
-    #-258 ?throw
-    -rot  ++IncDir
-    dup >r (include-file)
-    r> close-file drop
+    fn len expand normalize to len to fn
+    ." Including " fn len type cr 
+    fn len AddSourceFile -rot to len to fn    \ Store canonical name
+    fn len r/o ?Relative-Open-File #-258 ?throw to file to sfstruct
+    fn len ++IncDir
+    sfstruct file (include-file)
+    file close-file drop
     --IncDir
     throw
-    base @ -> SbBase
-    depth -> SbDepth
-    context @ -> sbContext
-    current @ -> sbCurrent
-    2drop ;
+    base @ to SbBase
+    depth to SbDepth
+    context @ to sbContext
+    current @ to sbCurrent ;
 
 : include       \ "<name>" --
     bl parse included ;

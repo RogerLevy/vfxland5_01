@@ -1,6 +1,7 @@
 -1 constant vfxcore
 variable debug  debug on
 
+include %idir%/file-fix.vfx
 include %idir%/misc.vfx
 include %idir%/scope.vfx
 include %idir%/fixed.vfx
