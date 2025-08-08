@@ -100,6 +100,14 @@ include %idir%\..\textmode\textmode-tools.vfx
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
 : h. ." $" base @ swap hex u. base ! ;
+: #.  base @ >r  decimal . r> base ! ;
+: h.8
+    base @ hex  swap
+    0 <# # # # # # # # # #> type
+    base !
+    space
+;
+
 variable saved-dp
 : d[ ( a - ) dp @ saved-dp ! dp ! ;
 : d] ( - ) saved-dp @ dp ! ;
@@ -258,3 +266,10 @@ aka file-exists? fileexists?
 : ?literal  state @ if postpone literal then ;
 
 : .:  postpone (s") 0 parse $, postpone type postpone cr ; immediate
+
+\ Make variable names show up properly in data stack traces
+debug @ [if]
+: variable  create 0 , ;
+: dvariable  create 0 , 0 , ;
+: 2variable  create 0 , 0 , ;
+[then]

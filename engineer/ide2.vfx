@@ -446,8 +446,11 @@ public
     +m identity cls draw-display-mode -m ;
 is draw-ide
 
+|| variable running
+
 : >ide ( - )
     \ Switch to IDE mode with proper visual formatting
+    running on 
     hist[ 7 attribute hist]
     enact-display-mode ;
 
@@ -460,11 +463,21 @@ is draw-ide
     hist[ >interpret out @ if cr then hist] ;
 
 : ide2-quit
+    running off
     textmode off
     consoledev setio
     hist-stack vacate
     ((quit))
 ;
+
+borrow error2~ console-debugger
+: ide-debugger
+    running @ if hist[ 4 push-attribute then
+    console-debugger
+    running @ if hist] then
+;
+
+' ide-debugger to-callback debugger
 
 ' ide2-quit is quit
 ' noop is boot
