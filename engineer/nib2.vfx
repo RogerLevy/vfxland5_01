@@ -217,7 +217,7 @@ object% [[
     drop ;
 
 : construct ( ... class addr - )
-    swap over cla-offset + !   \ Store class pointer
+    swap over 's cla !   \ Store class pointer
     [[
         me !defaults
         cla @ 's constructor-xt @ ?dup if execute then
@@ -535,7 +535,7 @@ defer (on-exec-error) ( xt err# obj - )
 
 : :: ( classifier <protocol> - )
     {: class | protocol :}
-    classifier abort" :: >> Can only define a protocol outside of a classifier block."
+    \ classifier abort" :: >> Can only define a protocol outside of a classifier block."
     class 's cla @ trait% = if class (protocol:) exit then
     class 's cla @ class% <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
@@ -563,8 +563,9 @@ defer (on-exec-error) ( xt err# obj - )
 \         classifier 's template @
 \     then ;
 
-: defaults ( class - a )
-    {: class :}
+: defaults ( [class] - a )
+    {: | class :}
+    classifier dup 0= if drop then to class 
     class 's cla @ trait% = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
     class 's template @ ?dup 0= if
         class instance class 's template !
@@ -596,9 +597,10 @@ defer (on-exec-error) ( xt err# obj - )
     \ Set parent bit for inheritance queries
     source-class 's classifier# @ classifier 's bit-table set-bit
     
-    \ Copy template if it exists
+    \ Copy template if one exists, updating its class
     source-class 's template @ ?dup if
-        classifier defaults source-class 's instance-size @ move
+        ( source-template ) defaults source-class 's instance-size @ move
+        classifier defaults 's cla !
     then
     
     \ Execute on-derive if set
@@ -635,7 +637,7 @@ aka prop property
 
 : copy ( a1 a2 - a2 )
     dup dup >r sizeof move r> ;
-
+    
 \ ==============================================================================
 \ Object% Base Protocols
 \ ==============================================================================
@@ -644,7 +646,7 @@ aka prop property
 
 object% :: info ( - )
     \ Default inspection - show class name and address
-    me . me .name ;
+    me . cla @ .name me .name ;
 
 object% :: describe ( - )
     \ Detailed inspection - override in subclasses for specific info

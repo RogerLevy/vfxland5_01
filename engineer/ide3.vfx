@@ -5,6 +5,8 @@
 validations @ validations off
 
 public
+
+0 value (me)
 defer draw-ide
 
 private   
@@ -210,7 +212,7 @@ borrow engineer~ func[]
 
 : .me ( - )
     \ Display current object info if valid, used in REPL debugging
-    me valid-object? -exit me info ;
+    (me) valid-object? -exit  (me) info ;
 
 : info-box ( - )
     1. 2. scaled>
@@ -304,8 +306,7 @@ borrow engineer~ func[]
     -1 of  endof				\ quiet
     -2 of  'AbortText @ DoAbortMessage  endof	\ ABORT" ..."
            .error
-  end-case
-;
+  end-case ;
 
 : obey ( - )
     osp @ >r uiosp @ osp !
@@ -443,6 +444,7 @@ object-table;
     current-mode activate ;
 
 : draw-display-mode ( - )
+    me to (me)
     current-mode draw ;
 
 \ =============================================================================

@@ -174,11 +174,11 @@ aka file-exists? fileexists?
         rp@ cell+ (.rs)
         .s
         pop-attribute
+        c" " 'AbortText !
         -2 throw
     else
         2drop
-    then
-;
+    then ;
 
 : abort"
     ?comp

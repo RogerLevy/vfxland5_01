@@ -10,3 +10,5 @@ Add subtask(s) to existing related tasks.
 Reference the previous message from the user if unsure which task to put it under.
 
 "Task1 and subtask Task2" = "Create Task1 with subtask Task2"
+
+Tasks are sorted by newest to oldest.

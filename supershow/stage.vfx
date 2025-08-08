@@ -6,14 +6,6 @@
 #actors 8 * ?constant #temps
 512 ?constant /actor
 
-: object-array ( c class <name> - )
-    {: count class :}
-    create count class sizeof array% instance [[
-        count for
-            class i me [] construct
-        loop
-    ]] ;
-
 variable gamelife
 0 0 2value gametime
 
@@ -339,7 +331,7 @@ class;
     bl word count f" class: %s" evaluate
     parent-class derive
     private
-    classifier defaults [[    \ allows both static and defaults assignments
+    defaults [[    \ allows both static and defaults assignments
 ;
 
 : actor-on-exec-error ( xt n - )
@@ -365,3 +357,7 @@ class;
 : actor-class ( - <name> )
     bl preparse ?hide-autoclass 
     actor% script-class ; 
+
+: find-class ( a len - class | actor% )
+    >pad find if execute else drop actor% then ;
+

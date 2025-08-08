@@ -1,11 +1,16 @@
 2025/08/08
-[ ] Pat head.
-    Test basic coordination ability.
-    [ ] Rub tummy.
-        Perform simultaneous belly rubbing motion.
+[ ] Investigate why editor isn't being opened on abort.
+
+[ ] Add trait::protocol identifier creation to (protocol:).
+    Enable trait::protocol-name syntax for cleaner protocol references.
+
+[ ] Fix abort by setting AbortText.
+    Currently aborting throws an exception due to the refactoring of system error handling
 
 [ ] Consolidate .IP and .DATA into a single smart address-decoding word.
     Detect if address is colon word or data word and display appropriately.
+
+    
 
 2025/07/12
 [ ] Finish designing Asset system.

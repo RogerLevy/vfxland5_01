@@ -28,10 +28,12 @@ variable room#
 \ Stashing actors between rooms
 \ =============================================================================
 
-var r#  \ the room each actor was in
-        \ -1 = persist
-        \ -2 = discard
-var a#  \ we also try to restore the ordering using actor#
+class: actor%
+    prop r#  \ the room each actor was in
+            \ -1 = persist
+            \ -2 = discard
+    prop a#  \ we also try to restore the ordering using actor#
+class;
 
 || : belong?
     r# @ room# @ = ` r# @ -1 = ` or ;

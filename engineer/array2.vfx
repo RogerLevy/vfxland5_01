@@ -134,6 +134,9 @@ class;
     max-items @ item-count !
     here data ! * allot&erase ;
 
+: /item ( array - n )
+    's item-size @ ;
+
 array% :: index ( a - n )
     data @ - item-size @ / me ?bounds ;
 
@@ -192,4 +195,13 @@ stack% :: pop-ref ( - a )
     create , cell array[
     does> @+ @ swap [] @ ;
 
-: object-table;  array] drop ;
+: object-table; ( - )
+    array] drop ;
+
+: object-array ( c class <name> - )
+    {: count class :}
+    create count class sizeof array% instance [[
+        count for
+            class i me [] construct
+        loop
+    ]] ;
