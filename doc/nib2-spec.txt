@@ -19,14 +19,14 @@ trait: object%
 \ Instantiation
 \ -------------
 
-: construct ( ... class - object )
+: instance ( ... class - object )
     \ create unnamed dictionary instance.
     \ executes constructor.
     
-: construct! ( ... class addr - )
+: construct ( ... class addr - )
     \ initialize object at pre-allocated address.
     \ stores class pointer and executes constructor.
-    \ used internally by construct and for memory pools.
+    \ used internally by instance and for memory pools.
     
 : $object ( ... class name len - object ) ( - object ) 
     \ create named dictionary instance.

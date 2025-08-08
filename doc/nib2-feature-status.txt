@@ -124,8 +124,8 @@ Status Legend:
 5.1 Basic Object Creation [x]
    [x] object - Create object from class
    [x] $object - Create object with string name  
-   [x] construct - Create unnamed dictionary instance
-   [x] construct! - Initialize object at pre-allocated address
+   [x] instance - Create unnamed dictionary instance
+   [x] construct - Initialize object at pre-allocated address
    [x] Object header initialization (class pointer)
 
 5.2 Advanced Object Creation [x]
@@ -269,7 +269,7 @@ Core systems working:
 - Enhanced 'S syntax supporting both fields and properties
 - Class and trait definition
 - Runtime type queries (is?)
-- Object creation with constructor support (construct, construct!, object, $object)
+- Object creation with constructor support (instance, construct, object, $object)
 - Trait composition with is-a
 - Protocol definition with default implementations
 - Protocol implementation with :: syntax
@@ -292,7 +292,8 @@ Core systems working:
 - Protocol propagation from traits to dependent classes
 - Field-space protection for safe property addition to reopened classifiers
 - Constructor system with :construct syntax replacing constructor:
-- construct! for initializing objects in pre-allocated memory
+- construct for initializing objects in pre-allocated memory
+- instance for creating unnamed dictionary objects
 
 Major systems pending:
 - Stack diagram storage and validation
@@ -323,8 +324,8 @@ RECENT MAJOR UPDATES (Dec 2024):
    - Maintains compatibility with existing object instances
 
 3. Object Construction System:
-   - Renamed *object to construct for clarity
-   - Added construct! for user-allocated memory initialization
+   - Renamed construct to instance for object creation clarity
+   - construct now initializes objects at user-allocated addresses
    - Renamed constructor: to :construct for consistency
    - <object planned but not yet implemented
    - Enables integration with memory pools and fixed-size allocators
