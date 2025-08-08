@@ -34,12 +34,14 @@
 \ - Supports iterative event scripting and testing
 \ ------------------------------------------------------------------------------
 
-actor-class event%
+class: event%
+    actor% derive
     prop delay-xt
     prop delay-secs
     prop starting-xt
     prop curves         \ array
-    
+class;   
+
 : (suicidal) ( - )
     act> ." Event finished: " unload me peek cr ;   
 
@@ -49,8 +51,6 @@ actor-class event%
     (suicidal)
     sp@ cell+ >r starting-xt @ execute r> !sp
     2r> at ;
-
-public
 
 : delay ( secs. - )
     delay-secs ! r> delay-xt ! 
@@ -144,10 +144,10 @@ public
     \ Create executable event named after the file being included.
     public
     currsourcename -path -ext >pad $create
-    here event% actor, [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
+    here event% instance [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
 
 \ : event ( - <name> )   \ TODO: automated event file creation
 
 : curve ( n - )
-    dup curves @ range? not if drop exit then
+    dup curves @ ?bounds not if drop exit then
     curves @ [] @ #items ? ;

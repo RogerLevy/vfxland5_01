@@ -6,12 +6,12 @@
 \ Factory, Prototype, and Strategy patterns for rapid game development iteration.
 \
 \ USAGE:
-\   enemy-class enemy1%           \ Create enemy class derived from ENEMIES%
+\   enemy-class enemy1%           \ Create enemy class derived from ENEMY%
 \   5 i/hp !                      \ Override default HP
 \   enemy1% one                   \ Instantiate enemy
 \
 \ COMPILE-TIME BEHAVIOR:
-\ - enemy-class creates new actor class derived from ENEMIES%
+\ - enemy-class creates new actor class derived from ENEMY%
 \ - Copies all i/values (initial values) from base template
 \ - Auto-detects sprite: enemy1% → enemy1.png if available  
 \ - Registers class in dictionary for hot-reload tracking
@@ -27,56 +27,34 @@
 \ - Hybrid compile/runtime: classes can be modified at runtime, but maintain object identity
 \ - Data-driven configuration: stats in table, behavior in _post-init hooks
 \ - Hot-reload integration: automatic enemy updates during development
-\ - Controlled inheritance: all enemies derive from single ENEMIES% template
+\ - Controlled inheritance: all enemies derive from single ENEMY% template
 \
 \ ==============================================================================
 
-honing @ not [if]
-    \ Stuff that should only be defined once.
-
-    static is-enemy
-    static i/bmp
-    static i/hp
-    static i/rad
-    static i/mass
-    static i/atk
-    static i/bounty
-    static i/firing-rate
+class: enemy%
+    actor% derive
+    is-a vessel%
+trait;
     
-    static is-player-projectile
-    
-    m: _post-init ( - ) ;
+enemy% defaults [[
+    enemy1.png bmp !
+    1 hp !
+    12. r !
+    5. m !
+    30 atk !
+    20 bounty !
+    80 firing-rate !
+]]
 
-    dictionary enemy-classes
+object% :: post-init ( - ) ;
 
-    variable tris-next#  512 tris-next# !
-    
-[then]
-   
-: post-init  me _post-init ;
+variable tris-next#  512 tris-next# !
 
-\ : is-enemy?  [[ is-enemy @ ]] ;
+private
 
-actor-class enemies%
-    is-enemy on
-    enemy1.png i/bmp !
-    1 i/hp !
-    12. i/rad !
-    5. i/mass !
-    30 i/atk !
-    20 i/bounty !
-    80 i/firing-rate !
-    public
-        prop hp
-        prop r
-        prop m
-        prop atk
-        prop bounty
-        prop firing-rate
-    private
-    
+dictionary enemy-classes
+ 
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
-
 \ : tri-speed 0.2 rnd 0.05 + ;
 \ : bias  me pos@ dist 160 / ;
 \ : towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
@@ -96,7 +74,7 @@ actor-class enemies%
     for c one [[ 360. rnd .05 rnd .95 + vec vx 2+! ]] loop
     r> next# ! ;
 
-enemies% :: _die
+enemy% :: kill
     me 0 0 from bounty @ burst-ring
     unload 
     ; \ regen ;
@@ -114,7 +92,7 @@ enemies% :: _die
     \ next# @ orbs-next# !
     r> next# ! ;
 
-enemies% :: damage ( n - )
+enemy% :: damage ( n - )
     ?dup -exit
     ( atk ) negate hp +!
     0.7 loud *snd-06* \ *snd-05*
@@ -126,7 +104,7 @@ enemies% :: damage ( n - )
         exit
     then
     actives>
-        is-player-projectile @ -exit
+        player me fired? -exit
         you me rhit? if
             atk @ you damage
             unload
@@ -137,26 +115,16 @@ enemies% :: damage ( n - )
     ?cull ;
 
 : (init)
-    i/bmp @ bmp !
-    i/hp @ hp !
-    i/rad @ r !
-    i/mass @ m !
-    i/atk @ atk !
-    i/bounty @ bounty !
-    i/firing-rate @ firing-rate !
     ['] enemy-physics phys !
     act> ?shoot ;
 
-enemies% :: init
-    (init) post-init ;
-
-: derive ( src-class dest-class - )
-    /class move ;
+enemy% :: init
+    (init) me post-init ;
 
 : auto-bitmap ( class - )
     {: c :} 
     c body> >name count -% f" %s.png" >pad find if
-        execute c 's i/bmp !
+        execute c defaults 's bmp !
     else drop then ;
 
 : register-enemy-class ( class - )
@@ -168,32 +136,33 @@ enemies% :: init
 
 : hot-reload-enemies ( - )
     ['] (include-enemy-class) enemy-classes walk-dictionary
-    actives> is-enemy @ -exit me init ;
+    actives> enemy% is? -exit me init ;
 
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
-: for:  str f" enemy-class %s%%" evaluate  enemies~ ;
-: hp:  val i/hp ! ;
-: atk:  val i/atk ! ;
-: gold:  val i/bounty ! ;
-: mass:  val i/mass ! ;
-: rad:  val i/rad ! ;
-: bmp:  val i/bmp ! ;
+: for:  str f" enemy-class %s%%" evaluate  enemies~  defaults ;
+: hp:  val hp ! ;
+: atk:  val atk ! ;
+: gold:  val bounty ! ;
+: mass:  val m ! ;
+: rad:  val r ! ;
+: bmp:  val bmp ! ;
 
 public
 
 : enemy-class ( - <name> )
-    {: | c already? :}
+    {: | already? :}
     bl preparse ?hide-autoclass  \ autoclasses don't count
-    preword find nip to already?
-    (actor-class) to c
+    preword find swap >body valid-class? and to already?
+    actor-class 
     already? not if
-        enemies% c derive
-        c register-enemy-class
+        ." deriving enemy " classifier .name cr
+        enemy% derive
+        classifier register-enemy-class
     then
-    c auto-bitmap
-    0 c 's _post-init ! ;
+    classifier auto-bitmap
+    ['] noop classifier 's post-init ! ;
 
 \ id            hp          atk         gold        rad         bmp                 spd         path
 for: enemy1     hp: 1       atk: 10     gold: 20                                    \ spd: 1.0    path: path1 

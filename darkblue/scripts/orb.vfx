@@ -2,7 +2,7 @@ orb.png 13 13 tileset orb.ts
 
 \ orb.ts animation orb.anm  0 3 range, 3 0 range, 
 
-cell array: orb-anim
+create orb-anim cell array[
     \ orb1.png , orb1.png , orb2.png , orb4.png , orb3.png , orb4.png , orb2.png , 
     orb.ts 0 tile ,
     orb.ts 1 tile ,
@@ -12,11 +12,10 @@ cell array: orb-anim
     orb.ts 2 tile ,
     orb.ts 1 tile ,
     orb.ts 0 tile ,
-array;
+array] drop
 
 actor-class orb%
-    prop r
-    prop m
+    is-a vessel%
 
 : ?laser
     0.1 passed? -exit

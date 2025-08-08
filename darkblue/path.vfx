@@ -5,31 +5,17 @@
 \ ------------------------------------------------------------------------------
 
 || 60 constant fps \ temporary
-|| #actors 3 * constant #pb-slots
 
-|| static size
-|| : class:  /obj 4 to /obj bl word create-class lastbody ;
-|| : property ( - <name> ) ( - a ) cell ofield ; 
-|| : class;  /obj swap 's size ! to /obj ;
-|| : (!classes)  over >object drop -1 ;
-|| : object-array ( n class - <name> ) ( - array )
-    dup >r 's size @ array
-    r> ['] (!classes) lastbody each drop ;
-|| : object ( class - object )
-    here >r
-    dup 's size @ allot&erase
-    r> swap >object ;
-
-private
+#actors 3 * ?constant #pb-slots
 
 \ =============================================================================
 \ Path class
 \ =============================================================================
 
 class: path%
-    property segments   \ addr -> array[segment%]
-    property alpdata    \ addr -> array[x., y.]
-    property easedata   \ addr -> array[segment%]
+    prop segments   \ addr -> array[segment%]
+    prop alpdata    \ addr -> array[x., y.]
+    prop easedata   \ addr -> array[segment%]
 class;
 
 \ =============================================================================
@@ -37,29 +23,28 @@ class;
 \ =============================================================================
 
 class: playback%
-    property path                    \ addr - pointer to path definition
-    property seg                     \ n - current segment index
-    property journey                 \ fixed - path progress 0-1.0  
-    || property startx property starty    \ fixed - starting position
-    || property starttime            \ n - milliseconds when started
-    || property speed                \ fixed - speed multiplier
-    || property scalex property scaley    \ fixed - runtime scaling
-    || property rotation             \ fixed - runtime rotation angle
-    || property active               \ flag - slot is active
-    || property #loops               \ n - completed loops
-    || property ppdir                \ n - pingpong direction 1/-1
+    is-a thinker%
+    prop path                   \ addr - pointer to path definition
+    prop seg                    \ n - current segment index
+    prop journey                \ fixed - path progress 0-1.0  
+    prop startx property starty \ fixed - starting position
+    prop starttime              \ n - milliseconds when started
+    prop speed                  \ fixed - speed multiplier
+    prop scalex property scaley \ fixed - runtime scaling
+    prop rotation               \ fixed - runtime rotation angle
+    prop active                 \ flag - slot is active
+    prop #loops                 \ n - completed loops
+    prop ppdir                  \ n - pingpong direction 1/-1
 \    || property lastevent            \ n - last event index fired
-    property alp                     \ a - arc-length parameterized coordinates
-                                     \ (optional)
+    prop alp                    \ a - arc-length parameterized coordinates
+                                \ (optional)
 class;
 
 \ =============================================================================
 \ Playback array
 \ =============================================================================
 
-|| #pb-slots playback% 's size @ array playbacks
-
-:noname playback% swap ! -1 ; playbacks each
+#pb-slots playback% object-array playbacks
 
 \ =============================================================================
 \ Path structure definition
@@ -73,23 +58,23 @@ class;
 \ =============================================================================
 
 class: segment%
-    property seg-type        \ n - segment type (waypoint/event)
-    property seg-x property seg-y \ fixed - target position
-    property seg-c1x property seg-c1y \ fixed - curve control point
-    property seg-c2x property seg-c2y \ fixed - curve control point 2
-    property seg-duration    \ n - milliseconds
-    property seg-ease        \ n - easing function ID
-    property seg-in          \ fixed - easing in amount
-    property seg-out         \ fixed - easing out amount
-    property seg-data        \ n - general purpose data
-    property seg-string      \ addr - event string (event only)
+    prop segtype                \ n - segment type (waypoint/event)
+    prop x prop y               \ fixed - target position
+    prop c1x prop c1y           \ fixed - curve control point
+    prop c2x prop c2y           \ fixed - curve control point 2
+    prop duration               \ n - milliseconds
+    prop easetype               \ n - easing function ID
+    prop in-amt                 \ fixed - easing in amount
+    prop out-amt                \ fixed - easing out amount
+    prop data                   \ n - general purpose data
+    prop string                 \ addr - event string (event only)
 class;
 
 \ =============================================================================
 \ Playback slot management
 \ =============================================================================
 
-|| : init ( playback ) ( -- )
+playback% :: init ( - )
     1.0 speed !
     1.0 scalex ! 1.0 scaley !
     1 ppdir !
@@ -112,7 +97,7 @@ class;
 || : (timespan) ( array[segment] -- ms )
     {: a :}
     0 a #items for
-        i a [] 's seg-duration @ +
+        i a [] 's duration @ +
     loop ;
     
 || : timespan ( path -- ms )
@@ -123,7 +108,7 @@ class;
     ( progress -- ) a (timespan) swap p* to target
     0 to accum
     a #items for
-        i a [] 's seg-duration @ to segdur
+        i a [] 's duration @ to segdur
         accum segdur + target > if
             i ` target accum - s>p segdur s>p p/ ` unloop exit
         then
@@ -136,10 +121,10 @@ class;
 
 : endxy ( seg# path -- x. y. )
     {: seg# p :}
-    seg# p segment 's seg-type @ SEG_EVENT = if
-        seg# 0 <= if 0 0 else seg# 1 - p segment 's seg-x 2@ then
+    seg# p segment 's segtype @ SEG_EVENT = if
+        seg# 0 <= if 0 0 else seg# 1 - p segment 's x 2@ then
     else
-        seg# p segment 's seg-x 2@
+        seg# p segment 's x 2@
     then ;
 
 || 0e fvalue t1 
@@ -194,7 +179,7 @@ class;
     endcase ;
 
 || : ease ( n. segment - f: n )
-    [[ p>f seg-in @ p>f seg-out @ p>f seg-ease @ ?ease ]] ;
+    [[ p>f in-amt @ p>f out-amt @ p>f easetype @ ?ease ]] ;
     
 || : pinpoint-eased ( playback ) ( seg# local-progress. path - x. y. )
     {: seg# n pth | f: fp seg sx sy dx dy t :}
@@ -208,9 +193,9 @@ class;
     seg# pth endxy scalex 2@ 2p* to dy to dx
     
     fp ` sx dx 2p>f ``
-        seg [[ seg-c1x @ seg-c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
     fp ` sy dy 2p>f ``
-        seg [[ seg-c1y @ seg-c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
 ;
 
 || : pinpoint ( playback ) ( seg# local-progress. path - x. y. )
@@ -225,9 +210,9 @@ class;
     seg# pth endxy scalex 2@ 2p* to dy to dx
     
     fp ` sx dx 2p>f ``
-        seg [[ seg-c1x @ seg-c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
     fp ` sy dy 2p>f ``
-        seg [[ seg-c1y @ seg-c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
 ;
 
 \ =============================================================================
@@ -264,7 +249,7 @@ class;
 \ Arc-length parameterization for even motion
 \ =============================================================================
 
-|| create playback-obj playback% 's size @ allot&erase
+|| playback% object playback-obj
 || 2variable first-point
 
 validations dup @ swap off \ validations are way too slow for this
@@ -399,11 +384,11 @@ variable drift-error-y
 : alp-displacement ( playback ) ( progress1. progress2. - dx. dy. )
     swap alp-position 2>r alp-position 2r> 2- ;
 
-: seg-getstart ( seg# array - n )
+: getstart ( seg# array - n )
     {: seg# a :}
     0
     seg# a #items 1 - min
-        for i a [] 's seg-duration @ + loop ;
+        for i a [] 's duration @ + loop ;
 
 : ?alp-ease ( n. - n. )
     {: n | seg# seg segstart segdur totaldur esegs :}
@@ -412,8 +397,8 @@ variable drift-error-y
     esegs (timespan) to totaldur
     n esegs (leg) to n to seg#
     seg# esegs [] to seg
-    seg 's seg-duration @ totaldur p/ to segdur 
-    seg# esegs seg-getstart totaldur p/ to segstart 
+    seg 's duration @ totaldur p/ to segdur 
+    seg# esegs getstart totaldur p/ to segstart 
     n seg ease f>p segdur p* segstart + ;
 
 || : velstep ( playback ) ( - vx. vy. )
@@ -472,36 +457,36 @@ variable drift-error-y
     dy 2 3 */ ;
 
 : curve ( segment ) ( c1x c1y c2x c2y - )
-    seg-c2x 2! seg-c1x 2! ;
+    c2x 2! c1x 2! ;
 
 2variable last-coord
 : waypoint ( duration. - segment ) 
-    segment% object [[ 
-        1000 p* seg-duration !   \ temporary: convert fixed seconds to integer milliseconds 
-        SEG_WAYPOINT seg-type !
-        at@ 2s>p seg-x 2!
-        1. seg-in ! 1. seg-out !
+    segment% instance [[ 
+        1000 p* duration !   \ temporary: convert fixed seconds to integer milliseconds 
+        SEG_WAYPOINT segtype !
+        at@ 2s>p x 2!
+        1. in-amt ! 1. out-amt !
         last-coord 2@ 2s>p
-            seg-x 2@ (linear) curve
+            x 2@ (linear) curve
         at@ last-coord 2!
     me ]] ;
         
 : ease ( segment ) ( n - )
-    seg-ease ! ;
+    easetype ! ;
     
 : strength ( segment ) ( in. out. - )
-    seg-out ! seg-in ! ;
+    out-amt ! in-amt ! ;
 
 : *alpdata ( - )
     2 cells array[ alp, array] alpdata ! ;
 
-: path[ create path% object [[  0 0 last-coord 2! ;
+: path[ create path% instance [[  0 0 last-coord 2! ;
 : path] ]] ; 
 
-: segments[ segment% 's size @ array[ ;
+: segments[ segment% sizeof array[ ;
 : segments] array] segments ! ;
 
-: easing[ *alpdata segment% 's size @ array[ ;
+: easing[ *alpdata segment% sizeof array[ ;
 : easing] array] easedata ! ;
 
 \ =============================================================================
@@ -520,7 +505,7 @@ variable drift-error-y
 \ : for-segments {: from count -- :}
 \     (fill-in)
 \     0 from count do
-\         easing-path segment 's seg-duration @ +
+\         easing-path segment 's duration @ +
 \     loop waypoint ;
 \ : (complete) ;
 

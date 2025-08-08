@@ -37,14 +37,14 @@ constant EASE-IN-OUT
 \ Tween object
 
 actor-class tween%
-    private-prop d 
-    private-prop adr 
-    private-prop xt 
-    private-prop ease 
-    private-prop n1 
-    private-prop n2 
-    private-prop s1 
-    private-prop spd
+    prop d 
+    prop adr 
+    prop xt 
+    prop ease 
+    prop n1 
+    prop n2 
+    prop s1 
+    prop spd
 
 || : val n1 @ n2 @ over - s1 @ 1. min d @ execute ease @ execute ;
 || : step spd @ s1 +! ;

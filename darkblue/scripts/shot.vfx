@@ -1,5 +1,5 @@
 actor-class shot%
-    is-player-projectile on
+    is-a projectile%
 
 shot% :: init
     orb2.png bmp ! ;

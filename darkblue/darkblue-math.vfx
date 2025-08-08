@@ -2,12 +2,6 @@
 
 validations dup @ swap off  \ disable validations for speed
 
-prop r \ radius
-prop m \ mass
-prop a \ angle
-prop w \ width
-prop l \ length
-
 : collision-force ( src-obj dest-obj -- x-force. y-force. )
     {: obj2 obj1 | f: dx f: dy f: distance f: overlap f: force-magnitude
                   f: obj1-radius f: obj2-radius f: total-radius f: obj2-speed :}

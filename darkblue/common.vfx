@@ -1,15 +1,38 @@
-\ Common Vars
-prop hp
-prop r \ radius 
-prop m \ mass
-prop atk
-prop owner
-prop worth \ when non-zero, makes object a collectible source of energy
+\ Common classifiers
+trait: vessel%
+    prop hp
+    prop r \ radius
+    prop m \ mass
+    prop atk
+    prop bounty
+    prop firing-rate
+trait;
 
-\ Messages
-m: damage ( n - ) negate hp +! ;
-m: _die ( - ) unload ;
-: die  me _die ;
+trait: projectile%
+    prop r \ radius
+    prop firer
+    prop atk
+    prop a \ angle
+    prop w \ width
+    prop l \ length
+trait;
+
+trait: pickup%
+    prop worth \ when non-zero, makes object a collectible source of energy
+trait;
+
+class: actor%
+    prop owner
+class;
+
+\ Common protocols
+object% :: damage ( n - ) negate hp +! ;
+object% :: kill ( - ) unload ;
+: die  me kill ;
+
+\ Common logic
+: fired? ( firer projectile - b )
+    's firer @ = ;
  
 \ Global variables
 0 value player

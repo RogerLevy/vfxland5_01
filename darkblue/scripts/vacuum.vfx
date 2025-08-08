@@ -4,10 +4,8 @@ require darkblue-math.vfx
 require path.vfx
 
 enemy-class vacuum%
-    0 i/firing-rate ! 
-    aka my-bubble n1
-
-    prop owner   
+    0 firing-rate ! 
+    prop my-bubble
 
 0 value bub
 \ : blowout-r  bub 's r @ 100. p* p>f  ;
@@ -27,7 +25,7 @@ enemy-class vacuum%
                 vx 2!
         then ;
 
-vacuum% :: _die
+vacuum% :: kill
     my-bubble @ to bub
     blowout-tris
     my-bubble @ out
@@ -76,9 +74,8 @@ vacuum% :: _die
 : bubble-act
     act> owner @ embody physics> ;
 
-vacuum% :: _post-init ( - )
-    suck
-    ;
+vacuum% :: post-init ( - )
+    suck ;
 
 public
 

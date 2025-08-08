@@ -1,8 +1,5 @@
 actor-class laser%
-
-    prop a \ angle
-    prop w \ width
-    prop l \ length
+    is-a projectile%
 
 : draw-laser ( - )
     w @ p>f f>ds >r
@@ -16,7 +13,8 @@ actor-class laser%
 
 public
 
-laser% create-actor beam
+laser% object beam
+
 20 beam 's atk ! 
 
 : *beam ( laser-angle. laser-length. laser-width. - beam% )

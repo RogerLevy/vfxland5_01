@@ -1,3 +1,4 @@
+
 \ Glypher-style AI experiment
 \ Status: charging doesn't work yet
 \ Verdict: some good ideas occurred, but the style isn't necessarily better
@@ -42,7 +43,7 @@ variable level
 variable level-ctr
 \ variable charge-key \ now a stack value
 
-2 cells array: dir-buttons
+create dir-buttons 2 cells array[ 
     \ key , angle ,
     <l> , 0. ,
     <.> , 45. ,
@@ -54,7 +55,8 @@ variable level-ctr
     <u> , 225. ,
     <i> , 270. ,
     <o> , 315. ,    
-array;
+array] drop
+
 : key@ @ ;
 : ang@ cell+ @ ;
 
@@ -116,7 +118,7 @@ prop dest-atk
             unload ;
 
 ( ease dir adr n2. len. - )        
-4 cells array: charge-levels
+create charge-levels 4 cells array[
     \ charge , cost , atk , xt ,
     10  , 0 , 0 ,   ' drop , 
     20  , 10 , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
@@ -124,7 +126,8 @@ prop dest-atk
     \ 25  , 10 , ' pea ,          \ moving laser projectile, damages multiple enemies as its travels
     40 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
     120 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
-array;
+array] drop
+
 : level[] charge-levels [] ;
 : charge@  @ ;
 : cost@  cell+ @ ;
@@ -149,7 +152,7 @@ aka ?; ?exit
     \ Iterate on array, address of each item in "A"
     | arr xt |
     a@ >r
-    arr >items arr #items arr /item * bounds ?do
+    arr 's data @ arr #items arr /item * bounds ?do
         i a!
         xt execute
     arr /item +loop
@@ -163,7 +166,7 @@ aka ?; ?exit
     \ Returns -1 if not found
     | arr xt |
     a@ >r
-    arr >items arr #items arr /item * bounds ?do
+    arr 's data @ arr #items arr /item * bounds ?do
         i a!
         xt execute if
             i arr index unloop exit

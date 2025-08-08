@@ -39,7 +39,7 @@ variable charge-key
 
 20 tweak charge-delay
 
-2 cells array: dir-buttons
+create dir-buttons 2 cells array[
     \ key , angle ,
     <l> , 0. ,
     <.> , 45. ,
@@ -50,8 +50,8 @@ variable charge-key
     <j> , 180. ,
     <u> , 225. ,
     <i> , 270. ,
-    <o> , 315. ,    
-array;
+    <o> , 315. ,
+array] drop
 
 : dir-key@ ( n - n ) dir-buttons [] @ ;
 : dir-ang@ ( n - ang. ) dir-buttons [] cell+ @ ;
@@ -114,14 +114,14 @@ prop dest-atk
             unload ;
 
 ( ease dir adr n2. len. - )        
-4 cells array: charge-levels
+create charge-levels 4 cells array[
     \ charge , cost , atk , xt ,
     10  , 0 , 0 ,   ' drop , 
     20  , 10 , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
     35  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
     60 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
     150 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
-array;
+array] drop
 
 : >charge  charge-levels [] @ ;
 : >cost  charge-levels [] cell+ @ ;
