@@ -72,7 +72,7 @@ networking% :: fetch-leaderboard ( - forth-code-addr forth-code-len )
 
 \ Scrapped idea: Trait constructors
 \ We decided that it was not feasible to support.
-\ 0 networking% constructor: ( - )
+\ 0 networking% :construct ( - )
 \     *cstring server-url ! ;
 
 \ ==============================================================================
@@ -82,7 +82,7 @@ networking% :: fetch-leaderboard ( - forth-code-addr forth-code-len )
 : fill-objects ( count class array - )
     {: count class array :}
     count 0 do
-        class *object i array [] !
+        class construct i array [] !
     loop ;
 
 \ ==============================================================================
@@ -90,16 +90,16 @@ networking% :: fetch-leaderboard ( - forth-code-addr forth-code-len )
 \ ==============================================================================
 
 class: leaderboard%
-    leaderboard% is-a networking%
+    is-a networking%
     prop players        \ array of player objects
     256 nprop last-error     \ byte-counted string for error messages        
 class;
 
-leaderboard% on-derive: ( source-class derived-class - )
+leaderboard% :derive ( source-class derived-class - )
     2drop cr ." Leaderboard system initialized!" cr ;
 
 \ Constructor defined outside class block
-0 leaderboard% constructor: ( - )
+0 leaderboard% :construct ( - )
     \ /networking
     20 player% sizeof *array players !
     20 player% players @ fill-objects ;

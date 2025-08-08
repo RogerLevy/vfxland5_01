@@ -72,7 +72,7 @@ trait;
 
 \ Scrapped idea: Trait constructors
 \ We decided that it was not feasible to support.
-\ 0 networking% constructor: ( - )
+\ 0 networking% :construct ( - )
 \     *cstring server-url ! ;
 
 \ ==============================================================================
@@ -82,7 +82,7 @@ trait;
 : fill-objects ( count class array - )
     {: count class array :}
     count 0 do
-        class *object i array [] !
+        class construct i array [] !
     loop ;
 
 \ ==============================================================================
@@ -94,12 +94,12 @@ class: leaderboard%
     property players        \ array of player objects
     256 nproperty last-error     \ byte-counted string for error messages
         
-    on-derive: ( source-class derived-class - )
+    :derive ( source-class derived-class - )
         2drop cr ." Leaderboard system initialized!" cr ;
 class;
 
 \ Constructor defined outside class block
-0 leaderboard% constructor: ( - )
+0 leaderboard% :construct ( - )
     \ /networking
     20 player% sizeof *array players !
     20 player% players @ fill-objects ;

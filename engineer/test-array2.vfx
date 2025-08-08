@@ -72,7 +72,7 @@ create test-data 42 , 84 ,
 : test-stack-operations
     cr ." Testing stack operations..."
     
-    10 cell stack% *object to test-stack
+    10 cell stack% construct to test-stack
     
     test-stack empty? s" Stack should be empty" assert
     

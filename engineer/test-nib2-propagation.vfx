@@ -19,7 +19,7 @@ require %idir%/nib2.vfx
     s" trait: test-trait% property test-prop trait;" .evaluate
     
     \ Create a class that uses the trait
-    s" class: test-class% test-class% is-a test-trait% class;" .evaluate
+    s" class: test-class% is-a test-trait% class;" .evaluate
     
     \ Add a protocol to the trait after the class is created
     se" test-trait% :: new-protocol .\" new protocol called\" cr ;" .evaluate
@@ -32,7 +32,7 @@ require %idir%/nib2.vfx
     se" test-class% :: new-protocol .\" class implementation\" cr ;" .evaluate
     
     \ Create an object and test the protocol
-    s" test-class% *object [[ me new-protocol ]]" .evaluate
+    s" test-class% construct [[ me new-protocol ]]" .evaluate
     
     ." OK" cr ;
 
@@ -43,7 +43,7 @@ require %idir%/nib2.vfx
     s" trait: no-space-trait% trait;" .evaluate
     
     \ Create a class that uses it
-    s" class: no-space-class% no-space-class% is-a no-space-trait% class;" .evaluate
+    s" class: no-space-class% is-a no-space-trait% class;" .evaluate
     
     \ Try to add a property to the reopened trait - should fail
     s" trait: no-space-trait% cell nproperty bad-prop trait;" .evaluate
@@ -56,7 +56,7 @@ require %idir%/nib2.vfx
     s" trait: prop-trait% trait;" .evaluate
     
     \ Create a class that uses it  
-    s" class: prop-class% prop-class% is-a prop-trait% class;" .evaluate
+    s" class: prop-class% is-a prop-trait% class;" .evaluate
     
     \ Try to add property to trait with dependents - should fail  
     ['] bad-prop-test catch 0<>
@@ -75,7 +75,7 @@ require %idir%/nib2.vfx
     s" class: any-class% property some-prop class;" .evaluate
     
     \ Apply the behavior trait - should work
-    s" any-class% is-a behavior-trait%" .evaluate
+    s" is-a behavior-trait%" .evaluate
     
     \ Verify it worked
     s" behavior-trait% 's do-something any-class% supports-protocol?" .evaluate
@@ -93,7 +93,7 @@ require %idir%/nib2.vfx
     s" class: field-class% property added-prop class;" .evaluate
     
     \ Verify the property was added by creating an object
-    s" field-class% *object [[ me 's added-prop 0<> ]]" .evaluate
+    s" field-class% construct [[ me 's added-prop 0<> ]]" .evaluate
     s" Object should have the added property" assert
     
     ." OK" cr ;
@@ -103,7 +103,7 @@ require %idir%/nib2.vfx
     
     \ Create trait and class
     s" trait: dynamic-trait% trait;" .evaluate
-    s" class: dynamic-class% dynamic-class% is-a dynamic-trait% class;" .evaluate
+    s" class: dynamic-class% is-a dynamic-trait% class;" .evaluate
     
     \ Create protocol with dynamic name
     s" test-protocol" fe" dynamic-trait%% :: %s .\" dynamic protocol\" cr ;" .evaluate
@@ -116,7 +116,7 @@ require %idir%/nib2.vfx
     s" test-protocol" fe" dynamic-class%% :: %s .\" class dynamic\" cr ;" .evaluate
     
     \ Test it
-    s" dynamic-class% *object [[ me test-protocol ]]" .evaluate
+    s" dynamic-class% construct [[ me test-protocol ]]" .evaluate
     
     ." OK" cr ;
 

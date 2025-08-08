@@ -210,16 +210,21 @@ object% [[
     then
     drop ;
 
-: *object ( ... class - object )
-    \ TODO: validate class
-    here over , swap 's instance-size @ cell- allot
-    dup !defaults
+: construct! ( ... class addr - )
+    swap over cla-offset + !   \ Store class pointer
     [[
+        me !defaults
         cla @ 's constructor-xt @ ?dup if execute then
-    me ]] ;
+    ]] ;
+    
+: construct ( ... class - object )
+    \ TODO: validate class
+    here >r
+    dup 's instance-size @ allot
+    ( class ) r@ construct! r> ;
 
 : $object ( ... class name len - object ) ( - object ) 
-    >$ $create *object ;
+    >$ $create construct ;
 
 : object ( ... class <name> - ) ( - object )
     bl parse $object drop ;
@@ -228,7 +233,7 @@ object% [[
 \ Members
 \ ==============================================================================
 
-create property%  class% *object [[
+create property%  class% construct [[
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
@@ -237,12 +242,12 @@ create property%  class% *object [[
     dup instance-size ! next-ofs !
 ]]
 
-create static%  class% *object [[
+create static%  class% construct [[
     property% 's instance-size @
     dup instance-size ! next-ofs !
 ]]
 
-create protocol%  class% *object [[
+create protocol%  class% construct [[
     static% 's instance-size @
         cell field default-xt
         cell field next-protocol
@@ -261,16 +266,16 @@ create protocol%  class% *object [[
 
 : begin-classifier ( class - )
     push-order public
-    create *object to classifier
+    create construct to classifier
+    1 classifier 's #openings +!
     allocate-classifier-bit
     pop-order ;
 
 : end-classifier ( - )
-    1 classifier 's #openings +!
     0 to classifier ;
     
 : reopened? ( class - b )
-    's #openings @ 0<> ;
+    's #openings @ 1 > ;
 
 : allocate-static-offset ( - )
     /static offset !
@@ -278,7 +283,7 @@ create protocol%  class% *object [[
     
 : create-property ( size <name> - property )
     push-order public
-    create property% *object [[
+    create property% construct [[
         property-size !
         allocate-static-offset
         MAGIC_PROPERTY magic !
@@ -377,7 +382,7 @@ create protocol%  class% *object [[
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
     static% already? if ' drop exit then
     push-order public
-    create static% *object [[
+    create static% construct [[
         allocate-static-offset
         MAGIC_FIELD magic !
     ]]
@@ -407,7 +412,7 @@ create protocol%  class% *object [[
     
     \ Merge protocols
     trait 's protocol-list dup list-count for
-        @next dup .name
+        @next \ ++dup .name
         ( protocol ) class support-protocol 
     loop drop
     
@@ -435,8 +440,9 @@ create protocol%  class% *object [[
 : class; ( - )
     end-classifier ;
 
-: is-a ( class <trait> - )
-    ' >body swap apply-trait ;
+: is-a ( [class] <trait> - )
+    \ [class] only required if outside class block
+    ' >body classifier ?dup 0= if swap then apply-trait ;
     
 : is? ( object classifier - bool )
     's classifier# @ swap 's cla @ 's bit-table test-bit ;
@@ -457,20 +463,34 @@ create protocol%  class% *object [[
 : add-protocol ( protocol trait - )
     's protocol-list add-to ;
 
+defer (on-exec-error)
+
+debug @ [if]
+    : oexec ( ... xt - ... )
+        ?dup -exit
+        {: xt :}
+        xt catch ?dup if
+            xt swap (on-exec-error)
+        then ;
+[else]
+    : oexec ( ... xt - ... )
+        ?dup -exit >r ;
+[then]
+
 : does-protocol ( - )
     does> swap [[
         dup 's offset @ cla @ + @ ?dup if
             nip
         else
-            >r
+            ( protocol ) >r
             -1
             cla @ >name count
             r> body> >name count
             f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
         then
-        ( xt ) execute
+        ( xt ) oexec
     ]] ;
-    
+
 : implement-protocol ( protocol class - )
     {: protocol class | name[ 256 ] :} 
     protocol [[
@@ -488,7 +508,7 @@ create protocol%  class% *object [[
         ' >body
         \ TODO: check if the protocol belongs to another trait and throw error if it is
     else
-        create protocol% *object
+        create protocol% construct
         does-protocol 
         [[
             me trait add-protocol
@@ -521,32 +541,35 @@ create protocol%  class% *object [[
 : stub ( - )
     -1 r> >name count f" %s >> Not implemented" .abort ;
 
-: constructor: ( #params class - )
-    classifier abort" CONSTRUCTOR: >> Constructors can only be defined outside of a classifier block."
-    dup 's cla @ class% <> abort" CONSTRUCTOR: >> Passed object is not a class - constructors can only be defined for classes."
+: :construct ( #params class - )
+    classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier block."
+    dup 's cla @ class% <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
     [[
         :noname constructor-xt !
         constructor-#params !
     ]] ;
 
-: defaults ( - a )
-    classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
-    classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
-    classifier 's template @ ?dup if else
-        classifier *object classifier 's template !
-        classifier 's template @
-    then ;
+\ : defaults ( - a )
+\     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
+\     classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
+\     classifier 's template @ ?dup if else
+\         classifier construct classifier 's template !
+\         classifier 's template @
+\     then ;
 
-: >defaults ( class - a )
-    's template @ ?dup if else
-        dup *object over 's template !
-        's template @
+: defaults ( class - a )
+    {: class :}
+    class 's cla @ trait% = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
+    class 's template @ ?dup 0= if
+        class construct class 's template !
+        class 's template @
     then ;
 
 : derive ( class - )
     {: source-class :}
     
     source-class 's cla @ class% <> abort" DERIVE >> Can only derive from classes."
+    classifier 0= abort" DERIVE >> Can only be called inside a class block."
     
     \ Copy size fields
     source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
@@ -569,7 +592,7 @@ create protocol%  class% *object [[
     
     \ Copy template if it exists
     source-class 's template @ ?dup if
-        defaults source-class 's instance-size @ move
+        classifier defaults source-class 's instance-size @ move
     then
     
     \ Execute on-derive if set
@@ -578,8 +601,8 @@ create protocol%  class% *object [[
     then 
 ;
 
-: on-derive: ( class - ) ( source-class derived-class - )
-    dup 's cla @ class% <> abort" ON-DERIVE: >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+: :derive ( class - ) ( source-class derived-class - )
+    dup 's cla @ class% <> abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
     [[ :noname on-derive-xt ! ]] ;
 
 \ ==============================================================================
@@ -604,8 +627,8 @@ aka prop property
     then
     drop r> ;
 
-\ IDE hook
-defer .me ( - ) ' noop is .me
+: copy ( a1 a2 - a2 )
+    dup dup >r sizeof move r> ;
 
 \ ==============================================================================
 \ Object% Base Protocols
@@ -620,6 +643,11 @@ object% :: info ( - )
 object% :: describe ( - )
     \ Detailed inspection - override in subclasses for specific info
     me info ;
+
+object% :: on-exec-error ( xt error# - )
+    throw ;
+    
+' on-exec-error is (on-exec-error)
 
 \ ==============================================================================
 \ Init/Reset

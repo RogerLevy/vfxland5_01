@@ -123,13 +123,13 @@ fifo% :: peek ( - item ) stub ;
 fifo% :: peek-ref ( - item ) stub ;
 
 class: array%
-    array% is-a iterable%
+    is-a iterable%
     prop max-items
     prop item-size
     prop data
 class;
 
-2 array% constructor: ( max-items item-size - )
+2 array% :construct ( max-items item-size - )
     2dup item-size ! max-items !
     max-items @ item-count !
     here data ! * allot&erase ;
@@ -145,10 +145,10 @@ array% :: deref-index ( n - ? )
 
 class: stack%
     array% derive
-    stack% is-a lifo%
+    is-a lifo%
 class;
 
-2 stack% constructor: ( max-items item-size - )
+2 stack% :construct ( max-items item-size - )
     2dup item-size ! max-items !
     here data ! * allot&erase ;
 
@@ -171,7 +171,7 @@ stack% :: pop-ref ( - a )
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - )
-    0 swap array% *object [[
+    0 swap array% construct [[
     here data ! ;  \ just to be sure
 
 : array] ( - array )
