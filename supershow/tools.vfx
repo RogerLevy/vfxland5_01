@@ -77,10 +77,6 @@ aka hone update
         -1 abort" Script already exists"
     then
     n[ count f" locate %s%%" evaluate ;
-
-: as ( object - )
-    \ Bind the given object and switch to its vocabulary.
-    [[ cla @ body> >name count -% f" %s~" evaluate ;
     
 : edit ( - <classname> )
     \ Edit a class (minus the %).

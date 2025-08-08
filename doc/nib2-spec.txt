@@ -110,11 +110,10 @@ trait: object%
     \ traits cannot "inherit" other traits.
     \ always public
     
-: is-a ( class <trait> )
-    \ adds trait to given class.
-    \ must be used inside class block.
+: is-a ( [class] <trait> )
+    \ applies trait to given class, or the current class if in a classifier block.
     \ if a wrong data type is given, throw an error.
-    \ sets a bit in a 1024-bit static for validation and logic.
+    \ merges protocols and properties from the trait into the class.
 
 : is? ( object classifier - b )
     \ check object for class or trait.

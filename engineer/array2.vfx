@@ -188,4 +188,8 @@ stack% :: pop-ref ( - a )
 : stack ( max width - <name> )
     stack% object ;
 
- 
+: object-table: ( a <name> - ) ( - object )
+    create , cell array[
+    does> @+ @ swap [] @ ;
+
+: object-table;  array] drop ;

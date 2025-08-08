@@ -1,6 +1,6 @@
-\ ------------------------------------------------------------------------------
-\ IDE v2 - Next-Level Development Interface  
-\ ------------------------------------------------------------------------------
+\ -------------------------------------------------------------------------------
+\ IDE v3 - Next-Level Development Interface (now utilizing OOP for display modes) 
+\ -------------------------------------------------------------------------------
 
 validations @ validations off
 
@@ -380,39 +380,70 @@ borrow engineer~ windowed
 borrow engineer~ winmode
 borrow engineer~ draw-tv
 
-: ide-mode ( - )
-    fullscreen winmode
-    ide on ;
+trait: displaymode-like%
+    prop _ide
+    prop _repl
+trait;
 
-: full-mode ( - )
-    fullscreen winmode
-    ide off repl off ;
-    
-: windowed-mode ( - )
-    windowed winmode
-    ide off repl off ;
+displaymode-like% :: activate ( - ) stub ;
+displaymode-like% :: draw ( - ) stub ;
 
-display-mode jumptable enact-display-mode
-    ' ide-mode ,
-    ' full-mode ,
-    ' windowed-mode ,
+\ IDE mode
+class: ide-mode%
+    is-a displaymode-like%
+class;
 
-: ide-mode-draw ( - )
+ide-mode% :: activate ( - )
+    fullscreen winmode ;
+
+ide-mode% :: draw ( - )
     at@ 2>r ide-layout 2r> at ;
 
-: full-mode-draw ( - )
+0 ide-mode% :construct ( - )
+    _ide on _repl on ;
+
+\ Full mode
+class: full-mode%
+    is-a displaymode-like%
+class;
+
+full-mode% :: activate ( - )
+    fullscreen winmode ;
+
+full-mode% :: draw ( - )
     draw-tv
-    ( draw repl here )
-    ;
-    
-: windowed-mode-draw ( - )
+    ( draw repl here ) ;
+
+\ Window mode
+class: window-mode%
+    is-a displaymode-like%
+class;
+
+window-mode% :: activate ( - )
+    windowed winmode ;
+
+window-mode% :: draw ( - )
     ?border draw-game
     ( draw repl here ) ;
 
-display-mode jumptable draw-display-mode
-    ' ide-mode-draw ,
-    ' full-mode-draw ,
-    ' windowed-mode-draw ,
+\ Create array of display modes
+ide-mode% object ide-mode
+full-mode% object full-mode
+window-mode% object window-mode
+
+display-mode object-table: current-mode
+    ide-mode , full-mode , window-mode ,
+object-table;
+
+\ Redefine ide and repl to point to current mode's properties
+:noname ( - a ) current-mode 's _ide ; is ide
+:noname ( - a ) current-mode 's _repl ; is repl
+
+: enact-display-mode ( - )
+    current-mode activate ;
+
+: draw-display-mode ( - )
+    current-mode draw ;
 
 \ =============================================================================
 \ Public Words

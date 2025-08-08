@@ -22,8 +22,10 @@ variable bye-chain
 cstring home-path$
 create funcs 256 12 * allot&erase
 0 value reload-shift?
-variable repl  repl on   \ enable commandline
-variable ide   ide on    \ enable IDE mode (enables commandline automatically)
+variable _repl  _repl on   \ enable commandline
+variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
+defer repl  ' _repl is repl
+defer ide  ' _ide is ide
 defer pump ' noop is pump
 cstring watch$
 variable watch-xt
@@ -534,7 +536,7 @@ load-bitmaps
 defer frame ( - ) ' noop is frame
 
 ' engineer~ public-xt !
-    include %idir%/ide2.vfx
+    include %idir%/ide3.vfx
 ' forth public-xt !
 
 \ =============================================================================
@@ -791,8 +793,8 @@ create zcommand 65536 allot
     over zcount zcommand zplace
     vfxforth-entrypoint ;
 
-borrow ide2~ history-stats
-borrow ide2~ visible-lines
+borrow ide3~ history-stats
+borrow ide3~ visible-lines
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args
     /console
