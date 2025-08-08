@@ -8,9 +8,9 @@
 
 : object-array ( c class <name> - )
     {: count class :}
-    create count class sizeof array% construct [[
+    create count class sizeof array% instance [[
         count for
-            class i me [] construct!
+            class i me [] construct
         loop
     ]] ;
 
@@ -215,7 +215,7 @@ actor% defaults [[
     me to saved-me
     #actors for
         next# @ actor dup free? if
-            c over construct!
+            c over construct
             unloop exit
         then  drop
         next# @ 1 + #actors mod next# !

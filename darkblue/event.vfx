@@ -134,7 +134,7 @@ public
     0 s" events" ['] count-curve each-file ;
 
 : load-curves ( - )
-    count-curves cell *stack curves !
+    count-curves cell stack% instance curves !
     s" events" ['] ?load-curve each-file ;
 
 || : does-event ( - )

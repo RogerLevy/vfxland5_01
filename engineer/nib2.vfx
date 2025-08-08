@@ -216,21 +216,21 @@ object% [[
     then
     drop ;
 
-: construct! ( ... class addr - )
+: construct ( ... class addr - )
     swap over cla-offset + !   \ Store class pointer
     [[
         me !defaults
         cla @ 's constructor-xt @ ?dup if execute then
     ]] ;
     
-: construct ( ... class - object )
+: instance ( ... class - object )
     \ TODO: validate class
     here >r
     dup 's instance-size @ allot
-    ( class ) r@ construct! r> ;
+    ( class ) r@ construct r> ;
 
 : $object ( ... class name len - object ) ( - object ) 
-    >$ $create construct ;
+    >$ $create instance ;
 
 : object ( ... class <name> - ) ( - object )
     bl parse $object drop ;
@@ -239,7 +239,7 @@ object% [[
 \ Members
 \ ==============================================================================
 
-create property%  class% construct [[
+create property%  class% instance [[
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
@@ -248,12 +248,12 @@ create property%  class% construct [[
     dup instance-size ! next-ofs !
 ]]
 
-create static%  class% construct [[
+create static%  class% instance [[
     property% 's instance-size @
     dup instance-size ! next-ofs !
 ]]
 
-create protocol%  class% construct [[
+create protocol%  class% instance [[
     static% 's instance-size @
         cell field default-xt
         cell field next-protocol
@@ -272,7 +272,7 @@ create protocol%  class% construct [[
 
 : begin-classifier ( class - )
     push-order only forth definitions
-    create construct to classifier
+    create instance to classifier
     1 classifier 's #openings +!
     allocate-classifier-bit
     pop-order ;
@@ -289,7 +289,7 @@ create protocol%  class% construct [[
     
 : create-property ( size <name> - property )
     push-order only forth definitions
-    create property% construct [[
+    create property% instance [[
         property-size !
         allocate-static-offset
         MAGIC_PROPERTY magic !
@@ -388,7 +388,7 @@ create protocol%  class% construct [[
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
     static% already? if ' drop exit then
     push-order only forth definitions
-    create static% construct [[
+    create static% instance [[
         allocate-static-offset
         MAGIC_FIELD magic !
     ]]
@@ -514,7 +514,7 @@ defer (on-exec-error) ( xt err# obj - )
         ' >body
         \ TODO: check if the protocol belongs to another trait and throw error if it is
     else
-        create protocol% construct
+        create protocol% instance
         does-protocol 
         [[
             me trait add-protocol
@@ -559,7 +559,7 @@ defer (on-exec-error) ( xt err# obj - )
 \     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
 \     classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
 \     classifier 's template @ ?dup if else
-\         classifier construct classifier 's template !
+\         classifier instance classifier 's template !
 \         classifier 's template @
 \     then ;
 
@@ -567,7 +567,7 @@ defer (on-exec-error) ( xt err# obj - )
     {: class :}
     class 's cla @ trait% = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
     class 's template @ ?dup 0= if
-        class construct class 's template !
+        class instance class 's template !
         class 's template @
     then ;
 

@@ -32,7 +32,7 @@ require %idir%/nib2.vfx
     se" test-class% :: new-protocol .\" class implementation\" cr ;" .evaluate
     
     \ Create an object and test the protocol
-    s" test-class% construct [[ me new-protocol ]]" .evaluate
+    s" test-class% instance [[ me new-protocol ]]" .evaluate
     
     ." OK" cr ;
 
@@ -93,7 +93,7 @@ require %idir%/nib2.vfx
     s" class: field-class% property added-prop class;" .evaluate
     
     \ Verify the property was added by creating an object
-    s" field-class% construct [[ me 's added-prop 0<> ]]" .evaluate
+    s" field-class% instance [[ me 's added-prop 0<> ]]" .evaluate
     s" Object should have the added property" assert
     
     ." OK" cr ;
@@ -116,7 +116,7 @@ require %idir%/nib2.vfx
     s" test-protocol" fe" dynamic-class%% :: %s .\" class dynamic\" cr ;" .evaluate
     
     \ Test it
-    s" dynamic-class% construct [[ me test-protocol ]]" .evaluate
+    s" dynamic-class% instance [[ me test-protocol ]]" .evaluate
     
     ." OK" cr ;
 

@@ -171,7 +171,7 @@ stack% :: pop-ref ( - a )
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - )
-    0 swap array% construct [[
+    0 swap array% instance [[
     here data ! ;  \ just to be sure
 
 : array] ( - array )

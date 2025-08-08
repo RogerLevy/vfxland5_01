@@ -82,7 +82,7 @@ trait;
 : fill-objects ( count class array - )
     {: count class array :}
     count 0 do
-        class construct i array [] !
+        class instance i array [] !
     loop ;
 
 \ ==============================================================================
