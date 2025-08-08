@@ -186,6 +186,8 @@ borrow engineer~ func[]
     pop-order
     ;
 
+: .me  me valid-object? -exit me info ;
+
 : info-box ( - )
     1. 2. scaled>
     0 gamewin-h scaled-at

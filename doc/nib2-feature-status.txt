@@ -98,6 +98,9 @@ Status Legend:
 4.1 Protocol Definition [x]
    [SKIP] protocol: ... ; syntax (replaced by unified ::)
    [x] :: syntax for unified protocol definition/implementation
+   [x] Protocol propagation from traits to dependent classes
+   [x] Automatic protocol propagation when added to traits
+   [x] Field-space protection for property addition to reopened classifiers
    [ ] Stack diagram storage and validation
    [x] Default protocol implementations
    [x] Protocol association with traits
@@ -120,16 +123,16 @@ Status Legend:
 
 5.1 Basic Object Creation [x]
    [x] object - Create object from class
-   [x] create-object - Create named object with parsing
-   [x] $create-object - Create object with string name
+   [x] $object - Create object with string name  
+   [x] construct - Create unnamed dictionary instance
+   [x] construct! - Initialize object at pre-allocated address
    [x] Object header initialization (class pointer)
 
 5.2 Advanced Object Creation [x]
-   [x] constructor: - Parameterized object construction 
+   [x] :construct - Parameterized object construction 
    [x] Constructor execution in object creation
    [x] Parameter validation and stack diagram support
-   [SKIP] <object - Assign class to user-allocated memory
-   [SKIP] <construct - Construct instance in user-allocated memory
+   [ ] <object - Assign class to user-allocated memory (planned, not yet implemented)
 
 5.3 Template and Default Management [x]
    [x] defaults - Get/create template object for class
@@ -186,23 +189,23 @@ Status Legend:
    [x] sizeof smart query supporting both objects and classes
    [ ] Property validation in engineer/checks.vfx
 
-8.3 Error Reporting [-]
-   [-] Descriptive abort messages for common errors
-   [ ] Enhanced error context for protocol mismatches
-   [ ] Development-mode validation vs production optimization
+8.3 Error Reporting [x]
+   [x] Descriptive abort messages for common errors
+   [x] Enhanced error context for protocol mismatches
+   [x] Development-mode validation vs production optimization (oexec system)
 
-9. INTEGRATION AND COMPATIBILITY [ ]
+9. INTEGRATION AND COMPATIBILITY [-]
 =================================
 
-9.1 Backwards Compatibility [ ]
-   [ ] Migration from current nib.vfx message system
+9.1 Backwards Compatibility [-]
+   [-] Migration from current nib.vfx message system (Engineer migrated)
    [ ] Existing game code compatibility layer
-   [ ] Performance parity with original system
+   [x] Performance parity with original system (oexec conditional compilation)
 
-9.2 System Integration [ ]
-   [ ] Integration with supershow actor system
-   [ ] Integration with existing field-space pools
-   [ ] Integration with oversight validation system
+9.2 System Integration [-]
+   [-] Integration with supershow actor system (actor% migrated to Nib 2.0)
+   [-] Integration with existing field-space pools (<object for user-allocated memory)
+   [x] Integration with oversight validation system
 
 10. SCOPE AND VISIBILITY ENFORCEMENT [x]
 ========================================
@@ -258,7 +261,7 @@ Phase 6: Object% Integration [x]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~90%
+Overall Completion: ~95%
 
 Core systems working:
 - Object runtime and scoping  
@@ -266,11 +269,11 @@ Core systems working:
 - Enhanced 'S syntax supporting both fields and properties
 - Class and trait definition
 - Runtime type queries (is?)
-- Object creation with constructor support
+- Object creation with constructor support (construct, construct!, object, $object)
 - Trait composition with is-a
 - Protocol definition with default implementations
 - Protocol implementation with :: syntax
-- Protocol dispatch with fallback behavior
+- Protocol dispatch with fallback behavior (oexec system)
 - Multiple trait composition support
 - Method overrides and late-bound dispatch
 - Class inheritance with derive
@@ -280,13 +283,16 @@ Core systems working:
 - Context validation for static definitions (must be in classifier blocks)
 - on-derive: hook system for class inheritance customization
 - Smart sizeof supporting both objects and classes  
-- Renamed object creation: *object (unnamed), object (named) for clarity
 - Enhanced 'S syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
 - Sized properties with nproperty (size <name> -) supporting embedded data structures
 - Hot-reload safety with property size change detection and clear error messages
 - Compact classifier syntax: class: name [traits...] [props...] ; and trait: name [props...] ;
   Supporting sized properties in compact form (prop-name size)
   Optional syntax that expands to block form internally
+- Protocol propagation from traits to dependent classes
+- Field-space protection for safe property addition to reopened classifiers
+- Constructor system with :construct syntax replacing constructor:
+- construct! for initializing objects in pre-allocated memory
 
 Major systems pending:
 - Stack diagram storage and validation
@@ -302,3 +308,38 @@ Remaining features for full spec compliance:
 Nib 2.0 now provides a complete, working object-oriented programming
 system with traits, protocols, inheritance, and lifecycle management.
 The core architecture is complete and ready for production use.
+
+RECENT MAJOR UPDATES (Dec 2024):
+================================
+
+1. Protocol Propagation System:
+   - Protocols added to traits automatically propagate to dependent classes
+   - Solves issue where classes missed protocols added after trait application
+   - Enables hot-reload protocol extension during development
+
+2. Field-Space Protection:
+   - Properties can only be added to reopened classifiers with field-space
+   - Prevents memory layout corruption from unsafe property addition
+   - Maintains compatibility with existing object instances
+
+3. Object Construction System:
+   - Renamed *object to construct for clarity
+   - Added construct! for user-allocated memory initialization
+   - Renamed constructor: to :construct for consistency
+   - <object planned but not yet implemented
+   - Enables integration with memory pools and fixed-size allocators
+
+4. Performance Optimization:
+   - oexec system with conditional compilation
+   - Debug builds: full error handling
+   - Release builds: direct execution via >r for zero overhead
+
+5. Engineer Migration:
+   - Complete migration of Engineer core to Nib 2.0
+   - Demonstrates real-world production usage
+   - Maintains backward compatibility
+
+6. Supershow Integration:
+   - Actor system migration to Nib 2.0 in progress
+   - Field-space usage for safe property extension
+   - Integration with existing memory pool architecture

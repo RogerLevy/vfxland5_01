@@ -256,3 +256,5 @@ aka file-exists? fileexists?
     then ;
     
 : ?literal  state @ if postpone literal then ;
+
+: .:  postpone (s") 0 parse $, postpone type postpone cr ; immediate

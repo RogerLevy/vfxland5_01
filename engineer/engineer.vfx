@@ -17,7 +17,6 @@ variable 'show ( - ) \ app logic and rendering
 defer desktop ( - ) \ default behavior of SHOW (restored on EMPTY)
 defer boot ( - ) \ app startup code like loading assets
 defer onSwitchIn ( - ) \ Window gets focus
-variable debug  debug on
 variable going
 variable bye-chain
 cstring home-path$
@@ -599,6 +598,7 @@ is frame
 
 : go ( - )
     \ going @ ?exit
+    debug @ if init-ide then
     .rs >display pre going on begin frame again ;
 
 \ =============================================================================
@@ -764,13 +764,11 @@ borrow ide2~ visible-lines
     (.cold)
     ."  ~~~ Engineer v1 ~~~ "
     cr
-    frigid init-ide \ cartridge
+    frigid
     \ 20 visible-lines !
     zcommand zcount strip-exe ide-interpret
     \ history-stats 
     dup 0= if drop go else .throw then ;
-    
-:noname me valid-object? if me .name then ; is .me
 
 ' engineer-entrypoint is EntryPoint
 assign engineer.cold to-do .cold

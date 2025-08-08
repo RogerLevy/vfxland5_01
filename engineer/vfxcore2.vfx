@@ -1,4 +1,5 @@
 -1 constant vfxcore
+variable debug  debug on
 
 include %idir%/misc.vfx
 include %idir%/scope.vfx

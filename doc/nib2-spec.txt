@@ -6,7 +6,7 @@ trait: object%
 \ Compile-time object life-cycle methods
 \ --------------------------------------
 
-: constructor: ( #params class - )
+: :construct ( #params class - )
     \ defines constructor for class
     \ stateless - always defined outside class blocks
     \ constructor code follows and is executed during object creation
@@ -19,17 +19,28 @@ trait: object%
 \ Instantiation
 \ -------------
 
-: *object ( ... class - object )
+: construct ( ... class - object )
     \ create unnamed dictionary instance.
     \ executes constructor.
+    
+: construct! ( ... class addr - )
+    \ initialize object at pre-allocated address.
+    \ stores class pointer and executes constructor.
+    \ used internally by construct and for memory pools.
     
 : $object ( ... class name len - object ) ( - object ) 
     \ create named dictionary instance.
     \ executes constructor.
 
 : object ( ... class <name> - ) ( - object )
-    \ create named dictionary instance (convenience word for BL PARSE $OBJECT DROP).
+    \ create named dictionary instance with parsed name.
     \ executes constructor.
+
+: <object ( ... addr class - addr )
+    \ initialize object at user-provided address.
+    \ for pre-allocated memory like actor pools.
+    \ executes constructor.
+    \ (planned but not yet implemented)
 
 \ Field definition
 \ ----------------
