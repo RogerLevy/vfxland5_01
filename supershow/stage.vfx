@@ -13,9 +13,9 @@ variable gamelife
 0 0 2value gametime
 
 trait: thinker% trait;
-thinker% :: init  ." init called on" me .name cr ;
-thinker% :: deinit  ." deinit called on" me .name cr ;
-thinker% :: think  ." think called on" me .name cr ;
+thinker% :: init  ;
+thinker% :: deinit  ;
+thinker% :: think  ;
 
 class: actor%
     is-a thinker%
@@ -51,20 +51,9 @@ class;
     dup valid-object? if drop -1 exit then
     's en @ ;
 
-\ : all> ( - ) ( - )
-\     r> {: xt :}
-\     me unsafe-[[ 
-\     0 actor to me
-\     #actors for
-\         xt execute 
-\         /actor +to me
-\     loop
-\     ]] ; 
-
 : actives> ( - ) ( - )
     r> {: xt :}
-    me unsafe-[[
-    0 actor to me
+    0 actor unsafe-[[
     #actors for
         en @ if xt execute then
         /actor +to me
@@ -356,7 +345,6 @@ class;
     err -exit
     me bench
     cr xt .name ." >> Actor had an oopsie, disabling: " me ['] info catch drop
-\    cr ." (Stage) Throw:"
     .s
     err throw ;
 

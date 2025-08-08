@@ -1,10 +1,13 @@
 variable attr
 variable textmode 
 
-250 constant ATTR_PUSH
-251 constant ATTR_POP
-254 constant ATTR_FG
-255 constant ATTR_BG  
+250 constant ATTR_CODES
+ATTR_CODES 1 -
+1 + dup constant ATTR_PUSH
+1 + dup constant ATTR_POP
+1 + dup constant ATTR_FG
+1 + dup constant ATTR_BG  
+drop
 
 : attribute ( n - )
     \ $0000BBFF = F = foreground, B = background

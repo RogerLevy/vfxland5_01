@@ -433,8 +433,6 @@ magic-id MAGIC_TWEAK TWK
 || : ?kb-unlock repl @ if restore-kb then ;
     
 || : -keys  reset-keyboard ;
-|| : ?quit  <esc> pressed? debug @ and if going off >vfx quit then ;
-|| : ?bye  <f4> pressed?  alt? and if bye then ;
 
 || : spin ( - f: n )
     ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
@@ -582,6 +580,14 @@ defer frame ( - ) ' noop is frame
 \ Main Loop
 \ =============================================================================
 
+|| : ?quit
+    <esc> pressed? debug @ and if
+        going off 
+        fullscreen? if windowed winmode then
+        >vfx
+        quit
+    then ;
+
 || : ?idle ( - ) debug @ if EmptyIdle then ;
 || : ?reload-shift ( - ) shift? to reload-shift? ;
 || : ?w/f ( - )
@@ -589,6 +595,7 @@ defer frame ( - ) ' noop is frame
     <enter> pressed?  alt? and if
         w/f -keys
     then ;    
+|| : ?bye  <f4> pressed?  alt? and if bye then ;
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
@@ -748,6 +755,29 @@ bye-chain link 0 ,
     context @ watch-context !
     0 parse 2dup f" :noname %s ;" evaluate watch-xt !
     watch$ place ;
+
+
+: ld ( - <path> )
+    bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
+        bl parse fe" \"%s\" doesn't exist or is not a project!" type cr
+        exit 
+    then
+    bl parse 2dup 2dup upper f" Loading %s..." type cr
+    home-path$ count f" %s\%s" $cwd
+    200 ms
+    \ ['] dir >r
+    ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
+                    \ SHELLCMD operations. Return stack anchor is a common
+                    \ pattern to stabilize memory layout when host OS calls
+                    \ interfere with interpreter state. Exact mechanism unknown.
+;
+
+: project ( - <path> )
+    home-path$ count $cwd
+    bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
+    200 ms
+    ld
+;
 
 \ =============================================================================
 \ Kickoff

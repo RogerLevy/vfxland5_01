@@ -9,28 +9,6 @@ frigid >vfx
 \ 0 to GenINI? \ don't save/load VFX INI file
 \ 0 to InitSupport? \ don't need windows constants
 256 1024 * 1024 * set-size  \ of dictionary
-
-: ld ( - <path> )
-    bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
-        -1 abort" Project doesn't exist or is not a project!"
-    then
-    bl parse home-path$ count f" %s\%s" $cwd
-    200 ms
-    \ ['] dir >r
-    ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
-                    \ SHELLCMD operations. Return stack anchor is a common
-                    \ pattern to stabilize memory layout when host OS calls
-                    \ interfere with interpreter state. Exact mechanism unknown.
-;
-
-: project ( - <path> )
-    home-path$ count $cwd
-    bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
-    200 ms
-    ld
-;
-
-marker gild
     
 cwd ..\bin
 save-dev engineer

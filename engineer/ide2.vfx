@@ -2,6 +2,8 @@
 \ IDE2 - Next-Level Development Interface  
 \ ------------------------------------------------------------------------------
 
+validations @ validations off
+
 public
 defer draw-ide
 
@@ -31,6 +33,8 @@ create scalexy 0 , 0 ,
 create str 32768 allot
 0 value >str
 
+16 cell stack hist-stack
+
 \ : ?+out  dup $80 and ?exit 1 out +! ;
 : hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
 : hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
@@ -39,10 +43,27 @@ borrow engineer~ frame
 borrow engineer~ draw-ide
 borrow engineer~ refresh
 
+: (echo) ( - )
+    \ Echo to VFX console
+    {: | skip :} 
+    >str -exit
+    op-handle @ hist-stack push
+    consoledev op-handle !
+    str >str bounds do
+        1 to skip
+        i c@ ATTR_FG = if 3 to skip then
+        i c@ ATTR_BG = if 3 to skip then
+        skip 1 = if
+            i c@ 10 ATTR_CODES 1 - within if i c@ emit then
+        then
+    skip +loop
+    hist-stack pop op-handle ! ;
+
 : hist-cr
     drop
     10 emit
     refresh-attribute
+    (echo)
     str >str add-history
     0 to >str
     0 out !
@@ -76,18 +97,19 @@ create vectors
   ' drop ,
 
 create hist-dev   0 , vectors ,
-16 cell stack hist-stack 
 
 : hist[ ( - )
-    textmode @ hist-stack push textmode on 
     op-handle @ hist-stack push
+    textmode @ hist-stack push textmode on 
     >str out !
     hist-dev op-handle ! ;
 
-: hist] ( - ) 
-    hist-stack pop op-handle !
+: hist] ( - )
     hist-stack pop textmode ! 
-    str >str add-history ;
+    hist-stack pop op-handle !
+    str >str add-history
+    (echo)
+    0 to >str ;
 
 \ =============================================================================
 \ IDE Components Display
@@ -409,16 +431,16 @@ public
     then ;
 
 : ide-events ( - )
-    hist[
     debug @ if
+        hist[
         ALLEGRO_EVENT_KEY_DOWN happened? if
             the-key <f1> - 0 12 within? if
                 the-key ?func
             then
         then
-        repl-events        
-    then
-    hist] ;
+        repl-events
+        hist] 
+    then ;
 
 :noname ( - )
     +m identity cls draw-display-mode -m ;
@@ -435,7 +457,7 @@ is draw-ide
     >ide ;
 
 : ide-interpret ( a len - res )
-    hist[ >interpret hist] ;
+    hist[ >interpret out @ if cr then hist] ;
 
 : ide2-quit
     textmode off
@@ -448,3 +470,5 @@ is draw-ide
 ' noop is boot
 ' noop is onSwitchIn
 init-history
+
+validations !
