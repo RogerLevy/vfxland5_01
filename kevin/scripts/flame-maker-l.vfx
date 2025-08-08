@@ -1,6 +1,6 @@
 require scripts\flame.vfx
 
-var kids
+prop kids
 
 class flame-maker-l%
 : *flame  flame% one dup [[ left fac ! ]] ;

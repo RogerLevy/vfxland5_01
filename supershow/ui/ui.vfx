@@ -8,9 +8,9 @@ public
 #elements /actor array elements
 
 \ Object extension
-var sx var sy
-var en var vis var draw
-var parent var lowest var highest var next var prev
+prop sx prop sy
+prop en prop vis prop draw
+prop parent prop lowest prop highest prop next prop prev
 require %idir%\..\dltree.vfx
 
 \ Allocation

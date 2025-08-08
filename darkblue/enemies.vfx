@@ -67,12 +67,12 @@ actor-class enemies%
     20 i/bounty !
     80 i/firing-rate !
     public
-        var hp
-        var r
-        var m
-        var atk
-        var bounty
-        var firing-rate
+        prop hp
+        prop r
+        prop m
+        prop atk
+        prop bounty
+        prop firing-rate
     private
     
 \ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;

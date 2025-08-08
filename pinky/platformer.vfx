@@ -3,16 +3,16 @@
 \ WIP
 \ ------------------------------------------------------------------------------
 
-var hp
-var fac
-var gravity
-var falling
-var in-air
-var jumppower 
-var risepower 
-var walkspeed
-var inertia
-var climbing
+prop hp
+prop fac
+prop gravity
+prop falling
+prop in-air
+prop jumppower 
+prop risepower 
+prop walkspeed
+prop inertia
+prop climbing
 
 m: _walk  drop ;  : walk  me _walk ;
 m: _jump ;        : jump  in-air on  me _jump ;

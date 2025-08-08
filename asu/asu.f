@@ -53,9 +53,9 @@ create sco " asu.sco" file,
 \ ['] create-struct-ifield is create-ifield ;
 
 0
-   var addr
-   dvar destval  \ float
-   dvar stepval  \ float
+   prop addr
+   8 nprop destval  \ float
+   8 nprop stepval  \ float
 constant /rampctl
 
 \ general-structs

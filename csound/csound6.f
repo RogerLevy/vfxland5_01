@@ -8,7 +8,7 @@ function: csoundStop ( csound -- )
 function: csoundDestroy ( csound -- )
 function: csoundCreateThread ( routine[ptr--ptr] userdata -- )
 function: csoundScoreEvent ( csound type pfields count -- )
-function: csoundGetChannelPtr ( CSOUND >pointervar *name type -- n )  \ maybe not safe
+function: csoundGetChannelPtr ( CSOUND >pointerprop *name type -- n )  \ maybe not safe
 function: csoundGetAudioChannel ( csound *name *samples -- )
 function: csoundSetAudioChannel ( csound *name *samples -- )
 function: csoundSetControlChannel ( csound *name floatval floatval -- )

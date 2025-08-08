@@ -15,8 +15,8 @@ cell array: orb-anim
 array;
 
 actor-class orb%
-    var r
-    var m
+    prop r
+    prop m
 
 : ?laser
     0.1 passed? -exit

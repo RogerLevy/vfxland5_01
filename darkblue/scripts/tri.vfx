@@ -3,10 +3,10 @@ require ../lib/claude-math.vfx
 tri.png 17 17 tileset tri.ts
 
 actor-class tri%
-    var r
-    var m
-    var ang
-    var vang
+    prop r
+    prop m
+    prop ang
+    prop vang
 
 aka bounced n1
 

@@ -1,4 +1,4 @@
-var talkable
+prop talkable
 rat3.png 40 40 tileset rat3.ts
 rat3.ts animation rat3.anm 0 7 range,
 

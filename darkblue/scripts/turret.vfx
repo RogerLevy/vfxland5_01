@@ -12,13 +12,13 @@ require tween.vfx
 require scripts\ship.vfx
 
 actor-class turret%
-    var shooting
-    var shaking     \ 0 ~ 1.0
-    var aim
-    var atk
-    var a
+    prop shooting
+    prop shaking     \ 0 ~ 1.0
+    prop aim
+    prop atk
+    prop a
 
-    var owner \ ship tracking pointer
+    prop owner \ ship tracking pointer
 
 borrow ship~ flash-ctr \ ship's recovery counter
 
@@ -67,14 +67,14 @@ array;
 : fire-medium ( atk - ) *shoot* 8. missile1% shoot ;
 : fire-large ( atk - ) *shoot* 8. missile2% shoot ;
 
-var a
+prop a
 : laser-physics
     owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
     owner @ 's a @ a ! ;
 
 \ TODO: turns these into dynamic internal vars (since we can't use n1-n4)
-var dest-w 
-var dest-atk 
+prop dest-w 
+prop dest-atk 
 
 : fire-thin ( atk - )
     *shoot*

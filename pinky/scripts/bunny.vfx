@@ -1,4 +1,4 @@
-var kind
+prop kind
 
 bunny.png 32 32 tileset bunny.ts
 

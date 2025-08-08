@@ -1,5 +1,5 @@
 actor-class bubble%
-    var r
+    prop r
 
 bubble% :: init ( - )
     ;

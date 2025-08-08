@@ -15,7 +15,7 @@ debug @ [if] <enter> [else] <esc> [then] constant <subscreen>
 dummy value p1
 create start-xy 160 , 120 , 
 variable #deaths
-var can-travel
+prop can-travel
 create item$ 17 allot&erase 
 variable can-save
 

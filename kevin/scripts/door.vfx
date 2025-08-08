@@ -1,13 +1,13 @@
 require doordata.vfx
 
 m: open ( - ) ;
-var dest \ room #
-var kind
+prop dest \ room #
+prop kind
 0 constant brass
 1 constant concrete
 2 constant jade
 3 constant chrome
-var lockstate
+prop lockstate
 0 constant unlocked
 1 constant locked
 2 constant oneway

@@ -35,10 +35,10 @@
 \ ------------------------------------------------------------------------------
 
 actor-class event%
-    var delay-xt
-    var delay-secs
-    var starting-xt
-    var curves         \ array
+    prop delay-xt
+    prop delay-secs
+    prop starting-xt
+    prop curves         \ array
     
 : (suicidal) ( - )
     act> ." Event finished: " unload me peek cr ;   

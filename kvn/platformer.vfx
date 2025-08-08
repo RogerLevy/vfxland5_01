@@ -4,11 +4,11 @@
 \ WIP
 \ ------------------------------------------------------------------------------
 
-var hp
-var fac
-var falling
-var in-air
-var climbing
+prop hp
+prop fac
+prop falling
+prop in-air
+prop climbing
 
 static gravity
 static terminal-vy

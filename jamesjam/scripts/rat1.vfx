@@ -1,4 +1,4 @@
-var talkable
+prop talkable
 
 class rat1%
 rat1% :: depict

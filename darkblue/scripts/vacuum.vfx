@@ -7,7 +7,7 @@ enemy-class vacuum%
     0 i/firing-rate ! 
     aka my-bubble n1
 
-    var owner   
+    prop owner   
 
 0 value bub
 \ : blowout-r  bub 's r @ 100. p* p>f  ;

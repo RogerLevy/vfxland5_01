@@ -1,10 +1,10 @@
 \ Common Vars
-var hp
-var r \ radius 
-var m \ mass
-var atk
-var owner
-var worth \ when non-zero, makes object a collectible source of energy
+prop hp
+prop r \ radius 
+prop m \ mass
+prop atk
+prop owner
+prop worth \ when non-zero, makes object a collectible source of energy
 
 \ Messages
 m: damage ( n - ) negate hp +! ;

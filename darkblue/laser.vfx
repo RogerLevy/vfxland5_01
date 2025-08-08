@@ -1,8 +1,8 @@
 actor-class laser%
 
-    var a \ angle
-    var w \ width
-    var l \ length
+    prop a \ angle
+    prop w \ width
+    prop l \ length
 
 : draw-laser ( - )
     w @ p>f f>ds >r

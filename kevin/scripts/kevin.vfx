@@ -285,7 +285,7 @@ private 0 value d public
 
 : ?warp  ?dup 0= if start# then warp ;
 
-var dest
+prop dest
 
 : enter ( - ) \ me = door, p1 = kevin
     ['] roomcol2 phys !

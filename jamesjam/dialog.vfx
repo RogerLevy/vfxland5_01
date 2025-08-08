@@ -4,7 +4,7 @@
 
 m: depict ;
 m: interact ( actor - ) drop ;
-var talkable
+prop talkable
 create script 256 allot
 0 value speaker
 0 value nearby
