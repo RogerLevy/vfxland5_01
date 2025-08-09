@@ -402,7 +402,7 @@ create protocol%  class% instance [[
 \ ==============================================================================
 
 : apply-trait ( trait class b:id? - )
-    {: trait class id? :}
+    {: trait class id? | could? :}
     class 's cla @ class% <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
@@ -420,18 +420,26 @@ create protocol%  class% instance [[
         trait 's classifier# @ class 's id-table set-bit
     then
     
+    \ Cache the current capability status
+    trait 's classifier# @ class 's can-table test-bit to could?
+    
     \ Set capability bit
     trait 's classifier# @ class 's can-table set-bit
     
     \ Merge protocols
     trait 's protocol-list dup list-count for
-        @next \ ++dup .name
-        ( protocol ) class support-protocol 
+        @next 
+        ( protocol ) class
+        \ Avoid clobbering already supported protocols if "upgrading"
+        \ a class from WORKS-WITH to IS-A.
+        could? if 2dup supports-protocol? not else -1 then
+        if support-protocol then
     loop drop
     
     \ Merge properties
     trait 's property-list dup list-count for
-        @next dup is-property-mapped? if drop else map-property then
+        @next
+        dup is-property-mapped? if drop else dup add-property map-property then
     loop drop
     
     \ Add class to dependents
