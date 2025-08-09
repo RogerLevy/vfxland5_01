@@ -1,0 +1,172 @@
+# Class Naming Convention Update Log
+# Generated: 2025-08-09
+
+## Overview
+Removing % suffixes from all non-system classes and adding _ prefixes to system classes.
+Resolving noun word collisions with appropriate suffixes.
+
+## Naming Conventions
+- System classes: _array, _stack, _property, etc.
+- Regular classes: actor, timer, vessel, etc.
+- Variable/value collisions: add 0 suffix (player → player0)
+- Array accessor collisions: add [] suffix (actor → actor[])
+- Property collisions: add 0 suffix (path → path0)  
+- Local variable collisions: add 0 suffix (actor → actor0)
+- Non-defining function collisions: add 0 suffix (waypoint → waypoint0)
+
+---
+
+## PHASE 1: ENGINEER (System Classes)
+
+### Classes to Rename
+- array% → _array
+- stack% → _stack
+- iterable% → _iterable
+- lifo% → _lifo
+- fifo% → _fifo
+- property% → _property
+- static% → _static
+- protocol% → _protocol
+- trait% → _trait
+- class% → _class
+- object% → _object
+
+### Noun Word Collisions in Engineer
+
+#### nib2.vfx (8 collisions)
+1. Line 328: `{: trait :}` → `{: trait0 :}`
+2. Line 337: `{: size property :}` → `{: size property0 :}`
+3. Line 405: `{: trait class id? | could? :}` → `{: trait0 class0 id? | could? :}`
+4. Line 520: `{: protocol class | name[ 256 ] :}` → `{: protocol0 class0 | name[ 256 ] :}`
+5. Line 531: `{: trait | protocol class :}` → `{: trait0 | protocol0 class0 :}`
+6. Line 556: `{: class | protocol :}` → `{: class0 | protocol0 :}`
+7. Line 586: `{: | class :}` → `{: | class0 :}`
+8. Line 595: `{: source-class :}` → `{: source-class0 :}`
+
+#### nib2-tools.vfx (1 collision)
+1. Line 82: `{: class :}` → `{: class0 :}`
+
+#### array2.vfx (1 collision)
+1. Line 202: `{: count class :}` → `{: count class0 :}`
+
+### Files to Update
+- engineer/nib2.vfx ✅
+- engineer/nib2-tools.vfx ✅
+- engineer/array2.vfx ✅
+- engineer/ide3.vfx ✅
+
+### Display Mode Classes (ide3.vfx)
+- ide-mode% → ide-mode
+- full-mode% → full-mode  
+- window-mode% → window-mode
+
+### Noun Word Collisions Fixed (ide3.vfx)
+1. Line 433: `ide-mode% object ide-mode` → `ide-mode object ide-mode0`
+2. Line 434: `full-mode% object full-mode` → `full-mode object full-mode0`
+3. Line 435: `window-mode% object window-mode` → `window-mode object window-mode0`
+4. Line 438: `ide-mode , full-mode , window-mode` → `ide-mode0 , full-mode0 , window-mode0`
+
+---
+
+## PHASE 2: SUPERSHOW
+
+### Classes to Rename
+- actor% → actor
+- timer% → timer
+- thinker% → thinker
+
+### Noun Word Collisions in Supershow
+
+#### stage.vfx (2 collisions)
+1. Line 43: `: actor ( n - actor ) actors [] ;` → `: actor[] ( n - actor ) actors [] ;`
+2. Line 332: `{: parent-class :}` → `{: parent-class0 :}`
+
+#### tools.vfx (1 collision)
+1. Line 25: `{: | class :}` → `{: | class0 :}`
+
+### Files to Update
+- supershow/stage.vfx
+- supershow/supershow.vfx
+- supershow/udlr.vfx
+- supershow/tools.vfx
+
+---
+
+## PHASE 3: GAME PROJECTS
+
+### Classes to Rename (darkblue)
+- vessel% → vessel
+- projectile% → projectile
+- pickup% → pickup
+- enemy% → enemy
+- event% → event
+- path% → path
+- segment% → segment
+- playback% → playback
+
+### Noun Word Collisions in Dark Blue
+
+#### common.vfx (1 collision)
+1. Line 41: `0 value player` → `0 value player0`
+
+#### path.vfx (2 collisions)
+1. Line 27: `prop path` → `prop path0`
+2. Line 463: `: waypoint ( duration. - segment )` → `: waypoint0 ( duration. - segment )`
+
+#### checks.vfx (1 collision)
+1. Line 11: `{: n actor | res :}` → `{: n actor0 | res :}`
+
+### Noun Word Collisions in Spunk
+
+#### be/be-ext-claude.vfx (3 collisions)
+1. Line 61: `{: actor | bitmap-id -- :}` → `{: actor0 | bitmap-id -- :}`
+2. Line 70: `{: actor index -- :}` → `{: actor0 index -- :}`
+3. Line 78: `{: | tileset -- :}` → `{: | tileset0 -- :}`
+
+### Noun Word Collisions in Test Files
+
+#### test-leaderboard.vfx (1 collision)
+1. Line 83: `{: count class array :}` → `{: count class0 array0 :}`
+
+#### test-leaderboard-exp.vfx (1 collision)
+1. Line 83: `{: count class array :}` → `{: count class0 array0 :}`
+
+### Files to Update
+- darkblue/common.vfx
+- darkblue/enemies.vfx
+- darkblue/path.vfx
+- darkblue/event.vfx
+- darkblue/checks.vfx
+- spunk/be/be-ext-claude.vfx
+- test-leaderboard.vfx
+- test-leaderboard-exp.vfx
+
+---
+
+## Summary Statistics
+
+### Total Noun Word Collisions: 22
+- Local variables in {: :}: 18
+- Value declarations: 1
+- Property declarations: 1
+- Array accessor functions: 1
+- Non-defining functions: 1
+
+### Files with Most Collisions
+1. engineer/nib2.vfx - 8 collisions
+2. spunk/be/be-ext-claude.vfx - 3 collisions
+3. supershow/stage.vfx - 2 collisions
+4. darkblue/path.vfx - 2 collisions
+
+---
+
+## Implementation Status
+- [ ] Phase 1: Engineer system classes
+- [ ] Phase 2: Supershow classes
+- [ ] Phase 3: Game project classes
+
+## Notes
+- All defining words (with <name> in stack diagram) are preserved
+- System classes use _ prefix instead of % suffix
+- Regular classes lose % suffix completely
+- Comprehensive search completed for all collision types

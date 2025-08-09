@@ -382,60 +382,60 @@ borrow engineer~ winmode
 borrow engineer~ draw-tv
 
 \ Displaymode-like trait
-trait: displaymode-like%
+trait: displaymode-like
     prop _ide
     prop _repl
     prop _hold
 trait;
 
-displaymode-like% :: activate ( - ) stub ;
-displaymode-like% :: draw ( - ) stub ;
+displaymode-like :: activate ( - ) stub ;
+displaymode-like :: draw ( - ) stub ;
 
 \ IDE mode
-class: ide-mode%
-    is-a displaymode-like%
+class: ide-mode
+    is-a displaymode-like
 class;
 
-ide-mode% :: activate ( - )
+ide-mode :: activate ( - )
     fullscreen winmode ;
 
-ide-mode% :: draw ( - )
+ide-mode :: draw ( - )
     at@ 2>r ide-layout 2r> at ;
 
-0 ide-mode% :construct ( - )
+0 ide-mode :construct ( - )
     _ide on _repl on ;
 
 \ Full mode
-class: full-mode%
-    is-a displaymode-like%
+class: full-mode
+    is-a displaymode-like
 class;
 
-full-mode% :: activate ( - )
+full-mode :: activate ( - )
     fullscreen winmode ;
 
-full-mode% :: draw ( - )
+full-mode :: draw ( - )
     draw-tv
     ( draw repl here ) ;
 
 \ Window mode
-class: window-mode%
-    is-a displaymode-like%
+class: window-mode
+    is-a displaymode-like
 class;
 
-window-mode% :: activate ( - )
+window-mode :: activate ( - )
     windowed winmode ;
 
-window-mode% :: draw ( - )
+window-mode :: draw ( - )
     ?border draw-game
     ( draw repl here ) ;
 
 \ Create array of display modes
-ide-mode% object ide-mode
-full-mode% object full-mode
-window-mode% object window-mode
+ide-mode object ide-mode0
+full-mode object full-mode0
+window-mode object window-mode0
 
 display-mode object-table: current-mode
-    ide-mode , full-mode , window-mode ,
+    ide-mode0 , full-mode0 , window-mode0 ,
 object-table;
 
 \ Redefine ide and repl to point to current mode's properties

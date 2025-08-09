@@ -2,19 +2,19 @@
 \ Arrays (NIBS)
 \ ------------------------------------------------------------------------------
 
-trait: iterable%
+trait: _iterable
     prop item-count
 trait;
 
 : #items ( iterable - n ) 's item-count @ ;
-iterable% :: vacate ( - ) 0 item-count ! ;
-iterable% :: index ( a - n ) stub ; 
-iterable% :: deref-index ( n - ? ) stub ;
+_iterable :: vacate ( - ) 0 item-count ! ;
+_iterable :: index ( a - n ) stub ; 
+_iterable :: deref-index ( n - ? ) stub ;
 
 variable (enough)
 : enough  (enough) on ;
     
-iterable% :: [] ( n - a )
+_iterable :: [] ( n - a )
     \ pronounced "box"
     stub ;
 
@@ -25,7 +25,7 @@ iterable% :: [] ( n - a )
         (enough) @ if unloop exit then
     loop ;
 
-iterable% :: each ( xt - ) ( ... a - ... )
+_iterable :: each ( xt - ) ( ... a - ... )
     (enough) @ >r
     (enough) off
     ['] (each) catch
@@ -39,7 +39,7 @@ iterable% :: each ( xt - ) ( ... a - ... )
         (enough) @ if unloop exit then
     loop ;
 
-iterable% :: each@ ( xt - ) ( ... ? - ... )
+_iterable :: each@ ( xt - ) ( ... ? - ... )
     (enough) @ >r
     (enough) off
     ['] (each@) catch
@@ -52,41 +52,41 @@ iterable% :: each@ ( xt - ) ( ... ? - ... )
     dup >r 's item-count @ 1 - p* r> [] ;
 
 \ Essential queries:
-iterable% :: empty? ( - bool )
+_iterable :: empty? ( - bool )
     item-count @ 0= ;
 
-iterable% :: ?bounds ( n - n )
+_iterable :: ?bounds ( n - n )
     dup 0 item-count @ 1 - within? not abort" ?BOUNDS >> Index out of range!" ;
 
 \ Search operations:
-iterable% :: find-index ( xt - n | -1 ) ( a - b )
+_iterable :: find-index ( xt - n | -1 ) ( a - b )
     {: xt :}
     item-count @ for
         i me [] xt execute if i unloop exit then
     loop -1 ;
 
-iterable% :: index-of ( item - n | -1 ) ( a - b )
+_iterable :: index-of ( item - n | -1 ) ( a - b )
     {: item :}
     item-count @ for
         i me deref-index item = if i unloop exit then
     loop -1 ;
 
-iterable% :: contains? ( item - bool )
+_iterable :: contains? ( item - bool )
     me index-of 0 >= ;
       
 \ Access helpers:
 \ For object/reference types:
-iterable% :: head ( - a )
+_iterable :: head ( - a )
     0 me ?bounds me [] ;
 
-iterable% :: tail ( - a )
+_iterable :: tail ( - a )
     item-count @ 1 - me ?bounds me [] ;
 
 \ For value types:
-iterable% :: head@ ( - ? )
+_iterable :: head@ ( - ? )
     0 me ?bounds me deref-index ;
 
-iterable% :: tail@ ( - ? )
+_iterable :: tail@ ( - ? )
     item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
@@ -106,30 +106,30 @@ iterable% :: tail@ ( - ? )
 \         else drop then
 \     loop j ;
 
-trait: lifo% trait;
-lifo% :: push ( item - ) stub ; 
-lifo% :: pop ( - item ) stub ; 
-lifo% :: push-copy ( a - ) stub ; 
-lifo% :: pop-ref ( - a ) stub ; 
-lifo% :: peek ( - item ) stub ;
-lifo% :: peek-ref ( - a ) stub ;
+trait: _lifo trait;
+_lifo :: push ( item - ) stub ; 
+_lifo :: pop ( - item ) stub ; 
+_lifo :: push-copy ( a - ) stub ; 
+_lifo :: pop-ref ( - a ) stub ; 
+_lifo :: peek ( - item ) stub ;
+_lifo :: peek-ref ( - a ) stub ;
 
-trait: fifo% trait;
-fifo% :: enqueue ( item - ) stub ;
-fifo% :: dequeue ( - item ) stub ;
-fifo% :: enqueue-copy ( a - ) stub ;
-fifo% :: dequeue-ref ( - a ) stub ;
-fifo% :: peek ( - item ) stub ;
-fifo% :: peek-ref ( - item ) stub ;
+trait: _fifo trait;
+_fifo :: enqueue ( item - ) stub ;
+_fifo :: dequeue ( - item ) stub ;
+_fifo :: enqueue-copy ( a - ) stub ;
+_fifo :: dequeue-ref ( - a ) stub ;
+_fifo :: peek ( - item ) stub ;
+_fifo :: peek-ref ( - item ) stub ;
 
-class: array%
-    is-a iterable%
+class: _array
+    is-a _iterable
     prop max-items
     prop item-size
     prop data
 class;
 
-2 array% :construct ( max-items item-size - )
+2 _array :construct ( max-items item-size - )
     2dup item-size ! max-items !
     max-items @ item-count !
     here data ! * allot&erase ;
@@ -137,44 +137,44 @@ class;
 : /item ( array - n )
     's item-size @ ;
 
-array% :: index ( a - n )
+_array :: index ( a - n )
     data @ - item-size @ / me ?bounds ;
 
-array% :: [] ( n - a )
+_array :: [] ( n - a )
     me ?bounds item-size @ * data @ + ;
 
-array% :: deref-index ( n - ? )
+_array :: deref-index ( n - ? )
     me [] @ ;
 
-class: stack%
-    array% derive
-    is-a lifo%
+class: _stack
+    _array derive
+    is-a _lifo
 class;
 
-2 stack% :construct ( max-items item-size - )
+2 _stack :construct ( max-items item-size - )
     2dup item-size ! max-items !
     here data ! * allot&erase ;
 
-stack% :: push ( item - )
+_stack :: push ( item - )
     item-count @ max-items @ = abort" Overflow."
     1 item-count +!  me tail ! ;
 
-stack% :: pop ( - item )
+_stack :: pop ( - item )
     item-count @ 0= abort" Underflow."
     me tail @  -1 item-count +! ;
 
-stack% :: push-copy ( a - )
+_stack :: push-copy ( a - )
     item-count @ max-items @ = abort" Overflow."
     1 item-count +!  ( a ) me tail item-size @ move ;
 
-stack% :: pop-ref ( - a )
+_stack :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
     me tail  -1 item-count +! ;
 
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - )
-    0 swap array% instance [[
+    0 swap _array instance [[
     here data !  me ]] ;  \ just to be sure
 
 : array] ( array - array )
@@ -186,10 +186,10 @@ stack% :: pop-ref ( - a )
     over [[ data @ item-size @ rot * + here - allot&erase ]] ;
 
 : array ( max width - <name> )
-    array% object ;
+    _array object ;
 
 : stack ( max width - <name> )
-    stack% object ;
+    _stack object ;
 
 : object-table: ( a <name> - ) ( - object )
     create , cell array[
@@ -199,9 +199,9 @@ stack% :: pop-ref ( - a )
     array] drop ;
 
 : object-array ( c class <name> - )
-    {: count class :}
-    create count class sizeof array% instance [[
+    {: count class0 :}
+    create count class0 sizeof _array instance [[
         count for
-            class i me [] construct
+            class0 i me [] construct
         loop
     ]] ;
