@@ -1,10 +1,10 @@
 2025/08/08
-[ ] Investigate why editor isn't being opened on abort.
+[x] Investigate why editor isn't being opened on abort.
 
 [ ] Add trait::protocol identifier creation to (protocol:).
     Enable trait::protocol-name syntax for cleaner protocol references.
 
-[ ] Fix abort by setting AbortText.
+[x] Fix abort by setting AbortText.
     Currently aborting throws an exception due to the refactoring of system error handling
 
 [ ] Consolidate .IP and .DATA into a single smart address-decoding word.

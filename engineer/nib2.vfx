@@ -664,18 +664,18 @@ object% :: on-exec-error ( xt error# - )
 || trait% object object%-fresh  
 object% object%-fresh copy drop
 
-: reset-object-trait ( - )
-    object%-fresh object% copy drop ;
+|| : reset-object-trait ( - )
+||     object%-fresh object% copy drop ;
 
 || variable fresh-next-classifier#
 || variable fresh-/static
 
-: init-nib ( - )
-    fresh-next-classifier# @ next-classifier# ! 
-    fresh-/static @ /static
-    0 to classifier
-    reset-object-trait ;
+|| : init-nib ( - )
+||     fresh-next-classifier# @ next-classifier# ! 
+||     fresh-/static @ to /static
+||     0 to classifier
+||     reset-object-trait ;
 
-: gild-nib ( - )
+|| : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
     /static fresh-/static ! ;

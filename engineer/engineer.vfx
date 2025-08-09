@@ -645,6 +645,7 @@ bye-chain link 0 ,
 \ || : return ( - )
 \     home-path$ count $cwd ;
 
+borrow nib2~ init-nib
 : empty ( - )
     debug @ -exit
     rs
@@ -807,5 +808,8 @@ borrow ide3~ visible-lines
 
 ' engineer-entrypoint is EntryPoint
 assign engineer.cold to-do .cold
-marker gild
+
+borrow nib2~ gild-nib
 gild-nib
+
+marker gild

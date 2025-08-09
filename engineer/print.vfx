@@ -3,12 +3,12 @@
 \ ------------------------------------------------------------------------------
 
 \ Palette
-include vga13h.vfx
+include %idir%/vga13h.vfx
 
 \ Backend
 || variable rmargin
 || create bg.png here
-    s" builtin\gfx\vga2_8x8_allegro5.png" file,
+    s" %idir%\builtin\gfx\vga2_8x8_allegro5.png" file,
 || here swap - constant /bg.png
 || 0 value vga-8x8 \ font
 || create range(s) 0 , 255 ,

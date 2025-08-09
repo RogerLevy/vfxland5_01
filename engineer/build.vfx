@@ -5,14 +5,14 @@
 optimising off
 include %idir%/file-fix.vfx
 include %idir%/engineer.vfx
+
+cwd ..
 frigid >vfx
 
-\ 0 to GenINI? \ don't save/load VFX INI file
-\ 0 to InitSupport? \ don't need windows constants
 256 1024 * 1024 * set-size  \ of dictionary
     
-cwd ..\bin
-save-dev engineer
+cwd bin
+save-dev engineer   
 cwd ..
 
 save-xref
