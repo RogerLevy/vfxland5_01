@@ -53,9 +53,6 @@ constant /magical-base
 
 || : ?literal  state @ if postpone literal then ;
 
-: -% ( a c -- a c' )
-    dup -exit 2dup + 1 - c@ '%' = -exit 1 - ;
-
 cstring name$
 : >$ ( a len - $ )
     name$ place name$ ;
@@ -71,21 +68,12 @@ cstring name$
     >r 8 /mod ( bit-ofs byte-ofs )
     r> + c@ 1 rot lshift and 0<> ;
 
-: add-to ( item list - )
-    \ list (head): [ next-node , item , count , ]
-    \ node: [ next-node , item , ]
-    {: item head :}
-    head cell+ cell+ @ 0= if
-        item head cell+ !
-    else
-        head
-        begin dup @ while @ repeat 
-        here swap ! 0 , item , 
-    then
-    1 head cell+ cell+ +! ;
-
 : @next ( node - next-node item )
     dup @ swap cell+ @ ;
+
+\ Forward-Linked List
+
+3 cells constant /list
 
 : list-count ( list - c )
     cell+ cell+ @ ;
@@ -93,8 +81,18 @@ cstring name$
 : list-count! ( c list - )
     cell+ cell+ ! ;
 
-
-3 cells constant /list
+: add-to ( item list - )
+    \ list (head): [ next-node , item , count , ]
+    \ node: [ next-node , item , ]
+    {: item head | count :}
+    head list-count to count
+    count 0= if
+        item head cell+ !
+    else
+        head count 1 - for @ loop
+        here swap ! 0 , item ,
+    then
+    count 1 + head list-count! ;
 
 : copy-list ( src dest - )
     {: src dest :}
@@ -126,7 +124,7 @@ variable osp   os osp ! \ object stack pointer
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
     [[
-    cla @ body> >name count -% f" %s~"
+    cla @ body> >name count f" %s~"
     >pad find if execute else drop then ;
 
 \ ==============================================================================
@@ -516,19 +514,25 @@ defer (on-exec-error) ( xt err# obj - )
         ( xt ) oexec
     ]] ;
 
+|| : :protocol ( protocolname-a protocolname-len classname-a classname-len - xt )
+    f" : %s:%s" 2dup upper
+    \ 2dup type cr
+    evaluate
+    state on
+    here ; 
+
 : implement-protocol ( protocol class - )
     {: protocol0 class0 | name[ 256 ] :} 
     protocol0 [[
         me body> >name count name[ place
         name[ count
-            class0 body> >name count 1 -
-            f" : %s::%s" 2dup upper evaluate
-        state on
-        here ( xt ) class0 offset @ + !
+        class0 body> >name count 
+        :protocol ( xt ) class0 offset @ + !
     ]] ;
     
 : (protocol:) ( trait <name> - ) ( ... object - ... )
-    {: trait0 | protocol0 class0 :}
+    {: trait0 | protocol0 class0 class1 buf[ 256 ] :}
+    bl preparse buf[ place
     _protocol already? if
         ' >body
         \ TODO: check if the protocol belongs to another trait and throw error if it is
@@ -541,13 +545,17 @@ defer (on-exec-error) ( xt err# obj - )
         me ]]
     then
     to protocol0
-    :noname protocol0 's default-xt !
+    
+    \ Compile the default behavior
+    buf[ count
+    trait0 body> >name count
+    :protocol protocol0 's default-xt !
     
     \ Propagate the protocol to dependents
     trait0 's dependents dup list-count for
-        @next to class0
-        protocol0 class0 supports-protocol? not if
-            protocol0 class0 support-protocol
+        @next to class1
+        protocol0 class1 supports-protocol? not if
+            protocol0 class1 support-protocol
         then
     loop drop
     ;
