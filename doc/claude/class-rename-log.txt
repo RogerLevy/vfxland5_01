@@ -85,10 +85,10 @@ Resolving noun word collisions with appropriate suffixes.
 1. Line 25: `{: | class :}` → `{: | class0 :}`
 
 ### Files to Update
-- supershow/stage.vfx
-- supershow/supershow.vfx
-- supershow/udlr.vfx
-- supershow/tools.vfx
+- supershow/stage.vfx ✅
+- supershow/supershow.vfx ✅
+- supershow/udlr.vfx ✅
+- supershow/tools.vfx ✅
 
 ---
 

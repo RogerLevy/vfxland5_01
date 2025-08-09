@@ -9,13 +9,13 @@
 variable gamelife
 0 0 2value gametime
 
-trait: thinker% trait;
-thinker% :: init  ;
-thinker% :: deinit  ;
-thinker% :: think  ;
+trait: thinker trait;
+thinker :: init  ;
+thinker :: deinit  ;
+thinker :: think  ;
 
-class: actor%
-    is-a thinker%
+class: actor
+    is-a thinker
     /actor field-space
     static autoclass
     prop en
@@ -31,8 +31,8 @@ class: actor%
     prop benched                    \ controls behavior and physics    
 class;
 
-#actors actor% object-array actors 
-#temps actor% object-array temps
+#actors actor object-array actors 
+#temps actor object-array temps
 
 \ =============================================================================
 \ Actor Access Words
@@ -40,7 +40,7 @@ class;
 
 : free? ( actor - f ) 's en @ 0= ;
 : as> ( actor - <code> ; ) [[ r> execute ]] ;
-: actor ( n - actor ) actors [] ;
+: actor[] ( n - actor ) actors [] ;
 : actor# ( actor - n ) actors index ;
 : act> ( - ) ( - ) 0 time !  r> beha ! ; 
 : act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
@@ -53,7 +53,7 @@ class;
 
 : actives> ( - ) ( - )
     r> {: xt :}
-    0 actor [[
+    0 actor[] [[
     #actors for
         en @ if xt execute then
         /actor +to me
@@ -68,7 +68,7 @@ class;
     benched @ if ." (BENCHED) " exit then
     en @ 0= if ." (FREE) " then ;
 
-actor% :: info ( actor - )
+actor :: info ( actor - )
     11 push-attribute
     ." [ #" me actor# . cla @ .name .status
     ." at: " x 2@ 2p>s swap . . 
@@ -186,7 +186,7 @@ variable next#
 : floating ( - )
     physics> vx 2@ x 2+! ;
 
-actor% defaults [[
+actor defaults [[
     en on
     prio on
     -5 -5 x1 2!  10 10 w1 2!
@@ -203,14 +203,14 @@ actor% defaults [[
     \ cr ." just >> All actors cleared!"
     0 next# !  actives>  unload ;
 
-0 actor% :construct ( - )
+0 actor :construct ( - )
     at@ 2s>p x 2! ;
 
 : (one) ( class - actor )
     {: c | saved-me :} 
     me to saved-me
     #actors for
-        next# @ actor dup free? if
+        next# @ actor[] dup free? if
             c over construct
             unloop exit
         then  drop
@@ -221,9 +221,9 @@ actor% defaults [[
     (one) dup init ;
     
 : *actor ( - actor )
-    actor% one ;
+    actor one ;
 
-actor% object dummy 
+actor object dummy 
 
 \ =============================================================================
 \ Object collisions
@@ -286,18 +286,18 @@ aka .> p>s
 
 || synonym xt1 n2
 
-class: timer%
-    actor% derive 
+class: timer
+    actor derive 
 class;
 
 : clear-timers ( -- )
-    actives> me timer% is? -exit unload ;
+    actives> me timer is? -exit unload ;
 
 || : (timer) ( time. xt -- )
     xt1 ! n1 ! act> n1 @ passed? -exit unload xt1 @ execute ;
 
 : timer> ( time. - ) ( - )
-    r> timer% one [[ (timer) ]] ;
+    r> timer one [[ (timer) ]] ;
 
 \ =============================================================================
 \ Secondary actor storage
@@ -329,11 +329,11 @@ class;
 || cstring classname$
 
 : script-class ( parent-class - <name> )
-    {: parent-class :}
+    {: parent-class0 :}
     \ Create a script class with its own private vocabulary (if it doesn't already exist)
     only forth definitions
     bl word count f" class: %s" evaluate
-    parent-class derive
+    parent-class0 derive
     private
     defaults [[    \ allows both static and defaults assignments
 ;
@@ -346,7 +346,7 @@ class;
     .s
     err throw ;
 
-' actor-on-exec-error actor% 's on-exec-error !
+' actor-on-exec-error actor 's on-exec-error !
     
 : ?hide-autoclass ( a len - )
     >pad find if
@@ -360,8 +360,8 @@ class;
 
 : actor-class ( - <name> )
     bl preparse ?hide-autoclass 
-    actor% script-class ; 
+    actor script-class ; 
 
-: find-class ( a len - class | actor% )
-    >pad find if execute else drop actor% then ;
+: find-class ( a len - class | actor )
+    >pad find if execute else drop actor then ;
 
