@@ -175,6 +175,7 @@ aka file-exists? fileexists?
         .s
         pop-attribute
         c" " 'AbortText !
+        EditOnError
         -2 throw
     else
         2drop
@@ -273,3 +274,4 @@ debug @ [if]
 : dvariable  create 0 , 0 , ;
 : 2variable  create 0 , 0 , ;
 [then]
+
