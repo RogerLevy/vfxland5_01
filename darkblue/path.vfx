@@ -253,7 +253,7 @@ playback% :: init ( - )
 || 2variable first-point
 
 validations dup @ swap off \ validations are way too slow for this
-: alp, ( path )
+: alp, ( - )
     me {: path | total-duration #target-samples #lookup-samples length-table coord-table
        f: total-length f: target-step f: current-target
        f: x f: y f: prev-x f: prev-y f: next-x f: next-y 
@@ -480,7 +480,7 @@ variable drift-error-y
 : *alpdata ( - )
     2 cells array[ alp, array] alpdata ! ;
 
-: path[ create path% instance [[  0 0 last-coord 2! ;
+: path[ create path% instance [[ 0 0 last-coord 2! ;
 : path] ]] ; 
 
 : segments[ segment% sizeof array[ ;

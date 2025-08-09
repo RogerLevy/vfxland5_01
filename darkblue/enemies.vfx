@@ -34,7 +34,7 @@
 class: enemy%
     actor% derive
     is-a vessel%
-trait;
+class;
     
 enemy% defaults [[
     enemy1.png bmp !
@@ -159,6 +159,7 @@ public
     already? not if
         ." deriving enemy " classifier .name cr
         enemy% derive
+        classifier .class
         classifier register-enemy-class
     then
     classifier auto-bitmap

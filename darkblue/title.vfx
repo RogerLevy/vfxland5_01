@@ -49,7 +49,7 @@ variable gamemode
 
 : logoh title-ts 0 tile bmph ;
 
-cell array: ntable
+create ntable cell array[
     0 ,
     1 ,
     1 ,
@@ -68,7 +68,7 @@ cell array: ntable
     39 ,
     39 ,
     40 ,
-array;
+array] drop
 
 : revealing n1 @ ntable n[] @ ;
 
