@@ -118,7 +118,7 @@ variable saved-dp
     3 push-attribute
     ."     RS:[ " 
     \ Walk from bottom (r0) to top (rp@), going downward
-    rp r0 @ over 5 cells + min  ?do
+    rp r0 @ over 9 cells + min  ?do
         i @ .name                    \ Print return address
         \ i rp <> if                  \ Not the last item?
         \     ." > "                   \ Print separator

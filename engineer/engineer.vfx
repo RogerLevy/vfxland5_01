@@ -24,13 +24,14 @@ create funcs 256 12 * allot&erase
 0 value reload-shift?
 variable _repl  _repl on   \ enable commandline
 variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
+variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
 defer repl  ' _repl is repl
 defer ide  ' _ide is ide
+defer hold  ' _hold is hold
 defer pump ' noop is pump
 cstring watch$
 variable watch-xt
 variable watch-context
-variable hold            \ HOLD ON / HOLD OFF to stop/resume logic updates
 
 \ =============================================================================
 \ System Integration
@@ -661,17 +662,23 @@ borrow nib2~ init-nib
     load-bitmaps
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
+: turnkey? ( - b )
+    home-path$ count nip 0<> ;
+
 : init-dev
     \ Development-only initialization
-    path home-path$ place
     +xrefs
     256 1024 * xref-kb
-    s" xref.xrf" fileexist? if load-xref then ;
+    turnkey? if
+        s" xref.xrf" fileexist? if load-xref then
+    then
+;
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
     debug @ if init-dev then
+    path home-path$ place
     init-mersenne
     init-allegro
     *display
@@ -716,36 +723,37 @@ borrow nib2~ init-nib
 : save-release ( - <path> )
     ['] cold is EntryPoint
     fullscreen?
-        ide @ repl @ debug @
-            ide off
-            repl off
+        debug @ hold @
             debug off
+            hold off
             fullscreen
             save cr
-        debug ! repl ! ide !
+        hold ! debug !
     if fullscreen else windowed then ;
 
 : save-debug ( - <path> )
     ['] vfxforth-entrypoint is EntryPoint
     fullscreen?
-        ide @ repl @ debug @
+        ide @ repl @ debug @ hold @
             ide off
             repl off
             debug off \ This disables Engineer-only initialization.
                       \ Counter-intuitive because we want to debug the game not Engineer.
+            hold off
             windowed
             save cr
-        debug ! repl ! ide !
+        hold ! debug ! repl ! ide !
     if fullscreen else windowed then ;
 
 : save-dev ( - <path> )
     fullscreen?
-        ide @ repl @
+        ide @ repl @ hold @
             ide on
             repl on
+            hold off
             windowed
             save cr
-        repl ! ide !
+        hold ! repl ! ide !
     if fullscreen else windowed then ;
 
 || : prj ( - a len ) path '\' ending ;
@@ -813,3 +821,4 @@ borrow nib2~ gild-nib
 gild-nib
 
 marker gild
+

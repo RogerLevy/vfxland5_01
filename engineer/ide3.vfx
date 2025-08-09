@@ -381,9 +381,11 @@ borrow engineer~ windowed
 borrow engineer~ winmode
 borrow engineer~ draw-tv
 
+\ Displaymode-like trait
 trait: displaymode-like%
     prop _ide
     prop _repl
+    prop _hold
 trait;
 
 displaymode-like% :: activate ( - ) stub ;
@@ -439,6 +441,7 @@ object-table;
 \ Redefine ide and repl to point to current mode's properties
 :noname ( - a ) current-mode 's _ide ; is ide
 :noname ( - a ) current-mode 's _repl ; is repl
+:noname ( - a ) current-mode 's _hold ; is hold
 
 : enact-display-mode ( - )
     current-mode activate ;

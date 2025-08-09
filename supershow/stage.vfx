@@ -136,7 +136,11 @@ actor% :: info ( actor - )
     (behave) (move) (+time) ;
 
 : step ( - )
-    hold @ ?exit ['] (step) catch .throw-catch ;
+    hold @ ?exit ['] (step) catch
+    ?dup if
+        hold on
+        .throw-catch
+    then ;
 
 \ =============================================================================
 \ Find actor
