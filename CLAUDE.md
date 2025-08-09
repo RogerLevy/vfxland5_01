@@ -115,6 +115,33 @@ Standard pattern: `think` → `render` → `animate` → repeat
 - `render`: Draw graphics to screen 
 - `animate`: Advance animations and timers
 
+### Startup Sequence
+The system has different entry points depending on build type:
+
+**Development Mode (engineer.exe)**
+1. Entry: `engineer-entrypoint` (handles Windows startup)
+2. Calls: `engineer.cold` (initializes IDE, processes command line)
+3. Loads: Project via command line or interactive commands
+4. Starts: `GO` to begin main loop with IDE/REPL available
+
+**Release Mode (turnkey executable)**
+1. Entry: `COLD` (set by `save-release` before saving)
+2. Sequence: `frigid` → `cartridge` → `boot` → `GO`
+3. No IDE/REPL, direct game execution
+
+**Main Loop (`GO`)**
+- Enters infinite `begin frame again` loop
+- `frame` executes `screen refresh controls pump`
+- `screen` draws using current `'show` vector
+- Games configure `'show` via `game` word (e.g., `show> think render`)
+
+**Key Words**
+- `FRIGID`: Initialize runtime (Allegro, display, etc.)
+- `CARTRIDGE`: Load game project (main.vfx)
+- `BOOT`: Game-specific startup (set by each game)
+- `GO`: Start the main execution loop
+- `GAME`: Configure per-frame behavior
+
 ### Interactive Development
 - REPL available during runtime for live coding
 - In-game editors (Spunk) allow immediate asset modification
