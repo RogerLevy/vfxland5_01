@@ -138,7 +138,8 @@ variable osp   os osp ! \ object stack pointer
     cell field next-ofs                 \ Next field offset for this class
     cell field field-space-size
     cell field classifier#
-    /bit-table field bit-table          \ Classification table
+    /bit-table field id-table           \ Classification table
+    /bit-table field can-table          \ Capability table
     /list field property-list
     /list field protocol-list
     cell field template
@@ -151,7 +152,8 @@ dup constant /classifier-base
 to /static
 
 : allocate-classifier-bit ( - )
-    next-classifier# @ classifier 's bit-table set-bit
+    next-classifier# @ classifier 's id-table set-bit
+    next-classifier# @ classifier 's can-table set-bit
     next-classifier# @ classifier 's classifier# !
     1 next-classifier# +! ;
 
@@ -187,7 +189,7 @@ create object% 0 (classifier) [[
 ]]
 
 : (add-object-system-trait-bit) ( - )
-    object% 's classifier# @ bit-table set-bit ;
+    object% 's classifier# @ id-table set-bit ;
 
 create-class trait% [[
     (add-object-system-trait-bit)
@@ -399,9 +401,9 @@ create protocol%  class% instance [[
 \ Classifier definition
 \ ==============================================================================
 
-: apply-trait ( trait class - )
-    {: trait class :}
-    class 's cla @ class% <> abort" IS-A >> Invalid destination - must be a class."
+: apply-trait ( trait class b:id? - )
+    {: trait class id? :}
+    class 's cla @ class% <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
     class reopened? if
@@ -414,7 +416,12 @@ create protocol%  class% instance [[
     then
     
     \ Set classifier bit
-    trait 's classifier# @ class 's bit-table set-bit
+    id? if
+        trait 's classifier# @ class 's id-table set-bit
+    then
+    
+    \ Set capability bit
+    trait 's classifier# @ class 's can-table set-bit
     
     \ Merge protocols
     trait 's protocol-list dup list-count for
@@ -440,7 +447,7 @@ create protocol%  class% instance [[
         (init-class) 
         /object-base instance-size !
         /object-base next-ofs !
-        object% classifier apply-trait 
+        object% classifier -1 apply-trait 
     ]] ;
 
 : class; ( - )
@@ -448,10 +455,14 @@ create protocol%  class% instance [[
 
 : is-a ( [class] <trait> - )
     \ [class] only required if outside class block
-    ' >body classifier ?dup 0= if swap then apply-trait ;
+    ' >body classifier ?dup 0= if swap then -1 apply-trait ;
+
+: works-with ( [class] <trait> - )
+    \ [class] only required if outside class block
+    ' >body classifier ?dup 0= if swap then 0 apply-trait ;
     
 : is? ( object classifier - bool )
-    's classifier# @ swap 's cla @ 's bit-table test-bit ;
+    's classifier# @ swap 's cla @ 's id-table test-bit ;
 
 : trait: ( <name> - )
     trait% already? if
@@ -591,11 +602,13 @@ defer (on-exec-error) ( xt err# obj - )
     source-class 's protocol-list  classifier 's protocol-list copy-list
     source-class 's property-list  classifier 's property-list copy-list
     
-    \ Copy parent's bit-table (trait relationships)
-    source-class 's bit-table classifier 's bit-table /bit-table move
+    \ Copy parent's bit table tables (trait relationships)
+    source-class 's id-table classifier 's id-table /bit-table move
+    source-class 's can-table classifier 's can-table /bit-table move
     
     \ Set parent bit for inheritance queries
-    source-class 's classifier# @ classifier 's bit-table set-bit
+    \ I believe this is not needed as it is set in the bit tables by begin-classifier
+    \ source-class 's classifier# @ classifier 's can-table set-bit
     
     \ Copy template if one exists, updating its class
     source-class 's template @ ?dup if

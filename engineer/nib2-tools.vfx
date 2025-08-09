@@ -1,43 +1,33 @@
 \ ------------------------------------------------------------------------------
 \ Nib 2.0 Introspection Tools
+\ Claude wrote the initial version of this but it's been heavily modified
 \ ------------------------------------------------------------------------------
 
 || 0 value target-class
 || 0 value target-bit
-|| 0 value found-parents
-
-|| : find-trait ( thread# nfa - f )
-    {: thread# nfa | body :}
-    nfa name> >body to body
-    body 's cla @ trait% = if
-        body 's classifier# @ target-bit = if
-            ."         - " nfa count type ."  (trait)" cr 
-            0  \ found it, stop walking
-            1 +to found-parents
-        else -1 then
-    else -1 then ;
+|| 0 value found-items
     
 || : find-parent ( thread# nfa - f )
     {: thread# nfa | body :}
     nfa name> >body to body
     body 's cla @ class% = if
         body 's classifier# @ target-bit = if
-            ."         - " nfa count type ."  (class)" cr 
+            ."        - " nfa count type cr 
             0  \ found it, stop walking
-            1 +to found-parents
+            1 +to found-items
         else -1 then
     else -1 then ;
-
-: .parents ( class - )
+    
+|| : .class-parents ( class - )
     \ Print all ancestors of a class
     dup valid-class? not abort" Not a valid class."
     
     to target-class
     cr ."     Parents of " target-class body> >name count type ." :" cr
     
-    0 to found-parents
+    0 to found-items
     #max-classifiers for
-        i target-class 's bit-table test-bit if
+        i target-class 's can-table test-bit if
             \ Check if this bit represents a trait (not the class itself)
             i target-class 's classifier# @ <> if
                 \ Find which trait has this classifier#
@@ -48,18 +38,33 @@
         then
     loop
     
-    found-parents 0= if ."         (no ancestors)" cr then ;
+    found-items 0= if ."        (no parents derived)" cr then ;
 
-: .traits ( class - )
+|| : find-trait ( thread# nfa - f )
+    {: thread# nfa | body :}
+    nfa name> >body to body
+    body 's cla @ trait% = if
+        body 's classifier# @ target-bit = if
+            ."        - " nfa count type
+            target-bit target-class 's id-table test-bit 0= if
+                ."  (capability only)"
+            then
+            cr 
+            0  \ found it, stop walking
+            1 +to found-items
+        else -1 then
+    else -1 then ;
+
+|| : .class-traits ( class - )
     \ Print all traits applied to a class
     dup valid-class? not abort" Not a valid class."
     
     to target-class
     cr ."     Traits of " target-class body> >name count type ." :" cr
     
-    0 to found-parents
+    0 to found-items
     #max-classifiers for
-        i target-class 's bit-table test-bit if
+        i target-class 's can-table test-bit if
             \ Check if this bit represents a trait (not the class itself)
             i target-class 's classifier# @ <> if
                 \ Find which trait has this classifier#
@@ -70,7 +75,7 @@
         then
     loop
     
-    found-parents 0= if ."         (no traits applied)" cr then ;
+    found-items 0= if ."        (no traits applied)" cr then ;
 
 : .class ( class - )
     \ Print detailed information about a class
@@ -86,9 +91,36 @@
     ."     Protocols: " class 's protocol-list list-count . cr
     ."     Dependents: " class 's dependents list-count . cr
     
-    class .traits
-    class .parents ;
+    class .class-traits
+    class .class-parents ;
+
+|| : ?.class ( thread# nfa - f )
+    {: thread# nfa | body :}
+    nfa name> >body to body
+    body 's cla @ class% = if
+        ."        - " nfa count type cr
+        1 +to found-items        
+    then -1 ;
+
+|| : ?.trait ( thread# nfa - f )
+    {: thread# nfa | body :}
+    nfa name> >body to body
+    body 's cla @ trait% = if
+        ."        - " nfa count type cr
+        1 +to found-items        
+    then -1 ;
+
+: .nibs ( - )
+    cr
+    ."    Classes:" cr
+    0 to found-items
+    ['] ?.class forth-wordlist WalkWordList 
+    ."        - Total: " found-items . cr cr
+    ."    Traits:" cr
+    0 to found-items
+    ['] ?.trait forth-wordlist WalkWordList 
+    ."        - Total: " found-items . cr ;
+    
 
 \ Example usage:
-\ ship% .parents
 \ ship% .class
