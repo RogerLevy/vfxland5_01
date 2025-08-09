@@ -6,5 +6,6 @@ include %idir%/scope.vfx
 include %idir%/fixed.vfx
 include %idir%/format.vfx
 include %idir%/nib2.vfx
+include %idir%/nib2-tools.vfx
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx

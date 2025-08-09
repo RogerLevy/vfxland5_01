@@ -661,7 +661,7 @@ object% :: on-exec-error ( xt error# - )
 \ Init/Reset
 \ ==============================================================================
 
-trait% object object%-fresh  
+|| trait% object object%-fresh  
 object% object%-fresh copy drop
 
 : reset-object-trait ( - )

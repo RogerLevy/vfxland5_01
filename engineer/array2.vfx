@@ -173,17 +173,19 @@ stack% :: pop-ref ( - a )
 
 \ ------------------------------------------------------------------------------
 
+
+
 : array[ ( item-size - )
     0 swap array% instance [[
-    here data ! ;  \ just to be sure
+    here data !  me ]] ;  \ just to be sure
 
-: array] ( - array )
-    here data @ - item-size @ /
+: array] ( array - array )
+    [[ here data @ - item-size @ /
     dup item-count ! max-items !   me ]] ;
 
-: pad-array  ( count - )
+: pad-array  ( array count - array )
     \ Pad out an array being built, to given count
-    data @ item-size @ rot * + here - allot&erase ;
+    over [[ data @ item-size @ rot * + here - allot&erase ]] ;
 
 : array ( max width - <name> )
     array% object ;

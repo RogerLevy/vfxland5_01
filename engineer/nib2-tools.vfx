@@ -1,0 +1,60 @@
+\ ------------------------------------------------------------------------------
+\ Nib 2.0 Introspection Tools
+\ ------------------------------------------------------------------------------
+
+|| 0 value target-class
+|| 0 value target-bit
+|| 0 value found-traits
+
+|| : find-trait ( thread# nfa - f )
+    {: thread# nfa | body :}
+    nfa name> >body to body
+    body 's cla @ trait% = if
+        body 's classifier# @ target-bit = if
+            ."         - " nfa count type cr
+            0  \ found it, stop walking
+            1 +to found-traits
+        else -1 then
+    else -1 then ;
+
+: .traits ( class - )
+    \ Print all traits applied to a class
+    dup valid-class? not abort" Not a valid class."
+    
+    to target-class
+    cr ."     Traits of " target-class body> >name count type ." :" cr
+    
+    0 to found-traits
+    #max-classifiers for
+        i target-class 's bit-table test-bit if
+            \ Check if this bit represents a trait (not the class itself)
+            i target-class 's classifier# @ <> if
+                \ Find which trait has this classifier#
+                \ This is a bit hacky - we walk the dictionary looking for traits
+                i to target-bit
+                ['] find-trait forth-wordlist WalkWordList
+            then
+        then
+    loop
+    
+    found-traits 0= if ."   (no traits applied)" cr then ;
+
+: .class ( class - )
+    \ Print detailed information about a class
+    {: class :}
+    class valid-class? not if ." Not a valid class" exit then
+    
+    cr
+    ."     Class: " class body> >name count type cr
+    ."     Instance size: " class 's instance-size @ . ." bytes" cr
+    ."     Field-space: " class 's field-space-size @ ?dup if . ." bytes" else ." none" then cr
+    ."     Classifier#: " class 's classifier# @ . cr
+    ."     Properties: " class 's property-list list-count . cr
+    ."     Protocols: " class 's protocol-list list-count . cr
+    ."     Dependents: " class 's dependents list-count . cr
+    
+    class .traits ;
+
+\ Example usage:
+\ ship% .traits
+\ ship% .class
