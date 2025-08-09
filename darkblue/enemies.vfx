@@ -157,9 +157,7 @@ public
     preword find swap >body valid-class? and to already?
     actor-class 
     already? not if
-        ." deriving enemy " classifier .name cr
         enemy% derive
-        classifier .class
         classifier register-enemy-class
     then
     classifier auto-bitmap

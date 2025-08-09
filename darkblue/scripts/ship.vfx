@@ -7,6 +7,7 @@ ship-v1.png 27 27 tileset ship.ts
 actor-class ship%
     prop r
     prop m
+    prop flash-ctr
 
 variable paralysis                \ paralyzes player when >0
 0 value recovering?
@@ -15,8 +16,6 @@ variable paralysis                \ paralyzes player when >0
 .3 tweak spd           \ normal movement speed
 0.93 tweak ine         \ inertia
 \ .03 tweak dec           \ deceleration
-
-aka flash-ctr n1
 
 : ?flash ( n - n )
     flash-ctr @ 0< ?exit
@@ -118,9 +117,12 @@ ship% :: damage ( n - )
     then ;
 
 : &objects
+exit
+
     en @ -exit
     flash-ctr @ 0 >= to recovering?
     actives>
+        me vessel% is? -exit
         r @ -exit
         you me rhit? -exit
         me enemy1% is? if hit-enemy exit then

@@ -22,6 +22,9 @@ trait: pickup%
 trait;
 
 class: actor%
+    works-with vessel%
+    works-with projectile%
+    works-with pickup%
     prop owner
 class;
 
@@ -31,7 +34,7 @@ object% :: kill ( - ) unload ;
 : die  me kill ;
 
 \ Common logic
-: fired? ( firer projectile - b )
+: fired? ( firer actor - b )
     's firer @ = ;
  
 \ Global variables
