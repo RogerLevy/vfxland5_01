@@ -667,8 +667,15 @@ object% object%-fresh copy drop
 : reset-object-trait ( - )
     object%-fresh object% copy drop ;
 
+|| variable fresh-next-classifier#
+|| variable fresh-/static
+
 : init-nib ( - )
-    [ next-classifier# @ ] literal next-classifier# ! 
-    [ /static ] literal to /static
+    fresh-next-classifier# @ next-classifier# ! 
+    fresh-/static @ /static
     0 to classifier
     reset-object-trait ;
+
+: gild-nib ( - )
+    next-classifier# @ fresh-next-classifier# !
+    /static fresh-/static ! ;
