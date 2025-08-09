@@ -45,7 +45,7 @@ class;
 : throwaway ( - )
     -2 r# ! ;
 
-timer% :: init ( - )
+timer :: init ( - )
     throwaway ;
 
 : persist ( - )

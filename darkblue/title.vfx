@@ -27,7 +27,7 @@ variable gamemode
     eval" start" ;
 
 : *selector
-    title-arrow% one as> act>
+    title-arrow one as> act>
         <left> pressed? if *snd-01* 0 gamemode ! then
         <right> pressed? if *snd-01* 1 gamemode ! then
         gamemode @ 0 = if 128. 150. x 2! bmp @ h| bmp ! then
@@ -35,8 +35,8 @@ variable gamemode
 
 : part3
     160 100 at *title drop
-    90 150 at text-normal% one [[ ]]
-    230 150 at text-resilient% one [[ ]]
+    90 150 at text-normal one [[ ]]
+    230 150 at text-resilient one [[ ]]
     *selector
     0.1 timer>  *actor as>  act>
         <start> pressed? if unload  part4 then ;

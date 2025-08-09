@@ -1,5 +1,5 @@
 \ Common classifiers
-trait: vessel%
+trait: vessel
     prop hp
     prop r \ radius
     prop m \ mass
@@ -8,7 +8,7 @@ trait: vessel%
     prop firing-rate
 trait;
 
-trait: projectile%
+trait: projectile
     prop r \ radius
     prop firer
     prop atk
@@ -17,20 +17,20 @@ trait: projectile%
     prop l \ length
 trait;
 
-trait: pickup%
+trait: pickup
     prop worth \ when non-zero, makes object a collectible source of energy
 trait;
 
-class: actor%
-    works-with vessel%
-    works-with projectile%
-    works-with pickup%
+class: actor
+    works-with vessel
+    works-with projectile
+    works-with pickup
     prop owner
 class;
 
 \ Common protocols
-object% :: damage ( n - ) negate hp +! ;
-object% :: kill ( - ) unload ;
+_object :: damage ( n - ) negate hp +! ;
+_object :: kill ( - ) unload ;
 : die  me kill ;
 
 \ Common logic
@@ -38,7 +38,7 @@ object% :: kill ( - ) unload ;
     's firer @ = ;
  
 \ Global variables
-0 value player
+0 value player0
 variable energy  1000 energy !
 variable automatic
 variable charge
@@ -68,7 +68,7 @@ aka <start> <enter>
     y @ 0. r @ 2 * - gameh. r @ 2 * + within? and ;
 : ?cull in? ?exit unload ;
 : center-pos  160. 120. ;
-: player-pos  player pos@ ;
+: player-pos  player0 pos@ ;
 : chance ( dividend divisor -- f ) rnd swap < ;
 
 : backdrop  0 0 at backdrop.png put ;

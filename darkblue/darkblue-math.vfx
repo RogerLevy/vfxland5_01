@@ -247,16 +247,16 @@ validations dup @ swap off  \ disable validations for speed
     again ;
 
 : seg-hit? ( enemy-obj laser-x. laser-y. laser-angle. laser-length. laser-width. - f )
-    {: enemy lx ly angle length width | 
+    {: enemy0 lx ly angle length width | 
        f: ex f: ey f: er f: lx1 f: ly1 f: lx2 f: ly2
        f: dx f: dy f: t f: closest-x f: closest-y f: distance f: half-width :}
     
     \ Check if enemy exists
-    enemy exists? not if 0 exit then
+    enemy0 exists? not if 0 exit then
     
     \ Get enemy properties
-    enemy 's x 2@ 2p>f to ey to ex
-    enemy 's r @ p>f to er
+    enemy0 's x 2@ 2p>f to ey to ex
+    enemy0 's r @ p>f to er
     
     \ Convert laser params to float for calculations  
     lx p>f to lx1  ly p>f to ly1

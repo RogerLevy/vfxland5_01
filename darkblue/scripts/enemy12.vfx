@@ -1,6 +1,6 @@
-actor-class enemy12%
+actor-class enemy12
 
-enemy12% :: init ( - )
+enemy12 :: init ( - )
     enemy12.png bmp !
     act>
         ;

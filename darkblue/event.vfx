@@ -9,7 +9,7 @@
 \ and can be dynamically loaded, executed, and reloaded during development.
 \
 \ Core Components:
-\ - event% actor class: Base class for all scripted events
+\ - event actor class: Base class for all scripted events
 \ - :EVENT word: Creates named events that can be executed later
 \ - DELAY mechanism: Allows events to wait for specified time periods
 \ - RUN command: Development tool for testing events with hot-reload
@@ -23,7 +23,7 @@
 \
 \ Example Event File (events/intro.vfx):
 \   :event 
-\     100 100 at player% spawn [[ ]]
+\     100 100 at player spawn [[ ]]
 \     3. delay
 \     cr ." Welcome to the game!"
 \   ;
@@ -34,8 +34,8 @@
 \ - Supports iterative event scripting and testing
 \ ------------------------------------------------------------------------------
 
-class: event%
-    actor% derive
+class: event
+    actor derive
     prop delay-xt
     prop delay-secs
     prop starting-xt
@@ -112,7 +112,7 @@ class;
 : scene ( - )
     \ Clear the stage of other events, skipping ME.
     0 0 at
-    actives> me you = ?exit me event% is? -exit unload ;
+    actives> me you = ?exit me event is? -exit unload ;
 
 || : my-curve? ( fn len - )
     {: fn len :} 
@@ -134,17 +134,17 @@ class;
     0 s" events" ['] count-curve each-file ;
 
 : load-curves ( - )
-    count-curves cell stack% instance curves !
+    count-curves cell stack instance curves !
     s" events" ['] ?load-curve each-file ;
 
 || : does-event ( - )
-    does> ( template ) event% one copy [[ start-event ]] ;
+    does> ( template ) event one copy [[ start-event ]] ;
 
 : :event ( - ) ( ... - )
     \ Create executable event named after the file being included.
     public
     currsourcename -path -ext >pad $create
-    here event% instance [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
+    here event instance [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
 
 \ : event ( - <name> )   \ TODO: automated event file creation
 

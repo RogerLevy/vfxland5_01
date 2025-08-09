@@ -1,5 +1,5 @@
-actor-class laser%
-    is-a projectile%
+actor-class laser
+    is-a projectile
 
 : draw-laser ( - )
     w @ p>f f>ds >r
@@ -13,11 +13,11 @@ actor-class laser%
 
 public
 
-laser% object beam
+laser object beam
 
 20 beam 's atk ! 
 
-: *beam ( laser-angle. laser-length. laser-width. - beam% )
+: *beam ( laser-angle. laser-length. laser-width. - beam )
     beam as> w ! l ! a ! at@ 2s>p x 2! halt en on me ;
 
 : laser ( - )

@@ -4,7 +4,7 @@ require scripts\tri.vfx
 
 ship-v1.png 27 27 tileset ship.ts
 
-actor-class ship%
+actor-class ship
     prop r
     prop m
     prop flash-ctr
@@ -31,7 +31,7 @@ variable paralysis                \ paralyzes player when >0
     for
         360. rnd dup
         me swap 20 vec from  \ note FROM takes ints
-        tri% one [[
+        tri one [[
             1. vec vx 2!
         ]]
     loop ;
@@ -48,11 +48,11 @@ variable paralysis                \ paralyzes player when >0
             \ .016 decelerate
             vx 2@ 0.94 dup 2p* vx 2! ;
 
-: lightning ( - )
-    lightning% one as> act> act> act> unload ;
+: *lightning ( - )
+    lightning one as> act> act> act> unload ;
 
 : slowdown-starfield ( - )
-    object% one as> act>
+    object one as> act>
         \ starfield-speed 0.06 - 0 max to starfield-speed ;
         starfield-speed 0.94 p* to starfield-speed ;
 
@@ -60,11 +60,11 @@ variable paralysis                \ paralyzes player when >0
     200 for
         me
         360. rnd 14 rnd vec from
-        dot% one [[ 360. rnd 2. rnd vec vx 2! ]] 
+        dot one [[ 360. rnd 2. rnd vec vx 2! ]] 
     loop
     unload ;
 
-ship% :: kill ( - )
+ship :: kill ( - )
     hush
     0 energy !
     62 flash-ctr !
@@ -73,13 +73,13 @@ ship% :: kill ( - )
     act>
         !bmp
         1.0 passed? -exit
-        lightning
+        *lightning
     act> act> act> 
         shatter
         3.0 timer>
             eval" retry" ;
 
-ship% :: damage ( n - )
+ship :: damage ( n - )
     ?dup -exit
     *snd-03*
     dup negate energy +!
@@ -122,11 +122,11 @@ exit
     en @ -exit
     flash-ctr @ 0 >= to recovering?
     actives>
-        me vessel% is? -exit
+        me vessel is? -exit
         r @ -exit
         you me rhit? -exit
-        me enemy1% is? if hit-enemy exit then
-        me orb% is? if hit-orb exit then
+        me enemy1 is? if hit-enemy exit then
+        me orb is? if hit-orb exit then
         recovering? ?exit
         worth @ if hit-tri exit then ;
 
@@ -154,8 +154,8 @@ exit
 : physics
     decel collisions vx 2@ x 2+! ;
 
-ship% :: init
-    me to player
+ship :: init
+    me to player0
     ship.ts 0 tile bmp !
     13. r !
     10. m !

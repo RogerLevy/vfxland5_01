@@ -2,7 +2,7 @@ require ../lib/claude-math.vfx
 
 tri.png 17 17 tileset tri.ts
 
-actor-class tri%
+actor-class tri
     prop r
     prop m
     prop ang
@@ -11,8 +11,8 @@ actor-class tri%
 aka bounced n1
 
 : repel
-    player  -exit
-    player me 75e 2.5e 0e repelling-force vx 2+!
+    player0  -exit
+    player0 me 75e 2.5e 0e repelling-force vx 2+!
     ; \ vx 2@ 2+ 1. clamplen vx 2! ;
 
 : ang>bmp ( ts n. - n )
@@ -50,7 +50,7 @@ aka bounced n1
 : !bmp
     tri.ts ang @ ang>bmp ( ?flicker ) bmp ! ;
 
-tri% :: init
+tri :: init
     tri.ts 0 tile bmp !
     4. r !
     0. m !

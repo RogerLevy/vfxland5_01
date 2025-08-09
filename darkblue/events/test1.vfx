@@ -1,5 +1,5 @@
 1. tweak timing
-enemy1% tweak class
+enemy1 tweak class
 1.5 tweak speed 
 
 : *enemy ( - actor )
@@ -17,7 +17,7 @@ enemy1% tweak class
     eval" reset"
 \    0.5 loud *bgm1* 50e seek
     gamew gameh 0.75 0.5 2p* at
-    s" bigbug%" find-class one [[ ]] 
+    s" bigbug" find-class one [[ ]] 
 
     begin        
     *enemy [[ 0.6 come-down ]]    

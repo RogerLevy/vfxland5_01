@@ -8,17 +8,17 @@ say-before title TITLE
     swap actor# 0 #actors within? and ;
 
 crucial test: log-damage ( n actor - n actor res )
-    {: n actor | res :}
-    n 0 < if n actor 0 exit then
-    n 0= if n actor -1 exit then  \ 0 is fine, just don't log
+    {: n actor0 | res :}
+    n 0 < if n actor0 0 exit then
+    n 0= if n actor0 -1 exit then  \ 0 is fine, just don't log
     s[
-        actor peek
+        actor0 peek
         n f" received %n damage " type
         me valid-actor? if
             ." from " me peek
         then
     s] log-info
-    n actor -1 ;
+    n actor0 -1 ;
 
 before damage log-damage
 

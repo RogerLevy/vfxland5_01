@@ -6,14 +6,14 @@
 \ Factory, Prototype, and Strategy patterns for rapid game development iteration.
 \
 \ USAGE:
-\   enemy-class enemy1%           \ Create enemy class derived from ENEMY%
+\   enemy-class enemy1           \ Create enemy class derived from ENEMY
 \   5 i/hp !                      \ Override default HP
-\   enemy1% one                   \ Instantiate enemy
+\   enemy1 one                   \ Instantiate enemy
 \
 \ COMPILE-TIME BEHAVIOR:
-\ - enemy-class creates new actor class derived from ENEMY%
+\ - enemy-class creates new actor class derived from ENEMY
 \ - Copies all i/values (initial values) from base template
-\ - Auto-detects sprite: enemy1% → enemy1.png if available  
+\ - Auto-detects sprite: enemy1 → enemy1.png if available  
 \ - Registers class in dictionary for hot-reload tracking
 \
 \ RUNTIME BEHAVIOR:
@@ -27,16 +27,16 @@
 \ - Hybrid compile/runtime: classes can be modified at runtime, but maintain object identity
 \ - Data-driven configuration: stats in table, behavior in _post-init hooks
 \ - Hot-reload integration: automatic enemy updates during development
-\ - Controlled inheritance: all enemies derive from single ENEMY% template
+\ - Controlled inheritance: all enemies derive from single ENEMY template
 \
 \ ==============================================================================
 
-class: enemy%
-    actor% derive
-    is-a vessel%
+class: enemy
+    actor derive
+    is-a vessel
 class;
     
-enemy% defaults [[
+enemy defaults [[
     enemy1.png bmp !
     1 hp !
     12. r !
@@ -46,7 +46,7 @@ enemy% defaults [[
     80 firing-rate !
 ]]
 
-object% :: post-init ( - ) ;
+_object :: post-init ( - ) ;
 
 variable tris-next#  512 tris-next# !
 
@@ -54,7 +54,7 @@ private
 
 dictionary enemy-classes
  
-\ : regen 0.5 timer> 320 220 2rnd at enemy1% one drop ;
+\ : regen 0.5 timer> 320 220 2rnd at enemy1 one drop ;
 \ : tri-speed 0.2 rnd 0.05 + ;
 \ : bias  me pos@ dist 160 / ;
 \ : towards  me pos@ 2- ang 0.33 rnd center-pos bias + tri-speed + vec ;
@@ -62,19 +62,19 @@ dictionary enemy-classes
 
 : burst ( n - )
     {: | c :}
-    s" tri%" find-class to c
+    s" tri" find-class to c
     next# @ >r 512 next# !
     for c one [[ 360. rnd .5 rnd .5 + vec vx 2+! ]] loop
     r> next# ! ;
 
 : burst-ring ( n - )
     {: | c :}
-    s" tri%" find-class to c
+    s" tri" find-class to c
     next# @ >r 512 next# !
     for c one [[ 360. rnd .05 rnd .95 + vec vx 2+! ]] loop
     r> next# ! ;
 
-enemy% :: kill
+enemy :: kill
     me 0 0 from bounty @ burst-ring
     unload 
     ; \ regen ;
@@ -86,13 +86,13 @@ enemy% :: kill
     gamelife @ firing-rate @ mod ?exit
     next# @ >r
     4096 512 + next# !
-    me 0 0 from s" orb%" find-class one [[
-        player pos@ me pos@ 2- ang 1. vec vx 2!
+    me 0 0 from s" orb" find-class one [[
+        player0 pos@ me pos@ 2- ang 1. vec vx 2!
     ]]
     \ next# @ orbs-next# !
     r> next# ! ;
 
-enemy% :: damage ( n - )
+enemy :: damage ( n - )
     ?dup -exit
     ( atk ) negate hp +!
     0.7 loud *snd-06* \ *snd-05*
@@ -104,7 +104,7 @@ enemy% :: damage ( n - )
         exit
     then
     actives>
-        player me fired? -exit
+        player0 me fired? -exit
         you me rhit? if
             atk @ you damage
             unload
@@ -118,7 +118,7 @@ enemy% :: damage ( n - )
     ['] enemy-physics phys !
     act> ?shoot ;
 
-enemy% :: init
+enemy :: init
     (init) me post-init ;
 
 : auto-bitmap ( class - )
@@ -136,12 +136,12 @@ enemy% :: init
 
 : hot-reload-enemies ( - )
     ['] (include-enemy-class) enemy-classes walk-dictionary
-    actives> enemy% is? -exit me init ;
+    actives> enemy is? -exit me init ;
 
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
-: for:  str f" enemy-class %s%%" evaluate  enemies~  defaults ;
+: for:  str f" enemy-class %s" evaluate  enemies~  defaults ;
 : hp:  val hp ! ;
 : atk:  val atk ! ;
 : gold:  val bounty ! ;
@@ -157,7 +157,7 @@ public
     preword find swap >body valid-class? and to already?
     actor-class 
     already? not if
-        enemy% derive
+        enemy derive
         classifier register-enemy-class
     then
     classifier auto-bitmap
@@ -169,6 +169,7 @@ for: enemy2     hp: 5       atk: 20     gold: 30                                
 for: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.                        \ spd: 2.0    path: path2
 for: vacuum     hp: 20      atk: 5      gold: 0                 bmp: enemy23.png
 
+." Hot-reload enemies" cr
 honing @ [if]
     hot-reload-enemies
 [then]

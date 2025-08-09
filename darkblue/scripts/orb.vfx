@@ -14,15 +14,15 @@ create orb-anim cell array[
     orb.ts 0 tile ,
 array] drop
 
-actor-class orb%
-    is-a vessel%
+actor-class orb
+    is-a vessel
 
 : ?laser
     0.1 passed? -exit
     me beam laser-hit? -exit
     unload ;
 
-orb% :: init
+orb :: init
     orb2.png bmp !
     0.5 r !
     10. m !

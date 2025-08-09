@@ -18,7 +18,7 @@ variable waiting
     r> ['] (!classes) lastbody each drop ;
 || : object  here >r dup , 's size @ cell- allot&erase r> ;
 
-class: ui-path%
+class: ui-path
 class;
 
 : @coords
@@ -70,7 +70,7 @@ create pmousex 0 , 0 ,
 : ?coords ( - array )
     recording @ if raw-coords else coords then ;
 
-ui-path% :: init
+ui-path :: init
     act>
         ?record ?smooth
     draw>
@@ -80,8 +80,8 @@ ui-path% :: init
         loop ;
 
 root [[
-    0 0 at object% el: pe2-ui [[
-        0 0 at ui-path% el: ui-path [[
+    0 0 at object el: pe2-ui [[
+        0 0 at ui-path el: ui-path [[
         ]]
     ]]
 ]]

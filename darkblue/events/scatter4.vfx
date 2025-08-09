@@ -1,4 +1,4 @@
-enemy20% tweak class
+enemy20 tweak class
 
 : scatter
     360. rnd swap vec vx 2! ;

@@ -1,5 +1,5 @@
-actor-class missile2%
-    is-a projectile%
+actor-class missile2
+    is-a projectile
     
-missile2% :: init
+missile2 :: init
     missile2.png bmp ! ;

@@ -10,7 +10,7 @@ require scripts\bubble.vfx
 \ Global commands
 
 : *ship ( - ship )
-    ship% one [[ me turret% one 's owner ! me ]] ;
+    ship one [[ me turret one 's owner ! me ]] ;
 
 : *player ( - )
     *ship drop ;

@@ -58,30 +58,30 @@ variable tileset-mode    \ flag: are we editing a tileset?
     bmp-width frames / frames >tileset ;
 
 \ Actor assignment helpers for editor use
-: assign-current-tile {: actor | bitmap-id -- :}
+: assign-current-tile {: actor0 | bitmap-id -- :}
     current-bitmap @ to bitmap-id
     bitmap-id if
-        bitmap-id actor 's bmp !
+        bitmap-id actor0 's bmp !
         ." Assigned current bitmap to actor"
     else
         ." No current bitmap"
     then ;
 
-: assign-tile-by-index {: actor index -- :}
+: assign-tile-by-index {: actor0 index -- :}
     editing-tileset @ if
-        actor index assign-tile
+        actor0 index assign-tile
     else
         ." No tileset being edited"
     then ;
 
 \ Enhanced info display for tilesets
-: show-tileset-info {: | tileset -- :}
-    editing-tileset @ to tileset
-    tileset if
-        ." Tileset: " tileset .
-        tileset baseid@ ." base=" .
-        tileset cell+ cell+ cell+ @ ." tw=" .
-        tileset cell+ cell+ cell+ cell+ @ ." th=" .
+: show-tileset-info {: | tileset0 -- :}
+    editing-tileset @ to tileset0
+    tileset0 if
+        ." Tileset: " tileset0 .
+        tileset0 baseid@ ." base=" .
+        tileset0 cell+ cell+ cell+ @ ." tw=" .
+        tileset0 cell+ cell+ cell+ cell+ @ ." th=" .
         cr
     then ;
 

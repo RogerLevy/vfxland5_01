@@ -24,7 +24,7 @@ cstring update-name$
     \ If not class is given, updates the current object's class
     {: | class0 :}
     bl parse dup if
-        -% 2dup f" %s%%" >pad find if
+        >pad find if
             >body to class0
             update-name$ place
         else
@@ -64,9 +64,9 @@ aka hone update
     bl parse n[ place
     n[ count f" scripts\%s.vfx" file-exists? not if
         n[ count f" scripts\%s.vfx" file[
-            n[ count f" actor-class %s%%" line,
+            n[ count f" actor-class %s" line,
             nl,
-            n[ count f" %s%% :: init ( - )" line,
+            n[ count f" %s :: init ( - )" line,
             n[ count has-image? if
                 n[ count f"     %s.png bmp !" line,
             then
@@ -76,7 +76,7 @@ aka hone update
     else
         -1 abort" Script already exists"
     then
-    n[ count f" locate %s%%" evaluate ;
+    n[ count f" locate %s" evaluate ;
     
 : edit ( - <classname> )
     \ Edit a class (minus the %).
@@ -88,7 +88,7 @@ aka hone update
         bl parse 
     then
     2dup f" %s~" evaluate
-    f" locate %s%%" evaluate ;
+    f" locate %s" evaluate ;
 
 || : s= compare 0= ;
 

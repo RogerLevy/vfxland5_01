@@ -3,7 +3,7 @@ require scripts\bubble.vfx
 require darkblue-math.vfx
 require path.vfx
 
-enemy-class vacuum%
+enemy-class vacuum
     0 firing-rate ! 
     prop my-bubble
 
@@ -14,7 +14,7 @@ enemy-class vacuum%
 
 : blowout-tris
     actives>
-        me tri% is? -exit
+        me tri is? -exit
         
         owner @ bub = if
             1 worth ! \ restore worth
@@ -25,7 +25,7 @@ enemy-class vacuum%
                 vx 2!
         then ;
 
-vacuum% :: kill
+vacuum :: kill
     my-bubble @ to bub
     blowout-tris
     my-bubble @ out
@@ -55,7 +55,7 @@ vacuum% :: kill
     act>
         meander x 2+! 
         actives>
-            me tri% is? -exit
+            me tri is? -exit
             owner @ ?exit
             you me 150e 200e attracting-force vx 2+!
             you me 10. near? if me you [[ capture ]] then ;
@@ -74,7 +74,7 @@ vacuum% :: kill
 : bubble-act
     act> owner @ embody physics> ;
 
-vacuum% :: post-init ( - )
+vacuum :: post-init ( - )
     suck ;
 
 public
@@ -95,7 +95,7 @@ path[ infinity-path
 path]
 
 : *vacuum
-    vacuum% one [[
+    vacuum one [[
         me *bubble [[ owner ! bubble-act me ]] my-bubble !
         infinity-path pb1 path-follow
         0.5 pb1 path-speed
@@ -106,9 +106,9 @@ path]
 
 : somewhere  gamew gameh 2rnd ;
 
-: sprinkle  for somewhere at tri% one drop loop ;
+: sprinkle  for somewhere at tri one drop loop ;
 
-: cleanup  actives> me tri% is? -exit unload ;
+: cleanup  actives> me tri is? -exit unload ;
 
 just 200 150 at *vacuum as
 200 sprinkle

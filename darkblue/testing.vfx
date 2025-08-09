@@ -7,15 +7,15 @@
 
 : test1
     50 50 at *player
-    100 100 at enemy1% one drop ;
+    100 100 at enemy1 one drop ;
 
 : test2
     50 50 at *player
-    object% one as> act>
+    object one as> act>
         begin
             0.408 passed? -exit
             4096 next# !
-            200 250 at enemy1% one [[ 0. -2. vx 2! ]]
+            200 250 at enemy1 one [[ 0. -2. vx 2! ]]
         again ;
 
 \ Simple Tests
@@ -32,7 +32,7 @@ include pathtest2.vfx
 
 \ require scripts\ship.vfx
 : kill-player ( - )
-    player as die ;
+    player0 as die ;
 
 \ Title Test
 \ title

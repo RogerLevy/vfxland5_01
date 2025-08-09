@@ -11,7 +11,7 @@ require scripts\shot.vfx
 require tween.vfx
 require scripts\ship.vfx
 
-actor-class turret%
+actor-class turret
     prop shooting
     prop shaking     \ 0 ~ 1.0
     prop aim
@@ -63,9 +63,9 @@ array] drop
         atk !
         act> ?cull ;
 
-: pea ( atk - ) *shoot* 8. shot% shoot ;
-: fire-medium ( atk - ) *shoot* 8. missile1% shoot ;
-: fire-large ( atk - ) *shoot* 8. missile2% shoot ;
+: pea ( atk - ) *shoot* 8. shot shoot ;
+: fire-medium ( atk - ) *shoot* 8. missile1 shoot ;
+: fire-large ( atk - ) *shoot* 8. missile2 shoot ;
 
 prop a
 : laser-physics
@@ -132,7 +132,7 @@ charge-levels #items cell array bars
 
 : *bars ( - )
     charge-levels #items 1 do
-        bar% one i bars [] !
+        bar one i bars [] !
     loop ;
 
 : !bars ( - )
@@ -267,7 +267,7 @@ charge-levels #items cell array bars
 : !bmp ( - )
     turret.ts a @ ang>bmp flicker bmp ! ;
 
-turret% :: init
+turret :: init
     turret.ts 0 tile bmp !
     *bars
     -1 level !

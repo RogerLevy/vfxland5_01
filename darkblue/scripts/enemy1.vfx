@@ -1,4 +1,4 @@
-enemy-class enemy1%
+enemy-class enemy1
 
-\ enemy1% :: _post-init
+\ enemy1 :: _post-init
 \     act> 1. x +! ;

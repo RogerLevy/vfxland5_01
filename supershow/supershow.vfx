@@ -142,9 +142,9 @@ class;
 
 || : load-autoclass ( a n - )
     -path | n a |
-    a n -ext f" %s%%" >pad find nip ?exit
+    a n -ext >pad find nip ?exit
     \ cr ." Creating auto-class from bitmap " a n type
-    a n -ext f" %s%%" 2dup
+    a n -ext 2dup
     f" class: %s actor derive autoclass on class;" evaluate 
     a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
 

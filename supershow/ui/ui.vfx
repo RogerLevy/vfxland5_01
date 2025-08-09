@@ -105,7 +105,7 @@ require %idir%\..\dltree.vfx
     \ Live update element class
     \ TODO: make `update` polymorphic since classes are now objects
     bl preparse f" scripts\%s.vfx" >try
-    bl word count f" %s%%" >pad find not if drop exit then
+    bl word find not if drop exit then
     >body to c
     root announce> me c is? -exit me init ;
 
