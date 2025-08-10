@@ -1,5 +1,4 @@
 require scripts\orb.vfx
-require scripts\enemy1.vfx
 require scripts\tri.vfx
 
 ship-v1.png 27 27 tileset ship.ts
@@ -125,7 +124,7 @@ exit
         me vessel is? -exit
         r @ -exit
         you me rhit? -exit
-        me enemy1 is? if hit-enemy exit then
+        \ me enemy is? if hit-enemy exit then
         me orb is? if hit-orb exit then
         recovering? ?exit
         worth @ if hit-tri exit then ;

@@ -1,7 +1,9 @@
-require title.vfx
-require-event test1
+\ require-event test1
+: test1 ;
+
 require laser.vfx
 require scripts\bubble.vfx
+require scripts\ship.vfx
 \ require death.vfx
 \ require subscreen.vfx
 \ require savegame.vfx

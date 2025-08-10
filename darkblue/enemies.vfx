@@ -121,17 +121,16 @@ enemy :: damage ( n - )
 enemy :: init
     (init) me post-init ;
 
-: auto-bitmap ( class - )
-    {: c :} 
-    c body> >name count -% f" %s.png" >pad find if
-        execute c defaults 's bmp !
+: auto-bitmap ( - )
+    classifier body> >name count f" %s.png" >pad find if
+        execute defaults 's bmp !
     else drop then ;
 
 : register-enemy-class ( class - )
     dup body> >name enemy-classes lookup ! ;
 
-: (include-enemy-class) ( -1 key$ a:val - -1 )
-    rot >r drop count -% f" scripts\%s.vfx"
+: (include-enemy-class) ( 1 key$ a - 1 )
+    rot >r drop count f" scripts\%s.vfx"
     ?included r> ;
 
 : hot-reload-enemies ( - )
@@ -153,23 +152,24 @@ public
 
 : enemy-class ( - <name> )
     {: | already? :}
-    bl preparse ?hide-autoclass  \ autoclasses don't count
+    bl preparse hide-autoclass  \ autoclasses don't count
     preword find swap >body valid-class? and to already?
-    actor-class 
+    enemy script-class 
     already? not if
-        enemy derive
         classifier register-enemy-class
     then
     classifier auto-bitmap
     ['] noop classifier 's post-init ! ;
 
+." Loading enemy table" cr
 \ id            hp          atk         gold        rad         bmp                 spd         path
 for: enemy1     hp: 1       atk: 10     gold: 20                                    \ spd: 1.0    path: path1 
 for: enemy2     hp: 5       atk: 20     gold: 30                                    \ spd: 2.0    path: path2
 for: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.                        \ spd: 2.0    path: path2
 for: vacuum     hp: 20      atk: 5      gold: 0                 bmp: enemy23.png
+." Done loading enemy table" cr
 
-." Hot-reload enemies" cr
 honing @ [if]
+    ." Hot-reloading enemies" cr
     hot-reload-enemies
 [then]

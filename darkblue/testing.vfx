@@ -38,4 +38,4 @@ include pathtest2.vfx
 \ title
 
 game
-run test1 
+\ run test1 

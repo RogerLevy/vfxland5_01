@@ -2,15 +2,18 @@
 \ spunk - Project loader
 \ ------------------------------------------------------------------------------
 
-\ =============================================================================
-\ Load the game
-\ =============================================================================
-
+." LOADER.VFX >> Loading constants" cr
 s" constants.vfx" ?included 
+
+." LOADER.VFX >> Loading Supershow" cr
 include %idir%\..\supershow\supershow.vfx
+
+." LOADER.VFX >> Loading validations" cr
 s" checks.vfx" ?included
+
+." LOADER.VFX >> Loading Spunk" cr
 include %idir%\spunk.vfx
-s" common.vfx" ?included
+
+." LOADER.VFX >> Loading modules" cr
 s" modules.vfx" ?included
-load-scripts
-s" game.vfx" ?included
+

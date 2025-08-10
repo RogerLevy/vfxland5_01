@@ -17,7 +17,6 @@ thinker :: think  ;
 class: actor
     is-a thinker
     /actor field-space
-    static autoclass
     prop en
     prop x prop y
     prop vx prop vy
@@ -30,6 +29,8 @@ class: actor
     prop prio                       \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
 class;
+
+trait: autoclass trait;
 
 #actors actor object-array actors 
 #temps actor object-array temps
@@ -102,13 +103,11 @@ actor :: info ( actor - )
         \ Compare SP to previous SP.
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if  
-            cr
-            s[ ." Positive stack imbalance in logic for actor " me info
+            s[ ." Positive stack imbalance in logic for actor " me info cr 
             s] log-warning .s
         then
         dup sp@ cell+ cell+ < if
-            cr
-            s[ ." Negative stack imbalance in logic for actor " me info
+            s[ ." Negative stack imbalance in logic for actor " me info cr
             s] log-warning .s
         then
     then
@@ -329,28 +328,34 @@ class;
 || cstring classname$
 
 : script-class ( parent-class - <name> )
-    {: parent-class0 :}
+    {: parent :}
     \ Create a script class with its own private vocabulary (if it doesn't already exist)
     only forth definitions
-    bl word count f" class: %s" evaluate
-    parent-class0 derive
+    bl parse f" class: %s" evaluate
+    parent derive
     private
     defaults [[    \ allows both static and defaults assignments
 ;
+
+: ?class;  classifier -exit class; ;
+: include  include ?class; ;
+: included  included ?class; ;
+: require  require ?class; ;
+: required  required ?class; ;
 
 : actor-on-exec-error ( xt n - )
     {: xt err :} 
     err -exit
     me bench
-    cr xt .name ." >> Actor had an oopsie, disabling: " me ['] info catch drop
+    xt .name ." >> Actor had an oopsie, disabling: " me ['] info catch drop cr
     .s
     err throw ;
 
 ' actor-on-exec-error actor 's on-exec-error !
     
-: ?hide-autoclass ( a len - )
+: hide-autoclass ( a len - )
     >pad find if
-        dup execute 's autoclass @ if
+        dup execute autoclass is? if
             \ Hide existing autoclass if any to fix LOCATE,
             \ which would otherwise take us to the call to LOAD-SCRIPTS
             \ in cases where we want to (re)define it within a script.
@@ -359,8 +364,8 @@ class;
     else drop then ;
 
 : actor-class ( - <name> )
-    bl preparse ?hide-autoclass 
-    actor script-class ; 
+    bl preparse hide-autoclass 
+    actor script-class ;
 
 : find-class ( a len - class | actor )
     >pad find if execute else drop actor then ;

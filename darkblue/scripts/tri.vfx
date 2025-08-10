@@ -7,8 +7,7 @@ actor-class tri
     prop m
     prop ang
     prop vang
-
-aka bounced n1
+    prop bounced
 
 : repel
     player0  -exit

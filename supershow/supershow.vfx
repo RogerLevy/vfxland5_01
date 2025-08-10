@@ -140,18 +140,20 @@ class;
 \ Create classes from bitmaps automatically
 \ =============================================================================
 
-|| : load-autoclass ( a n - )
+|| : (create-autoclass) ( a n - )
     -path | n a |
     a n -ext >pad find nip ?exit
-    \ cr ." Creating auto-class from bitmap " a n type
+    \ ." Creating auto-class from bitmap " a n type cr
     a n -ext 2dup
-    f" class: %s actor derive autoclass on class;" evaluate 
+    f" class: %s actor derive is-a autoclass class;" evaluate 
     a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
 
-: load-autoclasses
+: create-autoclasses
+    ." Creating autoclasses" cr
     s" gfx" >datadir dir-exists? -exit
     get-order get-current
-        s" gfx" >datadir `` ['] load-autoclass ` each-file
+        s" gfx" >datadir
+        ['] (create-autoclass) each-file
     set-current set-order ;
 
 \ =============================================================================
@@ -159,10 +161,14 @@ class;
 \ =============================================================================
 
 || : load-script ( a n - )
-    -path f" scripts\%s" required ;
+    2dup '.' ending s" vfx" compare 0= if
+        -path f" scripts\%s" required
+    else
+        2drop
+    then ;
 
 : load-scripts ( - )
-    load-autoclasses
+    create-autoclasses
     s" scripts" dir-exists? -exit
     s" scripts" ['] load-script each-file ;
 
