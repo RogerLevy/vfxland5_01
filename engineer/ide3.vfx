@@ -211,7 +211,7 @@ borrow engineer~ func[]
 
 : .me ( - )
     \ Display current object info if valid, used in REPL debugging
-    me valid-object? -exit  me info ;
+    me valid-object? -exit  me ['] info catch drop ;
 
 : info-box ( - )
     1. 2. scaled>
