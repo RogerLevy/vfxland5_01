@@ -316,7 +316,8 @@ borrow engineer~ func[]
     >str if cr then
     ?dup if .throw cr rs state off then 
     0 #tib ! 
-    osp @ uiosp ! r> osp ! ;
+    osp @ uiosp ! r> osp !
+    checkdict ;
 
 : ide-char ( n - )
     alt? if drop exit then
@@ -401,7 +402,7 @@ ide-mode :: activate ( - )
     fullscreen winmode ;
 
 ide-mode :: draw ( - )
-    at@ (pen) 2! ide-layout (pen) 2@ at ;
+    at@ (pen) 2! ['] ide-layout catch drop (pen) 2@ at ;
 
 0 ide-mode :construct ( - )
     _ide on _repl on ;
