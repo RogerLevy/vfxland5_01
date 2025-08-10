@@ -20,6 +20,7 @@ variable display-mode  \ 0 = IDE, 1 = Fullscreen (game), 2 = Windowed (game)
 : ?type ?dup 0= if drop else type then ;
 
 create scalexy 0 , 0 ,
+create (pen) 0 , 0 , 
 
 : scaled>  ( x. y. - <code> ; )
     2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> execute -m ;
@@ -225,6 +226,7 @@ borrow engineer~ func[]
         ." State: " .state cr
         ." Dict free: " .unused cr
         ." Hold: " .hold cr
+        ." Pen: " (pen) 2@ swap . . cr
         ." Watch: " cr .watch cr
     s] 12 print2 ;
 
@@ -253,7 +255,7 @@ borrow engineer~ func[]
 : stack-display ( - )
     1. 2. scaled>
     split-x 6 lines from-bottom scaled-at
-    s[  
+    s[
         names ?.s
         ints ?.s
         fixes ?.s
@@ -399,7 +401,7 @@ ide-mode :: activate ( - )
     fullscreen winmode ;
 
 ide-mode :: draw ( - )
-    at@ 2>r ide-layout 2r> at ;
+    at@ (pen) 2! ide-layout (pen) 2@ at ;
 
 0 ide-mode :construct ( - )
     _ide on _repl on ;
