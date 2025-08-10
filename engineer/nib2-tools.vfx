@@ -79,20 +79,23 @@
 
 : .class ( class - )
     \ Print detailed information about a class
-    {: class0 :}
-    class0 valid-class? not if ." Not a valid class" exit then
+    [[
+    me valid-class? not if ." Not a valid class" exit then
     
     cr
-    ."     Class: " class0 body> >name count type cr
-    ."     Instance size: " class0 's instance-size @ . ." bytes" cr
-    ."     Field-space: " class0 's field-space-size @ ?dup if . ." bytes" else ." none" then cr
-    ."     Classifier#: " class0 's classifier# @ . cr
-    ."     Properties: " class0 's property-list list-count . cr
-    ."     Protocols: " class0 's protocol-list list-count . cr
-    ."     Dependents: " class0 's dependents list-count . cr
+    ."     Class: " me body> >name count type cr
+    ."     Instance size: " instance-size @ . ." bytes" cr
+    ."     Field-space: " field-space-size @ ?dup if . ." bytes" else ." none" then cr
+    ."     Mapped space: " next-ofs @ ?dup if . ." bytes" else ." none" then
+        instance-size @ next-ofs @ - ?dup if ."  ("  . ." remaining)" then cr
+    ."     Classifier #: " classifier# @ . cr
+    ."     Properties: " property-list list-count . cr
+    ."     Protocols: " protocol-list list-count . cr
+    ."     Dependents: " dependents list-count . cr
     
-    class0 .class-traits
-    class0 .class-parents ;
+    me .class-traits
+    me .class-parents
+    ]] ;
 
 || : ?.class ( thread# nfa - f )
     {: thread# nfa | body :}
