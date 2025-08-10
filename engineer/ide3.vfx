@@ -363,7 +363,6 @@ borrow engineer~ func[]
         then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
-        ." SWITCH OUT" cr
         active off
         ide @ repl @ and if hold on then
     then
@@ -496,10 +495,23 @@ is draw-ide
     enact-display-mode
     >display ;
 
+: .rainbow
+    bounds do
+        i c@ dup emit
+        bl <> if
+            attr @ 1 + 15 and dup 0= if 2 + then attribute
+        then
+    loop
+    7 attribute ;
+
+: welcome
+    hist[  s" Welcome to VFX Land!" .rainbow cr   hist] ;
+
 : init-ide ( - )
     init-history
     0 display-mode !
-    >ide ;
+    >ide
+    welcome ;
 
 : ide-interpret ( a len - res )
     hist[ >interpret out @ if cr then hist] ;

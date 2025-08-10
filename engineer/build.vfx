@@ -7,7 +7,7 @@ include %idir%/file-fix.vfx
 include %idir%/engineer.vfx
 
 cwd ..
-frigid >vfx
+frigid init-ide >vfx
 
 256 1024 * 1024 * set-size  \ of dictionary
     
