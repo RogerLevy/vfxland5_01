@@ -74,6 +74,15 @@ wrap-word [[
 \     then
 \     ' >body @ ?literal s" +" evaluate ; immediate 
 
+: ?prop ( protocol - n )
+    validations @ -exit
+    s" (?prop)" evaluate ; immediate
+
+: does-property
+    immediate does> 
+        validations @ >r validations off
+        >property
+        r> validations ! ;
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;

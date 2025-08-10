@@ -32,9 +32,12 @@ dup constant /object-base
     cell field magic
 constant /magical-base
 
-: ?prop ( n - n )
-    dup 0= abort" ?PROP >> Property offset is 0 - property not mapped for this class!" ;
+: (?prop) ( n - n )
+    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
 
+: ?prop
+    (?prop) ;
+    
 ' cla >body 2 cells + @ constant cla-offset
 : prop+ ( object offset - a )
     s" over cla-offset + @ + @ ?prop +" evaluate ; immediate
@@ -289,19 +292,27 @@ create _protocol  _class instance [[
     /static offset !
     cell +to /static ;
     
-: does-property
-    does> 's offset @ cla @ + @ ?prop me + ;    
-
-: create-property ( size <name> - property )
-    push-order only forth definitions
-    create _property instance [[
-        property-size !
-        allocate-static-offset
-        MAGIC_PROPERTY magic !
-    me ]]
-    pop-order
-    does-property ;
-
+: >property ( property - ) 
+    \ Compile the code to resolve property address. 
+    \ Optimizes down to two instructions with validations off 
+    ( protocol ) >r 
+    s" me dup >cla @" evaluate 
+    r> 's offset @ ?literal 
+    s" + @ ?prop +" evaluate ;  
+ 
+: does-property 
+    immediate does> >property ; 
+ 
+: create-property ( size <name> - property ) 
+    push-order only forth definitions 
+    create _property instance [[ 
+        property-size ! 
+        allocate-static-offset 
+        MAGIC_PROPERTY magic ! 
+    me ]]     
+    s" does-property" evaluate   \ late-bound for easy Oversight integration
+    pop-order ;  
+    
 : defining-a-trait? ( - b )
     classifier >cla @ _trait = ;
 
