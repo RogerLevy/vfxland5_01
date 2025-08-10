@@ -18,27 +18,23 @@ cstring update-name$
 || : hone-class ( - )
     update-name$ count f" update %s" evaluate ;
     
-: update ( - <class> )
+: update ( - [<class>] )
     \ Live update actor class
     \ Activates honing mode with custom command (see HONE-CLASS)
     \ If not class is given, updates the current object's class
     {: | class0 :}
-    bl parse dup if
-        >pad find if
-            >body to class0
-            update-name$ place
-        else
-            -1 abort" Class not found!"
-        then
+    bl parse
+    dup if
+        >pad find not abort" Class not found!"
+        >body to class0
+        pad count update-name$ place
     else
         2drop
-        me valid-object? if
-            cla @ to class0
-            class0 body> >name count update-name$ place
-        else
-            -1 abort" ME is not a valid object - nothing to update!"
-        then
-    then 
+        me valid-object? not abort" ME is not a valid object - nothing to update!"
+        cla @ to class0
+        class0 body> >name count update-name$ place
+    then
+    
     ['] hone-class honing !
     update-name$ count f" %s.vfx" file-exists? if
         update-name$ count f" %s.vfx" >try
