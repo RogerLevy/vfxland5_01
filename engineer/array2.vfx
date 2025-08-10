@@ -130,6 +130,7 @@ class: _array
 class;
 
 2 _array :construct ( max-items item-size - )
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
     max-items @ item-count !
     here data ! * allot&erase ;
