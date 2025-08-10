@@ -476,10 +476,14 @@ create _protocol  _class instance [[
     end-classifier ;
 
 : is-a ( [class] <trait> - )
+    \ Apply trait to class
     \ [class] only required if outside class block
     ' >body classifier ?dup 0= if swap then -1 apply-trait ;
 
 : works-with ( [class] <trait> - )
+    \ Apply trait to class without adding to id-table
+    \ Adds protocols and maps properties from the trait for transparent interoperability
+    \ IS? will return 0
     \ [class] only required if outside class block
     ' >body classifier ?dup 0= if swap then 0 apply-trait ;
     

@@ -1,6 +1,6 @@
 Working name: Nib 2.0
 
-trait: object%
+trait: object
     system trait that all classes have.
 
 \ Compile-time object life-cycle methods
@@ -12,9 +12,9 @@ trait: object%
     \ constructor code follows and is executed during object creation
 
 \ These would be defined outside blocks with :: syntax:
-\ object% :: teardown ( - )
-\ object% :: init ( - )
-\ object% :: deinit ( - )
+\ object :: teardown ( - )
+\ object :: init ( - )
+\ object :: deinit ( - )
 
 \ Instantiation
 \ -------------
@@ -80,11 +80,18 @@ trait: object%
     \ always public.
     
     \ Compact syntax (optional):
-    \ class: <name> [parent-trait] [additional-traits...] [props...] [prop-name size...] ;
+    \ class: <name> [optional-class] [additional-traits...] [props...] [prop-name size...] ;
     \ Examples:
-    \   class: point% x y ;                                    \ Simple class with two properties
-    \   class: array% iterable% max-items item-size data ;     \ Class with trait and properties
-    \   class: network% serializable% loggable% address 4 port 2 buffer 256 ;  \ Multiple traits, sized properties
+    \   Simple class with two properties
+    \     class: point x y ;
+    \   Class with trait and properties
+    \     class: array iterable max-items item-size data ;
+    \   Class with parent (first trait is a class)
+    \     class: enemy actor ;
+    \   Class with capabilities (traits that it does not identify with, same as WORKS-WITH )
+    \     class: actor "vessel" "projectile" "pickup" ;
+    \   Multiple traits, sized properties
+    \     class: network serializable loggable address 4 port 2 buffer 256 ;  
     \ The compact form expands internally to the block form.
 
 : defaults ( - a )
@@ -100,8 +107,8 @@ trait: object%
     \ Compact syntax (optional):
     \ trait: <name> [props...] [prop-name size...] ;
     \ Examples:
-    \   trait: iterable% item-count ;                  \ Simple trait with one property
-    \   trait: drawable% x y bitmap flags 4 ;          \ Trait with multiple properties including sized
+    \   trait: iterable item-count ;                  \ Simple trait with one property
+    \   trait: drawable x y bitmap flags 4 ;          \ Trait with multiple properties including sized
     \ The compact form expands internally to the block form.
     \ Note: traits cannot reference other traits in compact form (no is-a allowed)
     \ used ONLY for data definition (properties).
@@ -114,6 +121,12 @@ trait: object%
     \ applies trait to given class, or the current class if in a classifier block.
     \ if a wrong data type is given, throw an error.
     \ merges protocols and properties from the trait into the class.
+
+: works-with ( [class] <trait> )
+    \ apply trait to class without adding to id-table.
+    \ adds protocols and maps properties from the trait for transparent interoperability.
+    \ IS? will return 0 (class does not identify as the trait).
+    \ used for capabilities/interfaces the class supports but doesn't inherit identity from.
 
 : is? ( object classifier - b )
     \ check object for class or trait.
@@ -131,7 +144,7 @@ trait: object%
     \ the class is validated against the protocol.
     \ always public.
 
-: on-derive: ( class - ) ( original-class derived-class - )
+: :derive ( class - ) ( original-class derived-class - )
     \ define post-derive behavior for given class.
     \ stateless - always defined outside class blocks.
     \ executed after DERIVE copies structure and members.
@@ -154,7 +167,7 @@ trait: object%
 
 public
 
-trait: collection%
+trait: collection
     property max-items
     property item-size
     property item-count
@@ -162,52 +175,52 @@ trait: collection%
 trait;
 
 \ Protocols defined outside trait block for statelessness
-collection% :: each ( xt - ) ( a - )
+collection :: each ( xt - ) ( a - )
     drop ;
 
-class: array%
-    array% is-a collection%
+class: array
+    array is-a collection
 class;
 
-class: slice% 
-    slice% is-a collection%
+class: slice 
+    slice is-a collection
 class;
 
-class: stack%
-    stack% is-a collection%
+class: stack
+    stack is-a collection
 class;
 
 || : /stack ( count item-size - )
     2dup item-size ! max-items !
     align here items ! * allot&erase ;
 
-2 stack% constructor: ( max-count item-size - )
+2 stack constructor: ( max-count item-size - )
     /stack ;
 
-2 array% constructor: ( max-count item-size - )
+2 array constructor: ( max-count item-size - )
     /stack max-items @ item-count ! ;
 
 : #items ( collection - n )
     's item-count @ ;
 
 \ Class implementation of protocol (stack diagram must match)
-array% :: each ( xt - ) ( a - )
+array :: each ( xt - ) ( a - )
     ... ; 
 
 
 \ example 2: actors
 -------------------------------------------
 
-trait: drawable%
+trait: drawable
     \ Properties only in trait block
 trait;
 
 \ Protocol defined outside for statelessness
-drawable% :: draw ( - )
+drawable :: draw ( - )
     drop ;
 
-class: actor%
-    actor% is-a drawable%
+class: actor
+    actor is-a drawable
     512 field-space
     property x
     property y
@@ -218,48 +231,46 @@ class: actor%
     static oexec-error-handler ( xt n - )
 class;
 
-\ on-derive hook defined outside class block
-actor% on-derive: ( original-class derived-class - )
+\ derive hook defined outside class block
+actor :derive ( original-class derived-class - )
     2drop 
     private ;  \ set up private vocabulary
 
 \ set static; DERIVE carries it over 
-' actor-oexec-error-handler actor% 's oexec-error-handler !
+' actor-oexec-error-handler actor 's oexec-error-handler !
 
-actor% :: draw ( - )
+actor :: draw ( - )
     sprite ;
 
-class: ship%
-    actor% derive
+class: ship
+    actor derive
     property energy
     property lives
 class;
 
 \ kinetic.vfx
-trait: kinetic%
+trait: kinetic
     property rad
     property mass
     property ang
 trait;
 
-kinetic% :: on-bounce ( object - )
+kinetic :: on-bounce ( object - )
     drop ;
 
 \ enemy1.vfx
 require kinetic.vfx  \ more likely to be in common.vfx to avoid repetition and false cross-app modularity, but this is just an example
 
-class: enemy1%
-    actor% derive
-    enemy1% is-a kinetic%   
+class: enemy1
+    actor derive
+    enemy1 is-a kinetic   
 class;
 
-\ on-derive hook defined outside
-enemy1% on-derive: ( original-class derived-class - )
+\ derive hook defined outside
+enemy1 :derive ( original-class derived-class - )
     nip
     dup register-enemy-class
     auto-bitmap ;
-
-
 
 
 conversation notes

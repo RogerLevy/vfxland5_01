@@ -88,8 +88,9 @@ Status Legend:
 3.5 Inheritance and Composition [x]
    [x] derive - Copy class structure, static area, and member lists
    [x] is-a - Add trait to classifier's bit table and copy properties/protocols
-   [x] on-derive: - Post-derivation hooks
-   [x] Stateless on-derive: definition outside blocks
+   [x] works-with - Apply trait protocols/properties without identity inheritance (IS? returns 0)
+   [x] :derive - Post-derivation hooks
+   [x] Stateless :derive definition outside blocks
    [x] Multiple trait composition support
 
 4. PROTOCOL SYSTEM [x]
@@ -281,7 +282,7 @@ Core systems working:
 - Complete lifecycle management system
 - Extensible object% base trait with reset capability
 - Context validation for static definitions (must be in classifier blocks)
-- on-derive: hook system for class inheritance customization
+- :derive hook system for class inheritance customization
 - Smart sizeof supporting both objects and classes  
 - Enhanced 'S syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
 - Sized properties with nproperty (size <name> -) supporting embedded data structures
