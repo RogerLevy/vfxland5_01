@@ -572,9 +572,9 @@ debug @ [if]
     \ Propagate the protocol to dependents
     trait0 's dependents dup list-count for
         @next to class0
-        protocol0 class0 supports-protocol? not if
+        \ protocol0 class0 supports-protocol? not if
             trait0 protocol0 class0 apply-protocol
-        then
+        \ then
     loop drop
     ;
 
