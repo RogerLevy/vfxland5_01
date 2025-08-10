@@ -39,6 +39,8 @@ constant /magical-base
 : prop+ ( object offset - a )
     s" over cla-offset + @ + @ ?prop +" evaluate ; immediate
 
+: >cla  s" cla-offset +" evaluate ;  immediate
+
 : 's ( object <name> - a )
     preword find not abort" 'S >> field name not found!"
     >body cell+ @ MAGIC_PROPERTY = if
@@ -172,8 +174,8 @@ create _class _class (classifier) [[ (init-class) ]]
     create _class (classifier) dup [[ (init-class) ]] ;
 
 : sizeof ( class|object - n )
-    dup 's cla @ _class = if 's instance-size @
-    else 's cla @ 's instance-size @ then ;
+    dup >cla @ _class = if 's instance-size @
+    else >cla @ 's instance-size @ then ;
 
 \ ==============================================================================
 \ TRAIT% and OBJECT%
@@ -203,10 +205,10 @@ _object [[
 \ ==============================================================================
 
 : (sizeof) ( object - n )
-    's cla @ 's instance-size @ ;
+    >cla @ 's instance-size @ ;
 
 : !defaults ( object - )
-    dup 's cla @ 's template @ ?dup if
+    dup >cla @ 's template @ ?dup if
         \ dup .name ." template copying" cr
         \ over >r 
         cell+ over dup cell+ swap (sizeof) cell- move
@@ -217,7 +219,7 @@ _object [[
     drop ;
 
 : construct ( ... class addr - )
-    swap over 's cla !   \ Store class pointer
+    swap over >cla !   \ Store class pointer
     [[
         me !defaults
         cla @ 's constructor-xt @ ?dup if execute then
@@ -264,7 +266,7 @@ create _protocol  _class instance [[
     's field-space-size @ 0<> ;
     
 : field-space ( n - )
-    classifier 's cla @ _trait = abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
+    classifier >cla @ _trait = abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
     classifier [[
         field-space-size !
         field-space-size @ instance-size !
@@ -298,7 +300,7 @@ create _protocol  _class instance [[
     does> 's offset @ cla @ + @ ?prop me + ;
 
 : defining-a-trait? ( - b )
-    classifier 's cla @ _trait = ;
+    classifier >cla @ _trait = ;
 
 : add-property ( property - )
     classifier 's property-list add-to ;
@@ -350,7 +352,7 @@ create _protocol  _class instance [[
         ' >body ?size-changed
     else
         \ Property doesn't exist - check rules
-        classifier 's cla @ _trait = if
+        classifier >cla @ _trait = if
             \ Trait rules
             classifier reopened? if
                 classifier 's dependents list-count 0<>
@@ -401,7 +403,7 @@ create _protocol  _class instance [[
 
 : apply-trait ( trait class b:id? - )
     {: trait0 class0 id? | could? :}
-    class0 's cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
+    class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
     class0 reopened? if
@@ -567,11 +569,11 @@ defer (on-exec-error) ( xt err# obj - )
 : :: ( classifier <protocol> - )
     {: class0 | protocol0 :}
     \ classifier abort" :: >> Can only define a protocol outside of a classifier block."
-    class0 's cla @ _trait = if class0 (protocol:) exit then
-    class0 's cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+    class0 >cla @ _trait = if class0 (protocol:) exit then
+    class0 >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0
-    protocol0 's cla @ _protocol <> abort" :: >> Word is not a protocol!"
+    protocol0 >cla @ _protocol <> abort" :: >> Word is not a protocol!"
     protocol0 class0 supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
     protocol0 class0 implement-protocol ;
 
@@ -580,7 +582,7 @@ defer (on-exec-error) ( xt err# obj - )
 
 : :construct ( #params class - )
     classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier block."
-    dup 's cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
+    dup >cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
     [[
         :noname constructor-xt !
         constructor-#params !
@@ -588,7 +590,7 @@ defer (on-exec-error) ( xt err# obj - )
 
 \ : defaults ( - a )
 \     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
-\     classifier 's cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
+\     classifier >cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
 \     classifier 's template @ ?dup if else
 \         classifier instance classifier 's template !
 \         classifier 's template @
@@ -597,53 +599,57 @@ defer (on-exec-error) ( xt err# obj - )
 : defaults ( [class] - a )
     {: | class0 :}
     classifier dup 0= if drop then to class0 
-    class0 's cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
+    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
     class0 's template @ ?dup 0= if
         class0 instance class0 's template !
         class0 's template @
     then ;
 
 : derive ( class - )
-    {: source-class0 :}
+    {: source-class :}
     
-    source-class0 's cla @ _class <> abort" DERIVE >> Can only derive from classes."
+    source-class >cla @ _class <> abort" DERIVE >> Can only derive from classes."
     classifier 0= abort" DERIVE >> Can only be called inside a class block."
     
     \ Copy size fields
-    source-class0 [[ instance-size @ next-ofs @ field-space-size @ ]]
+    source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
     classifier [[ field-space-size ! next-ofs ! instance-size ! ]]
     
     \ Copy statics
-    source-class0 /classifier-base +
+    source-class /classifier-base +
     classifier /classifier-base +   
     /classifier /classifier-base - move
     
     \ Copy member lists
-    source-class0 's protocol-list  classifier 's protocol-list copy-list
-    source-class0 's property-list  classifier 's property-list copy-list
+    source-class 's protocol-list  classifier 's protocol-list copy-list
+    source-class 's property-list  classifier 's property-list copy-list
     
     \ Copy parent's bit table tables (trait relationships)
-    source-class0 's id-table classifier 's id-table /bit-table move
-    source-class0 's can-table classifier 's can-table /bit-table move
+    source-class 's id-table classifier 's id-table /bit-table move
+    source-class 's can-table classifier 's can-table /bit-table move
     
     \ Set parent bit for inheritance queries
     \ I believe this is not needed as it is set in the bit tables by begin-classifier
     \ source-class 's classifier# @ classifier 's can-table set-bit
     
     \ Copy template if one exists, updating its class
-    source-class0 's template @ ?dup if
-        ( source-template ) defaults source-class0 's instance-size @ move
-        classifier defaults 's cla !
+    source-class 's template @ ?dup if
+        ( source-template ) defaults source-class 's instance-size @ move
+        classifier defaults >cla !
     then
     
+    \ Copy constructor
+    source-class 's constructor-xt @ classifier 's constructor-xt !
+    source-class 's constructor-#params @ classifier 's constructor-#params !
+    
     \ Execute on-derive if set
-    source-class0 's on-derive-xt @ ?dup if
-        source-class0 classifier rot execute  \ ( source-class derived-class - )
+    source-class 's on-derive-xt @ ?dup if
+        source-class classifier rot execute  \ ( source-class derived-class - )
     then 
 ;
 
 : :derive ( class - ) ( source-class derived-class - )
-    dup 's cla @ _class <> abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+    dup >cla @ _class <> abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
     [[ :noname on-derive-xt ! ]] ;
 
 \ ==============================================================================
@@ -657,7 +663,7 @@ aka prop property
 : valid-class? ( a - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup 's cla @ _class = r> and >r
+        dup >cla @ _class = r> and >r
     then
     drop r> ;
 
@@ -671,7 +677,7 @@ aka prop property
 : valid-object? ( a - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup 's cla @ ( class ) valid-class? r> and >r
+        dup >cla @ ( class ) valid-class? r> and >r
     then
     drop r> ;
 
@@ -683,7 +689,7 @@ aka prop property
     over valid-object? not abort" IS? >> Invalid object."
     dup valid-classifier? not abort" IS? >> Invalid classifier."
     's classifier# @ swap
-    dup 's cla @ _class <> if 's cla @ then 's id-table test-bit ;
+    dup >cla @ _class <> if >cla @ then 's id-table test-bit ;
     
 \ ==============================================================================
 \ _OBJECT Base Protocols
