@@ -289,6 +289,9 @@ create _protocol  _class instance [[
     /static offset !
     cell +to /static ;
     
+: does-property
+    does> 's offset @ cla @ + @ ?prop me + ;    
+
 : create-property ( size <name> - property )
     push-order only forth definitions
     create _property instance [[
@@ -297,7 +300,7 @@ create _protocol  _class instance [[
         MAGIC_PROPERTY magic !
     me ]]
     pop-order
-    does> 's offset @ cla @ + @ ?prop me + ;
+    does-property ;
 
 : defining-a-trait? ( - b )
     classifier >cla @ _trait = ;
