@@ -260,8 +260,6 @@ create _static  _class instance [[
 
 create _protocol  _class instance [[
     _static 's instance-size @
-        cell field default-xt
-        cell field next-protocol
     dup instance-size ! next-ofs !
 ]]
 
@@ -335,8 +333,10 @@ create _protocol  _class instance [[
 : supports-protocol? ( protocol class - bool )
     swap 's offset @ + @ 0<> ;
 
-: support-protocol ( protocol class - )
-    >r [[ default-xt @ offset @ ]] r> + ! ;
+: apply-protocol ( trait protocol class - )
+    {: trait0 protocol0 class0 | ofs :}
+    protocol0 's offset @ to ofs
+    trait0 ofs + @ class0 ofs + ! ;
 
 : has-unmapped-properties? ( trait - bool )
     {: trait0 :}
@@ -447,7 +447,7 @@ create _protocol  _class instance [[
         \ Avoid clobbering already supported protocols if "upgrading"
         \ a class from WORKS-WITH to IS-A.
         could? if 2dup supports-protocol? not else -1 then
-        if support-protocol then
+        if trait0 -rot apply-protocol then
     loop drop
     
     \ Merge properties
@@ -503,19 +503,11 @@ create _protocol  _class instance [[
 : add-protocol ( protocol trait - )
     's protocol-list add-to ;
 
-defer (on-exec-error) ( xt err# obj - )
-
-\ debug @ [if]
-\     : oexec ( ... xt - ... )
-\         ?dup -exit
-\         {: xt :}
-\         xt catch ?dup if
-\             xt swap me (on-exec-error)
-\         then ;
-\ [else]
-    : oexec ( ... xt - ... )
-        ?dup -exit >r ;
-\ [then]
+debug @ [if]
+    defer oexec ( ... xt - ... )
+[else]
+    aka oexec execute
+[then]
 
 : unbound-dispatch ( ... object protocol-xt - ... ) ( ... - ... )
     \ Backdoor for using classes like callback structs.
@@ -527,7 +519,7 @@ defer (on-exec-error) ( xt err# obj - )
 : does-protocol ( - )
     does> swap [[
         dup 's offset @ cla @ + @ ?dup if
-            nip
+            nip ( xt )
         else
             ( protocol ) >r
             -1
@@ -545,17 +537,17 @@ defer (on-exec-error) ( xt err# obj - )
     state on
     here ; 
 
-: implement-protocol ( protocol class - )
-    {: protocol0 class0 | name[ 256 ] :} 
+: implement-protocol ( protocol classifier - )
+    {: protocol0 c | name[ 256 ] :} 
     protocol0 [[
         me body> >name count name[ place
         name[ count
-        class0 body> >name count 
-        :protocol ( xt ) class0 offset @ + !
+        c body> >name count 
+        :protocol ( xt ) c offset @ + !
     ]] ;
     
 : (protocol:) ( trait <name> - ) ( ... object - ... )
-    {: trait0 | protocol0 class0 class1 buf[ 256 ] :}
+    {: trait0 | class0 protocol0 buf[ 256 ] :}
     bl preparse buf[ place
     _protocol already? if
         ' >body
@@ -570,16 +562,16 @@ defer (on-exec-error) ( xt err# obj - )
     then
     to protocol0
     
-    \ Compile the default behavior
+    \ Compile the default behavior in the trait
     buf[ count
     trait0 body> >name count
-    :protocol protocol0 's default-xt !
+    protocol0 trait0 implement-protocol
     
     \ Propagate the protocol to dependents
     trait0 's dependents dup list-count for
-        @next to class1
-        protocol0 class1 supports-protocol? not if
-            protocol0 class1 support-protocol
+        @next to class0
+        protocol0 class0 supports-protocol? not if
+            trait0 protocol0 class0 apply-protocol
         then
     loop drop
     ;
@@ -723,10 +715,20 @@ _object :: describe ( - )
     \ Detailed inspection - override in subclasses for specific info
     me info ;
 
-_object :: on-exec-error ( xt error# - )
+_object :: on-error ( xt err# - )
     throw ;
+
+: debug-oexec ( ... xt - ... )
+    dup >r
+    catch ?dup if
+        r> swap me on-error
+        exit
+    then
+    r> drop ;
     
-' on-exec-error is (on-exec-error)
+debug @ [if]
+    ' debug-oexec is oexec
+[then]
 
 \ ==============================================================================
 \ Apply _OBJECT to other system classifiers
