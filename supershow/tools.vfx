@@ -83,7 +83,7 @@ aka hone update
     \ If no name given, edit the class inferred from the current object (ME).
     \ Switch to the class's vocabulary.
     0 preparse nip 0= if
-        cla @ body> >name count -%
+        cla @ body> >name count
     else
         bl parse 
     then

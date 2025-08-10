@@ -2,7 +2,6 @@
 \ Shader support
 \ ------------------------------------------------------------------------------
 
-|| \ s" glsl/default.v.glsl" s" glsl/default.f.glsl" load-shader constant default.s
 || : ?err  0= abort" Shader uniform not found." ;
 || : sf-!  cell- dup sf! ;
 || : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;

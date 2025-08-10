@@ -28,7 +28,7 @@ variable room#
 \ Stashing actors between rooms
 \ =============================================================================
 
-class: actor%
+class: actor
     prop r#  \ the room each actor was in
             \ -1 = persist
             \ -2 = discard

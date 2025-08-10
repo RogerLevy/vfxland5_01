@@ -115,11 +115,11 @@
     ."    Classes:" cr
     0 to found-items
     ['] ?.class forth-wordlist WalkWordList 
-    ."        - Total: " found-items . cr cr
+    ."        Total: " found-items . cr cr
     ."    Traits:" cr
     0 to found-items
     ['] ?.trait forth-wordlist WalkWordList 
-    ."        - Total: " found-items . cr ;
+    ."        Total: " found-items . cr ;
     
 
 \ Example usage:
