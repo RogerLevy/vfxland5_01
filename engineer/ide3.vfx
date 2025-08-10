@@ -506,7 +506,7 @@ is draw-ide
     7 attribute ;
 
 : welcome
-    hist[  s" Welcome to VFX Land!" .rainbow cr   hist] ;
+    hist[  10 attribute  s" Welcome to VFX Land!" .rainbow cr   hist] ;
 
 : init-ide ( - )
     init-history

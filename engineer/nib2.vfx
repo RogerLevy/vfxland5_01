@@ -503,6 +503,8 @@ create _protocol  _class instance [[
 : add-protocol ( protocol trait - )
     's protocol-list add-to ;
 
+\ : OEXEC
+\ Execute bound XT with error-handling.
 debug @ [if]
     defer oexec ( ... xt - ... )
 [else]
@@ -700,6 +702,11 @@ aka prop property
     dup valid-classifier? not abort" IS? >> Invalid classifier."
     's classifier# @ swap
     dup >cla @ _class <> if >cla @ then 's id-table test-bit ;
+
+: ?oexec ( xt - ) ( - )
+    \ Execute bound XT with error-handling if it is non-zero.
+    \ The XT must take or return any parameters.
+    ?dup -exit oexec ;
     
 \ ==============================================================================
 \ _OBJECT Base Protocols
@@ -721,7 +728,7 @@ _object :: on-error ( xt err# - )
 : debug-oexec ( ... xt - ... )
     dup >r
     catch ?dup if
-        r> swap me on-error
+        r> swap me 's cla @ 's on-error @ execute
         exit
     then
     r> drop ;
