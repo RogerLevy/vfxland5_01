@@ -184,23 +184,23 @@ borrow engineer~ func[]
     loop ;
 
 : .honing ( - )
-    honing @ 0= if ." OFF " exit then
+    honing @ 0= if ." OFF  " exit then
     honing @ if
         honing @ -1 = if
-            retry-filepath$ count ?type
+            retry-filepath$ count ?type space space
         else
-            honing @ .name
+            honing @ .name space
         then
     then ;
 
 : .state ( - )
-    state @ if ." COMPILING" else ." INTERPRETING" then ;
+    state @ if ." COMPILING  " else ." INTERPRETING  " then ;
 
 : .unused ( - )
     unused .comma ."  bytes" ;
 
 : .hold ( - )
-    hold @ if ." ON" else ." OFF" then ;
+    hold @ if ." ON  " else ." OFF  " then ;
 
 : .watch ( - )
     watch-xt @ -exit
@@ -224,8 +224,9 @@ borrow engineer~ func[]
         .hotkeys cr
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
-        ." Context: " context @ .name ."  Current: " current @ .name cr
-        ." Dict free: " .unused cr        
+        ." Context: " context @ .name ."  Current: " current @ .name
+        space
+        ." Dict free: " .unused cr 
         ." Pen: " (pen) 2@ swap . . cr
         ." Honing: " .honing 
         ." State: " .state 
