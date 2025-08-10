@@ -11,7 +11,6 @@ defer draw-ide
 private   
 include %idir%/history.vfx   \ private to this file's vocabulary
 
-: toggle dup @ 0= swap ! ;
 synonym dup-endcase end-case
 aligned-page uios
 variable uiosp  uios uiosp !
@@ -161,10 +160,14 @@ borrow engineer~ draw-game
 
     1e f>ds >r
     -1e -1e appw 2 * 1 + apph 2 * 1 + 2s>f 
-    repl @ if 
-        1e 1e 1e 1e
+    hold @ if
+        1e 0.25e 0.25e 1e \ red
     else
-        0e 1e 0.5e 1e
+        repl @ if 
+            1e 1e 1e 1e \ white
+        else
+            0e 1e 0.5e 1e \ green
+        then
     then
     r> al_draw_rectangle
     
@@ -360,12 +363,13 @@ borrow engineer~ func[]
         then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
+        ." SWITCH OUT" cr
         active off
-        display-mode @ 0= ide @ and if hold on then
+        ide @ repl @ and if hold on then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
         active on
-        display-mode @ 0= ide @ and if hold off then
+        ide @ repl @ not and if hold off then
     then
     repl @ if
         ALLEGRO_EVENT_KEY_CHAR happened? if
@@ -489,7 +493,8 @@ is draw-ide
     \ Switch to IDE mode with proper visual formatting
     running on 
     hist[ 7 attribute hist]
-    enact-display-mode ;
+    enact-display-mode
+    >display ;
 
 : init-ide ( - )
     init-history

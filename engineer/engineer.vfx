@@ -352,7 +352,8 @@ synonym z zoom
 
 || : clear-funcs ( - )
     funcs 256 12 * erase
-    s" ?reload" <f5> func ;
+    s" ?reload" <f5> func
+    s" hold toggle" <f8> func ;
 
 : ?func ( n - )
     <f1> - dup 0 12 within? if
@@ -444,7 +445,6 @@ magic-id MAGIC_TWEAK TWK
 
 || : pre ( - )
     0 #tib ! postpone \\ 
-    \ ['] noop is EditOnError
     !delta !delta ;
     
 || : ?throw ( n - ) 
@@ -605,14 +605,15 @@ defer frame ( - ) ' noop is frame
 || : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
 :noname ( - )
-    screen refresh controls pump ;
+    controls pump screen refresh ;
 is frame
 
 : go ( - )
     \ Main engine loop - enter IDE if debug mode, otherwise run normally
     \ going @ ?exit
-    debug @ if >ide then
-    >display pre going on begin frame again ;
+    debug @ if >ide else >display then
+    frame frame hold off \ fix IDE starting with hold enabled because of the initial window switch to VFX
+    pre going on begin frame again ;
 
 \ =============================================================================
 \ Entry Points  
@@ -624,7 +625,6 @@ is frame
     hWndMain to vfx-hwnd
     vfx-hwnd z" Engineer Dev Console" SetWindowText drop
     >vfx ;
-
 
 || create bye-chain-root
 bye-chain link 0 ,
@@ -667,6 +667,7 @@ borrow nib2~ init-nib
 
 : init-dev
     \ Development-only initialization
+    empty 
     +xrefs
     256 1024 * xref-kb
     turnkey? if

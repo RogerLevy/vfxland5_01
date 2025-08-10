@@ -275,3 +275,4 @@ debug @ [if]
 : 2variable  create 0 , 0 , ;
 [then]
 
+: toggle dup @ 0= swap ! ;
