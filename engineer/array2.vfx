@@ -55,8 +55,11 @@ _iterable :: each@ ( xt - ) ( ... ? - ... )
 _iterable :: empty? ( - bool )
     item-count @ 0= ;
 
+: in-bounds? ( n iterable - b )
+    [[ dup 0 item-count @ 1 - within? ]] ;
+
 _iterable :: ?bounds ( n - n )
-    dup 0 item-count @ 1 - within? not abort" ?BOUNDS >> Index out of range!" ;
+    me in-bounds? not abort" ?BOUNDS >> Index out of range!" ;
 
 \ Search operations:
 _iterable :: find-index ( xt - n | -1 ) ( a - b )

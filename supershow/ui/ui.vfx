@@ -58,7 +58,7 @@ require %idir%\..\dltree.vfx
 \ Logic
 || : (act) ( - )
     en @ -exit
-    beha @ oexec
+    beha @ ?oexec
     [ last-colon-xt @ ] literal me dleach ;
 || : act-children ( element - )
     ['] (act) swap dleach ;
@@ -70,7 +70,7 @@ require %idir%\..\dltree.vfx
 || : (draw) ( - )
     en @ -exit vis @ -exit
     +m +t 0 0 at
-        draw @ if draw @ oexec else sprite then
+        draw @ if draw @ ?oexec else sprite then
         [ last-colon-xt @ ] literal me dleach
     -m  ;
 || : draw-children ( element - )

@@ -10,9 +10,9 @@ variable gamelife
 0 0 2value gametime
 
 trait: thinker trait;
-thinker :: init  ;
-thinker :: deinit  ;
-thinker :: think  ;
+thinker :: init ( - ) ;
+thinker :: deinit ( - ) ;
+thinker :: think ( - ) ;
 
 class: actor
     is-a thinker
@@ -28,6 +28,9 @@ class: actor
     prop phys
     prop prio                       \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
+    prop id
+
+    defaults [[ -1 id ! ]]
 class;
 
 trait: autoclass trait;
@@ -42,7 +45,7 @@ trait: autoclass trait;
 : free? ( actor - f ) 's en @ 0= ;
 : as> ( actor - <code> ; ) [[ r> execute ]] ;
 : actor[] ( n - actor ) actors [] ;
-: actor# ( actor - n ) actors index ;
+: actor# ( actor - n ) 's id @ ;
 : act> ( - ) ( - ) 0 time !  r> beha ! ; 
 : act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
 : physics> ( - ) ( - ) r> phys ! ;
@@ -74,11 +77,12 @@ validations !
     en @ 0= if ." (FREE) " then ;
 
 actor :: info ( actor - )
-    11 push-attribute
-    ." [ #" me actor# . cla @ .name .status
+    11 push-attribute ." [ "
+    me actor# dup 0 >= if ." #" . else drop me .name then
+    cla @ .name
+    .status
     ." at: " x 2@ 2p>s swap . . 
-    ( me peeked ) ." ] "
-    pop-attribute ;
+    ." ] " pop-attribute ;
 
 : !" ( - <var>" )
     '"' parse 2dup 2>r
@@ -99,7 +103,7 @@ actor :: info ( actor - )
 : ?benched  benched @ if r> drop then ;
 
 : behave ( - )
-    beha @ oexec ;
+    beha @ ?oexec ;
 
 : !sp ( a - )
     \ Restore SP. If debug mode is on, report stack imbalances.
@@ -121,7 +125,7 @@ actor :: info ( actor - )
     actives> ?benched sp@ >r behave r> !sp ;
 
 : physics ( - )
-    phys @ oexec ;
+    phys @ ?oexec ;
 
 || : (move) ( - )
     actives> ?benched physics ;
@@ -215,6 +219,7 @@ actor defaults [[
     #actors for
         next# @ actor[] dup free? if
             c over construct
+            next# @ over 's id !
             unloop exit
         then  drop
         next# @ 1 + #actors mod next# !
@@ -347,15 +352,14 @@ class;
 : require  require ?class; ;
 : required  required ?class; ;
 
-: actor-on-exec-error ( xt n - )
+actor :: on-error ( xt err# - )
     {: xt err :} 
     err -exit
     me bench
-    xt .name ." >> Actor had an oopsie, disabling: " me ['] info catch drop cr
+    xt .name ." >> Actor threw an error - disabling "
+    me ['] info catch drop cr
     .s
     err throw ;
-
-' actor-on-exec-error actor 's on-exec-error !
     
 : hide-autoclass ( a len - )
     >pad find if
