@@ -1,11 +1,18 @@
 2025/08/08
+[ ] Add ability to check if a protocol has been implemented by a class
+    (as opposed to simply adopted from a trait) and use that to check whether
+    to propagate a protocol in (PROTOCOL:).
+    Distinguish between class-specific implementations and inherited trait
+    protocols.
+
 [x] Investigate why editor isn't being opened on abort.
 
-[ ] Add trait::protocol identifier creation to (protocol:).
-    Enable trait::protocol-name syntax for cleaner protocol references.
+[x] Add trait:protocol identifier creation to (protocol:).
+    Enable trait:protocol-name syntax for cleaner protocol references.
 
 [x] Fix abort by setting AbortText.
-    Currently aborting throws an exception due to the refactoring of system error handling
+    Currently aborting throws an exception due to the refactoring of system
+    error handling
 
 [ ] Consolidate .IP and .DATA into a single smart address-decoding word.
     Detect if address is colon word or data word and display appropriately.

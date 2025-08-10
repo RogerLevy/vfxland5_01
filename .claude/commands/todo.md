@@ -1,5 +1,7 @@
 Add a task to doc/general-todo.txt
 
+Add it at the top, always maintaining date groupings.
+
 The task's summary should concisely summarize "$ARGUMENTS" with a short 1-2 line
 description, unless otherwise specified.  (For example if "$ARGUMENTS" contains
 a phrase like "with a detailed description" or "summarize <document>" or "no description".
@@ -11,4 +13,3 @@ Reference the previous message from the user if unsure which task to put it unde
 
 "Task1 and subtask Task2" = "Create Task1 with subtask Task2"
 
-Tasks are sorted by newest to oldest.
