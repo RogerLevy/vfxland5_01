@@ -143,11 +143,11 @@ borrow engineer~ draw-game
 : (2x-game) 2. 2. scaled> draw-game ;
 : gamewin-h apph 2 * 100 + ;
 : game-window ( - )
-    0 0 monw 2 / gamewin-h al_set_clipping_rectangle
+    split-x  0 monw 2 / gamewin-h al_set_clipping_rectangle
 
     +m
     identity
-    monw 4 / appw - 2 +
+    monw 4 / appw - 2 +  split-x +
     gamewin-h 2 / apph - 2 +
     2s>f 1e 1e 0e transform
 
@@ -219,30 +219,30 @@ borrow engineer~ func[]
 
 : info-box ( - )
     1. 2. scaled>
-    0 gamewin-h scaled-at
+    split-x gamewin-h scaled-at
     s[
         .hotkeys cr
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
         ." Context: " context @ .name ."  Current: " current @ .name cr
-        ." Honing: " .honing cr
-        ." State: " .state cr
-        ." Dict free: " .unused cr
-        ." Hold: " .hold cr
+        ." Dict free: " .unused cr        
         ." Pen: " (pen) 2@ swap . . cr
+        ." Honing: " .honing 
+        ." State: " .state 
+        ." Hold: " .hold cr
         ." Watch: " cr .watch cr
     s] 12 print2 ;
 
 : user-area ( - )
     1. 2. scaled>
-    0 gamewin-h 10 lines + scaled-at
+    split-x gamewin-h 8 lines + scaled-at
     s" (User Area)" print ;
 
 : command-history ( - )
     1. 2. scaled>
     \ split-x s>f 0e 1e 1e 0e transform
     monh 7 lines - 24 / visible-lines !
-    split-x 0 at
+    0 0 at
     s[ render-history s] print-colorful ;
 
 : ints  0 stackmode ! ;
@@ -257,7 +257,7 @@ borrow engineer~ func[]
 
 : stack-display ( - )
     1. 2. scaled>
-    split-x 6 lines from-bottom scaled-at
+    0 6 lines from-bottom scaled-at
     s[
         names ?.s
         ints ?.s
@@ -272,7 +272,7 @@ borrow engineer~ func[]
 
 : command-line ( - )
     1. 2. scaled>
-    split-x 1 lines from-bottom scaled-at
+    0 1 lines from-bottom scaled-at
     s[
         .tib
         active @ repl @ and if
@@ -364,7 +364,7 @@ borrow engineer~ func[]
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         active off
-        ide @ repl @ and if hold on then
+        ide @ if hold on then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
         active on
