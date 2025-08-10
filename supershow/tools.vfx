@@ -101,3 +101,8 @@ aka hone update
     s= and not
     if postpone \\ exit then
     private ;
+
+engineer~
+: fp ( - )
+    \ Frame profile
+    ['] screen time? ;
