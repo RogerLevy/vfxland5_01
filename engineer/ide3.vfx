@@ -6,7 +6,6 @@ validations @ validations off
 
 public
 
-0 value (me)
 defer draw-ide
 
 private   
@@ -212,7 +211,7 @@ borrow engineer~ func[]
 
 : .me ( - )
     \ Display current object info if valid, used in REPL debugging
-    (me) valid-object? -exit  (me) info ;
+    me valid-object? -exit  me info ;
 
 : info-box ( - )
     1. 2. scaled>
@@ -447,8 +446,7 @@ object-table;
     current-mode activate ;
 
 : draw-display-mode ( - )
-    me to (me)
-    current-mode draw ;
+    current-mode ['] draw unbound-dispatch ;
 
 \ =============================================================================
 \ Public Words
@@ -499,6 +497,7 @@ is draw-ide
     hist[ >interpret out @ if cr then hist] ;
 
 : ide2-quit
+    ." IDE2-QUIT" cr
     running off
     textmode off
     consoledev setio

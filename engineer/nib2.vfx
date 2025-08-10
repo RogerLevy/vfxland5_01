@@ -467,9 +467,6 @@ create _protocol  _class instance [[
     \ [class] only required if outside class block
     ' >body classifier ?dup 0= if swap then 0 apply-trait ;
     
-: is? ( object classifier - bool )
-    's classifier# @ swap 's cla @ 's id-table test-bit ;
-
 : trait: ( <name> - )
     _trait already? if
         ' >body to classifier
@@ -499,6 +496,13 @@ defer (on-exec-error) ( xt err# obj - )
     : oexec ( ... xt - ... )
         ?dup -exit >r ;
 \ [then]
+
+: unbound-dispatch ( ... object protocol-xt - ... ) ( ... - ... )
+    \ Backdoor for using classes like callback structs.
+    \ The object will not be bound during execution of the protocol.
+    \ This means that it cannot use any of its properties.
+    swap [[ >body 's offset @ cla @ + @ ]]
+    ?dup if execute then ;
 
 : does-protocol ( - )
     does> swap [[
@@ -657,6 +661,13 @@ aka prop property
     then
     drop r> ;
 
+: valid-classifier? ( a - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup 's magic @ MAGIC_CLASSIFIER = r> and >r
+    then
+    drop r> ;
+
 : valid-object? ( a - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
@@ -666,9 +677,16 @@ aka prop property
 
 : copy ( a1 a2 - a2 )
     dup dup >r sizeof move r> ;
+
+\ TODO: Optimize and put the runtime checks in optional validations.
+: is? ( object|class classifier - bool )
+    over valid-object? not abort" IS? >> Invalid object."
+    dup valid-classifier? not abort" IS? >> Invalid classifier."
+    's classifier# @ swap
+    dup 's cla @ _class <> if 's cla @ then 's id-table test-bit ;
     
 \ ==============================================================================
-\ Object% Base Protocols
+\ _OBJECT Base Protocols
 \ ==============================================================================
 
 0 to classifier
@@ -685,6 +703,16 @@ _object :: on-exec-error ( xt error# - )
     throw ;
     
 ' on-exec-error is (on-exec-error)
+
+\ ==============================================================================
+\ Apply _OBJECT to other system classifiers
+\ ==============================================================================
+
+_class is-a _object
+_trait is-a _object
+_protocol is-a _object
+_property is-a _object
+_static is-a _object
 
 \ ==============================================================================
 \ Init/Reset
