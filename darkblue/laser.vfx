@@ -20,7 +20,7 @@ laser object beam
 : *beam ( laser-angle. laser-length. laser-width. - beam )
     beam as> w ! l ! a ! at@ 2s>p x 2! halt en on me ;
 
-: laser ( - )
+: beams ( - )
     beam as>
         en @ -exit
         step-laser

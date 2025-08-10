@@ -32,7 +32,7 @@ require scripts\ship.vfx
 
 \ Gameplay main loop 
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
-: render  backdrop ( .75 .75 scale> ) starfield hud bubbles sprites laser animate ;
+: render  backdrop ( .75 .75 scale> ) starfield hud bubbles sprites beams animate ;
 : think  step ;
 : game  show> think render ;
 

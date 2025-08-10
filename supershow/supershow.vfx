@@ -11,7 +11,7 @@
 
 \ include %idir%\checks.vfx
 
-validations off  \ temporarily disable during initial migration to nib2
+\ validations off  \ temporarily disable during initial migration to nib2
 
 \ =============================================================================
 \ Constants and Variables
