@@ -1,4 +1,4 @@
-validations dup @ swap off
+fast[
 
 crucial test: check-object ( a - a n:res )
     dup  valid-object? ;
@@ -80,9 +80,9 @@ wrap-word [[
 
 : does-property
     immediate does> 
-        validations @ >r validations off
+        fast[
         >property
-        r> validations ! ;
+        fast] ;
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;
@@ -104,4 +104,4 @@ before put CHARMFUL-BITMAP-INDEX
 before bmpwh CHARMFUL-BITMAP-INDEX
 before bitmap-file CRUCIAL-BITMAP-INDEX
 
-validations !
+fast]

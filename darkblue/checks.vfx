@@ -1,4 +1,4 @@
-validations dup @ swap off 
+fast[
 
 say-before game GAME
 say-before title TITLE
@@ -22,4 +22,4 @@ crucial test: log-damage ( n actor - n actor res )
 
 before damage log-damage
 
-validations !
+fast]

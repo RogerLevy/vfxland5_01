@@ -2,7 +2,7 @@
 \ Better VFX error reporting
 \ ------------------------------------------------------------------------------
 
-validations dup @ swap off
+fast[
 
 private
 
@@ -164,4 +164,4 @@ private
 \ ' null-catch-save ' debug-catch-restore extends-catch
 ' console-debugger to-callback debugger
 
-validations !
+fast]

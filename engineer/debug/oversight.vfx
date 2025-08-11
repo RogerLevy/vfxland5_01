@@ -663,3 +663,8 @@ variable include-levels
 \ : require  ['] require wrapped-include ;
 \ : required  ['] required wrapped-include ;
 
+
+variable (validations)
+
+: fast[  validations @ (validations) ! validations off ;
+: fast]  (validations) @ validations ! ;

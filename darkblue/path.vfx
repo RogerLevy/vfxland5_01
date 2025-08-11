@@ -252,7 +252,7 @@ playback :: init ( - )
 || playback object playback-obj
 || 2variable first-point
 
-validations dup @ swap off \ validations are way too slow for this
+fast[ \ validations are way too slow for this
 : alp, ( - )
     me {: path0 | total-duration #target-samples #lookup-samples length-table coord-table
        f: total-length f: target-step f: current-target
@@ -336,7 +336,7 @@ validations dup @ swap off \ validations are way too slow for this
         coord-table free throw
         length-table free throw
     ]] ;
-validations !
+fast]
     
 || : point@  0 alp @ #items 1 - clamp alp @ [] 2@ ; 
 

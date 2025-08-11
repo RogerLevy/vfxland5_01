@@ -2,7 +2,7 @@
 \ IDE v3 - Next-Level Development Interface (now utilizing OOP for display modes) 
 \ -------------------------------------------------------------------------------
 
-validations @ validations off
+fast[
 
 public
 
@@ -540,4 +540,4 @@ borrow error2~ console-debugger
 ' noop is onSwitchIn
 init-history
 
-validations !
+fast]

@@ -1,4 +1,4 @@
-validations dup @ swap off
+fast[
 
 public
 500 value #stars
@@ -25,4 +25,4 @@ public
         seeds #stars for @+ star loop drop
         starfield-speed ctr +! ;
 
-validations !
+fast]

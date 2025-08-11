@@ -1,6 +1,6 @@
 \ words by Claude AI
 
-validations dup @ swap off  \ disable validations for speed
+fast[ \ disable validations for speed
 
 : collision-force ( src-obj dest-obj -- x-force. y-force. )
     {: obj2 obj1 | f: dx f: dy f: distance f: overlap f: force-magnitude
@@ -339,4 +339,4 @@ validations dup @ swap off  \ disable validations for speed
     normal-y force-magnitude f* fnegate
     2f>p ;
 
-validations !
+fast]
