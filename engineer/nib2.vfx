@@ -639,6 +639,9 @@ debug @ [if]
     \ Copy parent's bit table tables (trait relationships)
     source-class 's id-table classifier 's id-table /bit-table move
     source-class 's can-table classifier 's can-table /bit-table move
+    \ Restore the classifier bits
+    classifier 's classifier# @ classifier 's id-table set-bit
+    classifier 's classifier# @ classifier 's can-table set-bit
     
     \ Set parent bit for inheritance queries
     \ I believe this is not needed as it is set in the bit tables by begin-classifier

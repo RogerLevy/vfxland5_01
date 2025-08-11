@@ -56,7 +56,9 @@ array] drop
     owner @ 0 0 from swap ( aim. class ) one as>
         swap ( aim. speed. ) vec vx 2!
         atk !
-        act> ?cull ;
+        you 's owner @ firer !
+        act>
+            ?cull ;
 
 : pea ( atk - ) *shoot* 8. shot shoot ;
 : fire-medium ( atk - ) *shoot* 8. missile1 shoot ;

@@ -121,7 +121,7 @@ ship :: damage ( n - )
     actives>
         r @ -exit
         you me rhit? -exit
-        \ me enemy is? if hit-enemy exit then
+        me enemy is? if hit-enemy exit then
         me orb is? if hit-orb exit then
         recovering? ?exit
         worth @ if hit-tri exit then ;
