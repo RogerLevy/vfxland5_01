@@ -76,8 +76,6 @@ array] drop
     owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
     owner @ 's a @ a ! ;
 
-\ TODO: turns these into dynamic internal vars (since we can't use n1-n4)
-
 : fire-thin ( atk - )
     *shoot*
     me 0 0 from

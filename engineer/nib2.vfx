@@ -573,7 +573,6 @@ debug @ [if]
     bl preparse buf[ place
     _protocol already? if
         ' >body
-        \ TODO: check if the protocol belongs to another trait and throw error if it is
     else
         create _protocol instance
         does-protocol 
