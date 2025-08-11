@@ -1,5 +1,7 @@
 actor-class laser
     is-a projectile
+    prop dest-w 
+    prop dest-atk 
 
 : draw-laser ( - )
     w @ p>f f>ds >r
@@ -18,7 +20,12 @@ laser object beam
 20 beam 's atk ! 
 
 : *beam ( laser-angle. laser-length. laser-width. - beam )
-    beam as> w ! l ! a ! at@ 2s>p x 2! halt en on me ;
+    laser beam construct
+    beam as>
+        w ! l ! a !
+        at@ 2s>p x 2!
+        halt
+        en on me ;
 
 : beams ( - )
     beam as>

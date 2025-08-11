@@ -116,12 +116,9 @@ ship :: damage ( n - )
     then ;
 
 : &objects
-exit
-
     en @ -exit
     flash-ctr @ 0 >= to recovering?
     actives>
-        me vessel is? -exit
         r @ -exit
         you me rhit? -exit
         \ me enemy is? if hit-enemy exit then

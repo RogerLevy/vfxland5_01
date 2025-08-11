@@ -15,12 +15,7 @@ actor-class turret
     prop shooting
     prop shaking     \ 0 ~ 1.0
     prop aim
-    prop atk
-    prop a
-
-    prop owner \ ship tracking pointer
-
-borrow ship~ flash-ctr \ ship's recovery counter
+    prop charging
 
 turret.png 32 32 tileset turret.ts
 
@@ -33,7 +28,7 @@ turret.png 32 32 tileset turret.ts
 
 variable charging
 \ variable charge  \ moved to common.vfx
-variable level
+variable charge-level
 variable level-ctr
 variable charge-key
 
@@ -67,14 +62,9 @@ array] drop
 : fire-medium ( atk - ) *shoot* 8. missile1 shoot ;
 : fire-large ( atk - ) *shoot* 8. missile2 shoot ;
 
-prop a
 : laser-physics
     owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
     owner @ 's a @ a ! ;
-
-\ TODO: turns these into dynamic internal vars (since we can't use n1-n4)
-prop dest-w 
-prop dest-atk 
 
 : fire-thin ( atk - )
     *shoot*
@@ -138,7 +128,7 @@ charge-levels #items cell array bars
 : !bars ( - )
     owner @ 13 -13 owner @ 's vx 2@ 2p>s 2+ from
     bars #items 1 do
-        i level @ <= if
+        i charge-level @ <= if
             i bars [] @ [[ at@ 2s>p x 2! ]]
         else
             i bars [] @ [[ -9999. -9999. x 2! ]]
@@ -159,11 +149,11 @@ charge-levels #items cell array bars
     charge @ . ;
     
 : .level ( - )
-    cr level @ . ;
+    cr charge-level @ . ;
 
 : end-charge ( - )
     \ cr ." End charge"
-    0 charge ! 0 level-ctr ! charging off -1 level ! ;
+    0 charge ! 0 level-ctr ! charging off -1 charge-level ! ;
 
 : fire ( level - )
     {: lvl :}
@@ -174,9 +164,9 @@ charge-levels #items cell array bars
     end-charge ;
 
 : ?+level ( - )
-    @level level @ > if
-        1 level +!
-        level @ 0> if
+    @level charge-level @ > if
+        1 charge-level +!
+        charge-level @ 0> if
             0.5 loud *snd-04* 
             30 level-ctr !
         then
@@ -201,7 +191,7 @@ charge-levels #items cell array bars
         i dir-key@ pressed? if
             charging @ not if
                 charging on
-                -1 level !
+                -1 charge-level !
             then
             i dir-key@ charge-key !
         then
@@ -211,7 +201,7 @@ charge-levels #items cell array bars
             cancel-charge exit
         then
         charge-key @ letgo? if
-            level @ fire
+            charge-level @ fire
         else
             level-ctr @ 0= if
                 +charge ?+level
@@ -270,7 +260,7 @@ charge-levels #items cell array bars
 turret :: init
     turret.ts 0 tile bmp !
     *bars
-    -1 level !
+    -1 charge-level !
     act>
         ?aim ?charge ?pea
         !ang !pos !bmp !bars ;
