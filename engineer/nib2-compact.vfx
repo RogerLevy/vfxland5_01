@@ -1,0 +1,110 @@
+: number? ( a len - f )
+    isnumber? case
+        1 of drop -1 exit endof
+        2 of drop drop -1 exit endof
+        -2 of fdrop -1 exit endof
+    endcase
+    0 ;
+
+: size? ( $ - f )
+    \ number or /size or s/size
+    {: $ :}
+    $ count number? ?dup ?exit
+    $ 1 + c@ '/' = ?dup ?exit
+    $ 2 + c@ '/' = ?dup ?exit
+    0 ;
+
+: "word"? ( $ - f )
+    {: $ :}
+    $ 1 + c@ '"' =
+    $ count + 1 - c@ '"' = and ;
+    
+: eval  bl parse evaluate ;
+: consume  bl parse 2drop ;
+: pre-xt  preword find 0<> and ;
+: @size preword size? if eval else cell then ;
+: comment?  preword 1 + c@ dup '\' = swap '(' = or ;
+: eol?  preword c@ 0= ;
+: ?term preword 1 + c@ ';' = dup if consume then ;
+
+: *property ( - )
+    bl parse
+    @size
+    f" %n nproperty %s" evaluate ;
+
+: is-class? ( ? - f )
+    dup valid-object? not if drop 0 exit then
+    's cla @ _class = ;
+
+: ?class ( - f ) 
+    pre-xt dup -exit
+    >body dup is-class? if derive -1 consume else drop 0 then ;
+
+: "trait" ( $ - a len )
+    {: $ :}
+    $ 2 + $ count nip 2 - ;
+
+: ?"trait" ( - f )
+    preword "word"? if
+        bl word "trait" >pad find 0<> and ?dup -exit
+        >body classifier 0 apply-trait
+        -1
+    else 0 then ;
+    
+: is-trait? ( ? - f )
+    dup valid-object? not if drop 0 exit then
+    's cla @ _trait = ;
+
+: ?trait ( - f ) 
+    ?"trait" ?dup ?exit
+    pre-xt dup -exit
+    >body dup is-trait? if classifier -1 apply-trait -1 consume else drop 0 then ;
+    
+: ?comment
+    comment? abort" Comments not allowed in compact class definitions."  ;
+    
+: ?invalid
+    preword size? if
+        consume
+        -1 abort" Invalid token."
+    then
+    ?comment ;
+
+: token ( - )
+    ?invalid
+    ?class ?exit
+    ?trait ?exit
+    *property ;
+
+: ?fieldspace ( - ) 
+    preword size? if eval field-space then ;    
+
+: next-line
+    refill 0= abort" Unexpected end of file."
+    eol? abort" Blank line encountered; check for missing semicolon." ;
+
+: c:
+    class:
+    ?comment
+    eol? if next-line then
+    ?fieldspace
+    begin ?term not while
+        token
+        eol? if next-line then
+    repeat
+    class; ;
+
+
+\\
+
+trait: thinker trait;
+
+512 constant /actor
+
+c: thingy ;
+c: actor  /actor  thingy  "thinker"
+    en buf 256 x y vx vy ;
+
+class: no-parse
+    prop x
+class;

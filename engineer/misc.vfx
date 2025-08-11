@@ -86,8 +86,11 @@ include %idir%\..\textmode\textmode-tools.vfx
     #1 bytes-left allot
     #1 bytes-left #1 read-file 2drop
     #1 close-file drop 0 , ;
+: parse  parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
+: preparse ( - a len )
+    >in @ swap parse-word rot >in ! ;
 : ?constant ( n - <name> ) ( - n )
     preword find nip if drop ' drop else constant then ;
 : ?fconstant ( n - <name> ) ( - n )
@@ -135,7 +138,6 @@ variable saved-dp
   
 : clamp >r max r> min ;
 : umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
-: preparse ( - a len ) >in @ swap parse rot >in ! ;
 
 aka se" s\"
 

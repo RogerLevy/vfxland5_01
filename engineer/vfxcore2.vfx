@@ -7,5 +7,6 @@ include %idir%/fixed.vfx
 include %idir%/format.vfx
 include %idir%/nib2.vfx
 include %idir%/nib2-tools.vfx
+include %idir%/nib2-compact.vfx
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx
