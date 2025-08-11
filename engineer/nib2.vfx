@@ -151,7 +151,7 @@ variable osp   os osp ! \ object stack pointer
     cell field constructor-xt
     cell field constructor-#params
     cell field on-derive-xt
-    /list field dependents              \ trait dependents (classes that applied the trait)
+    /list field dependents              \ classifier dependents (classes that applied the trait or classes that derived the class)
     cell field #openings
 dup constant /classifier-base
 to /static
@@ -360,7 +360,17 @@ create _protocol  _class instance [[
     then
     property0 ;
 
+: ?add-property ( property - )
+    dup is-property-mapped? if
+        drop \ -1 abort" PROPERTY >> Property already mapped!"
+    else
+        dup add-property
+        map-property
+    then ;
+
 : nproperty ( size <name> - ) ( - a )
+    {: | property0 :}
+
     classifier 0= abort" NPROPERTY >> Can't define a property outside of a classifier definition."
 
     _property already? if
@@ -390,13 +400,16 @@ create _protocol  _class instance [[
     then
     
     \ Map the property
-    ( property )
-    dup is-property-mapped? if
-        drop \ -1 abort" PROPERTY >> Property already mapped!"
-    else
-        dup add-property
-        map-property
-    then ;
+    ( property ) dup ?add-property
+    
+    \ Propagate the property to dependents
+    ( property ) to property0
+    classifier 's dependents dup list-count for
+        @next classifier >r to classifier
+            property0 ?add-property
+        r> to classifier
+    loop drop
+    ;
     
 : property ( <name> - ) ( - a )
     cell nproperty ;
@@ -664,7 +677,10 @@ debug @ [if]
     \ Execute on-derive if set
     source-class 's on-derive-xt @ ?dup if
         source-class classifier rot execute  \ ( source-class derived-class - )
-    then 
+    then
+    
+    \ Add class to dependents
+    classifier source-class 's dependents add-to 
 ;
 
 : :derive ( class - ) ( source-class derived-class - )
