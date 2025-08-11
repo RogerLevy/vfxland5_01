@@ -639,7 +639,7 @@ bye-chain link 0 ,
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn
-    honing off ;
+    honing @ -1 <> if honing off then ;
 
 ' cleanup bye-chain-root cell+ !
 
