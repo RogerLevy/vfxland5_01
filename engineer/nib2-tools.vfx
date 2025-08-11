@@ -90,7 +90,7 @@
         instance-size @ next-ofs @ - ?dup if ."  ("  . ." remaining)" then cr
     ."     Classifier #: " classifier# @ . cr
     ."     Properties: " property-list list-count . cr
-    ."     Protocols: " protocol-list list-count . cr
+    \ ."     Protocols: " protocol-list list-count . cr
     ."     Dependents: " dependents list-count . cr
     
     me .class-traits
