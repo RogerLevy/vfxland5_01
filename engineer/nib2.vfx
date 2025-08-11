@@ -288,9 +288,10 @@ create _protocol  _class instance [[
 : reopened? ( class - b )
     's #openings @ 1 > ;
 
-: allocate-static-offset ( - )
+: allocate-static-offset ( n - )
+    dup /static + /classifier > abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
     /static offset !
-    cell +to /static ;
+    +to /static ;
     
 : >property ( property - ) 
     \ Compile the code to resolve property address. 
@@ -306,7 +307,7 @@ create _protocol  _class instance [[
     push-order only forth definitions 
     create _property instance [[ 
         property-size ! 
-        allocate-static-offset 
+        cell allocate-static-offset 
         MAGIC_PROPERTY magic ! 
     me ]]     
     s" does-property" evaluate   \ late-bound for easy Oversight integration
@@ -324,6 +325,11 @@ create _protocol  _class instance [[
 : map-property ( property - )
     \ map property for current class
     [[
+        classifier has-field-space? if
+            classifier 's next-ofs @ property-size @ +
+            classifier 's field-space-size @ > abort" MAP-PROPERTY >> Cannot map property - out of field space!"
+        then
+    
         classifier 's next-ofs @ offset @ classifier + !
         property-size @ classifier 's next-ofs +!
     ]]
@@ -419,7 +425,7 @@ create _protocol  _class instance [[
     _static already? if ' drop exit then
     push-order only forth definitions
     create _static instance [[
-        allocate-static-offset
+        cell allocate-static-offset
         MAGIC_FIELD magic !
     ]]
     pop-order
@@ -429,7 +435,7 @@ create _protocol  _class instance [[
 \ Classifier definition
 \ ==============================================================================
 
-: apply-trait ( trait class f:id? - )
+: apply-trait ( trait class b:id? - )
     {: trait0 class0 id? | could? :}
     class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
@@ -573,7 +579,7 @@ debug @ [if]
         does-protocol 
         [[
             me trait0 add-protocol
-            allocate-static-offset 
+            cell allocate-static-offset 
         me ]]
     then
     to protocol0
