@@ -177,7 +177,7 @@ aka file-exists? fileexists?
         .s
         pop-attribute
         c" " 'AbortText !
-        EditOnError
+        \ EditOnError
         -2 throw
     else
         2drop
