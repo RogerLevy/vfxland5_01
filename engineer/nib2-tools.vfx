@@ -101,7 +101,7 @@
     {: thread# nfa | body :}
     nfa name> >body to body
     body 's cla @ _class = if
-        ."        - " nfa count type cr
+        ."         - " nfa count type cr
         1 +to found-items        
     then -1 ;
 
@@ -109,20 +109,25 @@
     {: thread# nfa | body :}
     nfa name> >body to body
     body 's cla @ _trait = if
-        ."        - " nfa count type cr
+        ."         - " nfa count type cr
         1 +to found-items        
     then -1 ;
 
 : .nibs ( - )
     cr
-    ."    Classes:" cr
+    ."     Classes:" cr
     0 to found-items
     ['] ?.class forth-wordlist WalkWordList 
-    ."        Total: " found-items . cr cr
-    ."    Traits:" cr
+    ."         Total: " found-items . cr cr
+    ."     Traits:" cr
     0 to found-items
     ['] ?.trait forth-wordlist WalkWordList 
-    ."        Total: " found-items . cr ;
+    ."         Total: " found-items . cr
+    cr
+    ."     Static field allocation: " /static . ." bytes (" /classifier /static - . ." remaining)" cr
+    cr
+    ;
+    
     
 
 \ Example usage:
