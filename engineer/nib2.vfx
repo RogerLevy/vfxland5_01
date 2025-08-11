@@ -625,7 +625,10 @@ debug @ [if]
     
     \ Copy size fields
     source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
-    classifier [[ field-space-size ! next-ofs ! instance-size ! ]]
+    classifier [[
+        field-space-size @ max field-space-size !
+        next-ofs !
+        instance-size @ max instance-size ! ]]
     
     \ Copy statics
     source-class /classifier-base +
