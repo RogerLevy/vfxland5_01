@@ -15,6 +15,7 @@ synonym dup-endcase end-case
 aligned-page uios
 variable uiosp  uios uiosp !
 variable display-mode  \ 0 = IDE, 1 = Fullscreen (game), 2 = Windowed (game)
+variable old-hold
 
 : ?type ?dup 0= if drop else type then ;
 
@@ -365,11 +366,12 @@ borrow engineer~ func[]
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         active off
-        ide @ if hold on then
+        ide @ if hold @ old-hold ! hold on then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
         active on
         ide @ repl @ not and if hold off then
+        ide @ repl @ and if old-hold @ hold ! then
     then
     repl @ if
         ALLEGRO_EVENT_KEY_CHAR happened? if
