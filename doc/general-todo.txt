@@ -1,3 +1,10 @@
+2025/08/11
+[ ] Keep track of class protocols in their protocol list.
+    Classes should maintain their protocol-list for introspection and debugging.
+
+[ ] Add validations support for protocols.
+    Verify protocol implementations match expected signatures and behaviors.
+
 2025/08/08
 [ ] Add ability to check if a protocol has been implemented by a class
     (as opposed to simply adopted from a trait) and use that to check whether
