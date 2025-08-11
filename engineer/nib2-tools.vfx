@@ -80,7 +80,7 @@
 : .class ( class - )
     \ Print detailed information about a class
     [[
-    me valid-class? not if ." Not a valid class" exit then
+    me valid-class? not if ." Not a valid class." exit then
     
     cr
     ."     Class: " me body> >name count type cr

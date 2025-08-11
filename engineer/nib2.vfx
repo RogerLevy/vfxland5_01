@@ -39,7 +39,9 @@ constant /magical-base
     (?prop) ;
     
 ' cla >body 2 cells + @ constant cla-offset
+
 : prop+ ( object offset - a )
+    \ Optimizes down to two instructions with validations off 
     s" over cla-offset + @ + @ ?prop +" evaluate ; immediate
 
 : >cla  s" cla-offset +" evaluate ;  immediate
@@ -292,7 +294,6 @@ create _protocol  _class instance [[
     
 : >property ( property - ) 
     \ Compile the code to resolve property address. 
-    \ Optimizes down to two instructions with validations off 
     ( protocol ) >r 
     s" me dup >cla @" evaluate 
     r> 's offset @ ?literal 
@@ -360,7 +361,7 @@ create _protocol  _class instance [[
     property0 ;
 
 : nproperty ( size <name> - ) ( - a )
-    classifier 0= abort" NPROPERTY >> Can't define a property outside of a classifier block."
+    classifier 0= abort" NPROPERTY >> Can't define a property outside of a classifier definition."
 
     _property already? if
         ' >body ?size-changed
@@ -401,7 +402,7 @@ create _protocol  _class instance [[
     cell nproperty ;
 
 : static ( <name> - ) ( - a )
-    classifier 0= abort" STATIC >> Can't define a static outside of a classifier block."
+    classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
     _static already? if ' drop exit then
     push-order only forth definitions
     create _static instance [[
@@ -415,7 +416,7 @@ create _protocol  _class instance [[
 \ Classifier definition
 \ ==============================================================================
 
-: apply-trait ( trait class b:id? - )
+: apply-trait ( trait class f:id? - )
     {: trait0 class0 id? | could? :}
     class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
@@ -477,14 +478,14 @@ create _protocol  _class instance [[
 
 : is-a ( [class] <trait> - )
     \ Apply trait to class
-    \ [class] only required if outside class block
+    \ [class] only required if outside class definition
     ' >body classifier ?dup 0= if swap then -1 apply-trait ;
 
 : works-with ( [class] <trait> - )
     \ Apply trait to class without adding to id-table
     \ Adds protocols and maps properties from the trait for transparent interoperability
     \ IS? will return 0
-    \ [class] only required if outside class block
+    \ [class] only required if outside class definition
     ' >body classifier ?dup 0= if swap then 0 apply-trait ;
     
 : trait: ( <name> - )
@@ -580,7 +581,7 @@ debug @ [if]
 
 : :: ( classifier <protocol> - )
     {: class0 | protocol0 :}
-    \ classifier abort" :: >> Can only define a protocol outside of a classifier block."
+    \ classifier abort" :: >> Can only define a protocol outside of a classifier definition."
     class0 >cla @ _trait = if class0 (protocol:) exit then
     class0 >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
@@ -593,7 +594,7 @@ debug @ [if]
     -1 r> >name count f" %s >> Not implemented" .abort ;
 
 : :construct ( #params class - )
-    classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier block."
+    classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
     dup >cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
     [[
         :noname constructor-xt !
@@ -601,7 +602,7 @@ debug @ [if]
     ]] ;
 
 \ : defaults ( - a )
-\     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class block."
+\     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class definition."
 \     classifier >cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
 \     classifier 's template @ ?dup if else
 \         classifier instance classifier 's template !
@@ -621,7 +622,7 @@ debug @ [if]
     {: source-class :}
     
     source-class >cla @ _class <> abort" DERIVE >> Can only derive from classes."
-    classifier 0= abort" DERIVE >> Can only be called inside a class block."
+    classifier 0= abort" DERIVE >> Can only be called inside a class definition."
     
     \ Copy size fields
     source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
@@ -678,21 +679,21 @@ aka nprop nproperty
 aka prop property
 
 \ Validation
-: valid-class? ( a - n:res )
+: valid-class? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
         dup >cla @ _class = r> and >r
     then
     drop r> ;
 
-: valid-classifier? ( a - n:res )
+: valid-classifier? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
         dup 's magic @ MAGIC_CLASSIFIER = r> and >r
     then
     drop r> ;
 
-: valid-object? ( a - n:res )
+: valid-object? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
         dup >cla @ ( class ) valid-class? r> and >r
