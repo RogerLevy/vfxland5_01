@@ -337,7 +337,7 @@ create _protocol  _class instance [[
         classifier [[ next-ofs @ instance-size ! ]]
     then ;
 
-: supports-protocol? ( protocol class - bool )
+: supports-protocol? ( protocol classifier - bool )
     swap 's offset @ + @ 0<> ;
 
 : apply-protocol ( trait protocol class - )
@@ -574,18 +574,21 @@ debug @ [if]
     _protocol already? if
         ' >body
     else
-        create _protocol instance
-        does-protocol 
+        create _protocol instance 
+        does-protocol
         [[
-            me trait0 add-protocol
-            cell allocate-static-offset 
+            cell allocate-static-offset
         me ]]
     then
     to protocol0
     
+    protocol0 [[
+        me trait0 supports-protocol? not if
+            me trait0 add-protocol
+        then
+    ]]
+    
     \ Compile the default behavior in the trait
-    buf[ count
-    trait0 body> >name count
     protocol0 trait0 implement-protocol
     
     \ Propagate the protocol to dependents
@@ -598,15 +601,15 @@ debug @ [if]
     ;
 
 : :: ( classifier <protocol> - )
-    {: class0 | protocol0 :}
+    {: c | protocol0 :}
     \ classifier abort" :: >> Can only define a protocol outside of a classifier definition."
-    class0 >cla @ _trait = if class0 (protocol:) exit then
-    class0 >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+    c >cla @ _trait = if c (protocol:) exit then
+    c >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0
     protocol0 >cla @ _protocol <> abort" :: >> Word is not a protocol!"
-    protocol0 class0 supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
-    protocol0 class0 implement-protocol ;
+    protocol0 c supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
+    protocol0 c implement-protocol ;
 
 : stub ( - )
     -1 r> >name count f" %s >> Not implemented" .abort ;
