@@ -49,7 +49,9 @@ class;
     at@ 2>r
     at@ 2s>p x 2! 
     (suicidal)
-    sp@ cell+ >r starting-xt @ execute r> !sp
+    \ sp@ cell+ >r
+    starting-xt @ execute
+    \ r> !sp
     2r> at ;
 
 : delay ( secs. - )
@@ -112,7 +114,7 @@ class;
 : scene ( - )
     \ Clear the stage of other events, skipping ME.
     0 0 at
-    actives> me you = ?exit me event is? -exit unload ;
+    actives> me you = ?exit unload ;
 
 || : my-curve? ( fn len - )
     {: fn len :} 

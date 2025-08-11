@@ -51,14 +51,13 @@ variable paralysis                \ paralyzes player when >0
     lightning one as> act> act> act> unload ;
 
 : slowdown-starfield ( - )
-    object one as> act>
+    actor one as> act>
         \ starfield-speed 0.06 - 0 max to starfield-speed ;
         starfield-speed 0.94 p* to starfield-speed ;
 
 : shatter ( - )
     200 for
-        me
-        360. rnd 14 rnd vec from
+        me 360. rnd 14 rnd vec from
         dot one [[ 360. rnd 2. rnd vec vx 2! ]] 
     loop
     unload ;

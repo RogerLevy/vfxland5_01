@@ -21,12 +21,13 @@ trait: pickup
     prop worth \ when non-zero, makes object a collectible source of energy
 trait;
 
-class: actor
-    works-with vessel
-    works-with projectile
-    works-with pickup
-    prop owner
-class;
+c: actor "vessel" "projectile" "pickup" owner ;
+\ class: actor
+\     works-with vessel
+\     works-with projectile
+\     works-with pickup
+\     prop owner
+\ class;
 
 \ Extend actor:info
 actor :: describe

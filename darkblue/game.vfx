@@ -1,5 +1,5 @@
-\ require-event test1
-: test1 ;
+require-event test1
+\ : test1 ;
 
 require laser.vfx
 require scripts\bubble.vfx

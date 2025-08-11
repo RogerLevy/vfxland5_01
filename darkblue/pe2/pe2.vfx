@@ -80,7 +80,7 @@ ui-path :: init
         loop ;
 
 root [[
-    0 0 at object el: pe2-ui [[
+    0 0 at element el: pe2-ui [[
         0 0 at ui-path el: ui-path [[
         ]]
     ]]
