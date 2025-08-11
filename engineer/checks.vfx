@@ -79,10 +79,10 @@ wrap-word [[
     s" (?prop)" evaluate ; immediate
 
 : does-property
-    immediate does> 
-        fast[
-        >property
-        fast] ;
+    immediate does>  fast[ >property fast] ;
+
+: prop+
+    fast[ postpone prop+ fast] ; immediate
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;
