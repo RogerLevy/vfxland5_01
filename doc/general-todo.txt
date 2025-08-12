@@ -1,4 +1,16 @@
 2025/08/11
+[ ] Add bracket matching validation for object binding operators `[[ ]]`.
+    Check for missing opening or closing double brackets.
+
+[ ] Experiment with possessive form syntax custom parser.
+    Implement `object's property` notation as alternative to `object 's property`.
+    [ ] Also implement `my` and `your` 
+
+[ ] Experiment with dot syntax custom parser.
+    Implement `object.member` notation as alternative to `object method`
+    or `object 's property`.
+    Look in old code for possibly pre-existing implementation.
+
 [ ] Keep track of class protocols in their protocol list.
     Classes should maintain their protocol-list for introspection and debugging.
 
