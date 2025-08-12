@@ -15,7 +15,7 @@
       {
         "id": "vfx-forth-simple",
         "aliases": ["VFX Forth Simple", "vfx-forth-simple"],
-        "extensions": [".vfx", ".f", ".forth", ".4th", ".fth"],
+        "extensions": [".vfx", ".fth"],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -26,5 +26,9 @@
         "path": "./syntaxes/vfx-forth-simple.tmLanguage.json"
       }
     ]
-  }
+  },
+  "files.associations": {
+      "*.vfx": "vfx-forth-simple"
+  }  
+
 }
