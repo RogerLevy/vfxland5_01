@@ -1,0 +1,30 @@
+{
+  "name": "vfx-forth-simple",
+  "displayName": "VFX Forth Simple",
+  "description": "Simple syntax highlighting for VFX Forth",
+  "version": "2.0.0",
+  "publisher": "vfxland",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "vfx-forth-simple",
+        "aliases": ["VFX Forth Simple", "vfx-forth-simple"],
+        "extensions": [".vfx", ".f", ".forth", ".4th", ".fth"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "vfx-forth-simple",
+        "scopeName": "source.vfx-forth-simple",
+        "path": "./syntaxes/vfx-forth-simple.tmLanguage.json"
+      }
+    ]
+  }
+}

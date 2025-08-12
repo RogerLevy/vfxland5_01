@@ -1,0 +1,278 @@
+{
+  "name": "VFX Forth Simple",
+  "scopeName": "source.vfx-forth-simple",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#colon-definitions"
+    },
+    {
+      "include": "#local-variables"
+    },
+    {
+      "include": "#defining-phrases"
+    },
+    {
+      "include": "#standalone-semicolon"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#character-literals"
+    },
+    {
+      "include": "#defining-words"
+    },
+    {
+      "include": "#user-words"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.backslash.vfx-forth",
+          "match": "\\\\\\s.*$"
+        },
+        {
+          "name": "comment.block.parens.vfx-forth",
+          "begin": "\\(\\s",
+          "end": "\\)",
+          "name": "comment.block.parens.vfx-forth"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.vfx-forth",
+          "begin": "(?<=\\s|^)(s\"|se\"|c\"|c\\\\\"|z\"|eval\"|abort\"|\\.\"|f\"|fe\"|s\\\\\")(?=\\s)",
+          "end": "\"",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.string.vfx-forth"
+            }
+          },
+          "contentName": "string.quoted.double.vfx-forth",
+          "patterns": [
+            {
+              "name": "constant.character.escape.vfx-forth",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "colon-definitions": {
+      "patterns": [
+        {
+          "begin": "(?<=\\s|^)(:)(?=\\s)",
+          "end": "(;)(?=\\s|$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "include": "#strings"
+            },
+            {
+              "include": "#local-variables"
+            },
+            {
+              "include": "#numbers"
+            },
+            {
+              "include": "#character-literals"
+            },
+            {
+              "match": "(?<=:)\\s+([^\\s]+)(?=\\s|$)",
+              "captures": {
+                "1": {
+                  "name": "keyword.other.defining.vfx-forth"
+                }
+              }
+            },
+            {
+              "include": "#defining-words-in-definition"
+            },
+            {
+              "include": "#user-words"
+            }
+          ]
+        }
+      ]
+    },
+    "local-variables": {
+      "patterns": [
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "begin": "(?<=\\s|^)\\{:",
+          "end": ":\\}",
+          "beginCaptures": {
+            "0": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "contentName": "keyword.other.defining.vfx-forth"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.vfx-forth",
+          "match": "(?<=\\s|^)\\$[0-9a-fA-F]+(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.hex.vfx-forth",
+          "match": "(?<=\\s|^)0x[0-9a-fA-F]+(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.hex.vfx-forth",
+          "match": "(?<=\\s|^)#[0-9]+(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.hex.vfx-forth",
+          "match": "(?<=\\s|^)%[01]+(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]*\\.[0-9]+([eE][+-]?[0-9]+)?(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]+\\.[0-9]*([eE][+-]?[0-9]+)?(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]+[eE][+-]?[0-9]+(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]+e(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?\\.[0-9]+e(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.float.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]+\\.e(?=\\s|$)"
+        },
+        {
+          "name": "constant.numeric.integer.vfx-forth",
+          "match": "(?<=\\s|^)-?[0-9]+(?![0-9.eE])(?=\\s|$)"
+        }
+      ]
+    },
+    "character-literals": {
+      "patterns": [
+        {
+          "name": "constant.character.vfx-forth",
+          "match": "(?<=\\s|^)'[^\\s]'?(?=\\s|$)"
+        }
+      ]
+    },
+    "defining-phrases": {
+      "patterns": [
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "begin": "(?<=\\s|^)(:)(?=\\s)",
+          "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "contentName": "keyword.other.defining.vfx-forth"
+        },
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "begin": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|::|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|class;|:noname|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct)(?=\\s)",
+          "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "contentName": "keyword.other.defining.vfx-forth"
+        },
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "begin": "(?<=\\s|^)([^\\s]+:)(?=\\s)",
+          "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "contentName": "keyword.other.defining.vfx-forth"
+        }
+      ]
+    },
+    "standalone-semicolon": {
+      "patterns": [
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "match": "(?<=\\s|^);(?=\\s|$)"
+        }
+      ]
+    },
+    "defining-words": {
+      "patterns": [
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "match": "(?<=\\s|^)[^\\s]*[:;][^\\s]*(?=\\s|$)"
+        }
+      ]
+    },
+    "defining-words-in-definition": {
+      "patterns": [
+        {
+          "name": "keyword.other.defining.vfx-forth",
+          "match": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|::|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|class;|:noname|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct)(?=\\s|$)"
+        }
+      ]
+    },
+    "user-words": {
+      "name": "variable.other.vfx-forth",
+      "match": "(?<=\\s|^)[^\\s]+(?=\\s|$)"
+    }
+  }
+}
