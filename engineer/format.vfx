@@ -57,6 +57,7 @@
         'f' of -1 (f.) add-field endof
         'u' of swap 0 <# #s #> add-field endof
         's' of -rot add-field endof
+        '$' of swap count add-field endof
         'd' of
             r> 1+ dup >r c@ case
                 'n' of -rot tuck dabs <# #s rot sign #> add-field endof
