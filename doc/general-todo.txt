@@ -9,12 +9,12 @@
     Similar to IS? but checks for capability as opposed to identity.
     Accepts either traits or protocol XT's.
 
-[ ] (NIBS) Add protocol conflict protections
-    [ ] Track which trait added each protocol to a class using an extra
+[-] (NIBS) Add protocol conflict protections
+    [x] Track which trait added each protocol to a class using an extra
         static field per protocol.
-    [ ] In APPLY-TRAIT, if a trait tries to write to a protocol implementation
+    [x] In APPLY-TRAIT, if a trait tries to write to a protocol implementation
         XT that is already taken by another trait, throw an error.
-    [ ] If a class implements a protocol, assign the class to it in the extra
+    [x] If a class implements a protocol, assign the class to it in the extra
         static field.  Use this to determine whether to propagate a protocol
         in DEFINE-PROTOCOL.
     [ ] Implement "triggers" - special protocols that can be chained, allowing
@@ -27,6 +27,8 @@
         - More verbose solution:
             Create wrappers that take an object:
             `: asset-init ( _asset - ) [[ _asset:init ]] ;`
+
+[ ] (NIBS) Make :: syntax consistent with other NIBS words - allow classifier inference when inside classifier blocks.
 
 [ ] (NIBS) Rename 'S to ->
 

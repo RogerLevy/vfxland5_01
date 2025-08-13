@@ -20,3 +20,4 @@ _widget works-with _renderable   \ This should abort with conflict error
 
 \ If we get here, the test failed
 cr ." ERROR: Conflict detection failed - should have aborted!"
+

@@ -439,7 +439,7 @@ create _protocol  _class instance [[
 \ ==============================================================================
 
 : apply-trait ( trait class b:id? - )
-    {: trait0 class0 id? | could? protocol0 :}
+    {: trait0 class0 id? | could? protocol0 origin :}
     class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
@@ -471,13 +471,18 @@ create _protocol  _class instance [[
         \ a class from WORKS-WITH to IS-A.
         could? if protocol0 class0 supports-protocol? not else -1 then
         if 
-            \ Check for protocol conflicts (has another trait applied this protocol?)
-            protocol0 's offset @ class0 + >origin @ dup 0<> swap trait0 <> and if
-                -1
-                trait0 body> >name count
-                protocol0 's offset @ class0 + >origin @ body> >name count  
-                protocol0 body> >name count
-                f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
+            \ Check for protocol conflicts (trait trying to override another trait's implementation)
+            protocol0 's offset @ class0 + >origin @ to origin
+            origin 0<> if
+                origin >cla @ _class <> if  \ Origin is a trait, not a class
+                    origin trait0 <> if     \ Different trait owns it
+                        -1
+                        trait0 body> >name count
+                        origin body> >name count  
+                        protocol0 body> >name count
+                        f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
+                    then
+                then
             then
             trait0 protocol0 class0 apply-protocol 
         then
@@ -578,6 +583,7 @@ debug @ [if]
         name[ count
         c body> >name count 
         :protocol ( xt ) c offset @ + !
+        c c offset @ + >origin !  \ Store class as origin when class implements protocol
     ]] ;
     
 : define-protocol ( trait <name> - ) ( ... object - ... )
@@ -606,9 +612,17 @@ debug @ [if]
     \ Propagate the protocol to dependents
     trait0 's dependents dup list-count for
         @next to class0
-        \ protocol0 class0 supports-protocol? not if
+        \ Only propagate if class doesn't have implementation from different source
+        protocol0 class0 supports-protocol? if
+            protocol0 's offset @ class0 + >origin @ trait0 = if
+                \ Implementation from this trait - safe to overwrite
+                trait0 protocol0 class0 apply-protocol
+            then
+            \ else: Implementation from different trait or class - don't overwrite
+        else
+            \ Class doesn't support protocol yet - apply it
             trait0 protocol0 class0 apply-protocol
-        \ then
+        then
     loop drop
     ;
 
