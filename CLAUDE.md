@@ -1,5 +1,8 @@
 # CLAUDE.md
 
+## Thinking Mode
+  - Always use extended thinking
+
 ## VFXLand 5 
 
 - Custom game engine and 2D games written in VFX Forth.
