@@ -28,8 +28,8 @@ def expand_class_definition(match):
             result += f"    {token[1:]} derive\n"
             
         # Handle works-with traits (+"traitname")
-        elif token.startswith('+"') and token.endswith('"'):
-            trait_name = token[2:-1]  # Remove +" and "
+        elif token.startswith('"') and token.endswith('"'):
+            trait_name = token[1:-1]  # Remove " and "
             result += f"    works-with {trait_name}\n"
             
         # Handle is-a traits (+traitname)
@@ -54,7 +54,7 @@ def convert_file(filename):
     with open(filename, 'r') as f:
         content = f.read()
     
-    pattern = r'c:\s+([^;]+);'
+    pattern = r'\bc:\s+([^;]+);'
     converted = re.sub(pattern, expand_class_definition, content)
     
     with open(filename, 'w') as f:
