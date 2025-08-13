@@ -15,7 +15,7 @@ _document :: print ( - ) ." Custom print from class" cr ;
 cr ." Debug: Origin after class implementation:"
 ' print >body 's offset @ _document + >origin @ .name
 
-_document instance constant test-doc
+_document make constant test-doc
 cr ." Before trait redefinition:"
 test-doc print   \ Should show "Custom print from class"
 

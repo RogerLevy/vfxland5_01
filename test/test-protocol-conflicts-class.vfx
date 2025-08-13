@@ -11,7 +11,7 @@ class;
 _document works-with _printable
 _document :: print ( - ) ." Custom print from class" cr ;
 
-_document instance constant test-doc
+_document make constant test-doc
 test-doc print   \ Should show "Custom print from class"
 
 cr ." Test 2 passed - class successfully overrode trait protocol"

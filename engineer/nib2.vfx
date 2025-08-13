@@ -230,14 +230,14 @@ _object [[
         cla @ 's constructor-xt @ ?dup if execute then
     ]] ;
     
-: instance ( ... class - object )
+: make ( ... class - object )
     \ TODO: validate class
     here >r
     dup 's instance-size @ allot
     ( class ) r@ construct r> ;
 
 : $object ( ... class name len - object ) ( - object ) 
-    >$ $create instance ;
+    >$ $create make ;
 
 : object ( ... class <name> - ) ( - object )
     bl parse $object drop ;
@@ -246,7 +246,7 @@ _object [[
 \ Members
 \ ==============================================================================
 
-create _property  _class instance [[
+create _property  _class make [[
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
@@ -255,12 +255,12 @@ create _property  _class instance [[
     dup instance-size ! next-ofs !
 ]]
 
-create _static  _class instance [[
+create _static  _class make [[
     _property 's instance-size @
     dup instance-size ! next-ofs !
 ]]
 
-create _protocol  _class instance [[
+create _protocol  _class make [[
     _static 's instance-size @
     dup instance-size ! next-ofs !
 ]]
@@ -277,7 +277,7 @@ create _protocol  _class instance [[
 
 : begin-classifier ( class - )
     push-order only forth definitions
-    create instance to classifier
+    create make to classifier
     1 classifier 's #openings +!
     allocate-classifier-bit
     pop-order ;
@@ -305,7 +305,7 @@ create _protocol  _class instance [[
  
 : create-property ( size <name> - property ) 
     push-order only forth definitions 
-    create _property instance [[ 
+    create _property make [[ 
         property-size ! 
         cell allocate-static-offset 
         MAGIC_PROPERTY magic ! 
@@ -427,7 +427,7 @@ create _protocol  _class instance [[
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
     _static already? if ' drop exit then
     push-order only forth definitions
-    create _static instance [[
+    create _static make [[
         cell allocate-static-offset
         MAGIC_FIELD magic !
     ]]
@@ -592,7 +592,7 @@ debug @ [if]
     _protocol already? if
         ' >body
     else
-        create _protocol instance 
+        create _protocol make 
         does-protocol
         [[
             2 cells allocate-static-offset
@@ -661,7 +661,7 @@ debug @ [if]
     classifier dup 0= if drop then to class0 
     class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
     class0 's template @ ?dup 0= if
-        class0 instance class0 's template !
+        class0 make class0 's template !
         class0 's template @
     then ;
 
@@ -727,6 +727,7 @@ debug @ [if]
 
 aka nprop nproperty
 aka prop property
+aka instance make  \ Backward compatibility
 
 \ Validation
 : valid-class? ( ? - n:res )

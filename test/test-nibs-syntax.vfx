@@ -16,7 +16,7 @@ class;
 test-class :: test-protocol2 ." outside class implementation" cr ;
 
 \ Verify both work
-test-class instance test-obj
+test-class make test-obj
 
 test-obj test-protocol
 test-obj test-protocol2

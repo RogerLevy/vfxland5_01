@@ -52,9 +52,9 @@ class: waypoint%
     property connections \ bitfield of connected waypoints
 class;
 
-create waypoint waypoint% instance drop
+create waypoint waypoint% make drop
 
-create actor actor% instance [[
+create actor actor% make [[
     me .
     x .
     y .
@@ -86,7 +86,7 @@ actor [[
     me think
 ]]
 
-create enemy enemy% instance [[
+create enemy enemy% make [[
     me dup . .name
     ." &mass=" mass .
     ." &x=" x .

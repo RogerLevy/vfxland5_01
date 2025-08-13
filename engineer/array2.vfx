@@ -178,7 +178,7 @@ _stack :: pop-ref ( - a )
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - )
-    0 swap _array instance [[
+    0 swap _array make [[
     here data !  me ]] ;  \ just to be sure
 
 : array] ( array - array )
@@ -204,7 +204,7 @@ _stack :: pop-ref ( - a )
 
 : object-array ( c class <name> - )
     {: count class0 :}
-    create count class0 sizeof _array instance [[
+    create count class0 sizeof _array make [[
         count for
             class0 i me [] construct
         loop
