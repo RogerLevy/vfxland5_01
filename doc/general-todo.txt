@@ -5,7 +5,7 @@
     +trait - add a trait 
     "trait" - add a trait's capabilities only 
     
-[ ] (NIBS) Add CAN? capability checking word.
+[x] (NIBS) Add CAN? capability checking word.
     Similar to IS? but checks for capability as opposed to identity.
     Accepts either traits or protocol XT's.
 
