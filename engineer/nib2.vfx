@@ -340,10 +340,13 @@ create _protocol  _class instance [[
 : supports-protocol? ( protocol classifier - bool )
     swap 's offset @ + @ 0<> ;
 
+: >origin ( protocol-xt-addr - origin-addr ) cell+ ;
+
 : apply-protocol ( trait protocol class - )
     {: trait0 protocol0 class0 | ofs :}
     protocol0 's offset @ to ofs
-    trait0 ofs + @ class0 ofs + ! ;
+    trait0 ofs + @ class0 ofs + !
+    trait0 class0 ofs + >origin ! ;
 
 : has-unmapped-properties? ( trait - bool )
     {: trait0 :}
@@ -436,7 +439,7 @@ create _protocol  _class instance [[
 \ ==============================================================================
 
 : apply-trait ( trait class b:id? - )
-    {: trait0 class0 id? | could? :}
+    {: trait0 class0 id? | could? protocol0 :}
     class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
@@ -462,12 +465,22 @@ create _protocol  _class instance [[
     
     \ Merge protocols
     trait0 's protocol-list dup list-count for
-        @next 
-        ( protocol ) class0
+        @next to protocol0
+        
         \ Avoid clobbering already supported protocols if "upgrading"
         \ a class from WORKS-WITH to IS-A.
-        could? if 2dup supports-protocol? not else -1 then
-        if trait0 -rot apply-protocol then
+        could? if protocol0 class0 supports-protocol? not else -1 then
+        if 
+            \ Check for protocol conflicts (has another trait applied this protocol?)
+            protocol0 's offset @ class0 + >origin @ dup 0<> swap trait0 <> and if
+                -1
+                trait0 body> >name count
+                protocol0 's offset @ class0 + >origin @ body> >name count  
+                protocol0 body> >name count
+                f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
+            then
+            trait0 protocol0 class0 apply-protocol 
+        then
     loop drop
     
     \ Merge properties
@@ -576,7 +589,7 @@ debug @ [if]
         create _protocol instance 
         does-protocol
         [[
-            cell allocate-static-offset
+            2 cells allocate-static-offset
         me ]]
     then
     to protocol0
