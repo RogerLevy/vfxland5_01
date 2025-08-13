@@ -35,7 +35,7 @@
 [ ] (NIBS) Add bracket matching validation for object binding operators `[[ ]]`.
     Check for missing opening or closing double brackets.
 
-[ ] (NIBS) Keep track of class protocols in their protocol list.
+[x] (NIBS) Keep track of class protocols in their protocol list.
     Classes should maintain their protocol-list for introspection and debugging.
 
 [ ] (NIBS) Add validations support for protocols.

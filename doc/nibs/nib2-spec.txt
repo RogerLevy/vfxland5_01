@@ -172,6 +172,12 @@ Protocol Propagation:
     Enables hot-reload protocol extension during development.
     Only propagates when class doesn't have conflicting implementation.
 
+Protocol Tracking:
+    Classes maintain their own protocol-list for introspection and debugging.
+    Protocols are automatically added when implemented via :: syntax.
+    Hot-reload safe - prevents duplicate protocol entries during development.
+    Enables .class introspection to show all protocols supported by a class.
+
 Field-Space Protection:
     Properties cannot be added to reopened classifiers without field-space.
     Prevents memory layout corruption from unsafe property addition.
@@ -181,14 +187,26 @@ Field-Space Protection:
     \ smart size query supporting both objects and classes
     \ for objects: gets class then returns instance-size
     \ for classes: directly returns instance-size
+
+\ Introspection System
+\ --------------------
+
+: .class ( class - )
+    \ detailed class inspection showing size, properties, protocols, traits, and parents
+    \ displays protocol count and detailed protocol listing
+    \ shows trait relationships and inheritance hierarchy
+
+: .nibs ( - )
+    \ system overview showing all classes, traits, and resource usage
     
 \ Enhanced Property Access
 \ ------------------------
 
-: 'S ( object <name> - a )
-    \ enhanced field/property access with performance optimization
+: -> ( object <name> - a )
+    \ enhanced field/property access with performance optimization (renamed from 'S)
     \ detects MAGIC_PROPERTY and generates optimized assembly with prop+
     \ generates simple + for regular fields
+    \ syntax: object -> property-name
 
 \ example 1: arrays with collection trait
 \ ---------------------------------------
@@ -229,7 +247,7 @@ class;
     /stack max-items @ item-count ! ;
 
 : #items ( collection - n )
-    's item-count @ ;
+    -> item-count @ ;
 
 \ Class implementation of protocol (stack diagram must match)
 array :: each ( xt - ) ( a - )
@@ -265,7 +283,7 @@ actor :derive ( original-class derived-class - )
     private ;  \ set up private vocabulary
 
 \ set static; DERIVE carries it over 
-' actor-oexec-error-handler actor 's oexec-error-handler !
+' actor-oexec-error-handler actor -> oexec-error-handler !
 
 actor :: draw ( - )
     sprite ;

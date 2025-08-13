@@ -52,6 +52,5 @@ write-log-line → log
 close-log-file → close  
 log-file-handle → hlog
 errors-this-session → #errors
-generate-log-filename → generate-logfile$
 Style Goal
 Readable brevity - names short enough to scan quickly while remaining meaningful within their immediate context. Prioritizes interactive development flow over verbose self-documentation.

@@ -16,7 +16,7 @@ Status Legend:
 1.1 Object Runtime Fundamentals [x] 
    [x] ME variable for current object context
    [x] [[ and ]] object scoping with object stack
-   [x] 'S field access syntax (immediate word)
+   [x] -> field access syntax (immediate word, renamed from 'S)
    [x] Object stack management (osp, os, pagealign)
    [x] Object validation framework (magic numbers)
 
@@ -156,11 +156,11 @@ Status Legend:
    [ ] Advanced object validation (valid-object?)
    [-] Field validation and bounds checking
 
-6.2 Introspection [ ]
-   [ ] Classifier capability enumeration
-   [ ] Field enumeration and metadata access
-   [ ] Protocol implementation checking
-   [ ] Runtime type information queries     
+6.2 Introspection [x]
+   [x] Classifier capability enumeration (.nibs, .class)
+   [x] Field enumeration and metadata access (.class shows properties count)
+   [x] Protocol implementation checking (.class shows protocols)
+   [x] Runtime type information queries (.class shows traits, parents, protocols)     
 
 7. LIFECYCLE MANAGEMENT [x]
 =======================
@@ -190,7 +190,7 @@ Status Legend:
    [ ] Protocol implementation validation
    [ ] Field access bounds checking
    [ ] Runtime contract enforcement
-   [x] 'S property support with MAGIC_PROPERTY detection and prop+ optimization
+   [x] -> property support with MAGIC_PROPERTY detection and prop+ optimization
    [x] Hot-reload property size validation with clear error messages
    [x] sizeof smart query supporting both objects and classes
    [ ] Property validation in engineer/checks.vfx
@@ -267,12 +267,12 @@ Phase 6: Object% Integration [x]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~98%
+Overall Completion: ~99%
 
 Core systems working:
 - Object runtime and scoping  
 - Property-based field system with conflict handling
-- Enhanced 'S syntax supporting both fields and properties
+- Enhanced -> syntax supporting both fields and properties
 - Class and trait definition
 - Runtime type queries (is?)
 - Object creation with constructor support (make, construct, object, $object)
@@ -289,7 +289,7 @@ Core systems working:
 - Context validation for static definitions (must be in classifier blocks)
 - :derive hook system for class inheritance customization
 - Smart sizeof supporting both objects and classes  
-- Enhanced 'S syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
+- Enhanced -> syntax with MAGIC_PROPERTY detection and prop+ immediate word for perfect assembly inlining
 - Sized properties with nproperty (size <name> -) supporting embedded data structures
 - Hot-reload safety with property size change detection and clear error messages
 - Compact classifier syntax: class: name [traits...] [props...] ; and trait: name [props...] ;
@@ -303,6 +303,8 @@ Core systems working:
 - CAN? capability checking for runtime type queries
 - Protocol conflict protection preventing unsafe trait overwrites
 - Protocol propagation enabling hot-reload extension of traits
+- Protocol tracking in class protocol-lists for introspection and debugging
+- Comprehensive introspection tools (.class, .nibs, .class-protocols)
 - Compact syntax (c:) with validation for concise class definitions
 
 Major systems pending:
@@ -323,35 +325,48 @@ The core architecture is complete and ready for production use.
 RECENT MAJOR UPDATES (Aug 2025):
 ================================
 
-1. Function Rename for AI Clarity (2025-08-13):
+1. Protocol Tracking System (2025-08-13):
+   - Classes now maintain protocol-list for introspection and debugging
+   - :: word automatically adds protocols to class protocol-list when implemented
+   - Hot-reload safe with protocol-in-list? duplicate prevention
+   - Enhanced .class introspection displays protocol count and detailed listing
+   - .class-protocols function for detailed protocol inspection
+   - Completes protocol introspection capabilities
+
+2. Function Rename for AI Clarity (2025-08-13):
    - Renamed INSTANCE to MAKE for anonymous object creation
    - Added backward compatibility alias 'aka instance make'
    - Eliminates AI confusion with OBJECT defining word
    - Clearer semantic distinction: MAKE (anonymous) vs OBJECT (named)
 
-2. Enhanced :: Syntax (2025-08-13):
+3. Property Access Operator Rename (2025-08-13):
+   - Renamed 'S to -> for enhanced property access
+   - Improves readability and aligns with common conventions
+   - Updated all documentation and examples
+
+4. Enhanced :: Syntax (2025-08-13):
    - :: now supports optional classifier parameter
    - Can infer current classifier context inside trait:/class: blocks
    - Syntax: :: protocol or classifier :: protocol
    - Improves usability and consistency
 
-3. Compact Class Syntax Completed (2025-08-13):
+5. Compact Class Syntax Completed (2025-08-13):
    - Full implementation of c: compact syntax parser
    - Validation prevents classifier names being used as properties
    - Handles %class, +trait, "trait" syntax correctly
    - Production-ready alternative to block syntax
 
-4. Protocol Conflict Protection (2025-08-13):
+6. Protocol Conflict Protection (2025-08-13):
    - Prevents traits from overriding other traits' protocol implementations
    - Classes can still override any trait protocols
    - Clear error messages for debugging conflicts
 
-5. CAN? Capability Checking (2025-08-13):
+7. CAN? Capability Checking (2025-08-13):
    - New runtime query function CAN? for capability checking
    - Accepts both traits and protocol XTs as parameters
    - Complements IS? for complete type introspection
 
-6. Protocol Propagation System (earlier):
+8. Protocol Propagation System (earlier):
    - Protocols added to traits automatically propagate to dependent classes
    - Solves issue where classes missed protocols added after trait application
    - Enables hot-reload protocol extension during development

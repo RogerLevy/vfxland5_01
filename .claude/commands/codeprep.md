@@ -2,9 +2,10 @@
 @doc/claude/word-naming-conventions.txt
 @doc/claude/stack-comment-conventions.txt
 @doc/claude/coding-style-guidelines.md
-@engineer/vfxcore2.vfx
 
-Read the individual files included by vfxcore2.vfx.
+@engineer/misc.vfx
+@engineer/nib2.vfx
+@engineer/array2.vfx
 
 ## Testing
 
