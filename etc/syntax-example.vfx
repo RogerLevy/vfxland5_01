@@ -1,0 +1,478 @@
+\ corrections to the syntax highlighting of my source code
+\ editor (Komodo Edit) are specified.
+
+
+\ line comment
+( inline comment )
+
+: word ( - ) 
+    user-word
+    x @ 1 + x +!
+    s" string"    
+    se" escaped string"
+    se" escaped \"string\""      \ correction: escaped quotes should not cancel the string highlighting
+    s\" escaped string (alternate syntax)"  \ correction: should be magenta
+    f" formatted string"
+    fe" escaped formatted \"string\""  \ correction: escaped quotes should not cancel the string highlighting
+;
+
+create word       \ correction: word should be red
+variable word     \ correction: word should be red
+2variable word    \ correction: word should be red
+0 value word      \ correction: value and word should be red
+0 2value word      \ correction: value and word should be red
+0e fvalue word      \ correction: value and word should be red
+
+\ character literal
+'c'   \ should be green
+
+\ numbers:
+0 1.0 1. .1 1.0e 1.e .1e 1e
+$abcdef
+#120  \ the # should be green
+%1001
+
+class: word \ all words following this pattern should be red (and "word")
+class; \ all words following this pattern should be red
+:noname \ should be red
+| x y z | \ should be red
+{: x y z | a b c :} \ should be red
+
+\ Forth defining words (red)
+variable 2variable create does> : synonym value fvalue 2value constant
+fconstant 2constant var svar static rolevar struct :make objlist [section] ::
+m: el: assetdef defer vocabulary define field sfield rolefield +user user
+begin-structure defer fconstant farray fvariable variable 2variable create
+2constant field: cfield: +field constant buffer: 2variable variable +user
+user 2variable variable 2constant constant alias: synonym aka
+
+\ Forth flow control words (red)
+begin again until repeat while case do loop unloop exit -exit ?exit leave
+of endof endcase end-case if then else for  +loop ?loop [if] [then] [else]
+[defined] [undefined] { } execute catch throw
+
+\ VFX and core Forth words (cyan)
+    include require pick roll dup drop ?dup nip swap rot over third 2dup 2drop 2nip 2swap 2rot 2over fdup fdrop fnip fswap frot 3dup 3drop 3nip 3swap 3rot >r r> r@ 2>r 2r> 2r@ i j s>f 2s>f 2f>s f>s f>s s>d d>s d>f f>d STEPTHROUGH SETBREAK DEBUG 
+    runbpm deinstall-debugger install-debugger debugwindowproc 
+    findnextins userdebugclose debugupdatestate userdebugchecks 
+    userdebuginit sourcewindowproc pcviewwindowproc memviewwindowproc 
+    dasmwindowproc clearexbps installexbp applybp removebp hasbp? 
+    rswindowproc pswindowproc logwindowproc nextins currins hdbgwin 
+    showtop selectline z>tip setmenucheck wnt? osversion 
+    nulldev: (editonerror) useraction1 openuserini editonerror? 
+    initreadfile rewind-file memory-check 
+    file-check hdata /data pdata genio>colours colours>genio 
+    textcolours inittextcolours runtextcolourresult runtextcolour 
+    cc.*templatename cc.*hook cc.custdata cc.flags cc.*custcolors 
+    cc.rgbresult cc.hinst cc.howner cc.size /choosecolor -stackmon 
+    +stackmon +crashscreen context.segss context.esp context.eflags context.segcs 
+    context.eip context.ebp context.eax context.ecx context.edx context.ebx 
+    context.esi context.edi context.segds context.seges context.segfs context.seggs 
+    context.floatsave context.dr7 context.dr6 context.dr3 context.dr2 
+    context.dr1 context.dr0 context.contextflags __context__ exception-code 
+    bye toggleinterp updateinterp closeinterp runinterpfromwinproc 
+    runinterp interpwindowproc hinterpwindow interpdevice request 
+    signal unlocksem locksem shutsem initsem semaphore 
+    critical_section.spincount critical_section.locksemaphore critical_section.owningthread 
+    critical_section.recursioncount critical_section.lockcount critical_section.pdebuginfo 
+    critical_section sync] [sync 
+    waitforsync taskreadied taskready taskstate start: terminate 
+    initiate to-pump to-task makethread init-multi wait-event/msg 
+    get-message send-message (get-message) (send-msg) msg? to-event 
+    clr-event-run 
+    (pause) multi single multi? his self 
+    inittcb !call++ !++ >task.callaction 
+    termthread initthread sub-task add-task attaskexit 
+    evt-bit# ~evt-mask evt-mask trg-bit# ~trg-mask trg-mask 
+    msg-bit# ~msg-mask msg-mask run-bit# ~run-mask run-mask 
+    tcb.callback tcb.clean tcb.event tcb.msrc tcb.mesg tcb.status 
+    tcb.pumpxt tcb.up tcb.hthread tcb.link /tcb test-code? 
+    semaphores? message-handler? event-handler? wwords wdis 
+    wview (wview) $wview freetextbuff alloctextbuff sizedtextbuff 
+    textbuff: inittextbuffsid textbuff-sid filedev: initfiledev 
+    /filedev help $help debughelp? helppage0 helpbase$ 
+    helpcmd$ /help$ .elapsed timer-reset timediff pasteconsole 
+    cr>console >console c>console setfont restore-cursor set-hourglass 
+    emptylb postclose sendclose getdlgdir adddlgtext getdlgfile 
+    $getdlgtext $setdlgtext execvfxdoc execdoc asksavefile askopenfile 
+    (askfile) asksavefilename askopenfilename (askfilename) 
+    afnerrval szdirectory szoutputname szinitialname cu$setmacro winconstant: 
+    [ctrl] ctrl docgen_latex docgen_texinfo docgen_markdown 
+    htmlback docgen_html makebootstrapfile .dg_tags .dg_macros 
+    dg_macros] [dg_macros dg_type: dg_tag: dg_personality? 
+    dg_fileext: docgen] [docgen +index +toc -internaldocs 
+    +internaldocs doconly parsed -docgen +docgen docgen-spacing 
+    docgen: ttx? ttx-get ttx-set xref-unused xref-all 
+    uses xref nextxref getxrefpos findxrefnearest 
+    findxrefinfo walkdecomp hasxdecomp? hasxref? $show 
+    (show) dcc-switch walkxref xref-report xrefs? -xrefs 
+    +xrefs xref-kb xref: load-xref save-xref term-xref 
+    init-xref dump(x) vfxforth docgen_latex docgen_texinfo docgen_markdown 
+    htmlback docgen_html makebootstrapfile .dg_tags .dg_macros 
+    dg_macros] [dg_macros dg_type: dg_tag: dg_personality? 
+    dg_fileext: docgen] [docgen +index +toc -internaldocs 
+    +internaldocs doconly parsed -docgen +docgen docgen-spacing 
+    docgen: split$lr fnip ftuck f4dup f2drop 
+    f2over f2swap f2dup f# (f#) integers 
+    reals .fsysprompt .nsw rec-float r:float post-float 
+    fnumber? isfnumber? is-old-number? f.sh f.s f? 
+    g. g.r (g.) f. f.r (f.) 
+    fe. fe.r (fe.) fs. fs.r (fs.) 
+    represent >exp badfloat? nan? infinity? fsign? 
+    places set-precision precision mc# max-precision #places 
+    fedigits fechar fdp >float (>float) exp-char? 
+    10**n (10**n) get10^n powers10 fatanh facosh 
+    fasinh ftanh fcosh fsinh fcotan fsec 
+    fcosec freduce rad>deg deg>rad fatan2 fsincos 
+    facos fcos fasin fsin fatan ftan 
+    #fliteral (rliteral) fliteral flit truncated roundedup 
+    floored rounded roundup floor fint ftrunc 
+    fround [fround] f** (f**) falog flnp1 
+    fexpm1 fexp 2** 2**z fln flog 
+    fmin fmax ?fnegate f~ fsign fsignbit 
+    f>= f<= f> f<> f= f< 
+    f0> f0<> f0= f0< fcmp2 fcmp1 
+    fr>d fr>s f>d f>s d>f s>f 
+    f2/ f2* fnegate fabs 1/f fsqrt 
+    fmod f/ f* f- f+ fvalue 
+    fvalcompchild tfloats tfloat+ 
+    tfaligned tfalign dfloats dfloat+ dfaligned dfalign 
+    sfloats sfloat+ sfaligned sfalign floats float+ 
+    faligned falign f, sf, df, tf, 
+    tf!+ df!+ sf!+ f!+ tf@+ df@+ 
+    sf@+ f@+ tf-! tf+! df-! df+! 
+    sf-! sf+! f-! f+! tf! df! 
+    sf! f! tf@ df@ sf@ f@ 
+    fdepth ndepth fpick (fpick) frot fover 
+    fdrop fswap fdup fclex sw@ cw! 
+    cw@ finit %lg2e %pi/4 %pi/2 %pi 
+    %1 %0 ;fseq fseq: ?nofpsin fpsin] 
+    [-fpsin [+fpsin fpsin? #fpframe #spare #rc 
+    #cw #sw fpext? signed-zero [fpdebug] #fdigits 
+    -fpcell fpcell ndp387system helpwinsaveopts helpwinsavecfg 
+    helpwinloadcfg helpwin-quit helpwin $helpwin z$winhelpfile helpwin-partial 
+    +randdigits choose random .dllexports .dllexport makedll 
+    ?+exe execfile err_shell dllmain: err_dllmaindef dllexport: 
+    err_dllnameorder console@ -statusbar +statusbar 
+    statusproc -console -ide makeconsole hconsolefont consoledev 
+    mainwindowproc bye task0-io setup-ide wantstatusbar? hwndstatusbar 
+    richedit: initresid /redev getsid configureprinting 
+    initprinting printtextwindow printtextsel printwindow printtext 
+    #pl/p printline#? setfooter setheader nopagefoot nopagehead 
+    szdocname savesysini loadsysini atinisave atiniload inisavechain 
+    iniloadchain (checksysini) useprevini -ini-exec setinidata definidir 
+    definifile iniparsermodes checksysini genini? previni$ appsuppini$ 
+    appsuppdir$ appsupp$ inidir$ inifile$ ini.deletekey ini.writemem 
+    ini.writebool ini.writeint ini.writezstr ini.writestr ini.readmem ini.readbool 
+    ini.readint ini.readzstr ini.readstr ini.writesection ini.section? 
+    ini.section ini.close ini.dest ini.open inilib copy-file 
+    makedirlevels prepdirname prepfilename +dirsep forcedir create-dir 
+    direxists? findsysfolder csidl_flag_create csidl_program_files 
+    csidl_windows csidl_common_appdata csidl_local_appdata csidl_appdata 
+    shgfp_type_current fullpathname runfontselector setwindowfont 
+    getwindowfont fontselector selectfont cf.nsizemax cf.nsizemin cf.nfonttype 
+    cf.lpszstyle cf.hinstance cf.lptemplatename cf.lpfnhook cf.lcustdata 
+    cf.rgbcolors cf.flags cf.ipointsize cf.lplogfont cf.hdc cf.hwndowner 
+    cf.lstructsize /choosefont beeper changetextcolours settextcolors 
+    gettextcolors /charformat2 rgb_blue rgb_green rgb_red rgb_white 
+    rgb_ltgray rgb_black rgb_preserve colorref rgb closeaccel 
+    openaccel destroyaccel makeaccel ;accelerators accel accelerators: 
+    tiprequest settiptext gettipindex ndi.lparam ndi.uflags ndi.hinst 
+    ndi.sztext ndi.ptext ndi.hdr /nmttdispinfo getststring stid@ 
+    stindex@ stmax# stnext stringtable: getnotcomment num/constant 
+    end? n>statusbar $>statusbar statusbar>z z>statusbar parts] 
+    ps, [parts gotopos extendline linepos addlines 
+    addline morelines topline# #lines settextpos gettextpos 
+    getcharbox getchardata linerange selection? validselection? 
+    getcheckstate setcheckstate getdlgtext getdlgitemu dlgcancel modelessdlgrun 
+    dlgdone dlgrun dlgrunresult +$datetime +zdatetime wintime$ 
+    windate$ envmacro: delenv writeenv readenv happ 
+    hwndmain idc_static 
+    excreasoncode debugger shex sh shellcmd >shell 
+    cat rm cwd $cwd pwd rmdir 
+    mkdir dir ls matchfirstfile execperfileent execperdirent 
+    (appidle) (emptyidle) (busyidle) (idle) domessage initwinloops 
+    -mdi +mdi checkmdi mdiclients /mdiclients -accelerator 
+    +accelerator checkaccels acceltable /acceltab -modeless +modeless 
+    checkmodeless modelesstable /modeless #modeless (ms) yield 
+    appidle getwindowwidth getwindowheight 
+    w", w$, w$+ (w$+) wappend parse/l 
+    [forth] widinfo comp-comp comp-interp exec-comp exec-interp 
+    tr] [tr tr.s0 tr.sp tr.idata tr.prevdp 
+    tr.link /transient anchortr /ta bad_transientarea 
+    guardsp] [guardsp /guard .namedenums enum{ enum 
+    namedenums /* // #define string -spaces 
+    +spaces token ::= check-success save-success ?bnf-error 
+    bnf-voc bnf-ignore-lines skipspace success fifo>(b) 
+    >fifo(b) fifo? resetfifo freefifo initialisefifo fifo_used 
+    fifo_head fifo_tail fifo_memptr fifo_size fifo commandline 
+    parsecommandline argv[ argc ;] [: 
+    restorelthreads savelthreads localthreads array carray 
+    iarray iarraychildcomp icarray icarraychildcomp 
+    array arraychildcomp carray carraychildcomp 2value 
+    i2value i2valcomp, value ivalue ivalcompchild buffer: 
+    -idata +idata idata? ireserve 
+    ialign16 ialign make-iblock inoroom? alignidef bin-align 
+    def-iblock# def-igap def-ialign idp iblock# iblock 
+    protectedexterns postprotfpextern preprotfpextern 
+    postprotextern preprotextern defaultexterns postfpextern prefpextern postextern 
+    preextern xcall-fault aborting? abort-code xcallsavendp? global: 
+    ascall: function: all-func-loaded? func-not-loaded 
+    func-loaded? func-pointer .badexterns #badexterns .externs -debugexterns 
+    +debugexterns aliasedexternvar externvar extern localextern: 
+    aliasedextern: extern: postfpextcall prefpextcall init-imports externlinked 
+    [firstlib] firstlib toplib library: .badlibs #badlibs 
+    .libs find-libfunction init-libs clear-libs clear-lib 
+    init-lib rtld_lazy incurrent inexternals inexternals? libredefs? 
+    externredefs? externwarnings? extern.voc types expose-module 
+    requires term-module init-module set-term-module set-init-module 
+    .cpu target_386_windows 
+    host_target cpu_target product-title copyright-date see dis 
+    (dis) dasm disasm/al disasm/ft disasm/f (dasm) 
+    1disasm ft-init-dis al-init-dis dasm-switch set-disaddr disaddr 
+    disassembler inswitch? .switches switch] runs run: 
+    [+switch [switch itemhead, switchhead, switch itm_xt 
+    itm_id itm_link /switchitem sw_defxt sw_itemlink sw_link 
+    /switchhead switch-link removeallsins removesininrange opt] 
+    [-opt [opt immediate donotsin removesin sinlined? 
+    [+sin [-sin sin] [sin -sindoes +sindoes 
+    -sin +sin interp> does> ; :noname 
+    : .tokeniser .tokens sinthreshold discard-sinline 
+    sinactive? sindoes? sin? debugsin? [o/s] [o/f] 
+    [] opt] [-opt [opt unoptimised optimised 
+    optimising? end-structure 
+    int field-type field struct recurse ;code 
+    does> interp> no-compiler     
+    lv!, lv@, lv, -safeos +safeos safeos? 
+    -fastlvs +fastlvs loopalignment short-branches] [+short-branches 
+    [-short-branches short-branches? -short-branches 
+    +short-branches -mustload +mustload mustload? fixvolbug? 
+    clean-opt flushcode -polite +polite inline unsafe-rs? 
+    inlining? inlining absurd aggressive normal no 
+    h-c ]a a[ asm] [asm ;masm 
+    masm: postfix prefix intel mpe use32 
+    use16 end-code ;code code lbl: proc 
+    p4? ppro? cpu=p4 cpu=ppro cpu=486 cpu=386 
+    cputype f-or f-and asm-access asm-core init-io 
+    default-console console: saveimg $saveimg saveconsole 
+    save savegui $saveext beforesave lastdllexport pdllmain 
+    #dllexports dummydllexport consoleapp? kb mb set-size 
+    get-size dosupsim supsim initsupport? (.short-cold) (.cold) 
+    .short-release .release builddatestring 0n>str n>str 
+    version# short-rel-date rel-date update-build buildfile set-buildfile 
+    datetime$, time$, date$, build$, make-build szsid 
+    io] [io setio at-xy 
+    generic-drivers config-gio term-gio init-gio rfu-gio 
+    readex-gio flushop-gio ioctl-gio getpos-gio setpos-gio bell-gio 
+    bs-gio ff-gio lf-gio cr-gio type-gio emit?-gio 
+    emit-gio accept-gio ekey?-gio ekey-gio key?-gio key-gio 
+    write-gio read-gio close-gio open-gio getxy-gen gotoxy-gen 
+    config-gen term-gen init-gen readex-gen rfu-gen flushop-gen 
+    ioctl-gen getpos-gen setpos-gen bell-gen bs-gen ff-gen 
+    lf-gen cr-gen type-gen emit?-gen emit-gen accept-gen 
+    ekey?-gen ekey-gen key?-gen key-gen write-gen read-gen 
+    close-gen open-gen opfunc ipfunc giofunc doio 
+    gen-private gen-vector gen-handle gen-sid .environment [environment?] 
+    environment? environment-wordlist fradjust ?init-locals locals| 
+    (local) {: { } :} cleanup-locals drop-locals inlocals? 
+    >real-dict >temp-dict (patchlocalsize) (s_lvarray,) (s_lvarg,) 
+    (s_makelvs,) (s_rellvs,) patch-address s_flvarg, patchlocalsize s_lvarray, 
+    s_lvarg, s_rellvs, s_makelvs, forth-kernel-end field: 
+    cfield: +field end-structure begin-structure field-type 
+    end-union part union end-variant variant end-subrecord 
+    subrecord array-of int field end-struct struct 
+    showbalance rethreadforth cold bye (init) freeze 
+    atexit atcold walkexitchain walkcoldchain showexitchain showcoldchain 
+    -verboseinclude +verboseinclude -smartinclude +smartinclude 
+    -vfcache +vfcache .sources (.source) locate locateinfo 
+    .nolocate .locate source-info whereis (whereis) addsourcefile 
+    sourcetrackrename -source-files +source-files buildlevel resolveincludefilename 
+    changeext3 extension? dirchar? includemem mem-open-file vf-reposition-file 
+    vf-file-position vf-file-size vf-read-file vf-close-file vf-open-file 
+    isfileidcached? vfslot! vfslot@ -vfslot +vfslot 
+    vfcached[] data-file require required include included 
+    include-file (include-file) ?markendofsource ((include-file)) 
+    debug1-off debug1-on linescompiled flush-file rename-file file-status 
+    relfileexist? fileexist? relfileexists? fileexists? delete-file resize-file 
+    reposition-file file-position file-size read-line read-file 
+    write-line write-file close-file ?relative-open-file open-file 
+    create-file r/w w/o r/o bin currdir 
+    incdir cdot stripfilename currsourcename .sourcename forth-buff 
+    mc" ms" m", expandmacro z$expandmacros $expandmacros 
+    $expand expand showmacros .macro .macros gettextmacro 
+    $setmacro setmacro textmacro: macroset? macroexists? unescape 
+    subsitute-safe replaces substitutez substitutec substitute protfree 
+    protalloc free resize allocate asciiz>$ $>asciiz 
+    z", $>z, z$, .z$expanded z$. .z$ 
+    caddr>zaddr timedout? expired later systime&date sysdow 
+    time&date dow sim similars similars-extension 
+    mat .free words ? .rs .s 
+    ldump dump halt? haltkey2 haltkey? flushkeys 
+    pauseconsole .tabwordn .tabword [endif] [then] [if] 
+    [else] [undefined] [defined] have passover compilation? 
+    cc-level zsysname .throw (doerrormessage) doerrormessage 
+    (doabortmessage) doabortmessage .source-line showsourceonerror 
+    showerrorline .errdef #anonerr syserrdef errdef #errdef 
+    (parseerrdef) (err$) .textchain errstruct nextsyserror nexterror 
+    .err err$ parseerrdef ed.leninline ed.len ed.caddr 
+    ed.id ed.link /errdef (abort") (abort) 
+    default-catch extends-catch ?throw throw catch (o_abort) 
+    o_abort ep> >ep defer! defer@ action-of 
+    to-do assign is defer .sysprompt (quit) 
+    ((quit)) reset-stacks quithook init-quit assess evaluate 
+    postpone (interpret) page-check parser recognize set-recognizers 
+    get-recognizers forth-recognizer main-recognizer 
+    rec-num r:num post-xlit xlit, rec-find r:immediate 
+    r:ndcs r:word r:fail postndcs postimm postnorm 
+    undefined xt[[ [[ ]] rectype>post rectype>comp 
+    rectype>int rectype: 
+    gs-check /max-stack \\ stopincluding #! (* 
+    (( parseuntil .( ( \ sliteral 
+    [char] 
+    readescaped escapetable 
+    ", $, [interp] [compile] 'syn ['] 
+    ' doisnumber? 2literal dliteral literal (fliteral) 
+    #literal (clit,) ] [ ?undef ?stack 
+    ?comp ?exec ?csp !csp 
+    addr\cnt 
+    -to +to to 
+    .operators op# operator: operator opcompiler 2value 
+    2valinterp 2valcomp, 2val, value valinterp (s_val,) 
+    bad-method operatorchain next-operator s_val, buffer: u#     
+    syncomp, >does comp: interp> 
+    does> (:) get-compiler 
+    set-compiler data-align code-align faster smaller data-alignment 
+    code-alignment /data-alignment /code-alignment lit 
+    (ndcs,) (compile,) docreate, (;code) (doexit,) (docolon,) 
+    compile-word ndcs, compile, dosemicolon, docolon, "xxx" 
+    getpathspec get-word next-name get-token parse-leading word 
+    parse-name parse-word parse refill query restore-input 
+    save-input to-source source tib-len tib source-id 
+    changenamewid movenametowid xt>wid checkdict dictbad name>compile 
+    name>interpret name>string traverse-wordlist walkallwords walkallwordlists 
+    walkwordlist (max-def) $forget forget empty anew 
+    marker remembers remember: prunes prune: cut-dictionary 
+    trim-dictionary ?order +order -order wids 
+    vocs order .voc voc? definitions previous 
+    also only set-order get-order set-current get-current 
+    >min-order resetminsearchorder forth-wordlist find search-context 
+    haslvs? search-wordlist (search-wordlist) checksynonym? 
+    flvcount lvcount voc>wid vocabulary wordlist immediate? 
+    immediate ndcs? ndcs: ndcs $create 
+    $create-in ($create) header (redefhook) redefhook lastnamefound 
+    -warnings +warnings warnings? hash-thread >vocname >wid-link 
+    wid-threads >threads >#threads >voc-link reveal hide 
+    revealname hidename smudge latest-xt latest unpatch 
+    patchxt patched? xtoptimised? ip>nfa inforth? inovl? 
+    ovi.name ovi.id ovi.unloadhook ovi.loadhook ovi.flags ovi.start 
+    ovi.end ovi.len ovi.magic ovi.link /ovi name? 
+    link> >link link>n n>link zerooptdata >code-gen 
+    >code-len >xref >info >line# body> >body 
+    >name dummynfa link>ctrl ctrl>link nfa>ctrl ctrl>nfa 
+    name> unalign .name headsize hdrinfo_plugged 
+    hdrinfo_optimised showchain atexecchain execchain dellink 
+    addendlink addlink link, ((w")) (w") wcount 
+    ^null ?cr (.") $. >number 
+    integer? isinteger? overridebase (integer?) +ascii-digit +char 
+    issep? +digit skip-sign digit .r u.r 
+    u. . d. d.r ud.r (u.r) 
+    (.) (u.) .ascii .dword .lword .word 
+    .byte #> <# #s # sign 
+    holds hold binary decimal hex bs 
+    >pos spaces space bell >syspadz >syspadc 
+    >syspad getsyspad zstrmatch $strmatch $cstrmatch strrmatch 
+    iwcmatch? wcmatch? (wcmatch?) *wcm ic= czplace 
+    c>czterm >zterm zterm z$+ zappend zmove 
+    zplace zcount zstrlen znull s+ $+ 
+    append addchar smove $move count place 
+    cnull overlapped? not-overlapped? csplit extracttext 
+    extractnum $null instring search (search) icompare 
+    istr= is= str= uplace umove upper 
+    upc -white -leading -trailing /string unused 
+    blank erase movex test-bit toggle-bit clear-bit 
+    set-bit c! w! ! 2! c@s 
+    w@s c@ w@ @ 2@ decr 
+    incr c-! w-! -! c+! w+! 
+    +! @on @off off on recurse 
+    cs-drop cs-roll cs-pick next-case nextcase begincase 
+    end-case endcase (s_drop,) s_drop, endof s_endof, 
+    ?of (s_?of,) s_?of, of (s_of,) s_of, 
+    case nextcasetarg fix-exits else (else) ahead 
+    endif then if repeat while until 
+    again begin (s_?br>,) (s_br>,) (s_res_br>,) (s_?br<,) 
+    (s_br<,) (s_mrk_br<,) s_?br>, s_br>, s_res_br>, s_?br<, 
+    s_br<, s_mrk_br<, ?leave (s_?leave,) s_?leave, leave 
+    (s_leave,) s_leave, +loop (s_+loop,) s_+loop, loop 
+    (s_loop,) s_loop, ?do (s_?do,) s_?do, do 
+    (s_do,) s_do, perform execute exit bounds 
+    unloop j i (?do) (do) (?leave) 
+    (leave) (of) ?branch branch ?checking nointerp 
+    ?pairs <resolve <mark >resolve >mark half-align 
+    align half-aligned aligned c, w, , 
+    allot&erase allot here dp cellbits chars 
+    char+ cell cell- cells+ cell/ cells 
+    cell+ d>s s>d dabs ?dnegate dnegate 
+    abs ?negate negate m+ d- d+ 
+    - + u4/ 4/ u2/ 2/ 
+    4* 2* 4- 2- 1- 4+ 
+    2+ 1+ m*/ d2/ mod u/ 
+    / /mod mu/mod um/mod d2* um* 
+    m* * ror rol arshift rshift 
+    lshift dmin dmax d> d< d= 
+    d0<> d0= d0< within within? u<= 
+    u>= u< u> >= <= > 
+    < <> = 0> 0< 0<> 
+    0= nubwiden nuwwiden nsbwiden nswwiden makelong 
+    hiword loword umax umin max min 
+    rdepth depth rp! rp@ sp! sp@ 
+    up! up@ 2over over 4dup 3dup 
+    2dup 2rot ?dup dup 2swap swap 
+    4drop 3drop 2drop drop nr> n>r 
+    2r@ 2r> 2>r r@ r> >r 
+    -rot rot ndrop nrev roll rpick 
+    pick tuck nip noop false= bic! 
+    xor! or! and! not invert xor 
+    or and emptyidle busyidle idle docgen? 
+    -docgen_hook +docgen_hook docgen_refill docgen_prerefill c#fliteral 
+    c#literal clit, docall, addxreflit addxref doexit, 
+    .prompt quit interpret .cold ticks ms 
+    pause editonerror showsourceonerrorhook number? isnumber? 
+    abort entrypoint accept type cr ekey? 
+    ekey key? key emit? emit original-xt 
+    fpsystem sbcurrent sbcontext sbdepth sbbase valcomp, 
+    debug1 textchain top-mask operatortype nextuser optimising 
+    exitchain coldchain search-ovl search-range tabwordstop 'sourcefile 
+    <headerless> saved>in source-line-pos checking #threads 
+    last-colon-xt last mincontext context current csp 
+    state blk scr import-func-link <id> 
+    ovl-id ovl-link lib-link res-link wid-link voc-link 
+    fence dir2-char dir1-char ign-char fp-char dp-char 
+    c/cols c/line excp exc0 exceptstackstart 
+    exceptstackend pad syspadend syspadstart ^syspad threadsync 
+    threadtcb threadexit? op-line# line# fsp-offset fs0-offset 
+    fsp fs0 $sp $s0 'aborttext currobj 
+    ip-handle op-handle 'tib dpl #d #l 
+    hld base out >in #tib r0 
+    s0 null max_path filetibsz vsize #vocs 
+    c/l bl true false crlf$ eol$
+    anl aeol adot abl ffeed alf 
+    acr atab bsout delin bsin abell 
+    localvars licensed externals substitutions sourcefiles environment 
+    forth genhash ucmove> ucmove 
+    cmove> cmove fill scan skip s= 
+    compare move fm/mod sm/rem m/ */ 
+    */mod du> du< rellvs makelvs lv 
+    lv@ lv! !jump !call getcalldest skipcall 
+    patchcall dolayabscall (loop) (+loop) (bye) exitcode 
+    to-callback cb: callproc: callback: callback, cbret, 
+    fromc <fromc?> set-callback callback-crash callback-entry-touched 
+    callback-exit callback-entry op-default ip-default reset-fpu int3 
+    breakpoint breakpoint varxcall nxcall64 nxcall xcall 
+    norecovery postextcall preextcall crash relocatesystem getprocaddress 
+    freelibrary loadlibrary execbase firstname 
+
+\ VFX and core Forth parsing words (should be cyan)
+char [char] postpone ['] to [compile] char ascii
+
+\ VFX and core Forth string words (should be magenta including the string body)
+eval" s" s\" se" c" f" fe" abort" z" ." 
