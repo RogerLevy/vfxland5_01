@@ -626,9 +626,9 @@ debug @ [if]
     loop drop
     ;
 
-: :: ( classifier <protocol> - )
-    {: c | protocol0 :}
-    \ classifier abort" :: >> Can only define a protocol outside of a classifier definition."
+: :: ( [classifier] <protocol> - )
+    {: | protocol0 c :}
+    classifier ?dup if to c else to c then
     c >cla @ _trait = if c define-protocol exit then
     c >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."

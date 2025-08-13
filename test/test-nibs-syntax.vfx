@@ -1,0 +1,24 @@
+\ Test the :: syntax changes
+
+\ First define a trait with protocols
+trait: test-trait
+    :: test-protocol stub ;
+    :: test-protocol2 stub ;
+trait;
+
+\ Test inside class definition  
+class: test-class
+    is-a test-trait
+    :: test-protocol ." inside class implementation" cr ;
+class;
+
+\ Test outside class definition
+test-class :: test-protocol2 ." outside class implementation" cr ;
+
+\ Verify both work
+test-class instance test-obj
+
+test-obj test-protocol
+test-obj test-protocol2
+
+." NIBS :: syntax test passed!" cr

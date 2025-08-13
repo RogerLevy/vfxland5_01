@@ -28,7 +28,7 @@
             Create wrappers that take an object:
             `: asset-init ( _asset - ) [[ _asset:init ]] ;`
 
-[ ] (NIBS) Make :: syntax consistent with other NIBS words - allow classifier inference when inside classifier blocks.
+[x] (NIBS) Make :: syntax consistent with other NIBS words - allow classifier inference when inside classifier blocks.
 
 [ ] (NIBS) Rename 'S to ->
 
