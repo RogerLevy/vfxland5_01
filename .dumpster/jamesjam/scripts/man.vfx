@@ -13,10 +13,10 @@ man.ts animation man.anm 0 1 range,
     actives>
         me it = ?exit
         me it traveled hit? if
-            it 's vx @ 0< if r-edge it [[ 0 vx ! x1 @ s>p - x ! ]] then
-            it 's vx @ 0> if l-edge it [[ 0 vx ! w1 @ s>p - x1 @ s>p - x ! ]] then
-            it 's vy @ 0< if t-edge it [[ 0 vy ! y1 @ s>p - y ! ]] then
-            it 's vy @ 0> if b-edge it [[ 0 vy ! h1 @ s>p - y1 @ s>p - y ! ]] then
+            it -> vx @ 0< if r-edge it [[ 0 vx ! x1 @ s>p - x ! ]] then
+            it -> vx @ 0> if l-edge it [[ 0 vx ! w1 @ s>p - x1 @ s>p - x ! ]] then
+            it -> vy @ 0< if t-edge it [[ 0 vy ! y1 @ s>p - y ! ]] then
+            it -> vy @ 0> if b-edge it [[ 0 vy ! h1 @ s>p - y1 @ s>p - y ! ]] then
         then ;
 : man-physics  vx 2@ x 2+!  ?hits  1. hp @ 8 * / a.spd ! ;
 man :: _idle

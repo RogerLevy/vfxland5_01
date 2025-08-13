@@ -112,7 +112,7 @@ require %idir%\..\dltree.vfx
 \ Management
 || : (gone) en off ;
 : isolate ( el - )
-    ['] (gone) over 's parent @ dleach  's en on ;
+    ['] (gone) over -> parent @ dleach  -> en on ;
 
 \ Element script classes
 
@@ -126,7 +126,7 @@ require %idir%\..\dltree.vfx
 
 : element-class ( - <name> )
     script-class
-    ['] element-oexec-error-handler swap 's oexec-error-handler ! ;
+    ['] element-oexec-error-handler swap -> oexec-error-handler ! ;
     
 \ ------------------------------------------------------------------------------
 

@@ -177,7 +177,7 @@ cstring wordname$
     \ Create validation instance from validator function and type
     {: vtor :}
     /validation struct [[
-        vtor 's level @ level !
+        vtor -> level @ level !
         0 xt !                          \ Will fetch dynamically from validator
         vtor validator !
         vtor body> >name count test-name$ place
@@ -186,11 +186,11 @@ cstring wordname$
 
 : set-pre-validation ( validation contract -- )
     \ Attach validation to contract (pre)
-    's pre-val ! ;
+    -> pre-val ! ;
 
 : set-post-validation ( validation contract -- )
     \ Attach validation to contract (post)
-    's post-val ! ;
+    -> post-val ! ;
     
 || variable caller-name
 
@@ -201,7 +201,7 @@ cstring wordname$
 : run-validation ( ... contract validation -- ... )
     \ dup 0= if 2drop exit then 
     
-    dup 's enabled @  over 's level @ safety @ and 0<>  and 0= if
+    dup -> enabled @  over -> level @ safety @ and 0<>  and 0= if
         2drop exit
     then
 
@@ -210,8 +210,8 @@ cstring wordname$
     val current-validation !
     \ should-recheck? off
 
-    val 's validator @ \ dup ." validator: " . 
-    's xt @
+    val -> validator @ \ dup ." validator: " . 
+    -> xt @
     \ dup ." xt: " . dup disasm/f
     execute to res
     r> current-validation !
@@ -221,7 +221,7 @@ cstring wordname$
     \ Recheck logic disabled for now
     \ should-recheck? @ if
     \     name-a name-len f" %s failed, attempting self-fix..." log-info
-    \     val 's xt @ execute
+    \     val -> xt @ execute
     \     
     \     res 0< if
     \         \ if res = -1 (pass), report and continue
@@ -237,15 +237,15 @@ cstring wordname$
     \ 1 #violations +!
     caller-rp @ ip>nfa caller-name !
     res 0= if
-        val 's validator @ >name count
-        c 's word-name$ count f" %s >> VALIDATION FAILED: %s" log-error
+        val -> validator @ >name count
+        c -> word-name$ count f" %s >> VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
         .s
         -999 throw
     then
     res 1 = if
-        val 's validator @ >name count 
-        c 's word-name$ count f" %s >> VALIDATION NOTE: %s" log-warning
+        val -> validator @ >name count 
+        c -> word-name$ count f" %s >> VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
         .s
     then ;
@@ -256,18 +256,18 @@ cstring wordname$
     @+ to impl-xt
     @ to c ( contract )
     
-    c 's enabled @ 0= if impl-xt execute exit then
+    c -> enabled @ 0= if impl-xt execute exit then
     
-    c 's pre-str$ @ $ff and if  \ faster than c@ which compiles a call fsr
-        c 's pre-str$ count log-debug
+    c -> pre-str$ @ $ff and if  \ faster than c@ which compiles a call fsr
+        c -> pre-str$ count log-debug
     then
 
-    c dup 's pre-val @ dup if run-validation else 2drop then
+    c dup -> pre-val @ dup if run-validation else 2drop then
     impl-xt execute
-    c dup 's post-val @ dup if run-validation else 2drop then
+    c dup -> post-val @ dup if run-validation else 2drop then
     
-    c 's post-str$ @ $ff and if
-        c 's post-str$ count log-debug
+    c -> post-str$ @ $ff and if
+        c -> post-str$ count log-debug
     then ;
     
 || : does-wrapper
@@ -319,12 +319,12 @@ cstring wordname$
 : compile-validator ( validator -- )
     {: vtor :}
     \ cr vtor .name
-    vtor 's compiled? @ if exit then     \ Already compiled?
+    vtor -> compiled? @ if exit then     \ Already compiled?
     
     :noname                             \ Start compilation, get XT 
-    vtor 's xt !                        \ Store XT immediately
+    vtor -> xt !                        \ Store XT immediately
     
-    vtor 's source-addr @ vtor 's source-len @ 
+    vtor -> source-addr @ vtor -> source-len @ 
     \ cr ." Cached source: [" 2dup type ." ]"
     
     evaluate-lines                      \ Compile the body line by line
@@ -332,14 +332,14 @@ cstring wordname$
     \ Manually complete the word compilation
     state off                           \ Turn off compile state
     
-    \ cr ." Compiled XT: " vtor 's xt @ .
-    vtor 's compiled? on               \ Mark as compiled
+    \ cr ." Compiled XT: " vtor -> xt @ .
+    vtor -> compiled? on               \ Mark as compiled
 ;
 
 : ?compile-validator ( validation -- )
     ?dup -exit
     {: val :}
-    val 's validator @ compile-validator ;
+    val -> validator @ compile-validator ;
 
 : assure-validators ( contract -- )
     {: c :}
@@ -434,12 +434,12 @@ public
 : say-before ( -- ) ( <word-name> <message...> )
     \ Set debug message to display before word execution
     bl parse ensure-contract >r 
-    0 parse r> 's pre-str$ place ;
+    0 parse r> -> pre-str$ place ;
 
 : say-after ( -- ) ( <word-name> <message...> )
     \ Set debug message to display after word execution
     bl parse ensure-contract 
-    0 parse r> 's post-str$ place ;
+    0 parse r> -> post-str$ place ;
 
 \ =============================================================================
 \ Self-Healing Support
@@ -457,7 +457,7 @@ public
 \        should-recheck? @ 0= 
 \        dup if 
 \            should-recheck? on 
-\            current-validation @ 's xt @ >name count f" %s performing self-fix..." log-info
+\            current-validation @ -> xt @ >name count f" %s performing self-fix..." log-info
 \        then
 \    else
 \        false
@@ -618,7 +618,7 @@ public
     ['] ?disable-validation swap walk-contract ;
 
 : disable-validator ( validator - )
-    's xt @ validator-xt !
+    -> xt @ validator-xt !
     ['] disable-contract-validator each-contract ; 
 
 || : ?enable-validation ( validation - f )
@@ -635,7 +635,7 @@ public
     ['] ?enable-validation swap walk-contract ;
 
 : enable-validator ( validator - )
-    's xt @ validator-xt !
+    -> xt @ validator-xt !
     ['] enable-contract-validator each-contract ; 
 
 \ =============================================================================

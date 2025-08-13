@@ -56,7 +56,7 @@ array] drop
     owner @ 0 0 from swap ( aim. class ) one as>
         swap ( aim. speed. ) vec vx 2!
         atk !
-        you 's owner @ firer !
+        you -> owner @ firer !
         act>
             ?cull ;
 
@@ -66,7 +66,7 @@ array] drop
 
 : laser-physics
     owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
-    owner @ 's a @ a ! ;
+    owner @ -> a @ a ! ;
 
 : fire-thin ( atk - )
     *shoot*
@@ -128,7 +128,7 @@ charge-levels #items cell array bars
     loop ;
 
 : !bars ( - )
-    owner @ 13 -13 owner @ 's vx 2@ 2p>s 2+ from
+    owner @ 13 -13 owner @ -> vx 2@ 2p>s 2+ from
     bars #items 1 do
         i charge-level @ <= if
             i bars [] @ [[ at@ 2s>p x 2! ]]
@@ -199,7 +199,7 @@ charge-levels #items cell array bars
         then
     loop
     charging @ if
-        owner @ 's flash-ctr @ 0 >= if  \ -1 = not flashing
+        owner @ -> flash-ctr @ 0 >= if  \ -1 = not flashing
             cancel-charge exit
         then
         charge-key @ letgo? if

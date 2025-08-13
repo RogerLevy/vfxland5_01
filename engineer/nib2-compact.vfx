@@ -45,7 +45,7 @@
 
 : is-class? ( ? - f )
     dup valid-object? not if drop 0 exit then
-    's cla @ _class = ;
+    -> cla @ _class = ;
 
 : ?class ( - f ) 
     preword 1 + c@ '%' <> if 0 exit then
@@ -61,7 +61,7 @@
 
 : is-trait? ( ? - f )
     dup valid-object? not if drop 0 exit then
-    's cla @ _trait = ;
+    -> cla @ _trait = ;
     
 : ?"trait" ( - f )
     preword "word"? if

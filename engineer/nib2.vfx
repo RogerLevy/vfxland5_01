@@ -46,8 +46,8 @@ constant /magical-base
 
 : >cla  s" cla-offset +" evaluate ;  immediate
 
-: 's ( object <name> - a )
-    preword find not abort" 'S >> field name not found!"
+: -> ( object <name> - a )
+    preword find not abort" -> >> field name not found!"
     >body cell+ @ MAGIC_PROPERTY = if
         ' >body 2 cells + @ ?literal s" prop+" evaluate
     else
@@ -157,9 +157,9 @@ dup constant /classifier-base
 to /static
 
 : allocate-classifier-bit ( - )
-    next-classifier# @ classifier 's id-table set-bit
-    next-classifier# @ classifier 's can-table set-bit
-    next-classifier# @ classifier 's classifier# !
+    next-classifier# @ classifier -> id-table set-bit
+    next-classifier# @ classifier -> can-table set-bit
+    next-classifier# @ classifier -> classifier# !
     1 next-classifier# +! ;
 
 || : (classifier) ( class - class )
@@ -179,8 +179,8 @@ create _class _class (classifier) [[ (init-class) ]]
     create _class (classifier) dup [[ (init-class) ]] ;
 
 : sizeof ( class|object - n )
-    dup >cla @ _class = if 's instance-size @
-    else >cla @ 's instance-size @ then ;
+    dup >cla @ _class = if -> instance-size @
+    else >cla @ -> instance-size @ then ;
 
 \ ==============================================================================
 \ TRAIT% and OBJECT%
@@ -194,7 +194,7 @@ create _object 0 (classifier) [[
 ]]
 
 : (add-object-system-trait-bit) ( - )
-    _object 's classifier# @ id-table set-bit ;
+    _object -> classifier# @ id-table set-bit ;
 
 create-class _trait [[
     (add-object-system-trait-bit)
@@ -210,10 +210,10 @@ _object [[
 \ ==============================================================================
 
 : (sizeof) ( object - n )
-    >cla @ 's instance-size @ ;
+    >cla @ -> instance-size @ ;
 
 : !defaults ( object - )
-    dup >cla @ 's template @ ?dup if
+    dup >cla @ -> template @ ?dup if
         \ dup .name ." template copying" cr
         \ over >r 
         cell+ over dup cell+ swap (sizeof) cell- move
@@ -227,13 +227,13 @@ _object [[
     swap over >cla !   \ Store class pointer
     [[
         me !defaults
-        cla @ 's constructor-xt @ ?dup if execute then
+        cla @ -> constructor-xt @ ?dup if execute then
     ]] ;
     
 : make ( ... class - object )
     \ TODO: validate class
     here >r
-    dup 's instance-size @ allot
+    dup -> instance-size @ allot
     ( class ) r@ construct r> ;
 
 : $object ( ... class name len - object ) ( - object ) 
@@ -256,17 +256,17 @@ create _property  _class make [[
 ]]
 
 create _static  _class make [[
-    _property 's instance-size @
+    _property -> instance-size @
     dup instance-size ! next-ofs !
 ]]
 
 create _protocol  _class make [[
-    _static 's instance-size @
+    _static -> instance-size @
     dup instance-size ! next-ofs !
 ]]
 
 || : has-field-space? ( class - b )
-    's field-space-size @ 0<> ;
+    -> field-space-size @ 0<> ;
     
 : field-space ( n - )
     classifier >cla @ _trait = abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
@@ -278,7 +278,7 @@ create _protocol  _class make [[
 : begin-classifier ( class - )
     push-order only forth definitions
     create make to classifier
-    1 classifier 's #openings +!
+    1 classifier -> #openings +!
     allocate-classifier-bit
     pop-order ;
 
@@ -286,7 +286,7 @@ create _protocol  _class make [[
     0 to classifier ;
     
 : reopened? ( class - b )
-    's #openings @ 1 > ;
+    -> #openings @ 1 > ;
 
 : allocate-static-offset ( n - )
     dup /static + /classifier > abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
@@ -297,7 +297,7 @@ create _protocol  _class make [[
     \ Compile the code to resolve property address. 
     ( protocol ) >r 
     s" me dup >cla @" evaluate 
-    r> 's offset @ ?literal 
+    r> -> offset @ ?literal 
     s" + @ ?prop +" evaluate ;  
  
 : does-property 
@@ -317,40 +317,40 @@ create _protocol  _class make [[
     classifier >cla @ _trait = ;
 
 : add-property ( property - )
-    classifier 's property-list add-to ;
+    classifier -> property-list add-to ;
 
 : is-property-mapped? ( property - b )
-    's offset @ classifier + @ 0<> ;
+    -> offset @ classifier + @ 0<> ;
 
 : map-property ( property - )
     \ map property for current class
     [[
         classifier has-field-space? if
-            classifier 's next-ofs @ property-size @ +
-            classifier 's field-space-size @ > abort" MAP-PROPERTY >> Cannot map property - out of field space!"
+            classifier -> next-ofs @ property-size @ +
+            classifier -> field-space-size @ > abort" MAP-PROPERTY >> Cannot map property - out of field space!"
         then
     
-        classifier 's next-ofs @ offset @ classifier + !
-        property-size @ classifier 's next-ofs +!
+        classifier -> next-ofs @ offset @ classifier + !
+        property-size @ classifier -> next-ofs +!
     ]]
     classifier has-field-space? not if            
         classifier [[ next-ofs @ instance-size ! ]]
     then ;
 
 : supports-protocol? ( protocol classifier - bool )
-    swap 's offset @ + @ 0<> ;
+    swap -> offset @ + @ 0<> ;
 
 : >origin ( protocol-xt-addr - origin-addr ) cell+ ;
 
 : apply-protocol ( trait protocol class - )
     {: trait0 protocol0 class0 | ofs :}
-    protocol0 's offset @ to ofs
+    protocol0 -> offset @ to ofs
     trait0 ofs + @ class0 ofs + !
     trait0 class0 ofs + >origin ! ;
 
 : has-unmapped-properties? ( trait - bool )
     {: trait0 :}
-    trait0 's property-list dup list-count for
+    trait0 -> property-list dup list-count for
         @next ( property ) is-property-mapped? not if
             -1 leave
         then
@@ -359,10 +359,10 @@ create _protocol  _class make [[
 
 : ?size-changed ( size property - property )
     {: size property0 :}
-    property0 's property-size @ size <> if
+    property0 -> property-size @ size <> if
         -1
         size
-        property0 's property-size @
+        property0 -> property-size @
         property0 body> >name count
         f" NPROPERTY >> %s changed from %n to %n bytes - reload/restart required."
         .abort
@@ -389,7 +389,7 @@ create _protocol  _class make [[
         classifier >cla @ _trait = if
             \ Trait rules
             classifier reopened? if
-                classifier 's dependents list-count 0<>
+                classifier -> dependents list-count 0<>
                 abort" NPROPERTY >> Cannot add new properties to reopened traits with dependents."
             then
             \ New trait or reopened trait with no dependents - okay
@@ -413,7 +413,7 @@ create _protocol  _class make [[
     
     \ Propagate the property to dependents
     ( property ) to property0
-    classifier 's dependents dup list-count for
+    classifier -> dependents dup list-count for
         @next classifier >r to classifier
             property0 ?add-property
         r> to classifier
@@ -432,7 +432,7 @@ create _protocol  _class make [[
         MAGIC_FIELD magic !
     ]]
     pop-order
-    does> 's offset @ cla @ + ;
+    does> -> offset @ cla @ + ;
 
 \ ==============================================================================
 \ Classifier definition
@@ -454,17 +454,17 @@ create _protocol  _class make [[
     
     \ Set classifier bit
     id? if
-        trait0 's classifier# @ class0 's id-table set-bit
+        trait0 -> classifier# @ class0 -> id-table set-bit
     then
     
     \ Cache the current capability status
-    trait0 's classifier# @ class0 's can-table test-bit to could?
+    trait0 -> classifier# @ class0 -> can-table test-bit to could?
     
     \ Set capability bit
-    trait0 's classifier# @ class0 's can-table set-bit
+    trait0 -> classifier# @ class0 -> can-table set-bit
     
     \ Merge protocols
-    trait0 's protocol-list dup list-count for
+    trait0 -> protocol-list dup list-count for
         @next to protocol0
         
         \ Avoid clobbering already supported protocols if "upgrading"
@@ -472,7 +472,7 @@ create _protocol  _class make [[
         could? if protocol0 class0 supports-protocol? not else -1 then
         if 
             \ Check for protocol conflicts (trait trying to override another trait's implementation)
-            protocol0 's offset @ class0 + >origin @ to origin
+            protocol0 -> offset @ class0 + >origin @ to origin
             origin 0<> if
                 origin >cla @ _class <> if  \ Origin is a trait, not a class
                     origin trait0 <> if     \ Different trait owns it
@@ -489,13 +489,13 @@ create _protocol  _class make [[
     loop drop
     
     \ Merge properties
-    trait0 's property-list dup list-count for
+    trait0 -> property-list dup list-count for
         @next
         dup is-property-mapped? if drop else dup add-property map-property then
     loop drop
     
     \ Add class to dependents
-    class0 trait0 's dependents add-to ;
+    class0 trait0 -> dependents add-to ;
    
 : class: ( <name> - )
     _class already? if
@@ -539,7 +539,7 @@ create _protocol  _class make [[
     end-classifier ;
 
 : add-protocol ( protocol trait - )
-    's protocol-list add-to ;
+    -> protocol-list add-to ;
 
 \ : OEXEC
 \ Execute bound XT with error-handling.
@@ -553,12 +553,12 @@ debug @ [if]
     \ Backdoor for using classes like callback structs.
     \ The object will not be bound during execution of the protocol.
     \ This means that it cannot use any of its properties.
-    swap [[ >body 's offset @ cla @ + @ ]]
+    swap [[ >body -> offset @ cla @ + @ ]]
     ?dup if execute then ;
 
 : does-protocol ( - )
     does> swap [[
-        dup 's offset @ cla @ + @ ?dup if
+        dup -> offset @ cla @ + @ ?dup if
             nip ( xt )
         else
             ( protocol ) >r
@@ -610,11 +610,11 @@ debug @ [if]
     protocol0 trait0 implement-protocol
     
     \ Propagate the protocol to dependents
-    trait0 's dependents dup list-count for
+    trait0 -> dependents dup list-count for
         @next to class0
         \ Only propagate if class doesn't have implementation from different source
         protocol0 class0 supports-protocol? if
-            protocol0 's offset @ class0 + >origin @ trait0 = if
+            protocol0 -> offset @ class0 + >origin @ trait0 = if
                 \ Implementation from this trait - safe to overwrite
                 trait0 protocol0 class0 apply-protocol
             then
@@ -651,18 +651,18 @@ debug @ [if]
 \ : defaults ( - a )
 \     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class definition."
 \     classifier >cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
-\     classifier 's template @ ?dup if else
-\         classifier instance classifier 's template !
-\         classifier 's template @
+\     classifier -> template @ ?dup if else
+\         classifier instance classifier -> template !
+\         classifier -> template @
 \     then ;
 
 : defaults ( [class] - a )
     {: | class0 :}
     classifier dup 0= if drop then to class0 
     class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
-    class0 's template @ ?dup 0= if
-        class0 make class0 's template !
-        class0 's template @
+    class0 -> template @ ?dup 0= if
+        class0 make class0 -> template !
+        class0 -> template @
     then ;
 
 : derive ( class - )
@@ -684,37 +684,37 @@ debug @ [if]
     /classifier /classifier-base - move
     
     \ Copy member lists
-    source-class 's protocol-list  classifier 's protocol-list copy-list
-    source-class 's property-list  classifier 's property-list copy-list
+    source-class -> protocol-list  classifier -> protocol-list copy-list
+    source-class -> property-list  classifier -> property-list copy-list
     
     \ Copy parent's bit table tables (trait relationships)
-    source-class 's id-table classifier 's id-table /bit-table move
-    source-class 's can-table classifier 's can-table /bit-table move
+    source-class -> id-table classifier -> id-table /bit-table move
+    source-class -> can-table classifier -> can-table /bit-table move
     \ Restore the classifier bits
-    classifier 's classifier# @ classifier 's id-table set-bit
-    classifier 's classifier# @ classifier 's can-table set-bit
+    classifier -> classifier# @ classifier -> id-table set-bit
+    classifier -> classifier# @ classifier -> can-table set-bit
     
     \ Set parent bit for inheritance queries
     \ I believe this is not needed as it is set in the bit tables by begin-classifier
-    \ source-class 's classifier# @ classifier 's can-table set-bit
+    \ source-class -> classifier# @ classifier -> can-table set-bit
     
     \ Copy template if one exists, updating its class
-    source-class 's template @ ?dup if
-        ( source-template ) defaults source-class 's instance-size @ move
+    source-class -> template @ ?dup if
+        ( source-template ) defaults source-class -> instance-size @ move
         classifier defaults >cla !
     then
     
     \ Copy constructor
-    source-class 's constructor-xt @ classifier 's constructor-xt !
-    source-class 's constructor-#params @ classifier 's constructor-#params !
+    source-class -> constructor-xt @ classifier -> constructor-xt !
+    source-class -> constructor-#params @ classifier -> constructor-#params !
     
     \ Execute on-derive if set
-    source-class 's on-derive-xt @ ?dup if
+    source-class -> on-derive-xt @ ?dup if
         source-class classifier rot execute  \ ( source-class derived-class - )
     then
     
     \ Add class to dependents
-    classifier source-class 's dependents add-to 
+    classifier source-class -> dependents add-to 
 ;
 
 : :derive ( class - ) ( source-class derived-class - )
@@ -740,7 +740,7 @@ aka instance make  \ Backward compatibility
 : valid-classifier? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup 's magic @ MAGIC_CLASSIFIER = r> and >r
+        dup -> magic @ MAGIC_CLASSIFIER = r> and >r
     then
     drop r> ;
 
@@ -758,8 +758,8 @@ aka instance make  \ Backward compatibility
     \ TODO: Optimize and put the runtime checks in optional validations.
     over valid-object? not abort" IS? >> Invalid object."
     dup valid-classifier? not abort" IS? >> Invalid classifier."
-    's classifier# @ swap
-    dup >cla @ _class <> if >cla @ then 's id-table test-bit ;
+    -> classifier# @ swap
+    dup >cla @ _class <> if >cla @ then -> id-table test-bit ;
 
 : can? ( object|class classifier|protocol-xt - bool )
     {: obj-or-class second-param | class-to-check :}
@@ -785,7 +785,7 @@ aka instance make  \ Backward compatibility
     else
         \ Classifier case: check capability table
         second-param valid-classifier? not abort" CAN? >> Invalid classifier."
-        second-param 's classifier# @ class-to-check 's can-table test-bit
+        second-param -> classifier# @ class-to-check -> can-table test-bit
     then ;
 
 : ?oexec ( xt - ) ( - )
@@ -813,7 +813,7 @@ _object :: on-error ( xt err# - )
 : debug-oexec ( ... xt - ... )
     dup >r
     catch ?dup if
-        r> swap me 's cla @ 's on-error @ execute
+        r> swap me -> cla @ -> on-error @ execute
         exit
     then
     r> drop ;

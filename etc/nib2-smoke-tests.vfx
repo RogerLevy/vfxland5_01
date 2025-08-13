@@ -37,7 +37,7 @@ class;
 actor% :derive ( source-class derived-class - )
     2drop cr ." Actor derived!!!" cr ;
 
-actor% >defaults 's rad p? cr
+actor% >defaults -> rad p? cr
 
 class: enemy%
     actor% derive
@@ -58,10 +58,10 @@ create actor actor% make [[
     me .
     x .
     y .
-    \ me 's y .
+    \ me -> y .
     me actor% is? .
     cr
-    i/hp . actor% 's i/hp .
+    i/hp . actor% -> i/hp .
 ]]
 
 

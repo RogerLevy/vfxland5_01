@@ -23,7 +23,7 @@ _asset :: use ( - ) ;        \ select for use in other words, such as rendering
 c: _tileset _asset baseid bmp tw th #tiles ;
 
 256 cell stack tilesets
-tilesets _tileset 's registry !
+tilesets _tileset -> registry !
 
 || : bmpw  dup if al_get_bitmap_width then ;
 || : bmph  dup if al_get_bitmap_height then ;
@@ -54,7 +54,7 @@ _tileset :: init ( - )
     me tilesets push ;
 
 : tile ( tileset n - n )
-    swap 's baseid @ + ;
+    swap -> baseid @ + ;
 
 : tileset ( bmp# tw th - <name> ) ( - tileset )
     2>r
@@ -109,4 +109,4 @@ create metas #bitmaps cells allot&erase
     >r
         here >r >datadir file,
         r> here over -
-    r> 's baseid @ cells metas + swap move ;
+    r> -> baseid @ cells metas + swap move ;

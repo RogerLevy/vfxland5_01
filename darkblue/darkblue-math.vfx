@@ -7,12 +7,12 @@ fast[ \ disable validations for speed
                   f: obj1-radius f: obj2-radius f: total-radius f: obj2-speed :}
 
     \ Get object radii
-    obj1 's r @ p>f to obj1-radius
-    obj2 's r @ p>f to obj2-radius
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
     obj1-radius obj2-radius f+ to total-radius
 
     \ Calculate distance between objects
-    obj1 's x 2@ obj2 's x 2@ 2- 2p>f to dy to dx
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ Check if collision occurred
@@ -22,7 +22,7 @@ fast[ \ disable validations for speed
 
     \ Calculate overlap and obj2's speed
     total-radius distance f- to overlap
-    obj2 's vx 2@ obj2 's vy 2@ 2- 2p>f
+    obj2 -> vx 2@ obj2 -> vy 2@ 2- 2p>f
     fdup f* fswap fdup f* f+ fsqrt to obj2-speed
 
     \ Calculate force based on overlap and obj2's speed
@@ -41,12 +41,12 @@ fast[ \ disable validations for speed
                   f: obj2-vx f: obj2-vy f: obj2-speed :}
 
     \ Get object radii
-    obj1 's r @ p>f to obj1-radius
-    obj2 's r @ p>f to obj2-radius
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
     obj1-radius obj2-radius f+ to total-radius
 
     \ Calculate distance between objects
-    obj1 's x 2@ obj2 's x 2@ 2- 2p>f to dy to dx
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ Check if collision occurred
@@ -55,7 +55,7 @@ fast[ \ disable validations for speed
     then
 
     \ Get obj2's velocity components
-    obj2 's vx 2@ 2p>f to obj2-vy to obj2-vx
+    obj2 -> vx 2@ 2p>f to obj2-vy to obj2-vx
     obj2-vx obj2-vx f* obj2-vy obj2-vy f* f+ fsqrt to obj2-speed
 
     \ Calculate overlap and base force
@@ -86,8 +86,8 @@ fast[ \ disable validations for speed
                   f: acceleration :}
 
     \ Get object properties
-    obj1 's r @ p>f to obj1-radius
-    obj2 's r @ p>f to obj2-radius
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
     
     \ cr ." obj1-radius: " obj1-radius f.
     \ cr ." obj2-radius: " obj2-radius f.
@@ -95,7 +95,7 @@ fast[ \ disable validations for speed
     obj1-radius obj2-radius f+ to total-radius
 
     \ Calculate collision normal (from obj2 to obj1)
-    obj1 's x 2@ obj2 's x 2@ 2- 2p>f to dy to dx
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ cr ." distance: " distance f. ." total-radius: " total-radius f.
@@ -110,8 +110,8 @@ fast[ \ disable validations for speed
     dy distance f/ to normal-y
 
     \ Get velocities
-    obj1 's vx 2@ 2p>f to obj1-vy to obj1-vx
-    obj2 's vx 2@ 2p>f to obj2-vy to obj2-vx
+    obj1 -> vx 2@ 2p>f to obj1-vy to obj1-vx
+    obj2 -> vx 2@ 2p>f to obj2-vy to obj2-vx
 
     \ cr ." obj1 vel: " obj1-vx f. obj1-vy f.
     \ cr ." obj2 vel: " obj2-vx f. obj2-vy f.
@@ -131,8 +131,8 @@ fast[ \ disable validations for speed
     relative-speed-normal fabs to relative-speed-normal
 
     \ Get objects' masses
-    obj1 's m @ p>f to obj1-mass
-    obj2 's m @ p>f to obj2-mass
+    obj1 -> m @ p>f to obj1-mass
+    obj2 -> m @ p>f to obj2-mass
 
     \ cr ." obj1-mass: " obj1-mass f.
     \ cr ." obj2-mass: " obj2-mass f.
@@ -161,8 +161,8 @@ fast[ \ disable validations for speed
 : rhit? ( obj obj - f )
     over exists? over exists? and not if 2drop 0 exit then
     {: o1 o2 | rd :}
-    o1 's r @
-    o2 's r @
+    o1 -> r @
+    o2 -> r @
     + to rd
     o1 pos@ o2 pos@ dist rd <= ;
 
@@ -173,9 +173,9 @@ fast[ \ disable validations for speed
               f: fx f: fy f: damping :}
         
     \ Get object properties
-    obj 's x 2@ 2p>f to obj-y to obj-x
-    obj 's vx 2@ 2p>f to obj-vy to obj-vx
-    obj 's r @ p>f to obj-radius
+    obj -> x 2@ 2p>f to obj-y to obj-x
+    obj -> vx 2@ 2p>f to obj-vy to obj-vx
+    obj -> r @ p>f to obj-radius
     
     \ Initialize variables
     false to screen-bounced?
@@ -255,8 +255,8 @@ fast[ \ disable validations for speed
     enemy0 exists? not if 0 exit then
     
     \ Get enemy properties
-    enemy0 's x 2@ 2p>f to ey to ex
-    enemy0 's r @ p>f to er
+    enemy0 -> x 2@ 2p>f to ey to ex
+    enemy0 -> r @ p>f to er
     
     \ Convert laser params to float for calculations  
     lx p>f to lx1  ly p>f to ly1
@@ -293,7 +293,7 @@ fast[ \ disable validations for speed
     distance half-width er f+ f< ;
 
 : laser-hit?  ( actor beam - f )
-    dup 's en @ 0= if 2drop 0 exit then
+    dup -> en @ 0= if 2drop 0 exit then
     [[ x 2@ a @ l @ w @ ]] seg-hit? ;
 
 : bubble-constraint-force ( center-obj trapped-obj f: bubble-radius f: damping -- x-force. y-force. )
@@ -303,22 +303,22 @@ fast[ \ disable validations for speed
        f: normal-x f: normal-y :}
 
     \ Calculate distance from center to trapped object
-    trapped 's x 2@ center 's x 2@ 2- 2p>f to dy to dx
+    trapped -> x 2@ center -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ If inside bubble, no constraint needed
     distance
     bubble-radius
-    trapped 's r @ p>f f-
+    trapped -> r @ p>f f-
     f<= if
         0. 0. exit
     then
 
     \ Calculate how far outside the bubble
-    distance bubble-radius trapped 's r @ p>f f- f- to excess
+    distance bubble-radius trapped -> r @ p>f f- f- to excess
 
     \ Get trapped object's velocity
-    trapped 's vx 2@ 2p>f to trapped-vy to trapped-vx
+    trapped -> vx 2@ 2p>f to trapped-vy to trapped-vx
 
     \ Calculate velocity component toward center
     distance 0e f= if

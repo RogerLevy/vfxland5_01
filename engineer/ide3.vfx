@@ -447,9 +447,9 @@ display-mode object-table: current-mode
 object-table;
 
 \ Redefine ide and repl to point to current mode's properties
-:noname ( - a ) current-mode 's _ide ; is ide
-:noname ( - a ) current-mode 's _repl ; is repl
-:noname ( - a ) current-mode 's _hold ; is hold
+:noname ( - a ) current-mode -> _ide ; is ide
+:noname ( - a ) current-mode -> _repl ; is repl
+:noname ( - a ) current-mode -> _hold ; is hold
 
 : enact-display-mode ( - )
     current-mode activate ;

@@ -3,7 +3,7 @@
         | f: dx f: dy f: distance f: force-magnitude f: force-ratio :}
 
     \ Calculate distance between objects
-    obj2 's x 2@ obj1 's x 2@ 2- 2p>f to dy to dx
+    obj2 -> x 2@ obj1 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ Check if outside radius or at same position
@@ -28,7 +28,7 @@
         | f: dx f: dy f: distance f: force-magnitude f: force-ratio :}
 
     \ Calculate distance between objects
-    obj2 's x 2@ obj1 's x 2@ 2- 2p>f to dy to dx
+    obj2 -> x 2@ obj1 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ Check if outside radius or at same position
@@ -66,7 +66,7 @@
         | f: dx f: dy f: distance f: force-magnitude :}
 
     \ Calculate distance between objects
-    obj1 's x 2@ obj2 's x 2@ 2- 2p>f to dy to dx
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
     dx dx f* dy dy f* f+ fsqrt to distance
 
     \ Check if outside radius or at same position

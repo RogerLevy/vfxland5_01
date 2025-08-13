@@ -42,10 +42,10 @@ trait: autoclass trait;
 \ Actor Access Words
 \ =============================================================================
 
-: free? ( actor - f ) 's en @ 0= ;
+: free? ( actor - f ) -> en @ 0= ;
 : as> ( actor - ) [[ r> execute ]] ;
 : actor[] ( n - actor ) actors [] ;
-: actor# ( actor - n ) 's id @ ;
+: actor# ( actor - n ) -> id @ ;
 : act> ( - ) ( - ) 0 time !  r> beha ! ; 
 : act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
 : physics> ( - ) ( - ) r> phys ! ;
@@ -53,7 +53,7 @@ trait: autoclass trait;
 : exists? ( actor - f )
     dup 0= if drop 0 exit then
     dup valid-object? if drop -1 exit then
-    's en @ ;
+    -> en @ ;
 
 fast[
 
@@ -98,8 +98,8 @@ actor :: info ( actor - )
 \ Actor Errors
 \ =============================================================================
 
-: benched?  's benched @ ;
-: bench  's benched on ; 
+: benched?  -> benched @ ;
+: bench  -> benched on ; 
 : ?benched  benched @ if r> drop then ;
 
 : behave ( - )
@@ -220,7 +220,7 @@ actor defaults [[
     #actors for
         next# @ actor[] dup free? if
             c over construct
-            next# @ over 's id !
+            next# @ over -> id !
             unloop exit
         then  drop
         next# @ 1 + #actors mod next# !

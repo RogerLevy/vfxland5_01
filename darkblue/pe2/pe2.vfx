@@ -11,12 +11,12 @@ variable waiting
 || static size
 || : class:  /obj 4 to /obj bl word create-class lastbody ;
 || : property ( - <name> ) ( - a ) cell ofield ; 
-|| : class;  /obj swap 's size ! to /obj ;
+|| : class;  /obj swap -> size ! to /obj ;
 || : (!classes)  [[ dup cla ! ]] -1 ;
 || : object-array ( n class - <name> ) ( - array )
-    dup >r 's size @ array
+    dup >r -> size @ array
     r> ['] (!classes) lastbody each drop ;
-|| : object  here >r dup , 's size @ cell- allot&erase r> ;
+|| : object  here >r dup , -> size @ cell- allot&erase r> ;
 
 class: ui-path
 class;

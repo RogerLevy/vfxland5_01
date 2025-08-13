@@ -43,7 +43,7 @@ require savegame.vfx
 : ?save
     debug @ ?exit
     can-save @ -exit
-    p1 's falling @ ?exit
+    p1 -> falling @ ?exit
     save ;
 
 bye-chain link ' ?save ,

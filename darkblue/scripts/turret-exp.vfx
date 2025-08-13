@@ -74,7 +74,7 @@ array] drop
 
 : laser-physics
     owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
-    owner @ 's a @ a ! ;
+    owner @ -> a @ a ! ;
 
 : fire-thin ( atk - )
     *shoot*
@@ -148,7 +148,7 @@ aka ?; ?exit
     \ Iterate on array, address of each item in "A"
     | arr xt |
     a@ >r
-    arr 's data @ arr #items arr /item * bounds ?do
+    arr -> data @ arr #items arr /item * bounds ?do
         i a!
         xt execute
     arr /item +loop
@@ -162,7 +162,7 @@ aka ?; ?exit
     \ Returns -1 if not found
     | arr xt |
     a@ >r
-    arr 's data @ arr #items arr /item * bounds ?do
+    arr -> data @ arr #items arr /item * bounds ?do
         i a!
         xt execute if
             i arr index unloop exit
@@ -202,7 +202,7 @@ aka ?; ?exit
         d: +charge charge @ 1 + 120 min charge ! ?jam ?+level charge @ shake ;
         : go? level-ctr @ 0= ;
         : juice go? if +charge else -1 level-ctr +! then ;
-        : flashing? 's flash-ctr @ 0 >= ;
+        : flashing? -> flash-ctr @ 0 >= ;
         : ?cancel owner @ flashing? -; -charge r> drop ; 
         : cannon ( n-n ) charging @ -; ?cancel dup letgo? if fire else juice then ;
         : ?switch ( n-n ) dup pressed? -; /charge ;
@@ -230,7 +230,7 @@ aka ?; ?exit
     : show [[ at@ 2s>p x 2! ]] ;
     : bar[] bars [] @ ;
     : bar-spacing 0 bar.png bmph 1 + negate ;
-    : bars-pos 13 -13 owner @ 's vx 2@ 2p>s 2+ ;
+    : bars-pos 13 -13 owner @ -> vx 2@ 2p>s 2+ ;
     : !bars 
         owner @ bars-pos from
         bars #items 1 do

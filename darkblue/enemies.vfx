@@ -123,7 +123,7 @@ enemy :: init
 
 : auto-bitmap ( - )
     classifier body> >name count f" %s.png" >pad find if
-        execute defaults 's bmp !
+        execute defaults -> bmp !
     else drop then ;
 
 : register-enemy-class ( class - )
@@ -159,7 +159,7 @@ public
         classifier register-enemy-class
     then
     classifier auto-bitmap
-    ['] noop classifier 's post-init ! ;
+    ['] noop classifier -> post-init ! ;
 
 ." Loading enemy table" cr
 \ id            hp          atk         gold        rad         bmp                 spd         path

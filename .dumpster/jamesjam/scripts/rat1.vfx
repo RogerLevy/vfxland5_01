@@ -2,7 +2,7 @@ prop talkable
 
 class rat1%
 rat1% :: depict
-    rat1.png portrait 's bmp ! ;
+    rat1.png portrait -> bmp ! ;
 rat1% :: interact ( other - ) 
     drop
     s[ ." I'm building a bomb to destroy myself" cr 

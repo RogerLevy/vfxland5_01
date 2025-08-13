@@ -5,11 +5,11 @@ bunny.png 32 32 tileset bunny.ts
 actor-class bunny%
 
 : ?h  vx @ 0< if h| then ;
-: ?dir  p1 's x @ x @ > if negate then ;
+: ?dir  p1 -> x @ x @ > if negate then ;
 : runaway  3.0 ?dir vx !  act> bunny.ts 1 tile ?h 2 125 cycle ;
 
 : kind0 ;
-: kind1  act> p1 's x 2@ x 2@ dist 48. <= -exit runaway ;
+: kind1  act> p1 -> x 2@ x 2@ dist 48. <= -exit runaway ;
 
 create kinds
     ' kind0 ,

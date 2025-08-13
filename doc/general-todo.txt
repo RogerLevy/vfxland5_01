@@ -30,7 +30,7 @@
 
 [x] (NIBS) Make :: syntax consistent with other NIBS words - allow classifier inference when inside classifier blocks.
 
-[ ] (NIBS) Rename 'S to ->
+[x] (NIBS) Rename 'S to ->
 
 [ ] (NIBS) Add bracket matching validation for object binding operators `[[ ]]`.
     Check for missing opening or closing double brackets.

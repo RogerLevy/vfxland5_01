@@ -17,7 +17,7 @@ public
 
 laser object beam
 
-20 beam 's atk ! 
+20 beam -> atk ! 
 
 : *beam ( laser-angle. laser-length. laser-width. - beam )
     laser beam construct

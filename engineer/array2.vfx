@@ -6,7 +6,7 @@ trait: _iterable
     prop item-count
 trait;
 
-: #items ( iterable - n ) 's item-count @ ;
+: #items ( iterable - n ) -> item-count @ ;
 _iterable :: vacate ( - ) 0 item-count ! ;
 _iterable :: index ( a - n ) stub ; 
 _iterable :: deref-index ( n - ? ) stub ;
@@ -49,7 +49,7 @@ _iterable :: each@ ( xt - ) ( ... ? - ... )
 : n[] ( n. iterable - a )
     \ Index into iterable based on a value in range 0 ~ 1.0
     \ pronounced "n-box"
-    dup >r 's item-count @ 1 - p* r> [] ;
+    dup >r -> item-count @ 1 - p* r> [] ;
 
 \ Essential queries:
 _iterable :: empty? ( - bool )
@@ -139,7 +139,7 @@ class;
     here data ! * allot&erase ;
 
 : /item ( array - n )
-    's item-size @ ;
+    -> item-size @ ;
 
 _array :: index ( a - n )
     data @ - item-size @ / me ?bounds ;

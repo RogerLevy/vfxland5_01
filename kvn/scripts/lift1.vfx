@@ -2,7 +2,7 @@ actor-class lift1%
 
 : physics
     me p1 hit? -exit
-    y @ p1 's y @ <= -exit
+    y @ p1 -> y @ <= -exit
     y @ y1 @ s>p + p1 [[ h1 @ s>p - y1 @ s>p - y ! ]] ;
 
 lift1% :: init

@@ -3,69 +3,69 @@
 : u+  rot + swap ;
 
 : dlremove  ( node -- )
-    dup 's parent @ dup 0= if  2drop  exit  then
+    dup -> parent @ dup 0= if  2drop  exit  then
     locals| p n |
-    0 n 's parent !
-    p 's lowest @ p 's highest @ = if
-        n p 's lowest @ = if
-            0 dup p 's lowest ! p 's highest !
+    0 n -> parent !
+    p -> lowest @ p -> highest @ = if
+        n p -> lowest @ = if
+            0 dup p -> lowest ! p -> highest !
         exit then
         -1 abort" dlremove: Corrupt tree!"
     else
-        n p 's lowest @ = if
-            0 n 's next @ 's prev !
-            n 's next @ p 's lowest !
-            0 dup n 's prev ! n 's next !
+        n p -> lowest @ = if
+            0 n -> next @ -> prev !
+            n -> next @ p -> lowest !
+            0 dup n -> prev ! n -> next !
         exit then
-        n p 's highest @ = if
-            0 n 's prev @ 's next !
-            n 's prev @ p 's highest !
-            0 dup n 's prev ! n 's next !
+        n p -> highest @ = if
+            0 n -> prev @ -> next !
+            n -> prev @ p -> highest !
+            0 dup n -> prev ! n -> next !
         exit then
-        n 's next @ n 's prev @ 's next !
-        n 's prev @ n 's next @ 's prev !
-        0 dup n 's prev ! n 's next !
+        n -> next @ n -> prev @ -> next !
+        n -> prev @ n -> next @ -> prev !
+        0 dup n -> prev ! n -> next !
     then ;
 
 : (dlinit)  ( node parent -- )
     locals| p n |
-    n dup p 's lowest ! p 's highest !
-    p n 's parent ! ;
+    n dup p -> lowest ! p -> highest !
+    p n -> parent ! ;
 
 : dlpush  ( node parent -- )
     2dup = abort" dlinsert: Same node!" 
     over dlremove
-    dup 's lowest @ 0= if  (dlinit)  exit  then
+    dup -> lowest @ 0= if  (dlinit)  exit  then
     locals| p n |
-    n p 's highest @ 's next !
-    p 's highest @ n 's prev !
-    n p 's highest !
-    p n 's parent ! ;
+    n p -> highest @ -> next !
+    p -> highest @ n -> prev !
+    n p -> highest !
+    p n -> parent ! ;
 
 : dlinsert-after  ( node dest -- )
     2dup = abort" dlinsert: Same node!"
-    dup 's parent @ 0= if 2drop exit then
+    dup -> parent @ 0= if 2drop exit then
     over dlremove 
-    dup 's next @ 0= if  's parent @ dlpush exit  then
-    dup 's next @ locals| neighbor dest src |
-    src dest 's next !
-    dest src 's prev !
-    neighbor src 's next !
-    src neighbor 's prev !
-    dest 's parent @ src 's parent ! ;
+    dup -> next @ 0= if  -> parent @ dlpush exit  then
+    dup -> next @ locals| neighbor dest src |
+    src dest -> next !
+    dest src -> prev !
+    neighbor src -> next !
+    src neighbor -> prev !
+    dest -> parent @ src -> parent ! ;
 
 : dlunshift  ( node parent -- )
     2dup = abort" dlinsert: Same node!" 
     over dlremove
-    dup 's lowest @ 0= if  (dlinit)  exit  then
+    dup -> lowest @ 0= if  (dlinit)  exit  then
     locals| p n |
-    p 's lowest @ n 's next !
-    n p 's lowest @ 's prev ! 
-    n p 's lowest !
-    p n 's parent ! ;
+    p -> lowest @ n -> next !
+    n p -> lowest @ -> prev ! 
+    n p -> lowest !
+    p n -> parent ! ;
 
 : dleach  ( xt node -- )
-    's lowest @ ?dup if
+    -> lowest @ ?dup if
         [[
             begin  me while
                 next @ >r  dup >r execute r>  r> to me
@@ -77,7 +77,7 @@
 : (dlorphan)  0 dup next ! dup prev ! parent ! ;
 
 : dlclear  ( node -- )
-    's lowest @ ?dup if
+    -> lowest @ ?dup if
         [[
             begin  me while
                 next @  (dlorphan)  to me
@@ -87,10 +87,10 @@
     then ;
 
 : #children ( obj - n )
-    's lowest @ dup if 0 swap begin 1 u+ 's next @ ?dup 0= until then ;
+    -> lowest @ dup if 0 swap begin 1 u+ -> next @ ?dup 0= until then ;
 
 : nth-child ( n obj - obj )
-    dup #children >r 's lowest @ swap 0 r> umod for 's next @ loop ;
+    dup #children >r -> lowest @ swap 0 r> umod for -> next @ loop ;
 
 : descendant? ( obj obj - f )
     swap [[

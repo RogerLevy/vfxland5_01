@@ -271,7 +271,7 @@ public
 : emerge ( - ) \ get kevin, find door, if it exists emerge from it
     ?kevin [[ !startxy ]]
     find-door ?dup -exit dup open
-    's x 2@ 13. 0 2+ p1 as>
+    -> x 2@ 13. 0 2+ p1 as>
         ['] roomcol2 phys !
         x 2!
         me 7 0 from  *coverup drop 0 priority
@@ -290,7 +290,7 @@ prop dest
 : enter ( - ) \ me = door, p1 = kevin
     ['] roomcol2 phys !
     me open  me to d
-    x 2@ -2. 0 2+ p1 's x 2!
+    x 2@ -2. 0 2+ p1 -> x 2!
     p1 as>
         fac @ fac2 !  right fac ! !flip  halt  float
         me 22 0 from  *coverup drop 0 priority
@@ -299,7 +299,7 @@ prop dest
         act> 0.05 vx +! ?walk.anm movelegs  0.2 passed? -exit prio off 
         act> 0.5 passed? -exit  halt
         act> 0.5 passed? -exit
-            blank blank blank blank  d 's dest @ ?warp  emerge ;
+            blank blank blank blank  d -> dest @ ?warp  emerge ;
 
 : ?spawn-kevin  ?kevin drop ;
 
@@ -346,4 +346,4 @@ private
     in-air @ if bounce else smear then ;
 
 kevin :: collide ( other - )
-    's cla @ body> c" camry" named? if collide-camry then ;
+    -> cla @ body> c" camry" named? if collide-camry then ;

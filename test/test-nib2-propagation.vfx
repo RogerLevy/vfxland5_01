@@ -25,7 +25,7 @@ require %idir%/nib2.vfx
     se" test-trait% :: new-protocol .\" new protocol called\" cr ;" .evaluate
     
     \ Verify the class now supports the new protocol
-    s" test-trait% 's new-protocol test-class% supports-protocol?" .evaluate
+    s" test-trait% -> new-protocol test-class% supports-protocol?" .evaluate
     s" Class should support new protocol after propagation" assert
     
     \ Implement the protocol on the class
@@ -78,7 +78,7 @@ require %idir%/nib2.vfx
     s" is-a behavior-trait%" .evaluate
     
     \ Verify it worked
-    s" behavior-trait% 's do-something any-class% supports-protocol?" .evaluate
+    s" behavior-trait% -> do-something any-class% supports-protocol?" .evaluate
     s" Class should support behavior trait protocol" assert
     
     ." OK" cr ;
@@ -93,7 +93,7 @@ require %idir%/nib2.vfx
     s" class: field-class% property added-prop class;" .evaluate
     
     \ Verify the property was added by creating an object
-    s" field-class% make [[ me 's added-prop 0<> ]]" .evaluate
+    s" field-class% make [[ me -> added-prop 0<> ]]" .evaluate
     s" Object should have the added property" assert
     
     ." OK" cr ;
@@ -109,7 +109,7 @@ require %idir%/nib2.vfx
     s" test-protocol" fe" dynamic-trait%% :: %s .\" dynamic protocol\" cr ;" .evaluate
     
     \ Verify class supports it
-    s" dynamic-trait% 's test-protocol dynamic-class% supports-protocol?" .evaluate
+    s" dynamic-trait% -> test-protocol dynamic-class% supports-protocol?" .evaluate
     s" Class should support dynamically created protocol" assert
     
     \ Implement on class

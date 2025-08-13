@@ -58,9 +58,9 @@
     fn w/o create-file throw to #1
     write-variables
     write-inventory
-    p1 's x 2@ room# @
+    p1 -> x 2@ room# @
         write-world
-    s[ . ." warp " 2p. ." ?kvn 's x 2!" s] 2dup write-chunk evaluate
+    s[ . ." warp " 2p. ." ?kvn -> x 2!" s] 2dup write-chunk evaluate
     #1 close-file throw ;
 : resume
     fn r/o open-file throw to #1

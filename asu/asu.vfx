@@ -87,26 +87,26 @@ constant /rampctl
 10 /rampctl array freqramps
 
 : stop-ramp ( struct -- )
-   dup 's destval f@ dup 's addr @ f! 0e dup 's stepval f! ;
+   dup -> destval f@ dup -> addr @ f! 0e dup -> stepval f! ;
 
 : do-ramp ( struct -- )
-   dup 's stepval f@ 0e f= if drop exit then
-   dup 's stepval f@ dup 's addr @ f+!
-   dup 's stepval f@ f0< if
-        dup 's addr @ f@ dup 's destval f@ f< if stop-ramp then
+   dup -> stepval f@ 0e f= if drop exit then
+   dup -> stepval f@ dup -> addr @ f+!
+   dup -> stepval f@ f0< if
+        dup -> addr @ f@ dup -> destval f@ f< if stop-ramp then
    else
-        dup 's addr @ f@ dup 's destval f@ f> if stop-ramp then
+        dup -> addr @ f@ dup -> destval f@ f> if stop-ramp then
    then  drop ;
 
 : init-amp-ramp ( i -- )
    locals| i |
-   0e ampramps i [] 's stepval f!
-   chnamp i apu[] ampramps i [] 's addr ! ;
+   0e ampramps i [] -> stepval f!
+   chnamp i apu[] ampramps i [] -> addr ! ;
 
 : init-freq-ramp ( i -- )
    locals| i |
-   0e freqramps i [] 's stepval f!
-   chnfreq i apu[] freqramps i [] 's addr ! ;
+   0e freqramps i [] -> stepval f!
+   chnfreq i apu[] freqramps i [] -> addr ! ;
 
 : init-ramps
    10 0 do i init-amp-ramp loop
@@ -192,13 +192,13 @@ defer musictick  ' noop is musictick
 
 : glide  ( destnote  f:rate/sec -- )
     /sec fover etfreq chnfreq ?neg
-    chn freqramps [] 's stepval f!
-    etfreq freqramps chn [] 's destval f! ;
+    chn freqramps [] -> stepval f!
+    etfreq freqramps chn [] -> destval f! ;
 
 : atten  ( f:destamp  f:rate/sec -- )
     /sec fover chnamp ?neg
-    chn ampramps [] 's stepval f!
-    ampramps chn [] 's destval f! ;
+    chn ampramps [] -> stepval f!
+    ampramps chn [] -> destval f! ;
 
 : muteall  16 0 do 0e i to chn amp loop ;
 

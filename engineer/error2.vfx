@@ -143,15 +143,15 @@ private
     ( context ) context /context move
     cr \ ." Windows exception: "
     ( err ) dup h.8 lookup-exception zcount type cr
-    context 's ESP @ rs 16 cells move
-    context 's EBP @ ds 16 cells move
-    ."     In: " context 's EIP @ .ip cr
+    context -> ESP @ rs 16 cells move
+    context -> EBP @ ds 16 cells move
+    ."     In: " context -> EIP @ .ip cr
     ."     Call stack: " cr 
     rs 8 rtrace cr
     ."     Data stack: " cr
     ds
     \ DOESN'T WORK!  s0 @ returns some other address; must be in a different user context here
-    \  s0 @  context 's EBP @   .s  -  cell/  
+    \  s0 @  context -> EBP @   .s  -  cell/  
     8 dtrace cr
     -1 ;
   

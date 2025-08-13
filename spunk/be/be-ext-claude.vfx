@@ -61,7 +61,7 @@ variable tileset-mode    \ flag: are we editing a tileset?
 : assign-current-tile {: actor0 | bitmap-id -- :}
     current-bitmap @ to bitmap-id
     bitmap-id if
-        bitmap-id actor0 's bmp !
+        bitmap-id actor0 -> bmp !
         ." Assigned current bitmap to actor"
     else
         ." No current bitmap"
@@ -134,7 +134,7 @@ variable tileset-mode    \ flag: are we editing a tileset?
         \ Check if any actors use this bitmap
         false to has-actors
         actives>
-            me 's bmp @ bitmap-id = if
+            me -> bmp @ bitmap-id = if
                 true to has-actors
             then ;
         

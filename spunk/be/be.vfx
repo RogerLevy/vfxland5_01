@@ -136,8 +136,8 @@ root [[
 ]]
 
 \ Zooming
-: zoom!  1. 8. clamp dup canvas 's sx 2! ;
-: +zoom  s>p canvas 's sx @ + zoom! ;
+: zoom!  1. 8. clamp dup canvas -> sx 2! ;
+: +zoom  s>p canvas -> sx @ + zoom! ;
 :noname  the-bmp @ bmpwh max get-zoom zoom! ;
 is auto-zoom  1 bmp!
 

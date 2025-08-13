@@ -8,7 +8,7 @@ enemy-class vacuum
     prop my-bubble
 
 0 value bub
-\ : blowout-r  bub 's r @ 100. p* p>f  ;
+\ : blowout-r  bub -> r @ 100. p* p>f  ;
 \ : blowout-r  150e ;
 : blowout-r  200e ;
 
@@ -32,20 +32,20 @@ vacuum :: kill
     unload ;
 
 : constraint-physics
-    owner @ ` me ` owner @ 's r @ p>f ` 0e ` bubble-constraint-force
+    owner @ ` me ` owner @ -> r @ p>f ` 0e ` bubble-constraint-force
     vx 2+!
     vx 2@ x 2+!
-    owner @ 's vx 2@ x 2+! ;
+    owner @ -> vx 2@ x 2+! ;
 
 : capture ( tri - )
     {: | bub :} 
     my-bubble @ to bub
     1 bounty +!
-    0.25 bub 's r +! 
+    0.25 bub -> r +! 
     [[
         0 worth !
         bub owner !
-        bub 's x 2@ bub 's r @ + 6. - x 2!   \ reposition at bubble "entrance"
+        bub -> x 2@ bub -> r @ + 6. - x 2!   \ reposition at bubble "entrance"
         ['] constraint-physics phys !
         90. rnd 225. + 1. vec vx 2!  \ randomized upward velocity 
         10. r !

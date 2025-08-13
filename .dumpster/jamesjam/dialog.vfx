@@ -29,12 +29,12 @@ root [[
 \ Rendering
 :noname bubble as> draw>
     script @ 0= nearby 0<> and if
-        nearby 's talkable @ if
+        nearby -> talkable @ if
             nearby 5 -22 from  talk.png put
         then
     then ;
 execute    
-:now dialog as> draw> speaker 0<> portrait-box 's vis ! ;
+:now dialog as> draw> speaker 0<> portrait-box -> vis ! ;
 :now textbox as> draw> textbox.png put ;
 :now textbox2 as> draw> textbox2.png put ;
 :now text as> draw> script count print ;
@@ -59,17 +59,17 @@ execute
 || : (say)  ( a n - )
     script place p1 [[ halt ]] dialog as> saying ;
 : say ( a n - )
-    portrait-box 's vis on
+    portrait-box -> vis on
     me to speaker
     speaker depict
-    portrait 's anm off
-    textbox 's vis on
-    textbox2 's vis off
+    portrait -> anm off
+    textbox -> vis on
+    textbox2 -> vis off
     (say) ;
 : narrate ( a n - )
-    portrait-box 's vis off
-    textbox 's vis off
-    textbox2 's vis on
+    portrait-box -> vis off
+    textbox -> vis off
+    textbox2 -> vis on
     (say) ;
 synonym portrait portrait
 dialog [[ listening ]]

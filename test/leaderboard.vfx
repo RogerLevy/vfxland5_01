@@ -157,7 +157,7 @@ class;
     {: addr len board :}
     board [[
     players @ #items for
-        i players @ [] @ 's handle count
+        i players @ [] @ -> handle count
         addr len compare 0= if
             i 1 + unloop ]] exit  \ Return 1-based rank
         then

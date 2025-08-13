@@ -86,7 +86,7 @@ playback :: init ( - )
 \ =============================================================================
 
 || : >segments ( path -- array )
-    's segments @ ;
+    -> segments @ ;
 
 || : segment[] ( seg# path -- segment )
     >segments [] ;
@@ -97,7 +97,7 @@ playback :: init ( - )
 || : (timespan) ( array[segment] -- ms )
     {: a :}
     0 a #items for
-        i a [] 's duration @ +
+        i a [] -> duration @ +
     loop ;
     
 || : timespan ( path -- ms )
@@ -108,7 +108,7 @@ playback :: init ( - )
     ( progress -- ) a (timespan) swap p* to target
     0 to accum
     a #items for
-        i a [] 's duration @ to segdur
+        i a [] -> duration @ to segdur
         accum segdur + target > if
             i ` target accum - s>p segdur s>p p/ ` unloop exit
         then
@@ -121,10 +121,10 @@ playback :: init ( - )
 
 : endxy ( seg# path -- x. y. )
     {: seg# p :}
-    seg# p segment[] 's segtype @ SEG_EVENT = if
-        seg# 0 <= if 0 0 else seg# 1 - p segment[] 's x 2@ then
+    seg# p segment[] -> segtype @ SEG_EVENT = if
+        seg# 0 <= if 0 0 else seg# 1 - p segment[] -> x 2@ then
     else
-        seg# p segment[] 's x 2@
+        seg# p segment[] -> x 2@
     then ;
 
 || 0e fvalue t1 
@@ -388,16 +388,16 @@ variable drift-error-y
     {: seg# a :}
     0
     seg# a #items 1 - min
-        for i a [] 's duration @ + loop ;
+        for i a [] -> duration @ + loop ;
 
 : ?alp-ease ( n. - n. )
     {: n | seg# seg segstart segdur totaldur esegs :}
-    path0 @ 's easedata @ to esegs
+    path0 @ -> easedata @ to esegs
     esegs 0= if n exit then
     esegs (timespan) to totaldur
     n esegs (leg) to n to seg#
     seg# esegs [] to seg
-    seg 's duration @ totaldur p/ to segdur 
+    seg -> duration @ totaldur p/ to segdur 
     seg# esegs getstart totaldur p/ to segstart 
     n seg ease f>p segdur p* segstart + ;
 
@@ -427,18 +427,18 @@ variable drift-error-y
     x 2@
     pb [[
         init p path0 !
-        path0 @ 's alpdata @ alp !
+        path0 @ -> alpdata @ alp !
         ( x y ) startx 2! 
     ]] ;
     
 : path-speed ( playback - )
-    's speed ! ;
+    -> speed ! ;
 
 : path-scale ( playback - )
-    's scalex 2! ;
+    -> scalex 2! ;
 
 : #laps ( -- n )
-    0 pb 's #loops @ ;
+    0 pb -> #loops @ ;
 
 : pb1 ( - playback ) 0 pb ;
 : pb2 ( - playback ) 1 pb ;
@@ -505,7 +505,7 @@ variable drift-error-y
 \ : for-segments {: from count -- :}
 \     (fill-in)
 \     0 from count do
-\         easing-path segment 's duration @ +
+\         easing-path segment -> duration @ +
 \     loop waypoint ;
 \ : (complete) ;
 
