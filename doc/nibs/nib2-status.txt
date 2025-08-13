@@ -67,14 +67,15 @@ Status Legend:
 
 3.2 Class Definition [x]
    [x] class: ... class; syntax (block form)
-   [x] class: <name> [traits...] [props...] ; syntax (compact form)
+   [x] c: <name> [traits...] [props...] ; compact syntax with parser
+   [x] Compact syntax validation (prevents classifier names as properties)
    [x] Class-specific property definition
    [x] Class instance size management
    [x] Class static area allocation
 
 3.3 Trait Definition [x]
    [x] trait: ... trait; syntax (block form)
-   [x] trait: <name> [props...] ; syntax (compact form)
+   [x] c: <name> [props...] ; compact syntax for traits
    [x] Trait property definition
    [x] Trait protocol definition (basic version without stack diagrams)
    [x] Trait static area management
@@ -103,12 +104,16 @@ Status Legend:
    [x] Automatic protocol propagation when added to traits
    [x] Field-space protection for property addition to reopened classifiers
    [ ] Stack diagram storage and validation
+   [x] CAN? capability checking word for runtime queries
+   [x] Protocol conflict protection preventing trait-to-trait overwrites
+   [x] Protocol propagation from traits to dependent classes
+   [x] Compact class syntax parser (c:) with validation
    [x] Default protocol implementations
    [x] Protocol association with traits
    [x] Stateless protocol definition outside blocks
 
 4.2 Method Implementation [x]
-   [x] :: syntax for unified definition/implementation
+   [x] :: syntax for unified definition/implementation with classifier inference
    [ ] Stack diagram validation between protocol and implementation
    [x] Method dispatch table management (basic)
    [x] Late-bound method resolution
@@ -125,7 +130,7 @@ Status Legend:
 5.1 Basic Object Creation [x]
    [x] object - Create object from class
    [x] $object - Create object with string name  
-   [x] instance - Create unnamed dictionary instance
+   [x] make - Create unnamed dictionary instance (renamed from 'instance')
    [x] construct - Initialize object at pre-allocated address
    [x] Object header initialization (class pointer)
 
@@ -162,7 +167,7 @@ Status Legend:
 
 7.1 Object Lifecycle Protocols [x]
    [x] object% trait - Base trait for all objects with extensibility
-   [x] Constructor system with constructor: syntax
+   [x] Constructor system with :construct syntax
    [x] Automatic constructor execution during object creation
    [x] Runtime lifecycle protocols available in traits (init, deinit)
 
@@ -262,7 +267,7 @@ Phase 6: Object% Integration [x]
 CURRENT STATUS SUMMARY
 =======================
 
-Overall Completion: ~95%
+Overall Completion: ~98%
 
 Core systems working:
 - Object runtime and scoping  
@@ -270,7 +275,7 @@ Core systems working:
 - Enhanced 'S syntax supporting both fields and properties
 - Class and trait definition
 - Runtime type queries (is?)
-- Object creation with constructor support (instance, construct, object, $object)
+- Object creation with constructor support (make, construct, object, $object)
 - Trait composition with is-a
 - Protocol definition with default implementations
 - Protocol implementation with :: syntax
@@ -292,18 +297,22 @@ Core systems working:
   Optional syntax that expands to block form internally
 - Protocol propagation from traits to dependent classes
 - Field-space protection for safe property addition to reopened classifiers
-- Constructor system with :construct syntax replacing constructor:
+- Constructor system with :construct syntax (formerly constructor:)
 - construct for initializing objects in pre-allocated memory
-- instance for creating unnamed dictionary objects
+- make for creating unnamed dictionary objects (formerly instance)
+- CAN? capability checking for runtime type queries
+- Protocol conflict protection preventing unsafe trait overwrites
+- Protocol propagation enabling hot-reload extension of traits
+- Compact syntax (c:) with validation for concise class definitions
 
 Major systems pending:
 - Stack diagram storage and validation
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
 - inner-protocol: for factored scoped operations (designed but not implemented)
-- Implementation of compact classifier syntax parser
 
 Remaining features for full spec compliance:
+- Stack diagram storage and validation
 - Advanced validation and error handling
 - Custom VFX Forth parser for offset calculators (>field pattern)
 
@@ -311,10 +320,38 @@ Nib 2.0 now provides a complete, working object-oriented programming
 system with traits, protocols, inheritance, and lifecycle management.
 The core architecture is complete and ready for production use.
 
-RECENT MAJOR UPDATES (Dec 2024):
+RECENT MAJOR UPDATES (Aug 2025):
 ================================
 
-1. Protocol Propagation System:
+1. Function Rename for AI Clarity (2025-08-13):
+   - Renamed INSTANCE to MAKE for anonymous object creation
+   - Added backward compatibility alias 'aka instance make'
+   - Eliminates AI confusion with OBJECT defining word
+   - Clearer semantic distinction: MAKE (anonymous) vs OBJECT (named)
+
+2. Enhanced :: Syntax (2025-08-13):
+   - :: now supports optional classifier parameter
+   - Can infer current classifier context inside trait:/class: blocks
+   - Syntax: :: protocol or classifier :: protocol
+   - Improves usability and consistency
+
+3. Compact Class Syntax Completed (2025-08-13):
+   - Full implementation of c: compact syntax parser
+   - Validation prevents classifier names being used as properties
+   - Handles %class, +trait, "trait" syntax correctly
+   - Production-ready alternative to block syntax
+
+4. Protocol Conflict Protection (2025-08-13):
+   - Prevents traits from overriding other traits' protocol implementations
+   - Classes can still override any trait protocols
+   - Clear error messages for debugging conflicts
+
+5. CAN? Capability Checking (2025-08-13):
+   - New runtime query function CAN? for capability checking
+   - Accepts both traits and protocol XTs as parameters
+   - Complements IS? for complete type introspection
+
+6. Protocol Propagation System (earlier):
    - Protocols added to traits automatically propagate to dependent classes
    - Solves issue where classes missed protocols added after trait application
    - Enables hot-reload protocol extension during development
@@ -328,6 +365,7 @@ RECENT MAJOR UPDATES (Dec 2024):
    - Renamed construct to instance for object creation clarity
    - construct now initializes objects at user-allocated addresses
    - Renamed constructor: to :construct for consistency
+   - Renamed instance to make for AI clarity (alias provided)
    - <object planned but not yet implemented
    - Enables integration with memory pools and fixed-size allocators
 

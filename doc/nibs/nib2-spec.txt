@@ -19,9 +19,10 @@ trait: object
 \ Instantiation
 \ -------------
 
-: instance ( ... class - object )
+: make ( ... class - object )
     \ create unnamed dictionary instance.
     \ executes constructor.
+    \ (formerly named 'instance' - alias provided for compatibility)
     
 : construct ( ... class addr - )
     \ initialize object at pre-allocated address.
@@ -92,7 +93,8 @@ trait: object
     \     class: actor "vessel" "projectile" "pickup" ;
     \   Multiple traits, sized properties
     \     class: network serializable loggable address 4 port 2 buffer 256 ;  
-    \ The compact form expands internally to the block form.
+    \ The compact form expands internally to the block form via c: parser.
+    \ Implemented with validation: property names cannot match classifier names.
 
 : defaults ( - a )
 : >defaults ( class - a )
@@ -109,7 +111,7 @@ trait: object
     \ Examples:
     \   trait: iterable item-count ;                  \ Simple trait with one property
     \   trait: drawable x y bitmap flags 4 ;          \ Trait with multiple properties including sized
-    \ The compact form expands internally to the block form.
+    \ The compact form expands internally to the block form via c: parser.
     \ Note: traits cannot reference other traits in compact form (no is-a allowed)
     \ used ONLY for data definition (properties).
     \ if it has not been defined, allocate a bit in a 1024-bit bitfield.
@@ -126,17 +128,25 @@ trait: object
     \ apply trait to class without adding to id-table.
     \ adds protocols and maps properties from the trait for transparent interoperability.
     \ IS? will return 0 (class does not identify as the trait).
+    \ CAN? will return -1 (class has the capability).
     \ used for capabilities/interfaces the class supports but doesn't inherit identity from.
 
 : is? ( object classifier - b )
-    \ check object for class or trait.
+    \ check object for class or trait identity (inheritance).
+    
+: can? ( object|class classifier|protocol-xt - bool )
+    \ check if object/class has capability (trait or protocol support).
+    \ similar to IS? but checks capabilities rather than identity.
+    \ accepts either traits or protocol XTs as second parameter.
 
 : derive ( class - )
     \ copy the given class (statics and defaults template) to the current class.
     \ if given item is any other data type, throw an error.
     
-: :: ( classifier <name> - ) ( ... object - ... )
+: :: ( [classifier] <name> - ) ( ... object - ... )
     \ unified protocol definition and implementation.
+    \ classifier parameter optional when inside trait:/class: blocks.
+    \ uses current classifier context when classifier omitted.
     \ when used with a trait, creates protocol if it doesn't exist.
     \ when used with a class, implements/overrides the protocol.
     \ stateless - can be used anywhere, not just in classifier blocks.
@@ -148,6 +158,24 @@ trait: object
     \ define post-derive behavior for given class.
     \ stateless - always defined outside class blocks.
     \ executed after DERIVE copies structure and members.
+
+\ Protocol System Safety Features
+\ --------------------------------
+
+Protocol Conflict Protection:
+    Traits cannot override protocol implementations from other traits.
+    System detects conflicts and aborts with descriptive error messages.
+    Classes can still override any trait protocol implementations.
+
+Protocol Propagation:
+    Protocols added to traits automatically propagate to dependent classes.
+    Enables hot-reload protocol extension during development.
+    Only propagates when class doesn't have conflicting implementation.
+
+Field-Space Protection:
+    Properties cannot be added to reopened classifiers without field-space.
+    Prevents memory layout corruption from unsafe property addition.
+    Use FIELD-SPACE to enable safe property addition in reopened classes.
     
 : sizeof ( class|object - n )
     \ smart size query supporting both objects and classes
@@ -194,10 +222,10 @@ class;
     2dup item-size ! max-items !
     align here items ! * allot&erase ;
 
-2 stack constructor: ( max-count item-size - )
+2 stack :construct ( max-count item-size - )
     /stack ;
 
-2 array constructor: ( max-count item-size - )
+2 array :construct ( max-count item-size - )
     /stack max-items @ item-count ! ;
 
 : #items ( collection - n )
