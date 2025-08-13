@@ -1,4 +1,17 @@
 2025/08/11
+[ ] Modify VFX Forth locals parser to handle buf[ ] patterns correctly.
+    Currently creates locals named `buf[` instead of `buf`, making code less readable.
+
+[ ] Make use of :DERIVE to replace ACTOR-CLASS and :EVENT.
+    Use on-derive hooks to automatically set up actor and event-specific behavior
+    without special syntax.
+    [ ] Replace ACTOR-CLASS with standard class: syntax plus :DERIVE hook
+    [ ] Replace :EVENT with standard class: syntax plus :DERIVE hook
+
+[ ] Experimentally write a static asset analyzer.
+    Implement bracket notation dependency discovery for automatic asset loading.
+    Think through implications for interactive development and error reporting.
+
 [ ] Add bracket matching validation for object binding operators `[[ ]]`.
     Check for missing opening or closing double brackets.
 
