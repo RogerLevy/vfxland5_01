@@ -554,7 +554,6 @@ debug @ [if]
 
 || : :protocol ( protocolname-a protocolname-len classname-a classname-len - xt )
     f" : %s:%s" 2dup upper
-    \ 2dup type cr
     evaluate
     state on
     here ; 
@@ -568,7 +567,7 @@ debug @ [if]
         :protocol ( xt ) c offset @ + !
     ]] ;
     
-: (protocol:) ( trait <name> - ) ( ... object - ... )
+: define-protocol ( trait <name> - ) ( ... object - ... )
     {: trait0 | class0 protocol0 buf[ 256 ] :}
     bl preparse buf[ place
     _protocol already? if
@@ -603,7 +602,7 @@ debug @ [if]
 : :: ( classifier <protocol> - )
     {: c | protocol0 :}
     \ classifier abort" :: >> Can only define a protocol outside of a classifier definition."
-    c >cla @ _trait = if c (protocol:) exit then
+    c >cla @ _trait = if c define-protocol exit then
     c >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0

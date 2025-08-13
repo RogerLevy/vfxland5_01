@@ -1,5 +1,5 @@
 2025/08/11
-[ ] (NIBS) Update compact class syntax parser
+[x] (NIBS) Update compact class syntax parser
     Every classifier token has distinguishing syntax now:
     %class - derive a class
     +trait - add a trait 

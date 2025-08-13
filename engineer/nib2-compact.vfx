@@ -1,3 +1,8 @@
+\ Compact class syntax parser for NIBS
+\ Claude gets confused by files that use this, so there's an automatic 
+\ Python script to perform expansion, but it's still useful for quick
+\ experiments and stuff that I don't need help from Claude with.
+
 : number? ( a len - f )
     isnumber? case
         1 of drop -1 exit endof
@@ -21,14 +26,20 @@
     
 : eval  bl parse evaluate ;
 : consume  bl parse 2drop ;
-: pre-xt  preword find 0<> and ;
-: @size preword size? if eval else cell then ;
+: pre-xt  preword count 1 /string >pad find 0<> and ;
+: @size  preword size? if eval else cell then ;
 : comment?  preword 1 + c@ dup '\' = swap '(' = or ;
 : eol?  preword c@ 0= ;
 : ?term preword 1 + c@ ';' = dup if consume then ;
 
 : *property ( - )
-    bl parse
+    bl parse 2dup
+    >pad find if
+        >body valid-classifier? if
+            >pad count fe" '%s' is a classifier name. Use %%class, +trait, or \"trait\" syntax."
+            -1 -rot .abort
+        then
+    else drop then
     @size
     f" %n nproperty %s" evaluate ;
 
@@ -37,28 +48,38 @@
     's cla @ _class = ;
 
 : ?class ( - f ) 
-    pre-xt dup -exit
-    >body dup is-class? if derive -1 consume else drop 0 then ;
+    preword 1 + c@ '%' <> if 0 exit then
+    pre-xt dup 0= if consume -1 abort" Token not found." then
+    >body dup is-class? not if
+        consume -1 abort" Token preceded by % must be a class."
+    then
+    derive -1 consume ;
 
 : "trait" ( $ - a len )
     {: $ :}
     $ 2 + $ count nip 2 - ;
 
-: ?"trait" ( - f )
-    preword "word"? if
-        bl word "trait" >pad find 0<> and ?dup -exit
-        >body classifier 0 apply-trait
-        -1
-    else 0 then ;
-    
 : is-trait? ( ? - f )
     dup valid-object? not if drop 0 exit then
     's cla @ _trait = ;
+    
+: ?"trait" ( - f )
+    preword "word"? if
+        bl word "trait" >pad find
+        0= if consume -1 abort" Token not found." then
+        >body dup is-trait? not abort" Token surrounded by quotes must be a trait." 
+        ( trait ) classifier 0 apply-trait
+        -1
+    else 0 then ;
 
 : ?trait ( - f ) 
     ?"trait" ?dup ?exit
-    pre-xt dup -exit
-    >body dup is-trait? if classifier -1 apply-trait -1 consume else drop 0 then ;
+    preword 1 + c@ '+' <> if 0 exit then
+    pre-xt dup 0= if consume -1 abort" Token not found." then
+    >body dup is-trait? not if
+        consume -1 abort" Token preceded by + must be a trait."
+    then
+    classifier -1 apply-trait consume -1 ;
     
 : ?comment
     comment? abort" Comments not allowed in compact class definitions."  ;
@@ -94,17 +115,13 @@
     repeat
     class; ;
 
-
 \\
+\ Test:
 
 trait: thinker trait;
-
+trait: _lifo trait;
 512 constant /actor
 
 c: thingy ;
-c: actor  /actor  thingy  "thinker"
+c: actor  /actor  %thingy  +_lifo  "thinker"
     en buf 256 x y vx vy ;
-
-class: no-parse
-    prop x
-class;

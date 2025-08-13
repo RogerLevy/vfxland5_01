@@ -293,7 +293,7 @@ aka .> p>s
 \ Timer actors
 \ =============================================================================
 
-c: timer actor xt1 dur ;
+c: timer %actor xt1 dur ;
 
 timer :: describe
     me info dur p? ;
