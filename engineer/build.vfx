@@ -2,7 +2,6 @@
 \ GetForegroundWindow 0 -10 0  1920 2 / 20 +  520 $40 SetWindowPos drop
 
 +xrefs 256 1024 * xref-kb
-optimising off
 include %idir%/file-fix.vfx
 include %idir%/engineer.vfx
 

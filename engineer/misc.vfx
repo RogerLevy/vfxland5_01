@@ -22,7 +22,7 @@ aka cd cwd
 : >lower ( c -- c' ) dup 65 91 within if 32 + then ;
 : ltype for dup c@ >lower emit 1 + loop drop ;  
 
-include %idir%\..\textmode\textmode-tools.vfx
+include %idir%/../textmode/textmode-tools.vfx
 
 : .name ( xt - )
     \ Smart name print
