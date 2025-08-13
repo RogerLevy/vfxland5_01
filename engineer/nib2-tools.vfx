@@ -77,6 +77,22 @@
     
     found-items 0= if ."        (no traits applied)" cr then ;
 
+|| : .class-protocols ( class - )
+    \ Print all protocols of a class
+    dup valid-class? not abort" Not a valid class."
+    
+    to target-class
+    cr ."     Protocols of " target-class body> >name count type ." :" cr
+    
+    0 to found-items
+    target-class -> protocol-list dup list-count for
+        @next body> >name count
+        ."        - " type cr
+        1 +to found-items
+    loop drop
+    
+    found-items 0= if ."        (no protocols implemented)" cr then ;
+
 : .class ( class - )
     \ Print detailed information about a class
     [[
@@ -90,10 +106,11 @@
         instance-size @ next-ofs @ - ?dup if ."  ("  . ." remaining)" then cr
     ."     Classifier #: " classifier# @ . cr
     ."     Properties: " property-list list-count . cr
-    \ ."     Protocols: " protocol-list list-count . cr
+    ."     Protocols: " protocol-list list-count . cr
     ."     Dependents: " dependents list-count . cr
     
     me .class-traits
+    me .class-protocols
     me .class-parents
     ]] ;
 
