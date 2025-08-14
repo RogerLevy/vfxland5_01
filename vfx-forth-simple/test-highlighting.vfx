@@ -1,0 +1,11 @@
+\ Test file for debugging highlighting issues
+
+class: test-class
+class;
+
+file-asset :: refresh ( - )
+    here data ! ;
+
+variable: my-var
+constant: my-const
+my-word;

@@ -229,7 +229,7 @@
         },
         {
           "name": "keyword.other.defining.vfx-forth",
-          "begin": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|::|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|class;|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct|prop|nprop)(?=\\s)",
+          "begin": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct|prop|nprop)(?=\\s)",
           "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
           "beginCaptures": {
             "1": {
@@ -245,7 +245,7 @@
         },
         {
           "name": "keyword.other.defining.vfx-forth",
-          "begin": "(?<=\\s|^)([^\\s]+:)(?=\\s)",
+          "begin": "(?<=\\s|^)([^\\s]+:)(?=\\s)(?!\\s*::)",
           "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
           "beginCaptures": {
             "1": {
@@ -273,7 +273,7 @@
       "patterns": [
         {
           "name": "keyword.other.defining.vfx-forth",
-          "match": "(?<=\\s|^)[^\\s]*[:;][^\\s]*(?=\\s|$)"
+          "match": "(?<=\\s|^)[^\\s]*;(?=\\s|$)"
         }
       ]
     },
@@ -281,7 +281,7 @@
       "patterns": [
         {
           "name": "keyword.other.defining.vfx-forth",
-          "match": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|::|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|class;|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct|prop|nprop|property|nproperty)(?=\\s|$)"
+          "match": "(?<=\\s|^)(variable|2variable|create|does>|synonym|value|fvalue|2value|constant|fconstant|2constant|var|svar|static|rolevar|struct|:make|objlist|m:|el:|assetdef|defer|vocabulary|define|field|sfield|rolefield|\\+user|user|begin-structure|fconstant|farray|fvariable|2constant|field:|cfield:|\\+field|buffer:|alias:|synonym|aka|class:|;code|code|end-structure|end-union|part|union|end-variant|variant|end-subrecord|subrecord|array-of|int|field|end-struct|struct|prop|nprop|property|nproperty)(?=\\s|$)"
         }
       ]
     },
