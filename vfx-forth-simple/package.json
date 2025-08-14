@@ -25,10 +25,15 @@
         "scopeName": "source.vfx-forth-simple",
         "path": "./syntaxes/vfx-forth-simple.tmLanguage.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[vfx-forth-simple]": {
+        "editor.autoClosingBrackets": "never",
+        "editor.autoClosingQuotes": "never"
+      }
+    }
   },
   "files.associations": {
       "*.vfx": "vfx-forth-simple"
-  }  
-
+  }
 }

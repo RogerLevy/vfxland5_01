@@ -4,10 +4,6 @@
     "lineComment": "\\"
   },
   "brackets": [],
-  "autoClosingPairs": [
-    ["\"", "\""]
-  ],
-  "surroundingPairs": [
-    ["\"", "\""]
-  ]
+  "autoClosingPairs": [],
+  "surroundingPairs": []
 }

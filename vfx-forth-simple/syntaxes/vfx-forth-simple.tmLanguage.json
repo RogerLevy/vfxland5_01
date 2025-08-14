@@ -70,13 +70,7 @@
               "name": "keyword.other.string.vfx-forth"
             }
           },
-          "contentName": "string.quoted.double.vfx-forth",
-          "patterns": [
-            {
-              "name": "constant.character.escape.vfx-forth",
-              "match": "\\\\."
-            }
-          ]
+          "contentName": "string.quoted.double.vfx-forth"
         }
       ]
     },
@@ -295,7 +289,7 @@
       "patterns": [
         {
           "name": "support.function.vfx-forth",
-          "match": "(?<=\\s|^)(dup|drop|swap|rot|over|nip|tuck|pick|roll|2dup|2drop|2swap|2over|2rot|3dup|3drop|>r|r>|r@|2>r|2r>|2r@|@|!|c@|c!|w@|w!|2@|2!|\\+!|c\\+!|w\\+!|\\+|-|\\*|/|mod|/mod|\\*/|\\*/mod|1\\+|1-|2\\+|2-|2\\*|2/|4\\+|4-|4\\*|4/|abs|negate|min|max|umin|umax|=|<>|<|>|<=|>=|0=|0<>|0<|0>|u<|u>|u<=|u>=|within|and|or|xor|not|invert|lshift|rshift|emit|key|type|cr|space|spaces|\\.|u\\.|\\.r|u\\.r|\\?|dump|words|see|here|allot|,|c,|w,|align|aligned|count|move|fill|blank|erase|compare|search|char|\\[char\\]|postpone|to|ascii)(?=\\s|$)"
+          "match": "(?<=\\s|^)(dup|drop|swap|rot|over|nip|tuck|pick|roll|2dup|2drop|2swap|2over|2rot|3dup|3drop|>r|r>|r@|2>r|2r>|2r@|@|!|c@|c!|w@|w!|2@|2!|\\+!|c\\+!|w\\+!|\\+|-|\\*|/|mod|/mod|\\*/|\\*/mod|1\\+|1-|2\\+|2-|2\\*|2/|4\\+|4-|4\\*|4/|abs|negate|min|max|umin|umax|=|<>|<|>|<=|>=|0=|0<>|0<|0>|u<|u>|u<=|u>=|within|and|or|xor|not|invert|lshift|rshift|emit|key|type|cr|space|spaces|\\.|u\\.|\\.r|u\\.r|\\?|dump|words|see|here|allot|,|c,|w,|align|aligned|count|move|fill|blank|erase|compare|search|char|\\[char\\]|postpone|to|ascii|cells|cell\\/|pad|cell\\+|allot\\&erase|i|\\[|\\])(?=\\s|$)"
         }
       ]
     },
@@ -303,7 +297,7 @@
       "patterns": [
         {
           "name": "support.function.vfx-forth",
-          "match": "(?<=\\s|^)(dup|drop|swap|rot|over|nip|tuck|pick|roll|2dup|2drop|2swap|2over|2rot|3dup|3drop|>r|r>|r@|2>r|2r>|2r@|@|!|c@|c!|w@|w!|2@|2!|\\+!|c\\+!|w\\+!|\\+|-|\\*|/|mod|/mod|\\*/|\\*/mod|1\\+|1-|2\\+|2-|2\\*|2/|4\\+|4-|4\\*|4/|abs|negate|min|max|umin|umax|=|<>|<|>|<=|>=|0=|0<>|0<|0>|u<|u>|u<=|u>=|within|and|or|xor|not|invert|lshift|rshift|emit|key|type|cr|space|spaces|\\.|u\\.|\\.r|u\\.r|\\?|dump|words|see|here|allot|,|c,|w,|align|aligned|count|move|fill|blank|erase|compare|search|char|\\[char\\]|postpone|to|ascii)(?=\\s|$)"
+          "match": "(?<=\\s|^)(dup|drop|swap|rot|over|nip|tuck|pick|roll|2dup|2drop|2swap|2over|2rot|3dup|3drop|>r|r>|r@|2>r|2r>|2r@|@|!|c@|c!|w@|w!|2@|2!|\\+!|c\\+!|w\\+!|\\+|-|\\*|/|mod|/mod|\\*/|\\*/mod|1\\+|1-|2\\+|2-|2\\*|2/|4\\+|4-|4\\*|4/|abs|negate|min|max|umin|umax|=|<>|<|>|<=|>=|0=|0<>|0<|0>|u<|u>|u<=|u>=|within|and|or|xor|not|invert|lshift|rshift|emit|key|type|cr|space|spaces|\\.|u\\.|\\.r|u\\.r|\\?|dump|words|see|here|allot|,|c,|w,|align|aligned|count|move|fill|blank|erase|compare|search|char|\\[char\\]|postpone|to|asciicells|cell\\/|pad|cell\\+|allot\\&erase|i|\\[|\\])(?=\\s|$)"
         }
       ]
     },
@@ -311,7 +305,7 @@
       "patterns": [
         {
           "name": "keyword.control.vfx-forth",
-          "match": "(?<=\\s|^)(if|then|else|endif|begin|again|until|while|repeat|do|loop|\\+loop|\\?do|leave|unloop|exit|case|of|endof|endcase|try|catch|throw|abort|abort\"|recurse|\\[if\\]|\\[then\\]|\\[else\\]|\\[endif\\]|\\[defined\\]|\\[undefined\\]|bounds|perform|execute)(?=\\s|$)"
+          "match": "(?<=\\s|^)(if|then|else|endif|begin|again|until|while|repeat|do|for|loop|\\+loop|\\?do|leave|unloop|exit|case|of|endof|endcase|try|catch|throw|abort|abort\"|recurse|\\[if\\]|\\[then\\]|\\[else\\]|\\[endif\\]|\\[defined\\]|\\[undefined\\]|perform|execute|\\?exit|\\-exit)(?=\\s|$)"
         }
       ]
     },
