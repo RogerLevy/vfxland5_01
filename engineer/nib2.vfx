@@ -541,12 +541,6 @@ create _protocol  _class make [[
 : add-protocol ( protocol trait - )
     -> protocol-list add-to ;
 
-: protocol-in-list? ( protocol classifier - bool )
-    {: protocol0 c :}
-    c -> protocol-list dup list-count for
-        @next protocol0 = if -1 unloop exit then
-    loop drop 0 ;
-
 \ : OEXEC
 \ Execute bound XT with error-handling.
 debug @ [if]
@@ -641,12 +635,7 @@ debug @ [if]
     >body to protocol0
     protocol0 >cla @ _protocol <> abort" :: >> Word is not a protocol!"
     protocol0 c supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
-    protocol0 c implement-protocol 
-    
-    \ Add protocol to class's protocol-list for introspection if not already there
-    protocol0 c protocol-in-list? not if
-        protocol0 c add-protocol
-    then ;
+    protocol0 c implement-protocol ;
 
 : stub ( - )
     -1 r> >name count f" %s >> Not implemented" .abort ;
