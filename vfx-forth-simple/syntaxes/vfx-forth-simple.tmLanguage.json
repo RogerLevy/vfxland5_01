@@ -209,6 +209,24 @@
       "patterns": [
         {
           "name": "keyword.other.defining.vfx-forth",
+          "begin": "(?<=\\s|^)([^\\s]+)\\s+(::)\\s+",
+          "end": "([^\\s]+)(?=\\s|$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            },
+            "2": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          }
+        },
+        {
+          "name": "keyword.other.defining.vfx-forth",
           "match": "(?<=\\s|^):noname(?=\\s|$)"
         },
         {

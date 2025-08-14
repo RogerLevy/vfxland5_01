@@ -9,3 +9,7 @@ file-asset :: refresh ( - )
 variable: my-var
 constant: my-const
 my-word;
+
+\ Test the new word :: word pattern
+test-class :: method-name ( - )
+    ." hello" ;
