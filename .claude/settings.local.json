@@ -40,7 +40,8 @@
       "Bash(sudo dpkg:*)",
       "Bash(sudo apt:*)",
       "Bash(apt search:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebSearch"
     ],
     "deny": []
   }
