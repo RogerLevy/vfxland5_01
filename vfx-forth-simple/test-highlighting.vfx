@@ -13,3 +13,10 @@ my-word;
 \ Test the new word :: word pattern
 test-class :: method-name ( - )
     ." hello" ;
+
+\ Test :construct and :derive patterns
+2 test-class :construct ( a b - )
+    swap ! ;
+
+test-class :derive ( - )
+    me init ;

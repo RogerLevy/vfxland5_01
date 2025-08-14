@@ -209,6 +209,21 @@
       "patterns": [
         {
           "name": "keyword.other.defining.vfx-forth",
+          "match": "(?<=\\s|^)(\\d+\\s+)?(\\S+)\\s+(:construct|:derive)(?=\\s)",
+          "captures": {
+            "1": {
+              "name": "constant.numeric.integer.vfx-forth"
+            },
+            "2": {
+              "name": "keyword.other.defining.vfx-forth"
+            },
+            "3": {
+              "name": "keyword.other.defining.vfx-forth"
+            }
+          }
+        },
+        {
+          "name": "keyword.other.defining.vfx-forth",
           "begin": "(?<=\\s|^)([^\\s]+)\\s+(::)\\s+",
           "end": "([^\\s]+)(?=\\s|$)",
           "beginCaptures": {
@@ -263,7 +278,7 @@
         },
         {
           "name": "keyword.other.defining.vfx-forth",
-          "begin": "(?<=\\s|^)([^\\s]+:)(?=\\s)(?!\\s*::)",
+          "begin": "(?<=\\s|^)([^\\s]+:)(?=\\s)(?!\\s*::)(?!\\s*construct)(?!\\s*derive)",
           "end": "(?<=\\s)([^\\s]+)(?=\\s|$)",
           "beginCaptures": {
             "1": {
