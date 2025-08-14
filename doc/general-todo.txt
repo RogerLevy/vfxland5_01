@@ -1,4 +1,20 @@
+2025/08/14
+[ ] (NIBS) Implement trait inheritance
+    Enable traits to derive from other traits using single inheritance.
+    Supports cleaner separation of abstract concepts from concrete implementations.
+    See doc/trait-inheritance-spec.md for full specification.
+    [ ] Add trait derivation syntax and compiler support
+    [ ] Runtime lineage validation for explicit parent calls (safety feature)
+
 2025/08/11
+[ ] Idea: Enhance :: to create psuedo-methods when the protocol doesn't exist.
+    The purpose would be to make method-writing transparent.
+    No more AS> or [[ ]] all the time.
+    This would make things easier for both me and Claude.
+    Ask Claude if this is a good idea or not.
+    They would be plain functions.  Unless it would be better to make them 
+    use the protocol system.  (But we'd run out of static space faster.)
+
 [x] (NIBS) Update compact class syntax parser
     Every classifier token has distinguishing syntax now:
     %class - derive a class
