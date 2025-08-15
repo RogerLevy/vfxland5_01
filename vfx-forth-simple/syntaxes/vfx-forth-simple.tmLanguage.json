@@ -340,7 +340,7 @@
     "colon-words": {
       "patterns": [
         {
-          "name": "invalid.illegal.vfx-forth",
+          "name": "keyword.other.colon-word.vfx-forth",
           "match": "(?<=\\s|^):[^\\s]+(?=\\s|$)"
         }
       ]

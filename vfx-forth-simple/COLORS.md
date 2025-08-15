@@ -107,6 +107,12 @@ You can customize the colors for VFX Forth syntax highlighting in two ways:
             "foreground": "#999999",
             "fontStyle": "italic"
           }
+        },
+        {
+          "scope": "keyword.other.colon-word.vfx-forth",
+          "settings": {
+            "foreground": "#FF6666"
+          }
         }
       ]
     }
@@ -123,9 +129,10 @@ You can customize the colors for VFX Forth syntax highlighting in two ways:
 
 Based on your Komodo editor screenshot, here's the exact color mapping:
 
-- **Red** (`#FF6666`): Defining words and flow control
+- **Red** (`#FF6666`): Defining words, flow control, and colon words
   - `keyword.other.defining.vfx-forth` - words like `:`, `variable`, `create`, `class:`
   - `keyword.control.vfx-forth` - words like `if`, `then`, `loop`, `begin`
+  - `keyword.other.colon-word.vfx-forth` - patterns like `:method`, `:construct`, `:derive`
 
 - **Cyan** (`#66DDDD`): Core Forth/VFX words and parsing words
   - `support.function.vfx-forth` - words like `dup`, `swap`, `2>r`, `@`, `!`
