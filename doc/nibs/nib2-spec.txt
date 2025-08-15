@@ -56,12 +56,14 @@ trait: object
     \ define an instance accessor (any size) and offset calculator (>NAME).
     \ dynamic offset resolution (uses a static to store the offset, 0 = invalid).
     \ supports hot-reload safety - detects size changes and aborts with clear error.
+    \ supports serialization metadata via <save, <int, <fixed, <float, <cstring.
     \ always public.
     
 : property ( <name> - ) ( - field ) ( object - field )
     \ define an instance accessor (cell) and offset calculator (>NAME).
     \ convenience word equivalent to "CELL NPROPERTY".
     \ dynamic offset resolution (uses a static to store the offset, 0 = invalid).
+    \ supports serialization metadata via <save, <int, <fixed, <float, <cstring.
     \ always public.
     
 : static ( <name> - ) ( - field ) ( class - field )
@@ -351,6 +353,43 @@ conversation notes
   development.
 
   The bigger risk might be Claude overthinking simple cases where basic classes would suffice.
+
+\ Serialization System
+\ --------------------
+
+Property-level serialization with metadata-driven binary format generation:
+
+: <save
+    \ mark current property for serialization
+    \ applies to property being defined
+    
+: <int, <fixed, <float, <cstring
+    \ set property data type for serialization
+    \ used with <save to generate typed binary output
+    
+example:
+    class: actor
+        prop x <int <save
+        prop y <int <save  
+        256 nprop name <cstring <save
+        prop health <int <save
+        prop temp <int  \ not serialized
+    class;
+
+: serbin ( obj - )
+    \ serialize object to compact self-describing binary format
+    \ includes class name and property names for forward compatibility
+    
+: deserbin ( data allocator-xt - obj )
+    \ deserialize binary data with custom object allocator
+    \ validates class and property names during loading
+    
+: readbin ( data callback-xt - )
+    \ inspect serialized data without instantiation
+    \ callback receives member objects (classes and properties)
+    
+: .bin ( data - )
+    \ display serialized data in human-readable format for debugging
 
 
 ● | Data Structure | field | property | static | protocol: | Notes                              |

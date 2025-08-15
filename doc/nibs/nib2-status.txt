@@ -269,6 +269,14 @@ CURRENT STATUS SUMMARY
 
 Overall Completion: ~99%
 
+Serialization System: [x] COMPLETE
+- Property-level serialization metadata (<save, <int, <fixed, <float, <cstring)
+- Binary serialization with self-describing format (serbin)
+- Binary deserialization with custom allocators (deserbin)
+- Data inspection without instantiation (readbin, .bin)
+- Type-safe serialization via dispatch tables
+- Hot-reload compatible metadata application
+
 Core systems working:
 - Object runtime and scoping  
 - Property-based field system with conflict handling
@@ -398,3 +406,12 @@ RECENT MAJOR UPDATES (Aug 2025):
    - Actor system migration to Nib 2.0 in progress
    - Field-space usage for safe property extension
    - Integration with existing memory pool architecture
+
+7. Serialization System (2025-08-15):
+   - Property-level serialization metadata system
+   - Declarative property configuration with <save, <int, <fixed, <float, <cstring
+   - Self-describing binary format with class and property names
+   - Type-safe serialization via dispatch tables
+   - Binary inspection tools for debugging serialized data
+   - Hot-reload compatible current-property tracking
+   - Comprehensive test suite demonstrating mixed property types
