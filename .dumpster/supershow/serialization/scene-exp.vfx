@@ -1,0 +1,73 @@
+\ : print-properties ( - )
+\     cla @ protocol-list dup list-count for
+\         @next dup print
+\         -> offset @ me + @ .
+\     loop drop ;
+
+
+actor :: print ( - )
+    cla @ .name [print] id [print] x [print] y [print] prio ;
+
+turret :: print ( - )
+    actor:print ." [attach] " [print] aim ;
+
+vessel is-a printable
+
+vessel :: print ( - ) 
+    [print] m [print] r [print] hp ;
+
+enemies :: print ( - )
+    actor:print vessel:print ;
+
+: print-actors ( - )
+    actives>
+        ." one: " me print ." ; " cr ;
+
+: [attach] ( <id> - )
+    \ attach to object of given id
+    \ in Darkblue this sets the new object's OWNER property
+    ;
+
+class: _scene-parser
+    is-a parser
+class;
+
+_scene-parser :: ?term ( - f )
+
+_scene-parser :: token ( - )
+
+_scene-parser object scene-parser
+
+
+
+
+: :one ( <data>; - ) 
+    \ parse serialized instance
+    \ if a class isn't found, it is loaded
+    \ if there's an error, it logs it and continues
+    0 parse scene-parser tokenize ;
+
+\ example output - would be written to a file
+\ for now the game would just load these directly
+\ but for speed the files should be embedded into the executable
+
+:one ship id 0 x 100. y 150. prio 0 ;
+:one [attach] 0 turret id 1 x 130. y 180. prio 0 aim 45. ;
+:one enemy1 id 2 x 22. y 22. prio 0 m 5. r 10. hp 100 ;
+
+\ a scene editor would not be able to edit the cached version directly.
+\ regardless of the source of the scene data, it must be instantiated to 
+\ the stage, edited there, and then saved to a scene file.  
+\ thereupon, to see the change in the game, the scene file asset has to be
+\ refreshed.
+
+class: scene 
+    forth-asset derive
+class;
+
+scene :: save ( - )
+    s[ print-actors s] *wstring data ! 
+    data @ wcount srcpath count write ;
+
+2 scene :construct ( srcpath len - )
+    srcpath place  me refresh ;

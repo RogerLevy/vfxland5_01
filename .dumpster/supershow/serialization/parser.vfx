@@ -1,0 +1,53 @@
+\ WIP
+
+trait: parser
+trait;
+
+: consume  bl word drop ;
+: eol? ( - f ) preword c@ 0= ;
+
+parser :: invoke-dsl ( - ) ;
+parser :: on-start ( - ) ;
+parser :: on-finish ( - ) ;
+parser :: on-error ( err - ) throw ; \ handle errors
+
+parser :: token ( - )
+    \ process next token
+    bl parse type space ;
+
+parser :: ?term ( - f )              
+    \ check for terminator, consume if found
+    \ by default, just check for end of input
+    preword 0= ?dup if consume then ;
+
+parser :: next-line ( - ) 
+    refill ;
+
+: (tokenize) ( - )
+    begin 
+        me ?term not while 
+        me token 
+        eol? if me next-line then
+    repeat ;
+
+parser :: tokenize ( a len - )
+    push-order
+    me invoke-dsl
+
+    \ save-input n>r
+    \ to-source
+    \ -1 to source-id
+    \ 0 >in !
+    \ 0 'SourceFile !
+    \ me on-start
+    \ ['] (tokenize) catch me on-error
+    \ me on-finish
+    \ nr> restore-input 
+    
+    pop-order ;
+
+\\
+
+_class-parser :: next-line ( - )
+    parser:next-line
+    eol? abort" Blank line encountered; check for missing semicolon." ;
