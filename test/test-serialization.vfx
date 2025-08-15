@@ -1,0 +1,64 @@
+\ Test serialization system
+
+class: test-actor
+    prop x <int <save
+    prop y <int <save
+    256 nprop name <cstring <save
+    prop health <int <save
+    prop score <fixed <save
+    prop temp <int  \ not saved
+class;
+
+\ Create test object
+test-actor object test-obj
+
+\ Set some values
+test-obj [[
+    100 x !
+    200 y !
+    s" Hero" name place
+    85 health !
+    1250. score !
+    999 temp !
+]]
+
+\ Test serialization
+cr ." Testing serialization..." cr
+
+cr ." Original object:" cr
+test-obj [[ 
+    ." X: " x @ . cr
+    ." Y: " y @ . cr  
+    ." Name: " name count type cr
+    ." Health: " health @ . cr
+    ." Score: " score @ p. cr
+    ." Temp: " temp @ . cr
+]]
+
+\ Serialize
+create result here test-obj serbin here swap - 
+cr ." Serialized " . ." bytes" cr
+
+\ Inspect the data
+cr ." Serialized data: " cr
+result ' inspect-member readbin
+
+\ Create allocator for testing
+: test-allocator ( len - a ) allocate throw ;
+
+\ Deserialize 
+result ' test-allocator deserbin
+
+cr ." Deserialized object:" cr
+test-obj [[ 
+    ." X: " x @ . cr
+    ." Y: " y @ . cr  
+    ." Name: " name count type cr
+    ." Health: " health @ . cr
+    ." Score: " score @ p. cr
+    ." Temp: " temp @ . cr
+]]
+
+
+
+cr ." Test complete." cr

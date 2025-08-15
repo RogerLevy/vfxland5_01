@@ -1,3 +1,9 @@
+2025/08/15
+[x] (NIBS) Implement serialization support
+    Add property-level serialization metadata and format-agnostic serialization system.
+    Properties declare their serialization metadata (type, save flag) and global serializers
+    walk properties to generate binary, XML, or other formats automatically.
+
 2025/08/14
 [ ] (NIBS) Implement trait inheritance
     Enable traits to derive from other traits using single inheritance.

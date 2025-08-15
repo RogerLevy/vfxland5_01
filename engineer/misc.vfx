@@ -79,13 +79,15 @@ include %idir%/../textmode/textmode-tools.vfx
     >r r@ file-size abort" Get file size error" drop
     r> file-position abort" Get file position error" drop
     - ;
-: file, ( a n - )
+: file, ( fn len - )
     expand
     r/o open-file drop | #1 |
     here 
     #1 bytes-left allot
     #1 bytes-left #1 read-file 2drop
     #1 close-file drop 0 , ;
+: filesize ( fn len - n )
+    r/o open-file throw dup file-size throw swap close-file throw ;
 : parse  parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
@@ -139,7 +141,7 @@ variable saved-dp
 : clamp >r max r> min ;
 : umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
 
-aka se" s\"
+aka se" s\"        \ " \ syntax highlight guard
 
 0 value #1
 : file[ w/o create-file throw to #1 ;
@@ -278,3 +280,17 @@ debug @ [if]
 [then]
 
 : toggle dup @ 0= swap ! ;
+: udup  over swap ;
+
+variable old-dp
+: temp[  here old-dp ! ;
+: temp]  old-dp @ here over -  old-dp @ dp ! ;
+
+: file@ ( fn len - a len ) 
+    \ returns allocated memory that has to be freed
+    2dup filesize allocate throw >r
+    r@ 999999999 2swap read 
+    r> ;
+
+: $@+ ( a - a' str len ) count 2dup + -rot ;
+: $, ( a len - ) dup >r    here place    r> 1 + allot ;
