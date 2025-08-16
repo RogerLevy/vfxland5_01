@@ -44,13 +44,17 @@ cr ." Serialized data: " cr
 result ' inspect-member readbin
 
 \ Create allocator for testing
-: test-allocator ( len - a ) allocate throw ;
+: test-instantiator ( class - object ) 
+    {: c :}
+    here c sizeof allot&erase 
+    c over cla-offset + ! ;
 
 \ Deserialize 
-result ' test-allocator deserbin
+create back-obj
+result ' test-instantiator deserbin drop
 
 cr ." Deserialized object:" cr
-test-obj [[ 
+back-obj [[ 
     ." X: " x @ . cr
     ." Y: " y @ . cr  
     ." Name: " name count type cr
