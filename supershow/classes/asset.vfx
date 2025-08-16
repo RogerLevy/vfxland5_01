@@ -1,0 +1,13 @@
+
+trait: asset
+    static registry         \ iterable for managing assets of the asset class
+    256 nprop srcpath
+trait;
+
+asset :: refresh ( - ) ;    \ disk -> asset
+asset :: store ( - ) ;      \ asset -> disk
+asset :: load ( - ) ;       \ disk/asset -> asset/game
+\ asset :: unload ( - ) ;     \ free runtime resources, deactivate
+asset :: use ( - ) ;        \ select/bind asset for operations
+asset :: on-startup ( - ) ; \ initialize at startup; disk -> asset [-> game]
+

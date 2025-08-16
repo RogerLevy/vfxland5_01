@@ -14,23 +14,23 @@ create bg-buf  /char-buf cells allot&erase
 \ Rendering a multiline string
 \ ----------------------------
 
-0 value >row  \ row offset
-0 value >cbuf \ char-buf offset
-0 value c     \ char
-0 value fgc   
-0 value bgc
-0 value skip
+|| 0 value >row  \ row offset
+|| 0 value >cbuf \ char-buf offset
+|| 0 value c     \ char
+|| 0 value fgc   
+|| 0 value bgc
+|| 0 value skip
 
-: write ( n - )
+|| : write ( n - )
     char-buf >cbuf + c!  
     fgc fg-buf >cbuf cells + !
     bgc bg-buf >cbuf cells + !
     1 +to >cbuf ;
 
-: >rgb ( n - n )
+|| : >rgb ( n - n )
     cells vga13h + @ 8 lshift $ff or ;
 
-: @attr
+|| : @attr
     attr @ dup $ff and >rgb to fgc
     8 rshift $ff and >rgb to bgc ;
 

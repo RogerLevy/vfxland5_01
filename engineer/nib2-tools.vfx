@@ -128,7 +128,15 @@
     cr
     ;
     
-    
-
-\ Example usage:
-\ ship% .class
+: ?object ( class <name> - obj )
+    {: class0 | obj0 :} 
+    preword find if 
+        >body to obj0 
+        obj0 -> cla @ class0 = if
+            bl word drop
+            obj0 exit
+        then
+    else
+        drop
+    then 
+    create class0 make ;

@@ -18,17 +18,18 @@ class: actor
     is-a thinker
     /actor field-space
     prop en
-    prop x prop y
+    prop x <fixed <save
+    prop y <fixed <save
     prop vx prop vy
-    prop bmp
+    prop bmp 
     prop x1 prop y1 prop w1 prop h1 \ hitbox 1
     prop beha
     prop time                       \ ms
     prop n1 prop n2 prop n3 prop n4 \ General purpose props
     prop phys
-    prop prio                       \ 0 = behind BG, <>0 = in front of BG
+    prop prio <int <save            \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
-    prop id
+    prop id <int <save
 
     defaults [[ -1 id ! ]]
 class;

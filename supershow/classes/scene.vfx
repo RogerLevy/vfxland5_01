@@ -1,0 +1,37 @@
+\ Scene asset - stored collection of actors
+
+class: scene
+    is-a asset
+class;
+
+: ser-stage ( - ) 
+    actives> me serbin ;
+
+\ : scene-instantiator ( class - obj ) 
+\    one ;
+
+: deser-actor ( a - a' )
+    ['] one deserbin ;
+
+scene :: store ( - )
+    \ serialize actors to disk
+    me -> srcpath c@ -exit
+    temp[ ser-stage temp] me -> srcpath count write ;
+
+scene :: load ( - )
+    \ deserialize from disk
+    {: | end :} 
+    me -> srcpath c@ -exit
+    me -> srcpath count ['] file@ catch abort" File read error"
+    ( a len ) over >r 
+    over + to end
+    #actors for 
+        deser-actor dup end = if leave then
+    loop drop
+    r> free throw ;
+
+scene :: refresh ( - )
+    me load ;
+
+2 scene :construct ( fn len - )
+    srcpath place ;
