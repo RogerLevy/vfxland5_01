@@ -1,8 +1,2 @@
 include %idir%/supershow.vfx
-
-: sketchpad
-    destroy-bitmaps
-    load-bitmaps
-    show> step sprites ;
-    
-sketchpad
+include %idir%/tools/sketchpad.vfx

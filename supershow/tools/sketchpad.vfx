@@ -1,0 +1,96 @@
+\ ==============================================================================
+\ SKETCHPAD mode
+
+\ SKETCHPAD~ vocabulary
+\ THIS - value pointing to the current scene
+\ SAVEAS <name> - create a scene (along with the file) and assign it to THIS
+
+\ ( startup: create scenes from every file in dat/scn/ and scenes/ )
+
+\ ( make a bunch of actors )
+
+\ saveas myscene   \ create a scene
+
+\ ( make some changes )
+
+\ CTRL+S - saves THIS
+
+\ otherscene load   \ instantiate more actors from pre-existing scene
+
+\ edit otherscene   \ set THIS to the given scene. this would clear the stage 
+                    \ and load the scene.
+\ ==============================================================================
+
+include %idir%/../../lib/mouse.vfx
+include %idir%/../classes/asset.vfx
+include %idir%/../classes/scene.vfx
+
+\ ------------------------------------------------------------------------------
+
+private
+
+s" " scene make value this
+
+: saveas ( <name> - )
+    bl preparse f" scenes/%s.scn" scene ?object 
+    dup to this  this store ;
+
+: edit ( <name> - )
+    ' >body to this  just  this load ;
+
+: save  this store ;    
+
+: ctrl+s  save ;
+
+\ ------------------------------------------------------------------------------
+
+0 value mx 
+0 value my
+0 value dragee
+\ create anchor 0 , 0 ,
+
+: bmpbox
+    {: | w h :}
+    bmp @ bmpwh to h to w
+    x 2@ 2p>s w h 2 2 2/ 2- 2dup w h 2+ ;
+
+: pick ( - obj | 0 )
+    0
+    actives> 
+        bmp @ -exit
+        mouse 2dup bmpbox overlap? if
+            \ bmp @ bitmap-file type cr
+            drop me 
+        then ;
+
+: copy-actor ( obj - obj` )
+    actor one copy
+    dup actors index over -> id ! ;
+
+: ?copy ( obj - obj` )
+    ctrl? if copy-actor ." copy" cr then  ;
+
+: dragging ( - )
+    lb <lb - 
+    case
+        1 of pick ?dup if ?copy dup info to dragee then endof
+        0 of dragee ?dup if [[ lb if mickey 2s>p x 2+! then ]] then endof
+        -1 of 0 to dragee endof
+    endcase ;
+
+: input 
+    get-mouse
+    dragging ;
+
+\ ------------------------------------------------------------------------------
+
+public
+
+: sketchpad
+    sketchpad~ show> step sprites input ;
+
+honing @ [if]
+sketchpad
+push-order
+[then]
+step
