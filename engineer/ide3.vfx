@@ -188,7 +188,7 @@ borrow engineer~ func[]
     honing @ 0= if ." OFF  " exit then
     honing @ if
         honing @ -1 = if
-            retry-filepath$ count ?type space space
+            retry-filepath$ count -path ?type space space
         else
             honing @ .name space
         then
@@ -225,8 +225,8 @@ borrow engineer~ func[]
         .hotkeys cr
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
-        ." Context: " context @ .name ."  Current: " current @ .name
-        space
+        \ ." Context: " context @ .name space 
+        ."  Current: " current @ .name space
         ." Dict free: " .unused cr 
         ." Pen: " (pen) 2@ swap . . cr
         ." Honing: " .honing 
