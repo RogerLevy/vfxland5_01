@@ -3,7 +3,7 @@
 \
 \ Auto-save system for Caverns of Kevin
 \ The idea is you can't just rage quit and start a new game - the only way to
-\ start a new game is to die (or delete the save file because you're a lameoid).
+\ start a new game is to die (or delete the save file because you're a beta).
 \ Why is this important to me?  I really want the player to feel like Kevin's
 \ life is real, and their journeys together - long or short - are real.  
 \ In this game you can "mess up" only to discover an alternate way, as in real
@@ -35,9 +35,11 @@
 || : write-inventory
     s[ ." divest" cr s] write-chunk 
     inventory walk> s[ ? c"type" ." get" cr s] write-chunk ;
+
 || : write-variables
     s[ #deaths ? ." #deaths !" cr s] write-chunk 
     s[ item$ c"type" ." select" cr s] write-chunk ;
+
 || : write-actors
     actives>
         cla @ object% = ?exit
@@ -49,11 +51,13 @@
             me peeked
             ." ]] " cr
         s] write-chunk ;
+
 || : write-persisters ;
 : read-world ( - )
     clear-temps
     read-chunk over >r mram swap move
     r> free drop ;
+
 || : write-world
     stow
     s" read-world " write-chunk
@@ -66,8 +70,10 @@
         stow
     loop
     write-persisters ;
+
 || : read-savefile
     begin eval-chunk done? until ;
+
 : save ( - )
     fn w/o create-file throw to #1
     write-variables
@@ -82,5 +88,6 @@
     fn r/o open-file throw to #1
     read-savefile
     #1 close-file throw ;
+    
 : save-exists? ( - f )
     fn file-exists? ;
