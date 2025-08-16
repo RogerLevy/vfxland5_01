@@ -87,7 +87,7 @@ include %idir%/../textmode/textmode-tools.vfx
     #1 bytes-left #1 read-file 2drop
     #1 close-file drop 0 , ;
 : filesize ( fn len - n )
-    r/o open-file throw dup file-size throw swap close-file throw ;
+    r/o open-file throw dup file-size throw drop swap close-file throw ;
 : parse  parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
@@ -283,14 +283,14 @@ debug @ [if]
 : udup  over swap ;
 
 variable old-dp
-: temp[  here old-dp ! ;
-: temp]  old-dp @ here over -  old-dp @ dp ! ;
+: temp[ ( - )  here old-dp ! ;
+: temp] ( - a len )  old-dp @ here over -  old-dp @ dp ! ;
 
 : file@ ( fn len - a len ) 
     \ returns allocated memory that has to be freed
-    2dup filesize allocate throw >r
+    2dup filesize dup >r allocate throw >r
     r@ 999999999 2swap read 
-    r> ;
-
+    r> r> ;
+    
 : $@+ ( a - a' str len ) count 2dup + -rot ;
 : $, ( a len - ) dup >r    here place    r> 1 + allot ;
