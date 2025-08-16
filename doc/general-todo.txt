@@ -1,4 +1,26 @@
 2025/08/15
+[ ] (Engineer) Integrate mouse support into Engineer
+    Add mouse input handling to Engineer's core input system.
+    Enable mouse-driven interaction in the IDE and development tools.
+
+[ ] (VSCode Extension) Study Tab Nav extension to fix word-by-word navigation
+    Research Tab Nav extension implementation to create a custom extension that fixes
+    VSCode's word navigation behavior for Forth code.
+
+[ ] (VSCode Extension) Add code formatter to vfx-forth-simple extension
+    Implement automatic code formatting for VFX Forth source files.
+    Should handle indentation, alignment, and standard Forth formatting conventions.
+
+[ ] (Engineer) Add file error reporting to misc.vfx
+    Replace silent THROW calls with descriptive error messages in file operations.
+    Current file@ and related words silently fail causing mysterious bugs.
+    Throw actual file error codes instead of directly throwing the result of each file 
+    access word which is just 0 / -1.
+
+[ ] (Engineer) Implement FIND-HOTKEY as a built-in feature
+    Add vocabulary-scoped hotkey dispatch system using modifier patterns (CTRL+S, ALT+F4, etc.).
+    Vocabularies can define hotkey words that get automatically discovered and executed.
+
 [x] (NIBS) Implement serialization support
     Add property-level serialization metadata and format-agnostic serialization system.
     Properties declare their serialization metadata (type, save flag) and global serializers
