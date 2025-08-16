@@ -1,5 +1,5 @@
 include %idir%/smooth.vfx
-require %idir%/../../etc/mouse.vfx
+require %idir%/../../lib/mouse.vfx
 require %idir%/../../supershow/ui/ui.vfx
 
 variable recording
