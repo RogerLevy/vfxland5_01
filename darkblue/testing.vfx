@@ -1,41 +1,19 @@
-\ Test .rs
-\ : rptest1 .rs ;
-\ : rptest2 test1 ;
-\ : rptest3 test2 ;
-\  
-\ rptest3
-
-: test1
-    50 50 at *player
-    100 100 at enemy1 one drop ;
-
-: test2
-    50 50 at *player
-    actor one as> act>
-        begin
-            0.408 passed? -exit
-            4096 next# !
-            200 250 at enemy1 one [[ 0. -2. vx 2! ]]
-        again ;
-
-\ Simple Tests
-\ test1
-\ test2 
-
 \ Path Test
-require path.vfx
-include pathtest2.vfx
+\ require path.vfx
+\ include pathtest2.vfx
 \ pathtest
 
-: start ( - )
-    just game test2 pathtest ;
+\ : start ( - )
+\    just game test2 pathtest ;
 
-\ require scripts\ship.vfx
-: kill-player ( - )
-    player0 as die ;
-
-\ Title Test
 \ title
-
-game
+\ game
 \ run test1 
+
+try ../supershow/tools/sketchpad
+
+sketchpad
+push-order push-order push-order push-order
+s" scenes/scene0.scn" scene object scene0
+edit scene0 
+watch this info

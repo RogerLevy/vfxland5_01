@@ -8,15 +8,16 @@ require starfield.vfx
 require laser.vfx
 require enemies.vfx
 
-\ ." Loading scripts" cr
+." Creating autoclasses" cr
 create-autoclasses
+
+." Loading scripts" cr
 load-scripts
 
-: game show> starfield ;
-
-\ ." Loading startup modules" cr
+." Loading game modes" cr
 require title.vfx
-s" game.vfx" ?included
+require game.vfx
+\ require gameover.vfx  
  
 debug @ [if]
 include %idir%\testing.vfx

@@ -1,24 +1,24 @@
 \ Common classifiers
 trait: vessel
-    prop hp
-    prop r \ radius
-    prop m \ mass
-    prop atk
-    prop bounty
-    prop firing-rate
+    prop hp <int <save
+    prop r  <fixed <save \ radius
+    prop m  <fixed <save \ mass
+    prop atk <int <save
+    prop bounty <int <save
+    prop firing-rate 
 trait;
 
 trait: projectile
-    prop r \ radius
+    prop r <fixed <save \ radius
     prop firer
-    prop atk
-    prop a \ angle
+    prop atk <int <save
+    prop a <fixed <save \ angle
     prop w \ width
     prop l \ length
 trait;
 
 trait: pickup
-    prop worth \ when non-zero, makes object a collectible source of energy
+    prop worth <int <save \ when non-zero, makes object a collectible source of energy
 trait;
 
 c: actor "vessel" "projectile" "pickup" owner ;
