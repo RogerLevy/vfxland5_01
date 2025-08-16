@@ -8,11 +8,11 @@ s" constants.vfx" ?included
 ." LOADER.VFX >> Loading Supershow" cr
 include %idir%\..\supershow\supershow.vfx
 
-." LOADER.VFX >> Loading validations" cr
-s" checks.vfx" ?included
-
 ." LOADER.VFX >> Loading Spunk" cr
 include %idir%\spunk.vfx
+
+." LOADER.VFX >> Loading validations" cr
+s" checks.vfx" ?included
 
 ." LOADER.VFX >> Loading modules" cr
 s" modules.vfx" ?included
