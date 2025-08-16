@@ -944,61 +944,56 @@ _object object%-fresh copy drop
         -1 , \ terminator
     ]] ;
 
-: deserbin ( data allocator-xt - a ) ( len - a )
-    {: data xt | class0 dest property0 :}
-    data 
-    begin 
-        dup @ -1 <> while
-        $@+ \ fetch class name
-        \ 2dup type cr
-        >pad find 0= abort" DESERBIN >> Encountered unknown class name."
-        >body dup valid-class? not abort" DESERBIN >> Encountered invalid class."
-        to class0
-        class0 sizeof xt execute to dest
-        class0 dest construct
-        dest [[
-            \ fetch properties
-            begin dup @ -1 <> while
-                $@+ \ fetch property name
-                \ 2dup type cr
-                >pad find 0= abort" DESERBIN >> Encountered unknown property name."
-                >body dup -> cla @ _property <> abort" DESERBIN >> Encountered invalid property."
-                to property0
-                \ deserialize the property
-                me property0 -> offset @ prop+ to val-addr
-                ( a ) 
-                property0 -> property-type @ cells bin-deser-table + @ execute
-                ( a' )
-            repeat
-        ]]
-    repeat drop 
-    data ;
-
-: readbin ( data xt - ) ( member - )
-    {: data xt | property0 buf[ 256 ] :}
-    data 
-    begin 
-        dup @ -1 <> while
-        $@+ \ fetch class name
-        >pad find 0= abort" READBIN >> Encountered unknown class name."
-        >body dup valid-class? not abort" READBIN >> Encountered invalid class."
-        \ execute the callback
-        ( class ) xt execute
+: deserbin ( a instantiator-xt - a' ) ( class - obj )
+    \ Deserialize one object.
+    {: data xt | property0 :}
+    data
+    \ dup 100 dump
+    $@+ \ fetch class name
+    \ 2dup type cr
+    >pad find 0= abort" DESERBIN >> Encountered unknown class name."
+    >body dup valid-class? not abort" DESERBIN >> Encountered invalid class."
+    ( class ) xt execute [[
         \ fetch properties
         begin dup @ -1 <> while
             $@+ \ fetch property name
-            >pad find 0= abort" READBIN >> Encountered unknown property name."
-            >body dup -> cla @ _property <> abort" READBIN >> Encountered invalid property."
+            \ 2dup type cr
+            >pad find 0= abort" DESERBIN >> Encountered unknown property name."
+            >body dup -> cla @ _property <> abort" DESERBIN >> Encountered invalid property."
             to property0
-
-            \ fetch the value
-            buf[ to val-addr
+            \ deserialize the property
+            me property0 -> offset @ prop+ to val-addr
+            ( a ) 
             property0 -> property-type @ cells bin-deser-table + @ execute
-
-            \ execute the callback
-            property0 xt execute
+            ( a' )
         repeat
-    repeat drop ;
+    ]]
+    cell+ ( a' ) ;
+
+: readbin ( a cb - a' ) ( member - )
+    {: data cb | property0 buf[ 256 ] :}
+    data 
+    $@+ \ fetch class name
+    >pad find 0= abort" READBIN >> Encountered unknown class name."
+    >body dup valid-class? not abort" READBIN >> Encountered invalid class."
+    ( class ) cb execute
+    \ Walk properties:
+    begin dup @ -1 <> while
+        $@+ \ fetch property name
+        >pad find 0= abort" READBIN >> Encountered unknown property name."
+        >body dup -> cla @ _property <> abort" READBIN >> Encountered invalid property."
+        to property0
+
+        \ fetch the value
+        buf[ to val-addr
+        ( a ) 
+        property0 -> property-type @ cells bin-deser-table + @ execute
+        ( a' )
+
+        \ execute the callback
+        property0 cb execute
+    repeat 
+    cell+ ( a' ) ;
 
 : inspect-member ( member - )
     dup -> cla @ _class = if
@@ -1015,4 +1010,4 @@ _object object%-fresh copy drop
     then ;
 
 : .bin ( data - )
-    ['] inspect-member swap readbin ;
+    ['] inspect-member readbin drop ;
