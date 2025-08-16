@@ -226,7 +226,7 @@ borrow engineer~ func[]
         ." CWD: " path '\' ending type cr
         ." Me: " .me cr
         \ ." Context: " context @ .name space 
-        ."  Current: " current @ .name space
+        ." Current: " current @ .name space
         ." Dict free: " .unused cr 
         ." Pen: " (pen) 2@ swap . . cr
         ." Honing: " .honing 
