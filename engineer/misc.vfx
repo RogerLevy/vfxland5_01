@@ -174,7 +174,7 @@ aka file-exists? fileexists?
 : .abort ( err a:msg len:msg - )
     rot if
         4 push-attribute
-        cr ." ABORT: " type cr
+        ." ABORT: " type cr
         rp@ cell+ (.rs)
         .s
         pop-attribute

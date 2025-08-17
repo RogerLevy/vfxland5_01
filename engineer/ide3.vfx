@@ -293,6 +293,29 @@ borrow engineer~ func[]
 \ IDE Logic
 \ =============================================================================
 
+: ShowErrorLine	\ -- ; display error line
+\ *G Show the current source file and line number.
+\ ** If *\fo{LINE#} contains -1, no action is taken.
+  line# @ -1 <> if
+    ."  Source: "
+    [char] " emit  'SourceFile @ .SourceName  [char] " emit
+    ."  on line "
+    base @ >r  decimal  line# @ .  r> base !
+  then
+;
+
+: ShowSourceOnError     \ -- ; display pointer to error
+\ *G Show the current text input line and a pointer to the error
+\ ** location defined by the current value of *\fo{>IN}.
+\ ** If *\fo{>IN} contains -1, no action is taken.
+  >in @ -1 <> if
+    ."  -> " source type
+    cr >in @ 1- 4 + spaces [char] ^ emit
+    ShowSourceOnErrorHook
+  endif
+;
+
+
 : .error ( - )
     4 push-attribute
     dup Err$ nip if			\ if text available
