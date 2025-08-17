@@ -1,4 +1,15 @@
+2025/08/17
+[ ] (IDE) Simplify stack display to show one format at a time with cycling hotkey
+    Change stack display to show one display type at a time instead of all four.
+    Add global immutable hotkey to cycle between display types.
+
 2025/08/16
+[ ] (Asset System) Validate asset names in ?ASSET
+    Ensure asset names match expected format and extension for the asset class.
+
+[ ] (NIBS) Add runtime protocol reassignment word REASSIGN
+    Implement REASSIGN ( xt protocol class - ) to dynamically change protocol implementations at runtime.
+
 [ ] (Asset System) Add multiple file extension support to assets
     Implement filtering mechanism so asset classes can specify supported file extensions.
 
