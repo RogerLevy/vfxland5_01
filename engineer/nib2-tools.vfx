@@ -128,7 +128,9 @@
     cr
     ;
     
-: ?object ( class <name> - obj )
+: ?object ( ... class <name> - ... obj -1 | obj 0 )
+    \ Returns true if the object already existed.
+    \ Contructor parameters are consumed if it didn't (it is contructed with MAKE)
     {: class0 | obj0 :} 
     preword find if 
         >body to obj0 

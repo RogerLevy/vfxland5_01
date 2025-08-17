@@ -10,7 +10,7 @@ trait: asset
     :: save-content ( - ) ;
     :: load-content ( - ) ;
     :: use ( - ) ;
-    :: extension ( - a len ) stub ;
+    \ :: extension ( - a len ) stub ;
 trait;
 
 : my-name me body> >name count ;
@@ -60,6 +60,7 @@ asset :: load-content ( asset - )
 
 : load-assets ( path-a path-len class - )
     \ For startup initialization
+    \ TODO: filter by extension (single)
     to class0   ['] (load-asset) each-file ;
 
 : refresh ( asset - )
@@ -72,4 +73,5 @@ asset :: load-content ( asset - )
 
 : refresh-assets ( path-a path-len class - )
     \ For dev-time hot-reload
+    \ TODO: filter by extension (single)
     to class0   ['] (refresh-asset) each-file ;

@@ -110,9 +110,6 @@ GetForegroundWindow value vfx-hwnd
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
 
-: >datadir ( a n - a n )
-    s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
-
 : each-file ( path:a n xt - ) ( a n - )
     -rot >zpad al_create_fs_entry locals| e xt |
     e al_open_directory if
@@ -125,6 +122,15 @@ GetForegroundWindow value vfx-hwnd
         abort" Couldn't open directory"
     then 
     e al_destroy_fs_entry ;
+
+: >datadir ( a n - a n )
+    s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
+
+\ =============================================================================
+\ Asset System
+\ =============================================================================
+
+include %idir%/asset2.vfx
 
 \ =============================================================================
 \ Interactive Tools
