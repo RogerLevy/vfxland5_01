@@ -5,28 +5,41 @@
         {
             "label": "build-engineer",
             "type": "shell",
-            "command": "cmd",
-            "args": ["/c", "start", "cmd", "/c", "build.bat"],
+            "command": "${workspaceFolder}/engineer/build.bat",
+            // "command": "cmd",
+            // "args": ["/c", "start", "cmd", "/c", "build.bat"],
             "options": {
                 "cwd": "${workspaceFolder}/engineer"
             },
-            "group": "build"
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "close": true,
+                "focus": false,
+                "panel": "dedicated",
+                "clear": false
+            }
         },
         {
             "label": "launch-engineer",
             "type": "shell",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "start",
-                "cmd",
-                "/c",
-                "dev.bat"
-            ],
+            "command": "${workspaceFolder}/dev.bat",
+            // "args": [ "/c", "start", "cmd", "/c", "dev.bat" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": "build"
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "close": true,
+                "focus": false,
+                "panel": "dedicated",
+                "clear": false
+            }
         }
 
     ]
