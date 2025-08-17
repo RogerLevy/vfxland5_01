@@ -21,68 +21,45 @@ wrap-word [[
 \     static does-validated-message dispatch, ;
 \ ------------------------------------------------------------------------------
 
-\ TODO: migrate :: to nib2
-
-\ magic-id WMESSAGE_MAGIC WMSG
-\ : m: ( - <name> <code> ; ) ( ... obj - ... )
-\     m:
-\     state on
-\     begin
-\         0 parse 2dup 2>r evaluate 
-\         2r> s" ;" strin?
-\     until
-\     state off
-\     lastbody >name count f" wrap-word %s" evaluate
-\     WMESSAGE_MAGIC , ;
-\ 
-\ borrow nib~ ?message
-\ : ?unwrap-message ( - <message> message )
-\     {: | body :}
-\     preword find not abort" Message not found" >body to body
-\     body s/wrapper + @ WMESSAGE_MAGIC = if
-\         bl parse 2drop
-\         body @ ( internal xt ) >body 
-\     else
-\         ?message
-\         ' >body 
-\     then ;
-\ 
-\ : :: ( class - <message> <code> ; ) ( ... obj - ... )
-\     ?unwrap-message >:: ;
-
-\ have to redefine these because it's not possible to wrap them ( :: crashes )
-\ cell to /static
-\ static oexec-error-handler ( xt n - )
-\ m: init ( - ) ;
-\ m: destruct ( - ) ;
-
-\ TODO: migrate -> to nib2
-\ TODO: properly support immediate word validations in Oversight to avoid this mess...
-
-\ validations dup @ swap on
-\     before ?object check-object
-\     : ?object ;
-\ validations !
-\ 
-\ : -> ( a - <name> a )
-\     validations @ if
-\         state @ if
-\             s" ?object" evaluate 
-\         else
-\             [ validations dup @ swap on ] ?object [ validations ! ]
-\         then
-\     then
-\     ' >body @ ?literal s" +" evaluate ; immediate 
-
-: ?prop ( protocol - n )
+: ?prop ( n - n )
     validations @ -exit
-    s" (?prop)" evaluate ; immediate
+    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
 
-: does-property
-    immediate does>  fast[ >property fast] ;
+: prop+ ( object offset - a )
+    \ Optimizes down to two instructions with validations off 
+    fast[ s" over cla-offset + @ + @" evaluate fast]
+    validations @ if s" ?prop" evaluate then
+    s" +" evaluate ; immediate
 
-: prop+
-    fast[ postpone prop+ fast] ; immediate
+\ -----------------------------------------------------------------------------
+\ This is redefined here because FAST[ FAST] have been defined at this point
+: does-property 
+    immediate does> fast[ >property fast] ; 
+\ -----------------------------------------------------------------------------
+
+
+\ -----------------------------------------------------------------------------
+\ THIS DOESN'T WORK WITH UNBOUND-DISPATCH
+\ : validate-dispatch ( - )
+\     me valid-object? not 
+\         abort" VALIDATE-DISPATCH >> Invalid object." ;
+
+\ : ?compile-validate-dispatch ( - )
+\     validations @ if s" validate-dispatch" evaluate then ;
+\ -----------------------------------------------------------------------------
+
+aka (->) ->
+
+: validate-object
+    dup valid-object? not 
+        abort" VALIDATE-DISPATCH >> Invalid object." ;
+
+: -> 
+    validations @ if
+        s" validate-object" evaluate
+    then
+    postpone (->) ; immediate
+
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;

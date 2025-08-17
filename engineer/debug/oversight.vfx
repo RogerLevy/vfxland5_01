@@ -664,7 +664,16 @@ variable include-levels
 \ : required  ['] required wrapped-include ;
 
 
-variable (validations)
+|| create stack 16 cells allot
+|| variable sp
 
-: fast[  validations @ (validations) ! validations off ;
-: fast]  (validations) @ validations ! ;
+|| : save-validations ( -- )
+    validations @ stack sp @ cells + !
+    sp @ 1 + 15 and sp ! ;
+
+|| : restore-validations ( -- )
+    sp @ 1 - 15 and sp !
+    stack sp @ cells + @ validations ! ;
+
+: fast[  save-validations validations off ;
+: fast]  restore-validations ;

@@ -33,17 +33,11 @@ dup constant /object-base
     cell field magic
 constant /magical-base
 
-: (?prop) ( n - n )
-    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
-
-: ?prop
-    (?prop) ;
-    
 ' cla >body 2 cells + @ constant cla-offset
 
 : prop+ ( object offset - a )
     \ Optimizes down to two instructions with validations off 
-    s" over cla-offset + @ + @ ?prop +" evaluate ; immediate
+    s" over cla-offset + @ + @ +" evaluate ; immediate
 
 : >cla  s" cla-offset +" evaluate ;  immediate
 
@@ -296,6 +290,9 @@ create _protocol  _class make [[
     /static offset !
     +to /static ;
     
+: ?prop ( n - n )
+    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
+
 : >property ( property - ) 
     \ Compile the code to resolve property address. 
     ( protocol ) >r 
@@ -579,10 +576,14 @@ debug @ [if]
     ]] ;
 
 || : :protocol ( protocolname-a protocolname-len classname-a classname-len - xt )
+    push-order only forth definitions
     f" : %s:%s" 2dup upper
     evaluate
+    pop-order 
     state on
     here ; 
+
+: ?compile-validate-dispatch ; immediate
 
 : implement-protocol ( protocol classifier - )
     {: protocol0 c | name[ 256 ] :} 
@@ -591,6 +592,7 @@ debug @ [if]
         name[ count
         c body> >name count 
         :protocol ( xt ) c offset @ + !
+        s" ?compile-validate-dispatch" evaluate
         c c offset @ + >origin !  \ Store class as origin when class implements protocol
     ]] ;
     
