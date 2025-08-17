@@ -109,6 +109,9 @@ cstring name$
         @next dest add-to
     loop drop ;
 
+: .list ( list - )
+    cr dup list-count for @next ."         " .name cr loop drop ; 
+
 \ ==============================================================================
 \ Object stack
 \ ==============================================================================
@@ -634,12 +637,19 @@ debug @ [if]
 : :: ( [classifier] <protocol> - )
     {: | protocol0 c :}
     classifier ?dup if to c else to c then
-    c >cla @ _trait = if c define-protocol exit then
-    c >cla @ _class <> abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
-    bl word find not abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
+    c >cla @ _trait = if 
+        c define-protocol 
+        exit
+    then
+    c >cla @ _class <> 
+        abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+    bl word find not 
+        abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0
-    protocol0 >cla @ _protocol <> abort" :: >> Word is not a protocol!"
-    protocol0 c supports-protocol? not abort" :: >> Tried to implement a protocol not supported by the class."
+    protocol0 >cla @ _protocol <> 
+        abort" :: >> Word is not a protocol!"
+    protocol0 c supports-protocol? not 
+        abort" :: >> Tried to implement a protocol not supported by the class."
     protocol0 c implement-protocol ;
 
 : stub ( - )
@@ -739,6 +749,13 @@ aka instance make  \ Backward compatibility
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
         dup >cla @ _class = r> and >r
+    then
+    drop r> ;
+
+: valid-trait? ( ? - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup >cla @ _trait = r> and >r
     then
     drop r> ;
 

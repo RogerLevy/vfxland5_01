@@ -18,10 +18,7 @@
         else -1 then
     else -1 then ;
     
-|| : .class-parents ( class - )
-    \ Print all ancestors of a class
-    dup valid-class? not abort" Not a valid class."
-    
+|| : .parents ( classifier - )
     to target-class
     cr ."     Parents of " target-class body> >name count type ." :" cr
     
@@ -55,10 +52,7 @@
         else -1 then
     else -1 then ;
 
-|| : .class-traits ( class - )
-    \ Print all traits applied to a class
-    dup valid-class? not abort" Not a valid class."
-    
+|| : .traits ( classifier - )
     to target-class
     cr ."     Traits of " target-class body> >name count type ." :" cr
     
@@ -89,13 +83,29 @@
     ."     Mapped space: " next-ofs @ ?dup if . ." bytes" else ." none" then
         instance-size @ next-ofs @ - ?dup if ."  ("  . ." remaining)" then cr
     ."     Classifier #: " classifier# @ . cr
-    ."     Properties: " property-list list-count . cr
-    \ ."     Protocols: " protocol-list list-count . cr
+    ."     Properties: " property-list .list
+    ."     Protocols: " protocol-list .list
     ."     Dependents: " dependents list-count . cr
     
-    me .class-traits
-    me .class-parents
+    me .traits
+    me .parents
     ]] ;
+
+: .trait ( trait  - )
+    \ Print detailed information about a class
+    [[
+    me valid-trait? not if ." Not a valid trait." exit then
+    
+    cr
+    ."     Trait: " me body> >name count type cr
+    ."     Classifier #: " classifier# @ . cr
+    ."     Properties: " property-list .list
+    ."     Protocols: " protocol-list .list
+    ."     Dependents: " dependents list-count . cr
+    
+    me .parents
+    ]] ;
+
 
 || : ?.class ( thread# nfa - f )
     {: thread# nfa | body :}
