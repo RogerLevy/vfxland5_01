@@ -2,7 +2,7 @@ trait: asset
 \    static registry
     prop existed
     prop dirty
-    256 nprop srcpath <save <cstring
+    256 nprop srcpath
 
     :: cleanup ( - ) ;                \ Free external resources (safe if empty)
     :: setup ( - ) ;                  \ Create/recreate external resources
@@ -19,12 +19,15 @@ trait;
 : find-asset ( $ - asset|0 )
     find if >body dup asset is? and else drop 0 then ;
 
+|| : srcpath! ( fn len - )
+    >abspath srcpath place ;
+
 : materialize ( fn len class - obj )
     {: fn len class0 :}
     fn len -path >pad find-asset ?dup 
     if dup -> existed on exit then 
     class0 fn len -path $object
-    [[ my-name me gen-path >abspath srcpath place   me ]] ;
+    [[ my-name -ext me gen-path srcpath!   me ]] ;
 
 : ?asset ( class <name> - obj )
     bl parse rot materialize ;
@@ -36,7 +39,8 @@ trait;
         dirty on ;
 
 asset :: save-content ( asset - )
-    temp[ me serbin temp] srcpath count 
+    temp[ me serbin temp] 
+    srcpath count 
     ['] write catch abort" File write error" ;
 
 : into-me ( class - obj )
