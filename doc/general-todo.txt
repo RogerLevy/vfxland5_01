@@ -1,4 +1,8 @@
 2025/08/17
+[ ] (IDE) Harden the IDE against errors and ensure graceful recovery
+    Protect against possible errors everywhere in the IDE codebase.
+    Ensure graceful recovery from errors or clean quit to VFX when necessary.
+
 [ ] (IDE) Simplify stack display to show one format at a time with cycling hotkey
     Change stack display to show one display type at a time instead of all four.
     Add global immutable hotkey to cycle between display types.

@@ -6,10 +6,9 @@ trait: asset
 
     :: cleanup ( - ) ;                \ Free external resources (safe if empty)
     :: setup ( - ) ;                  \ Create/recreate external resources
-    :: gen-path ( name len - a len ) stub ;
-    :: save-content ( - ) ;
-    :: load-content ( - ) ;
-    :: use ( - ) ;
+    :: gen-path ( name len - a len ) stub ;  \ Generate file path from asset name (compile-time)
+    :: save-content ( - ) ;                    \ Serialize asset to disk (dev-time)
+    :: load-content ( - ) ;                    \ Deserialize asset from disk (runtime/dev-time)
     \ :: extension ( - a len ) stub ;
 trait;
 
@@ -23,6 +22,7 @@ trait;
     >abspath srcpath place ;
 
 : materialize ( fn len class - obj )
+    \ Find or create asset object by name (compile/runtime)
     {: fn len class0 :}
     fn len -path >pad find-asset ?dup 
     if dup -> existed on exit then 
@@ -30,9 +30,11 @@ trait;
     [[ my-name -ext me gen-path srcpath!   me ]] ;
 
 : ?asset ( class <name> - obj )
+    \ Parse name and materialize asset (compile-time)
     bl parse rot materialize ;
 
 : manifest ( obj - )
+    \ Initialize asset for use (runtime)
     as>
         existed @ if me cleanup then
         me setup 
@@ -52,22 +54,25 @@ asset :: load-content ( asset - )
     free throw ;
 
 : commit ( asset - )
+    \ Save asset to disk and clear dirty flag (dev-time)
     dup save-content   -> dirty off ;
 
 || 0 value class0
 
 : load-asset ( fn len class - asset )
+    \ Load single asset from file (runtime/startup)
     materialize dup load-content dup setup ;
 
 || : (load-asset) ( fn len - )
     class0 load-asset drop ;
 
 : load-assets ( path-a path-len class - )
-    \ For startup initialization
+    \ Load all assets from directory (runtime/startup)
     \ TODO: filter by extension (single)
     to class0   ['] (load-asset) each-file ;
 
 : refresh ( asset - )
+    \ Reload asset from disk keeping same object (dev-time)
     dup load-content
     dup cleanup
     setup ;
@@ -76,6 +81,6 @@ asset :: load-content ( asset - )
     class0 materialize refresh ;
 
 : refresh-assets ( path-a path-len class - )
-    \ For dev-time hot-reload
+    \ Reload all assets in directory (dev-time hot-reload)
     \ TODO: filter by extension (single)
     to class0   ['] (refresh-asset) each-file ;
