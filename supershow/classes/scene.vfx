@@ -1,3 +1,5 @@
+1 constant SCENE_FORMAT_VERSION
+
 class: scene
     is-a asset
     is-a loadable
@@ -11,13 +13,23 @@ class;
 scene :: save-content ( - )
     \ save actors on stage to disk
     temp[ 
+        SCENE_FORMAT_VERSION ,
+        me serbin
         ['] enabled? ['] serbin sermulti
     temp] srcpath count write ;
+
+: load-scene-data ( a - )
+    @+ dup SCENE_FORMAT_VERSION <> if
+        -1 swap f" SCENE:LOAD >> Unsupported scene format version %n" .abort
+    else drop then 
+    ['] into-me desbin
+    ['] one ['] desbin desmulti 
+    drop ;
 
 scene :: load ( - )
     \ load actors from disk to stage
     srcpath count ['] file@ nip catch abort" File read error"
-    dup ['] one ['] desbin desmulti 
+    dup load-scene-data
     free throw ;
 
 : >scene ( <name> - ) 
