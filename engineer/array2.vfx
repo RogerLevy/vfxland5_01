@@ -202,9 +202,14 @@ _stack :: pop-ref ( - a )
 : object-table; ( - )
     array] drop ;
 
+class: _object-array
+    _array derive
+    :: deref-index ( n - ? ) me [] ;
+class;
+
 : object-array ( c class <name> - )
     {: count class0 :}
-    create count class0 sizeof _array make [[
+    create count class0 sizeof _object-array make [[
         count for
             class0 i me [] construct
         loop

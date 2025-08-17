@@ -1,0 +1,8 @@
+
+trait: loadable
+    :: load ( - ) ;
+trait;
+
+trait: usable
+    :: use ( - ) ;
+trait;

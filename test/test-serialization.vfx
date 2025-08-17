@@ -51,7 +51,7 @@ result ' inspect-member readbin
 
 \ Deserialize 
 create back-obj
-result ' test-instantiator deserbin drop
+result ' test-instantiator desbin drop
 
 cr ." Deserialized object:" cr
 back-obj [[ 

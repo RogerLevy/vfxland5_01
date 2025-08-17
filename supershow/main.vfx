@@ -1,2 +1,2 @@
 include %idir%/supershow.vfx
-include %idir%/tools/sketchpad.vfx
+\ include %idir%/tools/sketchpad.vfx

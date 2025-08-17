@@ -1,0 +1,170 @@
+\ ==============================================================================
+\ Serialization Support
+\ ==============================================================================
+
+\ Property type constants
+0 constant TYPE_CELL
+1 constant TYPE_INT
+2 constant TYPE_FIXED
+3 constant TYPE_FLOAT
+4 constant TYPE_CSTRING  \ note: meant for embedded cstring fields
+\ 5 constant TYPE_ARRAY
+
+\ Metadata words - operate on current-property
+: <save ( - )
+    current-property 0= abort" <SAVE >> No property being defined"
+    -1 current-property -> serialize-flag ! ;
+
+: <int ( - )
+    current-property 0= abort" <INT >> No property being defined"
+    TYPE_INT current-property -> property-type ! ;
+
+: <fixed ( - )
+    current-property 0= abort" <FIXED >> No property being defined"
+    TYPE_FIXED current-property -> property-type ! ;
+
+: <float ( - )
+    current-property 0= abort" <FLOAT >> No property being defined"
+    TYPE_FLOAT current-property -> property-type ! ;
+
+: <cstring ( - )
+    current-property 0= abort" <CSTRING >> No property being defined"
+    TYPE_CSTRING current-property -> property-type ! ;
+
+\ : <array ( - )
+\     current-property 0= abort" <ARRAY >> No property being defined"
+\     TYPE_ARRAY current-property -> property-type ! ;
+
+: serialize? ( property - flag )
+    -> serialize-flag @ ;
+
+|| 0 value val-addr
+
+|| : bin-ser-cell ( - ) val-addr @ , ;
+|| : bin-ser-int ( - ) val-addr @ , ;
+|| : bin-ser-fixed ( - ) val-addr @ , ;
+|| : bin-ser-float ( - ) val-addr @ , ;
+|| : bin-ser-cstring ( - ) val-addr count $, ;
+
+|| : bin-deser-cell ( a - a' ) @+ val-addr ! ;
+|| : bin-deser-int ( a - a' ) @+ val-addr ! ;
+|| : bin-deser-fixed ( a - a' ) @+ val-addr ! ;
+|| : bin-deser-float ( a - a' ) @+ val-addr ! ;
+|| : bin-deser-cstring ( a -a'  ) $@+ val-addr place ;
+
+|| create bin-ser-table
+||     ' bin-ser-cell ,
+||     ' bin-ser-int ,
+||     ' bin-ser-fixed ,
+||     ' bin-ser-float ,
+||     ' bin-ser-cstring ,
+
+|| create bin-deser-table
+||     ' bin-deser-cell ,
+||     ' bin-deser-int ,
+||     ' bin-deser-fixed ,
+||     ' bin-deser-float ,
+||     ' bin-deser-cstring ,
+
+: serbin ( obj - )
+    \ serialize object into dictionary in binary format
+    {: obj | property0 &count :}
+    obj [[ 
+        cla @ >name count $,
+        here to &count 0 , 
+        cla @ -> property-list dup list-count for
+            @next to property0
+            property0 serialize? if
+                \ serialize the property
+                1 &count +!
+                me property0 -> offset @ prop+ to val-addr
+                property0 >name count $,
+                property0 -> property-type @ cells bin-ser-table + @ execute
+            then
+        loop drop 
+    ]] ;
+
+: desbin ( a instance-xt - a' ) ( class - obj )
+    \ deserialize object from given buffer address in binary format
+    \ returns updated buffer address
+    {: data xt | property0 :}
+    data
+    \ dup 100 dump
+    $@+ \ fetch class name
+    \ 2dup type cr
+    >pad find 0= abort" desbin >> Encountered unknown class name."
+    >body dup valid-class? not abort" desbin >> Encountered invalid class."
+    ( class ) xt execute [[
+        \ fetch properties
+        @+ for
+            $@+ \ fetch property name
+            \ 2dup type cr
+            >pad find 0= abort" desbin >> Encountered unknown property name."
+            >body dup -> cla @ _property <> abort" desbin >> Encountered invalid property."
+            to property0
+            \ deserialize the property
+            me property0 -> offset @ prop+ to val-addr
+            ( a ) 
+            property0 -> property-type @ cells bin-deser-table + @ execute
+            ( a' )
+        loop
+    ]]
+    ( a' ) ;
+
+: readbin ( a cb - a' ) ( member - )
+    {: data cb | property0 buf[ 256 ] :}
+    data 
+    $@+ \ fetch class name
+    >pad find 0= abort" READBIN >> Encountered unknown class name."
+    >body dup valid-class? not abort" READBIN >> Encountered invalid class."
+    ( class ) cb execute
+    \ Walk properties:
+    @+ for
+        $@+ \ fetch property name
+        >pad find 0= abort" READBIN >> Encountered unknown property name."
+        >body dup -> cla @ _property <> abort" READBIN >> Encountered invalid property."
+        to property0
+
+        \ fetch the value
+        buf[ to val-addr
+        ( a ) 
+        property0 -> property-type @ cells bin-deser-table + @ execute
+        ( a' )
+
+        \ execute the callback
+        property0 cb execute
+    loop
+    ( a' ) ;
+
+: inspect-member ( member - )
+    dup -> cla @ _class = if
+        .name cr
+    else
+        dup .name ." = " 
+        -> property-type @ case
+            TYPE_CELL      of val-addr ? endof  
+            TYPE_INT       of val-addr ? endof 
+            TYPE_FIXED     of val-addr p? endof   
+            TYPE_FLOAT     of val-addr sf@ f. endof   
+            TYPE_CSTRING   of val-addr count type endof                 
+        endcase cr
+    then ;
+
+: .bin ( data - )
+    ['] inspect-member readbin drop ;
+
+: sermulti ( iterable filter-xt ser-xt - ) ( obj - flag ) ( obj - ) 
+    {: arr filter-xt ser-xt :}
+    arr #items dup ,
+    for
+        i arr deref-index 
+        dup filter-xt execute if
+            ser-xt execute 
+        else drop then
+    loop ;
+
+: desmulti ( a instance-xt deser-xt - ) ( class - obj ) ( a instance-xt - a' ) 
+    {: a instance-xt deser-xt :}
+    a @+ for
+        instance-xt deser-xt execute
+    loop drop ;

@@ -1,0 +1,111 @@
+\ ------------------------------------------------------------------------------
+\ Tilemap v2
+\
+\ (Untested)
+\ ------------------------------------------------------------------------------
+
+variable pile
+
+\ =============================================================================
+\ Tileset
+\ =============================================================================
+
+s" dat/gfx" 2constant tilesets-path
+
+class: tileset
+    is-a asset
+    is-a usable
+    prop baseid <save <int 
+    prop bmp
+    prop tw <save <int 
+    prop th <save <int 
+    prop #tiles <save <int 
+
+    :: gen-path ( name len - a len )
+        tilesets-path f" %s/%s.ts" ;
+
+class;
+
+\ 256 cell stack tilesets
+\ tilesets tileset -> registry !
+
+|| : bmpw  dup if al_get_bitmap_width then ;
+|| : bmph  dup if al_get_bitmap_height then ;
+
+: slice-tiles ( bmp tw th - )
+    {: b tw th :}
+    b -exit
+    next-bmp# @ >r   baseid @ next-bmp# !
+    b bmph th - 1 + for
+        b bmpw tw - 1 + for
+            b i j tw th al_create_sub_bitmap +bitmap drop
+        tw +loop
+    th +loop
+    next-bmp# @ baseid @ - #tiles !   r> next-bmp# ! ;
+
+tileset :: use ( - )
+    baseid @ pile ! ;
+
+tileset :: setup ( - )
+    me new? if next-bmp# @ baseid ! then
+    bmp @ bitmap@ tw @ th @ slice-tiles 
+    me new? if #tiles @ next-bmp# +! then ;
+
+tileset :: cleanup ( - )
+    baseid @ #tiles @ bounds do
+         i bitmap@ al_destroy_bitmap
+    loop ;
+
+: >tileset ( bmp# tw th <name> - )
+    tileset ?asset 
+    [[ th ! tw ! bmp ! me ]]
+    manifest ;
+
+: tile ( tileset n - n )
+    swap -> baseid @ + ;
+
+: load-tileset ( fn len - tileset )
+    tileset load-asset ;
+
+: load-tilesets ( - )
+    tilesets-path tileset load-assets ;
+
+: reload-tilesets ( - )
+    tilesets-path tileset refresh-assets ;
+
+: is-tile? ( n - f )
+    bitmap@ dup -exit al_is_sub_bitmap ;
+
+\ =============================================================================
+\ Tilemap - Low level
+\ =============================================================================
+
+|| : nr  0 pen y@ gap + at ;
+|| : tile+  pile @ + put gap 0 +at ;
+
+: lay ( a - )
+    batch> tmh for tmw for @+ tile+ loop nr loop drop ;
+
+: spot ( col row a - a )
+    -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
+
+: xy>cr ( x. y. - col row )
+    gap dup 2/ 2p>s ;
+
+\ =============================================================================
+\ Tile metadata
+\ =============================================================================
+
+create metas #bitmaps cells allot&erase
+: meta ( n - n ) pile @ + cells metas + @ ;
+: collectible?  meta $20 and 0<> ;
+: destructible?  meta $80 and 0<> ;
+: solid?  meta $0F and $0F = ;
+: instakill?  meta $40 and 0<> ;
+: trap?  meta $10 and 0<> ;
+
+: load-metas ( a:fn len:fn tileset - )
+    >r
+        here >r >datadir file,
+        r> here over -
+    r> -> baseid @ cells metas + swap move ;

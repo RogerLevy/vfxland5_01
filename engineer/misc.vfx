@@ -288,9 +288,11 @@ variable old-dp
 
 : file@ ( fn len - a len ) 
     \ returns allocated memory that has to be freed
-    2dup filesize dup >r allocate throw >r
-    r@ 999999999 2swap read 
-    r> r> ;
+    {: fn len | mem size :}
+    fn len filesize to size 
+    size allocate throw to mem
+    mem size fn len read 
+    mem size ;
     
 : $@+ ( a - a' str len ) count 2dup + -rot ;
 : $, ( a len - ) dup >r    here place    r> 1 + allot ;

@@ -1,0 +1,75 @@
+trait: asset
+\    static registry
+    prop existed
+    prop dirty
+    256 nprop srcpath <save <cstring
+
+    :: cleanup ( - ) ;                \ Free external resources (safe if empty)
+    :: setup ( - ) ;                  \ Create/recreate external resources
+    :: gen-path ( name len - a len ) stub ;
+    :: save-content ( - ) ;
+    :: load-content ( - ) ;
+    :: use ( - ) ;
+    :: extension ( - a len ) stub ;
+trait;
+
+: my-name me body> >name count ;
+: new? -> existed @ not ;
+
+: find-asset ( $ - asset|0 )
+    find if >body dup asset is? and else drop 0 then ;
+
+: materialize ( fn len class - obj )
+    {: fn len class0 :}
+    fn len -path >pad find-asset ?dup 
+    if dup -> existed on exit then 
+    class0 fn len -path $object
+    [[ my-name me gen-path >abspath srcpath place   me ]] ;
+
+: ?asset ( class <name> - obj )
+    bl parse rot materialize ;
+
+: manifest ( obj - )
+    as>
+        existed @ if me cleanup then
+        me setup 
+        dirty on ;
+
+asset :: save-content ( asset - )
+    temp[ me serbin temp] srcpath count 
+    ['] write catch abort" File write error" ;
+
+: into-me ( class - obj )
+    drop   me ;
+
+asset :: load-content ( asset - )
+    srcpath count ['] file@ catch nip abort" File read error"
+    ( a ) dup ['] into-me desbin drop  
+    free throw ;
+
+: commit ( asset - )
+    dup save-content   -> dirty off ;
+
+|| 0 value class0
+
+: load-asset ( fn len class - asset )
+    materialize dup load-content dup setup ;
+
+|| : (load-asset) ( fn len - )
+    class0 load-asset drop ;
+
+: load-assets ( path-a path-len class - )
+    \ For startup initialization
+    to class0   ['] (load-asset) each-file ;
+
+: refresh ( asset - )
+    dup load-content
+    dup cleanup
+    setup ;
+
+|| : (refresh-asset) ( fn len - )
+    class0 materialize refresh ;
+
+: refresh-assets ( path-a path-len class - )
+    \ For dev-time hot-reload
+    to class0   ['] (refresh-asset) each-file ;
