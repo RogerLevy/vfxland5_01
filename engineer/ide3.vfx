@@ -288,7 +288,7 @@ borrow engineer~ func[]
     game-window     command-history
     info-box        stack-display
     ( user-area )   command-line ;
-    
+
 \ =============================================================================
 \ IDE Logic
 \ =============================================================================
@@ -314,7 +314,6 @@ borrow engineer~ func[]
     ShowSourceOnErrorHook
   endif
 ;
-
 
 : .error ( - )
     4 push-attribute
@@ -542,8 +541,8 @@ is draw-ide
 : ide-interpret ( a len - res )
     hist[ >interpret out @ if cr then hist] ;
 
-: ide2-quit
-    ." IDE2-QUIT" cr
+: ide-quit
+    ." IDE-QUIT" cr
     running off
     textmode off
     consoledev setio
@@ -559,8 +558,7 @@ borrow error2~ console-debugger
 ;
 
 ' ide-debugger to-callback debugger
-
-' ide2-quit is quit
+' ide-quit is quit
 ' noop is boot
 ' noop is onSwitchIn
 init-history
