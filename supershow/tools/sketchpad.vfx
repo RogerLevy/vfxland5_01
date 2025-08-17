@@ -3,7 +3,9 @@
 
 \ SKETCHPAD~ vocabulary
 \ THIS - value pointing to the current scene
-\ SAVEAS <name> - create a scene (along with the file) and assign it to THIS
+\ SAVEAS <name> - create a scene (along with the file) and assign it to THIS.
+\                 no extension.
+\ EDIT <name>   - create or load a scene - no extension.
 
 \ ( startup: create scenes from every file in dat/scn/ and scenes/ )
 
@@ -22,23 +24,25 @@
 \ ==============================================================================
 
 include %idir%/../../lib/mouse.vfx
-include %idir%/../classes/asset.vfx
-include %idir%/../classes/scene.vfx
 
 \ ------------------------------------------------------------------------------
 
 private
 
-s" " scene make value this
+0 value this
+
+: save ( - )
+    this 0= 
+        abort" No current scene!  Say `SAVEAS <scene>` or `EDIT <scene>` first."
+    this commit ;    
+
+: (friendly-scene)  bl parse f" >scene %s.scn" evaluate ;
 
 : saveas ( <name> - )
-    bl preparse f" scenes/%s.scn" scene ?object 
-    dup to this  this store ;
+    (friendly-scene) to this   save ; 
 
 : edit ( <name> - )
-    ' >body to this  just  this load ;
-
-: save  this store ;    
+    (friendly-scene) to this   just this load ;
 
 : ctrl+s  save ;
 

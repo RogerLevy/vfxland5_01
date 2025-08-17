@@ -95,6 +95,8 @@ require %idir%\waveplay.vfx
 \ =============================================================================
 
 include %idir%\stage.vfx
+include %idir%\classes\traits.vfx
+include %idir%\classes\scene.vfx
 
 \ =============================================================================
 \ Tilemap
@@ -180,6 +182,7 @@ class;
     reload-bitmaps
     reload-tilesets ;
 
+
 \ =============================================================================
 \ Initialization
 \ =============================================================================
@@ -198,4 +201,5 @@ class;
 
 debug @ [if]
     include %idir%/tools.vfx
+    include %idir%/tools/sketchpad.vfx
 [then]

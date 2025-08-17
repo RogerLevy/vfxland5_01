@@ -7,9 +7,9 @@ class: abc
     prop b <save 
     prop c <save 
 class;
-abc :: gen-path f" test/abc/%s" ;
+abc :: gen-path f" test/abc/%s.abc" ;
 
-\ abc ?asset test.abc 
+\ abc ?asset test 
 \ [[  1 a ! 2 b ! 3 c !
 \ me ]] manifest
 \ test.abc commit
