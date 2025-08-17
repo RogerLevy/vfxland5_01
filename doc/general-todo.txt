@@ -1,3 +1,13 @@
+2025/08/16
+[ ] (Asset System) Add multiple file extension support to assets
+    Implement filtering mechanism so asset classes can specify supported file extensions.
+
+[ ] (Engineer) Look into adding anonymous functions
+    Investigate implementing `[: ;]` syntax for inline anonymous functions.
+
+[ ] (NIBS) Consider reversing word order of DERIVE
+    Change syntax from `<class> derive` to `derive <class>` for consistency.
+
 2025/08/15
 [ ] (Engineer) Integrate mouse support into Engineer
     Add mouse input handling to Engineer's core input system.
