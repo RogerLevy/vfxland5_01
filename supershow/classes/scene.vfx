@@ -3,6 +3,8 @@
 class: scene
     is-a asset
     is-a loadable
+    :: gen-path ( name len - fn len )
+        f" dat/scn/%s.scn" ;
 class;
 
 : deser-actor ( a - a' )
@@ -15,8 +17,8 @@ scene :: save-content ( - )
     temp[ 
         SCENE_FORMAT_VERSION ,
         me serbin
-        ['] enabled? ['] serbin sermulti
-    temp] srcpath count write ;
+        actors ['] enabled? ['] serbin sermulti
+    temp] srcpath count ['] write catch abort" File write error" ;
 
 : load-scene-data ( a - )
     @+ dup SCENE_FORMAT_VERSION <> if
@@ -28,9 +30,9 @@ scene :: save-content ( - )
 
 scene :: load ( - )
     \ load actors from disk to stage
-    srcpath count ['] file@ nip catch abort" File read error"
+    srcpath count ['] file@ catch nip abort" File read error"
     dup load-scene-data
     free throw ;
 
-: >scene ( <name> - ) 
-    scene ?asset manifest ;
+: >scene ( <name> - scene ) 
+    scene ?asset dup manifest ;
