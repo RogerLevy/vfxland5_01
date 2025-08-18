@@ -296,9 +296,6 @@ aka .> p>s
 
 c: timer %actor xt1 dur ;
 
-timer :: describe
-    me info dur p? ;
-
 : clear-timers ( -- )
     actives> me timer is? -exit unload ;
 

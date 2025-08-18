@@ -29,14 +29,6 @@ c: actor "vessel" "projectile" "pickup" owner ;
 \     prop owner
 \ class;
 
-\ Extend actor:info
-actor :: describe
-    11 push-attribute ." [ "
-    me info
-    ." R: " r @ p.
-    ." M: " m @ p.
-    ." ] " pop-attribute ;
-
 \ Common protocols
 _object :: damage ( n - ) negate hp +! ;
 _object :: kill ( - ) unload ;

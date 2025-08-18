@@ -315,7 +315,8 @@ borrow engineer/ func[]
   endif
 ;
 
-: lastword  tib >in @ bl ending ;
+: ?trim 2dup + 1 - c@ bl = if 1 - then ;
+: lastword  tib >in @ ?trim bl ending ;
 
 : (DoErrorMessage) ( err - )
     4 push-attribute

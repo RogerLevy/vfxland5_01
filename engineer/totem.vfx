@@ -2,7 +2,7 @@ trait: _totem
 \    static registry
     prop existed
     prop dirty
-    256 nprop srcpath
+    256 nprop srcpath <cstring
 
     :: cleanup ( - ) ;                  \ Free external resources (safe if empty)
     :: setup ( - ) ;                    \ Create/recreate external resources
@@ -23,9 +23,9 @@ trait;
 || : srcpath! ( fn len - )
     >abspath srcpath place ;
 
-|| : gen-path ( fn len - a len )
+|| : gen-path ( - a len )
     \ TODO: support arbitrary paths
-    my-name   me default-path   f" %s/%s" ;
+    my-name   me default-path   2dup ensure-dir  f" %s/%s" ;
 
 : materialize ( fn len class - obj )
     \ Find or create totem object by name or path (dev/compile/runtime)
@@ -33,7 +33,7 @@ trait;
     fn len -path >pad find-totem ?dup 
     if dup -> existed on exit then 
     class0 fn len -path $object
-    [[ fn len gen-path srcpath!   me ]] ;
+    [[ gen-path srcpath!   me ]] ;
 
 : *totem ( class <name> - obj )
     \ Parse name and materialize totem (dev/compile-time)

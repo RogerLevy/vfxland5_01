@@ -1,0 +1,14 @@
+." Dictionary before empty: " checkdict cr
+empty 
+include ../supershow/supershow.vfx
+include ../supershow/tilemap2.vfx
+
+." Dictionary after tilemap2.vfx: " checkdict cr
+\\
+load-bitmaps
+
+bg.png 16 16 *tileset bg.ts
+
+\\
+
+bg.ts info
