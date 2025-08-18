@@ -843,7 +843,7 @@ aka instance make  \ Backward compatibility
 
 : inspect-property ( property val-addr - )
     {: property val-addr :} 
-    property .name ." = " 
+    property .name ." : " 
     property -> property-type @ case
         TYPE_CELL      of val-addr ? endof  
         TYPE_INT       of val-addr ? endof 
@@ -861,6 +861,9 @@ aka instance make  \ Backward compatibility
         loop drop 
     ]] ;
 
+: .object ( object - )
+    [[ me . cla @ .name me .name ]] ;
+
 \ ==============================================================================
 \ _OBJECT Base Protocols
 \ ==============================================================================
@@ -869,7 +872,7 @@ aka instance make  \ Backward compatibility
 
 _object :: info ( - )
     \ Default inspection - show class name, address, and properties
-    me . cla @ .name me .name  cr
+    me .object  cr
     me .props ;
 
 _object :: on-error ( xt err# - )
