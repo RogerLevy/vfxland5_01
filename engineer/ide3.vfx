@@ -315,12 +315,12 @@ borrow engineer/ func[]
   endif
 ;
 
-2variable lastword
+: lastword  tib >in @ bl ending ;
 
 : (DoErrorMessage) ( err - )
     4 push-attribute
     dup -13 = if
-        lastword 2@ type ." ? " 
+        lastword type ." ? " 
     else
         dup Err$ nip if			\ if text available
             .ErrDef     		\ generate error message
@@ -340,9 +340,9 @@ assign (DoErrorMessage) to-do DoErrorMessage
 : (interpret)	\ --
     page-check
     begin  
-        ?stack parse-name dup
-    while  
-        2dup lastword 2!
+        ?stack 
+        parse-name dup
+    while
         parser execute
     repeat
     2drop ;
