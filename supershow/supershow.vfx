@@ -95,8 +95,8 @@ require %idir%\waveplay.vfx
 \ =============================================================================
 
 include %idir%\stage.vfx
-include %idir%\classes\traits.vfx
-include %idir%\classes\scene.vfx
+include %idir%\traits.vfx
+include %idir%\scene.vfx
 
 \ =============================================================================
 \ Tilemap
