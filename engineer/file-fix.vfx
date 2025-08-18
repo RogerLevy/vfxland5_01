@@ -17,8 +17,11 @@ create temp-path-buf$ 256 allot
             2drop abs-path-buf$ zcount
         then ;
 
+: slashes  2dup  over + swap do  i c@ '/' = if
+    '\' i c!  then  #1 +loop ; 
+
 : normalize ( c-addr u -- c-addr2 u2 )
-    >abspath ;           \ Convert to canonical absolute path
+    slashes >abspath ;           \ Convert to canonical absolute path
 
 : .s
     depth 8 min locals| d |
@@ -35,8 +38,6 @@ create temp-path-buf$ 256 allot
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
-: slashes  2dup  over + swap do  i c@ '/' = if
-    '\' i c!  then  #1 +loop ; 
 : -path ( a n - a n ) slashes  '\' ending  0 max ;
 
 \ Fixed file loading words

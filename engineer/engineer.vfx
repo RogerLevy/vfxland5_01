@@ -274,8 +274,13 @@ create pen 0 , 0 , \ int
     ?bitmap ;
 
 : load-bitmaps ( - )
-    ." Loading bitmaps" cr 
-    s" gfx" >datadir ['] (load-bitmap) each-file ;
+    ." Loading bitmaps..." cr 
+    s" gfx" >datadir normalize
+    2dup dir-exists? not if 
+        f" %s not found, skipping..." type cr
+        exit
+    then
+    ['] (load-bitmap) each-file ;
 
 || : (reload-bitmap) ( a n - ) \ path
     \ TODO: reload only updated bitmaps
@@ -537,8 +542,6 @@ magic-id MAGIC_TWEAK TWK
 \ =============================================================================
 \ Interface Module
 \ =============================================================================
-
-load-bitmaps
 
 defer frame ( - ) ' noop is frame
 

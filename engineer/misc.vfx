@@ -71,7 +71,8 @@ include %idir%/../textmode/textmode-tools.vfx
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
-: slashes  2dup  over + swap do  i c@ '/' = if
+: slashes ( a n - a n )  
+    2dup  over + swap do  i c@ '/' = if
     '\' i c!  then  #1 +loop ; 
 : -path ( a n - a n ) slashes  '\' ending  0 max ;
 : -ext  2dup '.' scan nip - ;
@@ -299,3 +300,12 @@ variable old-dp
 
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
+
+extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
+
+cstring zstr
+: ensure-dir ( fp len - )
+    normalize zstr zplace
+    0 zstr 0 SHCreateDirectoryExA abort" Error creating directory!" ;
+
+
