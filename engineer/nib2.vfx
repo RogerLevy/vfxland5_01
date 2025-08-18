@@ -554,13 +554,6 @@ debug @ [if]
     aka oexec execute
 [then]
 
-: unbound-dispatch ( ... object protocol-xt - ... ) ( ... - ... )
-    \ Backdoor for using classes like callback structs.
-    \ The object will not be bound during execution of the protocol.
-    \ This means that it cannot use any of its properties.
-    swap [[ >body -> offset @ cla @ + @ ]]
-    ?dup if execute then ;
-
 : does-protocol ( - )
     does> swap [[
         dup -> offset @ cla @ + @ ?dup if

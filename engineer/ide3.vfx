@@ -416,6 +416,7 @@ trait: displaymode-like
     prop _ide
     prop _repl
     prop _hold
+    static draw-xt
 trait;
 
 displaymode-like :: activate ( - ) stub ;
@@ -429,8 +430,9 @@ class;
 ide-mode :: activate ( - )
     fullscreen winmode ;
 
-ide-mode :: draw ( - )
+: ide-mode-draw ( - )
     at@ (pen) 2! ['] ide-layout catch drop (pen) 2@ at ;
+' ide-mode-draw ide-mode -> draw-xt !
 
 0 ide-mode :construct ( - )
     _ide on _repl on ;
@@ -443,9 +445,10 @@ class;
 full-mode :: activate ( - )
     fullscreen winmode ;
 
-full-mode :: draw ( - )
+: full-mode-draw ( - )
     draw-tv
     ( draw repl here ) ;
+' full-mode-draw full-mode -> draw-xt !
 
 \ Window mode
 class: window-mode
@@ -455,9 +458,10 @@ class;
 window-mode :: activate ( - )
     windowed winmode ;
 
-window-mode :: draw ( - )
+: window-mode-draw ( - )
     ?border draw-game
     ( draw repl here ) ;
+' window-mode-draw window-mode -> draw-xt !
 
 \ Create array of display modes
 ide-mode object ide-mode0
@@ -477,7 +481,7 @@ object-table;
     current-mode activate ;
 
 : draw-display-mode ( - )
-    current-mode ['] draw unbound-dispatch ;
+    current-mode [[ draw-xt ]] @ execute ;
 
 \ =============================================================================
 \ Public Words
