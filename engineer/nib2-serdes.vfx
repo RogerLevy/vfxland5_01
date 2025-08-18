@@ -2,35 +2,6 @@
 \ Serialization Support
 \ ==============================================================================
 
-\ Property type constants
-0 constant TYPE_CELL
-1 constant TYPE_INT
-2 constant TYPE_FIXED
-3 constant TYPE_FLOAT
-4 constant TYPE_CSTRING  \ note: meant for embedded cstring fields
-\ 5 constant TYPE_ARRAY
-
-\ Metadata words - operate on current-property
-: <save ( - )
-    current-property 0= abort" <SAVE >> No property being defined"
-    -1 current-property -> serialize-flag ! ;
-
-: <int ( - )
-    current-property 0= abort" <INT >> No property being defined"
-    TYPE_INT current-property -> property-type ! ;
-
-: <fixed ( - )
-    current-property 0= abort" <FIXED >> No property being defined"
-    TYPE_FIXED current-property -> property-type ! ;
-
-: <float ( - )
-    current-property 0= abort" <FLOAT >> No property being defined"
-    TYPE_FLOAT current-property -> property-type ! ;
-
-: <cstring ( - )
-    current-property 0= abort" <CSTRING >> No property being defined"
-    TYPE_CSTRING current-property -> property-type ! ;
-
 \ : <array ( - )
 \     current-property 0= abort" <ARRAY >> No property being defined"
 \     TYPE_ARRAY current-property -> property-type ! ;
@@ -111,13 +82,20 @@
     ]]
     ( a' ) ;
 
-: readbin ( a cb - a' ) ( member - )
+: inspect-member ( member val-addr - )
+    over -> cla @ _class = if 
+        drop .name cr
+    else
+        inspect-property
+    then ;
+
+: readbin ( a cb - a' ) ( member val-addr - )
     {: data cb | property0 buf[ 256 ] :}
     data 
     $@+ \ fetch class name
     >pad find 0= abort" READBIN >> Encountered unknown class name."
     >body dup valid-class? not abort" READBIN >> Encountered invalid class."
-    ( class ) cb execute
+    ( class ) cb me execute
     \ Walk properties:
     @+ for
         $@+ \ fetch property name
@@ -132,23 +110,9 @@
         ( a' )
 
         \ execute the callback
-        property0 cb execute
+        property0 buf[ cb execute
     loop
     ( a' ) ;
-
-: inspect-member ( member - )
-    dup -> cla @ _class = if
-        .name cr
-    else
-        dup .name ." = " 
-        -> property-type @ case
-            TYPE_CELL      of val-addr ? endof  
-            TYPE_INT       of val-addr ? endof 
-            TYPE_FIXED     of val-addr p? endof   
-            TYPE_FLOAT     of val-addr sf@ f. endof   
-            TYPE_CSTRING   of val-addr count type endof                 
-        endcase cr
-    then ;
 
 : .bin ( data - )
     ['] inspect-member readbin drop ;

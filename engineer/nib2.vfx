@@ -811,7 +811,56 @@ aka instance make  \ Backward compatibility
     \ Execute bound XT with error-handling if it is non-zero.
     \ The XT must take or return any parameters.
     ?dup -exit oexec ;
-    
+
+\ Property type constants
+0 constant TYPE_CELL
+1 constant TYPE_INT
+2 constant TYPE_FIXED
+3 constant TYPE_FLOAT
+4 constant TYPE_CSTRING  \ note: meant for embedded cstring fields
+\ 5 constant TYPE_ARRAY
+
+\ Metadata words - operate on current-property
+: <save ( - )
+    current-property 0= abort" <SAVE >> No property being defined"
+    -1 current-property -> serialize-flag ! ;
+
+: <int ( - )
+    current-property 0= abort" <INT >> No property being defined"
+    TYPE_INT current-property -> property-type ! ;
+
+: <fixed ( - )
+    current-property 0= abort" <FIXED >> No property being defined"
+    TYPE_FIXED current-property -> property-type ! ;
+
+: <float ( - )
+    current-property 0= abort" <FLOAT >> No property being defined"
+    TYPE_FLOAT current-property -> property-type ! ;
+
+: <cstring ( - )
+    current-property 0= abort" <CSTRING >> No property being defined"
+    TYPE_CSTRING current-property -> property-type ! ;
+
+: inspect-property ( property val-addr - )
+    {: property val-addr :} 
+    property .name ." = " 
+    property -> property-type @ case
+        TYPE_CELL      of val-addr ? endof  
+        TYPE_INT       of val-addr ? endof 
+        TYPE_FIXED     of val-addr p? endof   
+        TYPE_FLOAT     of val-addr sf@ f. endof   
+        TYPE_CSTRING   of val-addr count type endof                 
+    endcase cr ;
+
+: .props ( object - )
+    [[
+        cla @ -> property-list dup list-count for
+            @next                       \ get property
+            me over -> offset @ prop+   \ get field address
+            inspect-property
+        loop drop 
+    ]] ;
+
 \ ==============================================================================
 \ _OBJECT Base Protocols
 \ ==============================================================================
@@ -819,12 +868,9 @@ aka instance make  \ Backward compatibility
 0 to classifier
 
 _object :: info ( - )
-    \ Default inspection - show class name and address
-    me . cla @ .name me .name ;
-
-_object :: describe ( - )
-    \ Detailed inspection - override in subclasses for specific info
-    me info ;
+    \ Default inspection - show class name, address, and properties
+    me . cla @ .name me .name  cr
+    me .props ;
 
 _object :: on-error ( xt err# - )
     throw ;
