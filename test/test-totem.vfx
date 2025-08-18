@@ -16,6 +16,6 @@ abc :: gen-path f" test/abc/%s.abc" ;
 
 \ test.abc [[ 0 a ! 0 b ! 0 c ! ]]
 \ s" test.abc" abc load-totem [[ a ? b ? c ? ]]
-s" test/abc" abc load-totems
+s" test/abc" abc load-dir
 test.abc [[ a ? b ? c ? ]]
 test2.abc [[ a ? b ? c ? ]]

@@ -21,8 +21,8 @@ class: tileset
     prop th <save <int 
     prop #tiles <save <int 
 
-    :: gen-path ( name len - a len )
-        tilesets-path f" %s/%s.ts" ;
+    :: default-path ( - path len )
+        tilesets-path ;
 
 class;
 
@@ -68,10 +68,10 @@ tileset :: cleanup ( - )
     tileset load-totem ;
 
 : load-tilesets ( - )
-    tilesets-path tileset load-totems ;
+    tilesets-path tileset load-dir ;
 
 : reload-tilesets ( - )
-    tilesets-path tileset refresh-totems ;
+    tilesets-path tileset refresh-dir ;
 
 : is-tile? ( n - f )
     bitmap@ dup -exit al_is_sub_bitmap ;

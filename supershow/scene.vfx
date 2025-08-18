@@ -3,8 +3,7 @@
 class: scene
     is-a _totem
     is-a loadable
-    :: gen-path ( name len - fn len )
-        f" dat/scn/%s.scn" ;
+    :: default-path ( - path len ) s" dat/scn" ;
 class;
 
 : deser-actor ( a - a' )
