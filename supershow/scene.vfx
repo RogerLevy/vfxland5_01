@@ -1,7 +1,7 @@
 1 constant SCENE_FORMAT_VERSION
 
 class: scene
-    is-a asset
+    is-a _asset
     is-a loadable
     :: gen-path ( name len - fn len )
         f" dat/scn/%s.scn" ;

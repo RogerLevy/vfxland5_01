@@ -2,7 +2,7 @@
 \   Asset based on a cached Forth script
 
 class: forth-asset
-    is-a asset
+    is-a _asset
     prop data               \ a wstring
     :: refresh ( - )
         srcpath count wslurp data ! ;

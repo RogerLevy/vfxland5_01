@@ -1,4 +1,4 @@
-trait: asset
+trait: _asset
 \    static registry
     prop existed
     prop dirty
@@ -16,7 +16,7 @@ trait;
 : new? -> existed @ not ;
 
 : find-asset ( $ - asset|0 )
-    find if >body dup asset is? and else drop 0 then ;
+    find if >body dup _asset is? and else drop 0 then ;
 
 || : srcpath! ( fn len - )
     >abspath srcpath place ;
@@ -40,7 +40,7 @@ trait;
         me setup 
         dirty on ;
 
-asset :: save-content ( asset - )
+_asset :: save-content ( asset - )
     temp[ me serbin temp] 
     srcpath count 
     ['] write catch abort" File write error" ;
@@ -48,7 +48,7 @@ asset :: save-content ( asset - )
 : into-me ( class - obj )
     drop   me ;
 
-asset :: load-content ( asset - )
+_asset :: load-content ( asset - )
     srcpath count ['] file@ catch nip abort" File read error"
     ( a ) dup ['] into-me desbin drop  
     free throw ;
@@ -86,8 +86,8 @@ asset :: load-content ( asset - )
     to class0   ['] (refresh-asset) each-file ;
 
 
-|| _trait object asset-fresh  
-asset asset-fresh copy drop
+|| _trait object _asset-fresh  
+_asset _asset-fresh copy drop
 
 : reset-asset-trait
-    asset-fresh asset copy drop ;
+    _asset-fresh _asset copy drop ;

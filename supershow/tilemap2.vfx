@@ -13,7 +13,7 @@ variable pile
 s" dat/gfx" 2constant tilesets-path
 
 class: tileset
-    is-a asset
+    is-a _asset
     is-a usable
     prop baseid <save <int 
     prop bmp

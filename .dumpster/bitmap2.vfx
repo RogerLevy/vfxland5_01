@@ -2,7 +2,7 @@
 \ based on sketch provided by Claude
 
 class: png-bitmap
-    is-a asset
+    is-a _asset
     var allegro-bitmap
     var id
 

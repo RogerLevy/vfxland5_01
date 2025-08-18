@@ -2,7 +2,7 @@ include %idir%/../../engineer/nib2-serdes.vfx
 include %idir%/../../engineer/asset2.vfx
 
 class: abc 
-    is-a asset 
+    is-a _asset 
     prop a <save 
     prop b <save 
     prop c <save 
