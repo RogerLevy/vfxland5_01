@@ -67,15 +67,24 @@ include %idir%/../textmode/textmode-tools.vfx
     ." ] "
     pop-attribute cr ;
 : rs reset-stacks ;
-: ending ( a n c - a n )
+: ending ( a len c - a' len' )
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
-: slashes ( a n - a n )  
+: slashes ( a len - a len )  
     2dup  over + swap do  i c@ '/' = if
     '\' i c!  then  #1 +loop ; 
-: -path ( a n - a n ) slashes  '\' ending  0 max ;
-: -ext  2dup '.' scan nip - ;
+: -path ( a len - a len' ) slashes  '\' ending  0 max ;
+: -ext  ( a len - a len' ) 2dup '.' scan nip - ;
+: <scan ( a len c - a len' )
+    {: a len c :}
+    a len 
+    2dup bounds swap 1 - do
+        i c@ c = if 1 - exit then 
+        1 - 
+    -1 +loop ;
+: -file ( a len - a len' ) slashes '\' <scan ;
+
 : bytes-left  ( id - n )
     >r r@ file-size abort" Get file size error" drop
     r> file-position abort" Get file position error" drop
