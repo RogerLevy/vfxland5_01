@@ -315,26 +315,47 @@ borrow engineer/ func[]
   endif
 ;
 
-: .error ( - )
+2variable lastword
+
+: (DoErrorMessage) ( err - )
     4 push-attribute
-    dup Err$ nip if			\ if text available
-        .ErrDef				\ generate error message
+    dup -13 = if
+        lastword 2@ type ." ? " 
     else
-        cr ." No text available for THROW code "
-        base @ >r  decimal 0 .r ." (10)"  r> base !
+        dup Err$ nip if			\ if text available
+            .ErrDef     		\ generate error message
+        else
+            ." No text available for THROW code "
+            base @ >r  decimal 0 .r ." (10)"  r> base !
+        then
+        cr
+        ShowErrorLine
+        ShowSourceOnError
     then
-    ShowErrorLine
-    ShowSourceOnError
     pop-attribute
     EditOnError ;
 
-: .throw ( n - )
-  case
-     0 of  endof				\ not an error
-    -1 of  endof				\ quiet
-    -2 of  'AbortText @ DoAbortMessage  endof	\ ABORT" ..."
-           .error
-  end-case ;
+assign (DoErrorMessage) to-do DoErrorMessage
+
+: (interpret)	\ --
+    page-check
+    begin  
+        ?stack parse-name dup
+    while  
+        2dup lastword 2!
+        parser execute
+    repeat
+    2drop ;
+
+' (interpret) is interpret
+
+\ : .throw ( n - )
+\     case
+\         0 of  endof				                    \ not an error
+\         -1 of  endof				                \ quiet
+\         -2 of  'AbortText @ DoAbortMessage  endof	
+\         .error  
+\     end-case ;
 
 : obey ( - )
     osp @ >r uiosp @ osp !
