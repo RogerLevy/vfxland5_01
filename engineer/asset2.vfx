@@ -84,3 +84,10 @@ asset :: load-content ( asset - )
     \ Reload all assets in directory (dev-time hot-reload)
     \ TODO: filter by extension (single)
     to class0   ['] (refresh-asset) each-file ;
+
+
+|| _trait object asset-fresh  
+asset asset-fresh copy drop
+
+: reset-asset-trait
+    asset-fresh asset copy drop ;

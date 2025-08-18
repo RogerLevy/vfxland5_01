@@ -658,6 +658,7 @@ borrow nib2~ init-nib
     rs
     cleanup
     init-nib
+    reset-asset-trait
     clear-funcs
     only forth definitions
     s" anew gild" evaluate ;

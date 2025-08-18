@@ -181,7 +181,7 @@ create _class _class (classifier) [[ (init-class) ]]
     else >cla @ -> instance-size @ then ;
 
 \ ==============================================================================
-\ TRAIT% and OBJECT%
+\ _TRAIT and _OBJECT
 \ ==============================================================================
 
 : (init-trait) ( - )
