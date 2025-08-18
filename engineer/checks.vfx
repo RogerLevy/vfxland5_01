@@ -6,21 +6,6 @@ crucial test: check-object ( a - a n:res )
 before [[ check-object
 wrap-word [[
 
-\ ------------------------------------------------------------------------------
-\ NOTE: This will NOT work!!! it wraps DO-MESSAGE not the message itself!!!
-\
-\ before do-message check-object
-\ borrow nib~ do-message
-\ wrap-word do-message
-\ 
-\ validations dup @ swap on \ important!
-\     : does-validated-message  does> swap do-message ;
-\ validations !
-\ 
-\ : m: ( - <name> <code> ; ) ( ... obj - ... ) 
-\     static does-validated-message dispatch, ;
-\ ------------------------------------------------------------------------------
-
 : ?prop ( n - n )
     validations @ -exit
     dup 0= abort" ?PROP >> Property not mapped for this class!" ;
@@ -37,22 +22,11 @@ wrap-word [[
     immediate does> fast[ >property fast] ; 
 \ -----------------------------------------------------------------------------
 
-
-\ -----------------------------------------------------------------------------
-\ THIS DOESN'T WORK WITH UNBOUND-DISPATCH
-\ : validate-dispatch ( - )
-\     me valid-object? not 
-\         abort" VALIDATE-DISPATCH >> Invalid object." ;
-
-\ : ?compile-validate-dispatch ( - )
-\     validations @ if s" validate-dispatch" evaluate then ;
-\ -----------------------------------------------------------------------------
-
 aka (->) ->
 
 : validate-object
     dup valid-object? not 
-        abort" VALIDATE-DISPATCH >> Invalid object." ;
+        abort" VALIDATE-OBJECT >> Invalid object." ;
 
 : -> 
     validations @ if
@@ -60,6 +34,11 @@ aka (->) ->
     then
     postpone (->) ; immediate
 
+:noname  ( obj protocol - obj protocol )
+    safety @ -exit
+    over valid-object? not
+        abort" PROTOCOL-VALIDATIONS >> Invalid object." ;
+is protocol-validations
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;

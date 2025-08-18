@@ -554,8 +554,10 @@ debug @ [if]
     aka oexec execute
 [then]
 
-: does-protocol ( - )
-    does> swap [[
+defer protocol-validations ( obj protocol - obj protocol )
+
+: does-protocol ( - ) ( ... obj - ... )
+    does> protocol-validations swap [[
         dup -> offset @ cla @ + @ ?dup if
             nip ( xt )
         else
