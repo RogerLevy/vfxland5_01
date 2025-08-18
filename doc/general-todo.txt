@@ -1,4 +1,7 @@
 2025/08/17
+[ ] (NIBS) Investigate protocol redefinition propagation not working as expected
+    Redefining _OBJECT:INFO doesn't seem to propagate to dependents such as _ARRAY.
+
 [ ] (IDE) Harden the IDE against errors and ensure graceful recovery
     Protect against possible errors everywhere in the IDE codebase.
     Ensure graceful recovery from errors or clean quit to VFX when necessary.
