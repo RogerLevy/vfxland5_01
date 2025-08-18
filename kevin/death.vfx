@@ -17,4 +17,4 @@
     1 gamelife +! 
     160 ` 120 8 - ` at s" Kevin died." >centered print ;
 : death
-    1 #deaths +! death~ movie show> step crt> you-died ; 
+    1 #deaths +! death/ movie show> step crt> you-died ; 

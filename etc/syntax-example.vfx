@@ -129,7 +129,7 @@ of endof endcase end-case if then else for  +loop ?loop [if] [then] [else]
     floored rounded roundup floor fint ftrunc 
     fround [fround] f** (f**) falog flnp1 
     fexpm1 fexp 2** 2**z fln flog 
-    fmin fmax ?fnegate f~ fsign fsignbit 
+    fmin fmax ?fnegate f/ fsign fsignbit 
     f>= f<= f> f<> f= f< 
     f0> f0<> f0= f0< fcmp2 fcmp1 
     fr>d fr>s f>d f>s d>f s>f 

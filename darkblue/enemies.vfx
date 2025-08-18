@@ -140,7 +140,7 @@ enemy :: init
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
-: for:  str f" enemy-class %s" evaluate  enemies~  defaults ;
+: for:  str f" enemy-class %s" evaluate  enemies/  defaults ;
 : hp:  val hp ! ;
 : atk:  val atk ! ;
 : gold:  val bounty ! ;

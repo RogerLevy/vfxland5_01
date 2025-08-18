@@ -91,4 +91,4 @@ caverns-of-kevin-crop.png value b
 || : title-bg  0 0 at  bgt lay ;
 
 : title
-    title~ movie skippable show> step crt> title-bg sprites ;
+    title/ movie skippable show> step crt> title-bg sprites ;

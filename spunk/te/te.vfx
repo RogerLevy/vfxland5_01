@@ -92,7 +92,7 @@ create syms
 \ ------------------------------------------------------------------------------
 public
 
-: te  te~ show> logic ui ;
+: te  te/ show> logic ui ;
 
 || : edit ( - <tileset> )
     >in @ ' execute baseid@ t0 ! >in !

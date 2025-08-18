@@ -41,9 +41,9 @@ create str 32768 allot
 : hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
 : hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
 
-borrow engineer~ frame 
-borrow engineer~ draw-ide
-borrow engineer~ refresh
+borrow engineer/ frame 
+borrow engineer/ draw-ide
+borrow engineer/ refresh
 
 : (echo) ( - )
     \ Echo to VFX console
@@ -140,7 +140,7 @@ variable hsplit   0.5 hsplit !
 : lines ( n - h )
     24 * ;
 
-borrow engineer~ draw-game
+borrow engineer/ draw-game
 : (2x-game) 2. 2. scaled> draw-game ;
 : gamewin-h apph 2 * 100 + ;
 : game-window ( - )
@@ -175,7 +175,7 @@ borrow engineer~ draw-game
     -m
     0 0 monw monh al_set_clipping_rectangle ;
 
-borrow engineer~ func[]
+borrow engineer/ func[]
 : .hotkeys ( - )
     s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  " type cr
     12 for
@@ -406,10 +406,10 @@ borrow engineer~ func[]
 \ Display Modes
 \ =============================================================================
 
-borrow engineer~ fullscreen
-borrow engineer~ windowed
-borrow engineer~ winmode
-borrow engineer~ draw-tv
+borrow engineer/ fullscreen
+borrow engineer/ windowed
+borrow engineer/ winmode
+borrow engineer/ draw-tv
 
 \ Displaymode-like trait
 trait: displaymode-like
@@ -487,7 +487,7 @@ object-table;
 \ Public Words
 \ =============================================================================
 
-borrow engineer~ -keys
+borrow engineer/ -keys
 
 public
 
@@ -554,7 +554,7 @@ is draw-ide
     ((quit))
 ;
 
-borrow error2~ console-debugger
+borrow error2/ console-debugger
 : ide-debugger
     running @ if hist[ 4 push-attribute then
     console-debugger

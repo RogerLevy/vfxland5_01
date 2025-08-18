@@ -542,7 +542,7 @@ load-bitmaps
 
 defer frame ( - ) ' noop is frame
 
-' engineer~ public-xt !
+' engineer/ public-xt !
     include %idir%/ide3.vfx
 ' forth public-xt !
 
@@ -652,7 +652,7 @@ bye-chain link 0 ,
 \ || : return ( - )
 \     home-path$ count $cwd ;
 
-borrow nib2~ init-nib
+borrow nib2/ init-nib
 : empty ( - )
     debug @ -exit
     rs
@@ -810,8 +810,8 @@ create zcommand 65536 allot
     over zcount zcommand zplace
     vfxforth-entrypoint ;
 
-borrow ide3~ history-stats
-borrow ide3~ visible-lines
+borrow ide3/ history-stats
+borrow ide3/ visible-lines
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args
     /console
@@ -825,7 +825,7 @@ borrow ide3~ visible-lines
 ' engineer-entrypoint is EntryPoint
 assign engineer.cold to-do .cold
 
-borrow nib2~ gild-nib
+borrow nib2/ gild-nib
 gild-nib
 
 marker gild

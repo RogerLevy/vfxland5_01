@@ -80,7 +80,7 @@ class;
     bl parse buf[ place
     push-order
     buf[ count check-event-file
-    buf[ count f" %s~" $private 
+    buf[ count f" %s/" $private 
     buf[ count >event-path required
     pop-order ;
 
@@ -103,7 +103,7 @@ class;
     a len event$ place
     \ at@ last-event-at 2!
     ['] hone-event honing !    
-    a len f" %s~" $private 
+    a len f" %s/" $private 
     a len >event-path >try
     a len >pad find if
         execute

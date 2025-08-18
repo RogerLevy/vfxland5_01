@@ -181,7 +181,7 @@ variable mode
 \ Kickoff
 public
 : be
-    be~
+    be/
     lock on
     pause on
     be-ui isolate

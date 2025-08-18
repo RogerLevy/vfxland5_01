@@ -129,7 +129,7 @@ variable osp   os osp ! \ object stack pointer
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
     [[
-    cla @ body> >name count f" %s~"
+    cla @ body> >name count f" %s/"
     >pad find if execute else drop then ;
 
 \ ==============================================================================

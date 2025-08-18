@@ -69,7 +69,7 @@ create cb-p /screen allot
     ag /screen erase  pg /screen erase ;
     
 : load-ag ( - )
-    context @  le~  clear-ag  room.scn$ ?included  context ! ; 
+    context @  le/  clear-ag  room.scn$ ?included  context ! ; 
 
 \ ------------------------------------------------------------------------------
 
@@ -200,7 +200,7 @@ create cb-p /screen allot
     room# @ #rooms for i room revert loop room ;
 
 : (le)
-    le~  show>  logic  ui  1 life +! ;
+    le/  show>  logic  ui  1 life +! ;
 
 \ ------------------------------------------------------------------------------
 public

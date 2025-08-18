@@ -1,7 +1,7 @@
 \ ==============================================================================
 \ SKETCHPAD mode
 
-\ SKETCHPAD~ vocabulary
+\ SKETCHPAD/ vocabulary
 \ THIS - value pointing to the current scene
 \ SAVEAS <name> - create a scene (along with the file) and assign it to THIS.
 \                 no extension.
@@ -91,7 +91,7 @@ private
 public
 
 : sketchpad
-    sketchpad~ show> step sprites input ;
+    sketchpad/ show> step sprites input ;
 
 honing @ [if]
 sketchpad

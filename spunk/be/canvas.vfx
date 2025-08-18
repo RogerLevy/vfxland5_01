@@ -1,9 +1,9 @@
 element-class canvas%
-borrow be~ the-bmp
-borrow be~ c1
-borrow be~ mouse
-borrow be~ lb
-borrow be~ rb
+borrow be/ the-bmp
+borrow be/ c1
+borrow be/ mouse
+borrow be/ lb
+borrow be/ rb
 : backing ( w h -)
     at@ 2+ 2>r
         at@f `` 2r> 2s>f `` 

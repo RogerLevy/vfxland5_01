@@ -10,7 +10,7 @@ variable public-xt  ' forth public-xt !
 
 : wlname
     CurrSourceName -path -ext wl$ place
-    wl$ s" ~" $+ count ;
+    wl$ s" /" $+ count ;
 
 : CurrWordlist wl$ count search-context if >body @ else 0 then ;
 : scope ( - )

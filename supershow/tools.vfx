@@ -2,7 +2,7 @@
 \ Interactive tools
 \ =============================================================================
 
-also engineer~
+also engineer/
 
 || 0 value c
 
@@ -42,7 +42,7 @@ cstring update-name$
         update-name$ count f" scripts\%s.vfx" >try
     then
     class0 init-by-class
-    update-name$ count f" %s~" $private ;
+    update-name$ count f" %s/" $private ;
 
 aka hone update
 
@@ -83,7 +83,7 @@ aka hone update
     else
         bl parse 
     then
-    2dup f" %s~" evaluate
+    2dup f" %s/" evaluate
     f" locate %s" evaluate ;
 
 || : s= compare 0= ;
@@ -98,7 +98,7 @@ aka hone update
     if postpone \\ exit then
     private ;
 
-engineer~
+engineer/
 : fp ( - )
     \ Frame profile
     ['] screen time? ;
