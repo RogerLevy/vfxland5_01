@@ -35,16 +35,17 @@ trait;
     class0 fn len -path $object
     [[ fn len gen-path srcpath!   me ]] ;
 
-: ?totem ( class <name> - obj )
+: *totem ( class <name> - obj )
     \ Parse name and materialize totem (dev/compile-time)
     bl parse rot materialize ;
 
 : manifest ( obj - )
     \ Initialize totem for use (runtime)
-    as>
+    [[
         existed @ if me cleanup then
         me setup 
-        dirty on ;
+        dirty on 
+    ]] ;
 
 _totem :: save-content ( totem - )
     temp[ me serbin temp] 

@@ -9,7 +9,7 @@ class: abc
 class;
 abc :: gen-path f" test/abc/%s.abc" ;
 
-\ abc ?totem test 
+\ abc *totem test 
 \ [[  1 a ! 2 b ! 3 c !
 \ me ]] manifest
 \ test.abc commit

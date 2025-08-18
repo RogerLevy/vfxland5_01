@@ -58,6 +58,9 @@ tileset :: cleanup ( - )
 
 : >tileset ( bmp# tw th <name> - )
     tileset ?totem 
+
+: *tileset ( bmp# tw th <name> - )
+    tileset *totem 
     [[ th ! tw ! bmp ! me ]]
     manifest ;
 

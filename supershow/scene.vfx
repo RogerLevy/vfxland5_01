@@ -33,5 +33,5 @@ scene :: load ( - )
     dup load-scene-data
     free throw ;
 
-: >scene ( <name> - scene ) 
-    scene ?totem dup manifest ;
+: *scene ( <name> - scene ) 
+    scene *totem dup manifest ;
