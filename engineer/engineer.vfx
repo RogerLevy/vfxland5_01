@@ -638,7 +638,7 @@ bye-chain link 0 ,
 || : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
     [ ' EntryPoint >body @ compile, ] ;
 
-|| : cleanup ( - )
+|| : engineer-cleanup ( - )
     bye-chain-root bye-chain !
     destroy-bitmaps
     ['] noop 'show !
@@ -647,7 +647,7 @@ bye-chain link 0 ,
     ['] noop is onSwitchIn
     honing @ -1 <> if honing off then ;
 
-' cleanup bye-chain-root cell+ !
+' engineer-cleanup bye-chain-root cell+ !
 
 \ || : return ( - )
 \     home-path$ count $cwd ;
@@ -656,7 +656,7 @@ borrow nib2~ init-nib
 : empty ( - )
     debug @ -exit
     rs
-    cleanup
+    engineer-cleanup
     init-nib
     reset-asset-trait
     clear-funcs
