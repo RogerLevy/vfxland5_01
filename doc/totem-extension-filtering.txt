@@ -1,7 +1,7 @@
-Asset Extension Filtering Approaches
+Totem Extension Filtering Approaches
 ====================================
 
-Problem: load-assets needs to filter files by extension based on asset class
+Problem: load-totems needs to filter files by extension based on totem class
 so it doesn't try to load incompatible files.
 
 
@@ -9,7 +9,7 @@ Option 1: Class Method for Extensions
 -------------------------------------
 Each class declares its supported extensions as a string.
 
-    trait: asset
+    trait: totem
         :: extensions ( - a len )  \ Return supported extensions
             s" .dat" ;              \ Default extension
     trait;
@@ -20,16 +20,16 @@ Each class declares its supported extensions as a string.
     tileset :: extensions ( - a len )  
         s" .ts" ;
 
-    bitmap-asset :: extensions ( - a len )
+    bitmap-totem :: extensions ( - a len )
         s" .png .jpg .bmp" ;       \ Multiple extensions
 
-    : load-assets ( path-a path-len class - )
+    : load-totems ( path-a path-len class - )
         {: path-a path-len class0 :}
         path-a path-len [: ( fn len )
             2dup extension           \ Get file extension
             class0 >extensions @ execute  \ Get class extensions
             search if                 \ Extension supported?
-                class0 load-asset drop
+                class0 load-totem drop
             else 2drop then
         ;] each-file ;
 
@@ -41,7 +41,7 @@ Option 2: Pattern-Based with Glob
 ---------------------------------
 Each class provides a file pattern for matching.
 
-    trait: asset
+    trait: totem
         :: file-pattern ( - a len )
             s" *.dat" ;             \ Default pattern
     trait;
@@ -49,13 +49,13 @@ Each class provides a file pattern for matching.
     scene :: file-pattern ( - a len )
         s" *.scn" ;
 
-    bitmap-asset :: file-pattern ( - a len )
+    bitmap-totem :: file-pattern ( - a len )
         s" *.{png,jpg,bmp}" ;       \ Multiple extensions
 
-    : load-assets ( path-a path-len class - )
+    : load-totems ( path-a path-len class - )
         >r 2dup r@ >file-pattern @ execute
         concat                       \ "dat/gfx/*.png"
-        r> swap ['] load-asset each-matching-file ;
+        r> swap ['] load-totem each-matching-file ;
 
 Pros: Works with existing glob/file-matching utilities
 Cons: Requires glob pattern support
@@ -65,23 +65,23 @@ Option 3: Filter Predicate
 --------------------------
 Each class implements a predicate to test file acceptance.
 
-    trait: asset
+    trait: totem
         :: accepts? ( fn len - flag )
             \ Default: accept .dat files
             extension s" .dat" compare 0= ;
     trait;
 
-    bitmap-asset :: accepts? ( fn len - flag )
+    bitmap-totem :: accepts? ( fn len - flag )
         extension
         dup s" .png" compare 0= if 2drop true exit then
         dup s" .jpg" compare 0= if 2drop true exit then
         s" .bmp" compare 0= ;
 
-    : load-assets ( path-a path-len class - )
+    : load-totems ( path-a path-len class - )
         {: path-a path-len class0 :}
         path-a path-len [: ( fn len )
             2dup class0 >accepts? @ execute if
-                class0 load-asset drop
+                class0 load-totem drop
             else 2drop then
         ;] each-file ;
 

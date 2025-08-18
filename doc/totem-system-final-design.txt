@@ -1,27 +1,27 @@
-Asset System Final Design
+Totem System Final Design
 =========================
 
 Overview
 --------
-The asset system provides a Smalltalk-like transparent persistence model where assets
+The totem system provides a Smalltalk-like transparent persistence model where totems
 (tilesets, scenes, animations, etc.) exist as live objects during development and 
-can be committed to disk when ready. At startup, assets are reconstructed from their
+can be committed to disk when ready. At startup, totems are reconstructed from their
 persisted state.
 
 Core Concepts
 ------------
-- Assets are live objects in a working set during development
+- Totems are live objects in a working set during development
 - Changes accumulate in memory until explicitly committed
 - Startup reconstructs the working set from persisted files
-- Each asset type has its own directory (e.g., dat/tiles/, dat/scn/)
-- Asset words provide direct access to asset objects
+- Each totem type has its own directory (e.g., dat/tiles/, dat/scn/)
+- Totem words provide direct access to totem objects
 
-Asset Protocol (Methods)
+Totem Protocol (Methods)
 -----------------------
-Each asset class implements these methods:
+Each totem class implements these methods:
 
     :: cleanup ( - )        
-        Free external resources (safe to call on empty assets)
+        Free external resources (safe to call on empty totems)
         
     :: setup ( - )          
         Create/recreate external resources using stored parameters
@@ -40,13 +40,13 @@ Each asset class implements these methods:
 
 Core Operations
 --------------
-1. Development time: Create or update assets via >asset words
-2. Startup time: Load assets from disk via load-asset
-3. Commit time: Persist dirty assets via commit-assets
+1. Development time: Create or update totems via >totem words
+2. Startup time: Load totems from disk via load-totem
+3. Commit time: Persist dirty totems via commit-totems
 
 Parameter Handling Problem
 -------------------------
-Different asset types require different parameters:
+Different totem types require different parameters:
 - Tileset: bitmap-id, tile-width, tile-height
 - Scene: (no parameters)
 - Animation: frame-count, duration
@@ -69,14 +69,14 @@ Implementation:
     scene :: apply-params ( - )
         ;  \ No params
     
-    : >asset ( ...params class <name> -- )
+    : >totem ( ...params class <name> -- )
         [core logic]
         apply-params
         [cleanup/setup/mark-dirty]
 
 Usage:
-    mybmp.png 16 16 tileset >asset mybmp.ts
-    scene >asset room1.scn
+    mybmp.png 16 16 tileset >totem mybmp.ts
+    scene >totem room1.scn
 
 Pros:
 - Simple and direct
@@ -104,15 +104,15 @@ Implementation:
     scene :: apply-params ( 0 - )
         drop ;  \ No params
     
-    : >asset ( ...params n class <name> - )
+    : >totem ( ...params n class <name> - )
         [core logic]
         apply-params
         [cleanup/setup/mark-dirty]
 
 Usage:
-    mybmp.png 16 16  3 tileset >asset mybmp.ts
-    0 scene >asset room1.scn
-    64 0.5  2 animation >asset walk.anim
+    mybmp.png 16 16  3 tileset >totem mybmp.ts
+    0 scene >totem room1.scn
+    64 0.5  2 animation >totem walk.anim
 
 Pros:
 - Explicit parameter count enables validation
@@ -125,19 +125,19 @@ Cons:
 - Slight usage complexity
 
 
-Option 3: Split into ?asset and manifest
+Option 3: Split into ?totem and manifest
 ========================================
 
 Design:
-    Separate asset acquisition from property setting and finalization
+    Separate totem acquisition from property setting and finalization
 
 Implementation:
-    : ?asset ( class <name> -- existed? obj )
-        parse-name 2dup find-asset-word if
+    : ?totem ( class <name> -- existed? obj )
+        parse-name 2dup find-totem-word if
             2drop execute @ true swap    \ Get existing
         else
             over instantiate              \ Create new
-            dup create-asset-word
+            dup create-totem-word
             dup gen-path over >path !
             false swap
         then ;
@@ -147,12 +147,12 @@ Implementation:
         setup mark-dirty ;                \ Setup and mark dirty
     
     : >tileset ( bmpid w h <name> -- )
-        tileset ?asset
+        tileset ?totem
         [[ h ! w ! bmp ! me ]]    \ Direct field access
         manifest ;
     
     : >scene ( <name> -- )
-        scene ?asset
+        scene ?totem
         drop                             \ No fields to set
         manifest ;
 
@@ -164,18 +164,18 @@ Pros:
 - No variable parameters in methods
 - Clean separation of concerns
 - Direct field access is idiomatic Forth
-- Each asset type word is self-contained
-- Pattern reads naturally: "get asset, set fields, manifest"
+- Each totem type word is self-contained
+- Pattern reads naturally: "get totem, set fields, manifest"
 
 Cons:
-- Requires two words (?asset/manifest) instead of one
+- Requires two words (?totem/manifest) instead of one
 - Slightly more complex implementation
 - Pattern must be followed consistently
 
 
 Recommendation
 -------------
-Option 3 (?asset/manifest split) provides the cleanest design:
+Option 3 (?totem/manifest split) provides the cleanest design:
 - Maintains method signature consistency
 - Separates concerns clearly
 - Provides maximum flexibility
@@ -190,7 +190,7 @@ Example Complete Implementation (Option 3)
 ==========================================
 
 class: tileset
-    is-a asset
+    is-a totem
     var bmp  var w  var h  var tiles
     
     :: cleanup ( - )
@@ -206,23 +206,23 @@ class: tileset
 class;
 
 : >tileset ( bmpid w h <name> -- )
-    tileset ?asset
+    tileset ?totem
     [[ h ! w ! bmp ! me ]]
     manifest ;
 
-: load-asset ( path class -- )
+: load-totem ( path class -- )
     \ Startup/load time
-    materialize >r           \ Create asset
+    materialize >r           \ Create totem
     r@ load-params          \ Read params from file
     r> setup ;              \ Create resources (no cleanup needed)
 
 : load-tileset ( path -- )
-    tileset load-asset ;
+    tileset load-totem ;
 
-: commit-asset ( asset -- )
+: commit-totem ( totem -- )
     \ Commit time
     dup save-params
     clear-dirty ;
 
-: commit-assets
-    ['] commit-easset all-dirty-assets each ;
+: commit-totems
+    ['] commit-etotem all-dirty-totems each ;

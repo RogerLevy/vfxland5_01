@@ -8,14 +8,14 @@
     Add global immutable hotkey to cycle between display types.
 
 2025/08/16
-[ ] (Asset System) Validate asset names in ?ASSET
-    Ensure asset names match expected format and extension for the asset class.
+[ ] (Asset System) Validate totem names in ?ASSET
+    Ensure totem names match expected format and extension for the totem class.
 
 [ ] (NIBS) Add runtime protocol reassignment word REASSIGN
     Implement REASSIGN ( xt protocol class - ) to dynamically change protocol implementations at runtime.
 
-[ ] (Asset System) Add multiple file extension support to assets
-    Implement filtering mechanism so asset classes can specify supported file extensions.
+[ ] (Asset System) Add multiple file extension support to totems
+    Implement filtering mechanism so totem classes can specify supported file extensions.
 
 [ ] (Engineer) Look into adding anonymous functions
     Investigate implementing `[: ;]` syntax for inline anonymous functions.
@@ -89,13 +89,13 @@
     [ ] Implement "triggers" - special protocols that can be chained, allowing
         all implementations supported by a class to execute.
         (No parameters allowed.)
-        `_asset trigger: init ( - ) ;`
+        `_totem trigger: init ( - ) ;`
     [ ] If needed, establish a standard way to alias conflicting trait protocols
         - Easy solution:
-            Directly call them.  `_asset:init`  (assumes object is scoped)
+            Directly call them.  `_totem:init`  (assumes object is scoped)
         - More verbose solution:
             Create wrappers that take an object:
-            `: asset-init ( _asset - ) [[ _asset:init ]] ;`
+            `: totem-init ( _totem - ) [[ _totem:init ]] ;`
 
 [x] (NIBS) Make :: syntax consistent with other NIBS words - allow classifier inference when inside classifier blocks.
 
@@ -124,8 +124,8 @@
     [ ] Replace ACTOR-CLASS with standard class: syntax plus :DERIVE hook
     [ ] Replace :EVENT with standard class: syntax plus :DERIVE hook
 
-[ ] Experimentally write a static asset analyzer.
-    Implement bracket notation dependency discovery for automatic asset loading.
+[ ] Experimentally write a static totem analyzer.
+    Implement bracket notation dependency discovery for automatic totem loading.
     Think through implications for interactive development and error reporting.
 
 2025/08/08
