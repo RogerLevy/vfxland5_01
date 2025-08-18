@@ -1,0 +1,93 @@
+trait: _totem
+\    static registry
+    prop existed
+    prop dirty
+    256 nprop srcpath
+
+    :: cleanup ( - ) ;                \ Free external resources (safe if empty)
+    :: setup ( - ) ;                  \ Create/recreate external resources
+    :: gen-path ( name len - a len ) stub ;  \ Generate file path from totem name (compile-time)
+    :: save-content ( - ) ;                    \ Serialize totem to disk (dev-time)
+    :: load-content ( - ) ;                    \ Deserialize totem from disk (runtime/dev-time)
+    \ :: extension ( - a len ) stub ;
+trait;
+
+: my-name me body> >name count ;
+: new? -> existed @ not ;
+
+: find-totem ( $ - totem|0 )
+    find if >body dup _totem is? and else drop 0 then ;
+
+|| : srcpath! ( fn len - )
+    >abspath srcpath place ;
+
+: materialize ( fn len class - obj )
+    \ Find or create totem object by name (compile/runtime)
+    {: fn len class0 :}
+    fn len -path >pad find-totem ?dup 
+    if dup -> existed on exit then 
+    class0 fn len -path $object
+    [[ my-name -ext me gen-path srcpath!   me ]] ;
+
+: ?totem ( class <name> - obj )
+    \ Parse name and materialize totem (compile-time)
+    bl parse rot materialize ;
+
+: manifest ( obj - )
+    \ Initialize totem for use (runtime)
+    as>
+        existed @ if me cleanup then
+        me setup 
+        dirty on ;
+
+_totem :: save-content ( totem - )
+    temp[ me serbin temp] 
+    srcpath count 
+    ['] write catch abort" File write error" ;
+
+: into-me ( class - obj )
+    drop   me ;
+
+_totem :: load-content ( totem - )
+    srcpath count ['] file@ catch nip abort" File read error"
+    ( a ) dup ['] into-me desbin drop  
+    free throw ;
+
+: commit ( totem - )
+    \ Save totem to disk and clear dirty flag (dev-time)
+    dup save-content   -> dirty off ;
+
+|| 0 value class0
+
+: load-totem ( fn len class - totem )
+    \ Load single totem from file (runtime/startup)
+    materialize dup load-content dup setup ;
+
+|| : (load-totem) ( fn len - )
+    class0 load-totem drop ;
+
+: load-totems ( path-a path-len class - )
+    \ Load all totems from directory (runtime/startup)
+    \ TODO: filter by extension (single)
+    to class0   ['] (load-totem) each-file ;
+
+: refresh ( totem - )
+    \ Reload totem from disk keeping same object (dev-time)
+    dup load-content
+    dup cleanup
+    setup ;
+
+|| : (refresh-totem) ( fn len - )
+    class0 materialize refresh ;
+
+: refresh-totems ( path-a path-len class - )
+    \ Reload all totems in directory (dev-time hot-reload)
+    \ TODO: filter by extension (single)
+    to class0   ['] (refresh-totem) each-file ;
+
+
+|| _trait object _totem-fresh  
+_totem _totem-fresh copy drop
+
+: reset-totem-trait
+    _totem-fresh _totem copy drop ;

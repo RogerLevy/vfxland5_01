@@ -1,21 +1,21 @@
 include %idir%/../../engineer/nib2-serdes.vfx
-include %idir%/../../engineer/asset2.vfx
+include %idir%/../../engineer/totem.vfx
 
 class: abc 
-    is-a _asset 
+    is-a _totem 
     prop a <save 
     prop b <save 
     prop c <save 
 class;
 abc :: gen-path f" test/abc/%s.abc" ;
 
-\ abc ?asset test 
+\ abc ?totem test 
 \ [[  1 a ! 2 b ! 3 c !
 \ me ]] manifest
 \ test.abc commit
 
 \ test.abc [[ 0 a ! 0 b ! 0 c ! ]]
-\ s" test.abc" abc load-asset [[ a ? b ? c ? ]]
-s" test/abc" abc load-assets
+\ s" test.abc" abc load-totem [[ a ? b ? c ? ]]
+s" test/abc" abc load-totems
 test.abc [[ a ? b ? c ? ]]
 test2.abc [[ a ? b ? c ? ]]

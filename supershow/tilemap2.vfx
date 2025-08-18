@@ -13,7 +13,7 @@ variable pile
 s" dat/gfx" 2constant tilesets-path
 
 class: tileset
-    is-a _asset
+    is-a _totem
     is-a usable
     prop baseid <save <int 
     prop bmp
@@ -57,7 +57,7 @@ tileset :: cleanup ( - )
     loop ;
 
 : >tileset ( bmp# tw th <name> - )
-    tileset ?asset 
+    tileset ?totem 
     [[ th ! tw ! bmp ! me ]]
     manifest ;
 
@@ -65,13 +65,13 @@ tileset :: cleanup ( - )
     swap -> baseid @ + ;
 
 : load-tileset ( fn len - tileset )
-    tileset load-asset ;
+    tileset load-totem ;
 
 : load-tilesets ( - )
-    tilesets-path tileset load-assets ;
+    tilesets-path tileset load-totems ;
 
 : reload-tilesets ( - )
-    tilesets-path tileset refresh-assets ;
+    tilesets-path tileset refresh-totems ;
 
 : is-tile? ( n - f )
     bitmap@ dup -exit al_is_sub_bitmap ;

@@ -127,10 +127,10 @@ GetForegroundWindow value vfx-hwnd
     s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
 
 \ =============================================================================
-\ Asset System
+\ Persistence system
 \ =============================================================================
 
-include %idir%/asset2.vfx
+include %idir%/totem.vfx
 
 \ =============================================================================
 \ Interactive Tools
@@ -658,7 +658,7 @@ borrow nib2/ init-nib
     rs
     engineer-cleanup
     init-nib
-    reset-asset-trait
+    reset-totem-trait
     clear-funcs
     only forth definitions
     s" anew gild" evaluate ;

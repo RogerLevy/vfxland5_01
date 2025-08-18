@@ -1,7 +1,7 @@
 1 constant SCENE_FORMAT_VERSION
 
 class: scene
-    is-a _asset
+    is-a _totem
     is-a loadable
     :: gen-path ( name len - fn len )
         f" dat/scn/%s.scn" ;
@@ -35,4 +35,4 @@ scene :: load ( - )
     free throw ;
 
 : >scene ( <name> - scene ) 
-    scene ?asset dup manifest ;
+    scene ?totem dup manifest ;
