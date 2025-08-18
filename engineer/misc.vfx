@@ -312,9 +312,12 @@ variable old-dp
 
 extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
-cstring zstr
 : ensure-dir ( fp len - )
-    normalize zstr zplace
-    0 zstr 0 SHCreateDirectoryExA abort" Error creating directory!" ;
+    {: | err zstr[ 256 ] :}
+    normalize zstr[ zplace
+    0 zstr[ 0 SHCreateDirectoryExA to err
+        err ERROR_FILE_EXISTS =
+        err ERROR_ALREADY_EXISTS = or not 
+        err 0<> and abort" Error creating directory!" ;
 
 
