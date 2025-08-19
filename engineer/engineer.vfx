@@ -8,6 +8,14 @@
 
 include %idir%\vfxcore2.vfx
 
+variable dump#
+
+: dumpsys
+    s" dumps" ensure-dir
+    ['] vfxcore here over - 
+    dump# @ f" dumps/dump%03n.bin" write 
+    1 dump# +! ;
+
 \ =============================================================================
 \ Engineer Variables
 \ =============================================================================
@@ -807,7 +815,7 @@ borrow nib2/ init-nib
 \ Kickoff
 \ =============================================================================
 
-create zcommand 65536 allot 
+create zcommand 256 allot 
 
 : engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
     over zcount zcommand zplace
