@@ -3,6 +3,10 @@
 || #buffers /buffer array buffers 
 || variable buffer-index
 
+: reset-strout-buffers ( - )
+    0 buffer-index !
+    buffers -> data @  #buffers /buffer * erase ;
+
 || : str ( - a )
     buffer-index @ buffers [] ;
 

@@ -88,6 +88,10 @@
 || create format-buffers #format-buffers /format-buffer * allot&erase
 || variable format-buffer-index
 
+: reset-format-buffers ( - )
+    0 format-buffer-index !
+    format-buffers #format-buffers /format-buffer * erase ;
+
 || : fbuf+ ( - a )
     format-buffer-index @ 1 + #format-buffers mod 
     dup format-buffer-index !

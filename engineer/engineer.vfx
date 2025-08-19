@@ -652,6 +652,8 @@ bye-chain link 0 ,
 || : engineer-cleanup ( - )
     bye-chain-root bye-chain !
     destroy-bitmaps
+    reset-format-buffers
+    reset-strout-buffers
     ['] noop 'show !
     ['] noop is boot
 \    ['] noop is .apperr

@@ -36,7 +36,7 @@ variable public-xt  ' forth public-xt !
 
 \ Search order stack
 : pagealign ( - )  here $ff and 256 swap - allot ;
-: aligned-page ( - <name> )  pagealign here $100 allot constant ;
+: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 aligned-page search-order-stack
 variable sosp   search-order-stack sosp ! \ object stack pointer
 : sos-push ( ? - ) sosp @ !  4 sosp c+! ;

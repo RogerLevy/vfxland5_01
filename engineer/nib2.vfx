@@ -111,7 +111,7 @@ cstring name$
 \ ==============================================================================
 
 : pagealign ( - )  here $ff and 256 swap - allot ;
-: aligned-page ( <name> - )  pagealign here $100 allot constant ;
+: aligned-page ( <name> - )  pagealign here $100 allot&erase constant ;
 aligned-page os
 variable osp   os osp ! \ object stack pointer
 
