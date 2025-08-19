@@ -775,8 +775,8 @@ aka instance make  \ Backward compatibility
 
 : is? ( object|class classifier - bool )
     \ TODO: Optimize and put the runtime checks in optional validations.
-    over valid-object? not abort" IS? >> Invalid object."
     dup valid-classifier? not abort" IS? >> Invalid classifier."
+    over valid-object? not if 2drop 0 exit then
     -> classifier# @ swap
     dup >cla @ _class <> if >cla @ then -> id-table test-bit ;
 
