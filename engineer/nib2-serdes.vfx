@@ -90,12 +90,12 @@
     then ;
 
 : readbin ( a cb - a' ) ( member val-addr - )
-    {: data cb | property0 buf[ 256 ] :}
+    {: data cb | property0 :}
     data 
     $@+ \ fetch class name
     >pad find 0= abort" READBIN >> Encountered unknown class name."
     >body dup valid-class? not abort" READBIN >> Encountered invalid class."
-    ( class ) cb me execute
+    ( class ) 0 cb execute
     \ Walk properties:
     @+ for
         $@+ \ fetch property name
@@ -104,13 +104,15 @@
         to property0
 
         \ fetch the value
-        buf[ to val-addr
+        val-addr >r
+        property0 -> property-size @ allocate throw to val-addr
         ( a ) 
         property0 -> property-type @ cells bin-deser-table + @ execute
         ( a' )
-
         \ execute the callback
-        property0 buf[ cb execute
+        property0 val-addr cb execute
+        val-addr free throw
+        r> to val-addr
     loop
     ( a' ) ;
 
