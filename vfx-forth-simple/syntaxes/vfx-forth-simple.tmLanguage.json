@@ -59,6 +59,12 @@
           "begin": "\\(\\s",
           "end": "\\)",
           "name": "comment.block.parens.vfx-forth"
+        },
+        {
+          "name": "comment.block.multiline.vfx-forth",
+          "begin": "\\(\\(",
+          "end": "\\)\\)",
+          "name": "comment.block.multiline.vfx-forth"
         }
       ]
     },
