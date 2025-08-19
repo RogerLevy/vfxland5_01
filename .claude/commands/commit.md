@@ -33,3 +33,5 @@ Here are specific prompts to improve commit message specificity:
   - Are the reasons for changes clear from the symptoms described?
   - Would this help during debugging/archaeology later?
   - Did I avoid words like "improve," "better," "enhance," "fix" without specifics?
+
+  **FINALLY*: Have a sub-agent double-check and correct your work.
