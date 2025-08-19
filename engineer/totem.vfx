@@ -78,19 +78,19 @@ _totem :: load-content ( totem - )
     \ TODO: filter by extension
     to class0   ['] (load-totem) each-file ;
 
-: refresh ( totem - )
-    \ Reload totem from disk keeping same object (dev-time)
+: reload ( totem - )
+    \ Reload totem from disk (dev-time)
     dup load-content
     dup cleanup
     setup ;
 
-|| : (refresh-totem) ( fn len - )
-    class0 materialize refresh ;
+|| : (reload-totem) ( fn len - )
+    class0 materialize reload ;
 
-: refresh-dir ( path-a path-len class - )
+: reload-dir ( path-a path-len class - )
     \ Reload all totems in given irectory (dev-time hot-reload)
     \ TODO: filter by extension
-    to class0   ['] (refresh-totem) each-file ;
+    to class0   ['] (reload-totem) each-file ;
 
 || _trait object _totem-fresh  
 _totem _totem-fresh copy drop
