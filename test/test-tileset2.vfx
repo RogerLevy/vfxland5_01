@@ -4,10 +4,17 @@ include ../supershow/supershow.vfx
 include ../supershow/tilemap2.vfx
 
 ." Dictionary after tilemap2.vfx: " checkdict cr
-\\
+
 load-bitmaps
 
-bg.png 16 16 *tileset bg.ts
+s" dat/gfx/bg.ts" tileset load-totem
+
+bg.ts info
+
+\ bg.png 20 20 *tileset bg.ts
+\ bg.ts commit
+
+bg.ts -> srcpath count file@ dump
 
 \\
 

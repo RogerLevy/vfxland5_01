@@ -4,25 +4,30 @@
 \ (Untested)
 \ ------------------------------------------------------------------------------
 
+
 variable pile
 
 \ =============================================================================
-\ Tileset
+\ tileset
 \ =============================================================================
 
-s" dat/gfx" 2constant tilesets-path
+\ here ," dat/gfx" constant tilesets-path$
+: tilesets-path$ c" dat/gfx" ;
+
+\ create tileset _class make drop
 
 class: tileset
-    is-a _totem
-    is-a usable
+    tileset is-a usable
+    tileset is-a _totem
+
     prop baseid <save <int 
     prop bmp
     prop tw <save <int 
     prop th <save <int 
     prop #tiles <save <int 
 
-    :: default-path ( - path len )
-        tilesets-path ;
+   :: default-path ( - path len )
+       tilesets-path$ count ;
 
 class;
 
@@ -44,7 +49,7 @@ class;
     next-bmp# @ baseid @ - #tiles !   r> next-bmp# ! ;
 
 tileset :: use ( - )
-    baseid @ pile ! ;
+   baseid @ pile ! ;
 
 tileset :: setup ( - )
     me new? if next-bmp# @ baseid ! then
@@ -56,8 +61,13 @@ tileset :: cleanup ( - )
          i bitmap@ al_destroy_bitmap
     loop ;
 
-: >tileset ( bmp# tw th <name> - )
-    tileset ?totem 
+|| : reconnect-bmp 
+    my-name -ext f" %s.png" >pad find 0= abort" tileset source bitmap not found!"
+    execute bmp ! ;   \ Bitmap words return their own bitmap ID's
+
+tileset :: load-content ( - )
+    _totem:load-content
+    reconnect-bmp ;
 
 : *tileset ( bmp# tw th <name> - )
     tileset *totem 
@@ -71,10 +81,10 @@ tileset :: cleanup ( - )
     tileset load-totem ;
 
 : load-tilesets ( - )
-    tilesets-path tileset load-dir ;
+    tilesets-path$ count  tileset load-dir ;
 
 : reload-tilesets ( - )
-    tilesets-path tileset refresh-dir ;
+    tilesets-path$ count  tileset reload-dir ;
 
 : is-tile? ( n - f )
     bitmap@ dup -exit al_is_sub_bitmap ;
@@ -112,3 +122,4 @@ create metas #bitmaps cells allot&erase
         here >r >datadir file,
         r> here over -
     r> -> baseid @ cells metas + swap move ;
+
