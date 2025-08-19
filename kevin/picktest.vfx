@@ -11,7 +11,7 @@ actor-class picktest%
     mouse to my to mx
     actives> 
         bmp @ -exit
-        \ cr me peek
+        \ cr me info
         mx my 2dup bmpbox overlap? if
             cr bmp @ bitmap-file type
         then ;

@@ -206,10 +206,11 @@ actor defaults [[
     0 #actors 1 - clamp next# ! ;
 
 : unload ( - )
+    cr ." Actor unloaded " me info
     en off  0 bmp !  0 beha !  0 phys ! ;
 
 : just ( - )
-    \ cr ." just >> All actors cleared!"
+    cr ." JUST >> All actors cleared!"
     0 next# !  actives>  unload ;
 
 0 actor :construct ( - )

@@ -120,7 +120,7 @@ require %idir%\..\dltree.vfx
     \ TODO: display xt name
     nip
     ?dup -exit
-    ." OEXEC >> Error on element, disabling: " me peek cr
+    ." OEXEC >> Error on element, disabling: " me info cr
     me bench
     throw ;
 

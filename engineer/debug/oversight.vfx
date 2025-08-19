@@ -476,8 +476,6 @@ public
         enabled @ if ." (ENABLED)" else ." (DISABLED)" then
     ]] ;
     
-|| : (.validation)  @ cr .validation -1 ;
-
 : >contract ( xt -- contract )
     dup >r xt>wid >r         \ Get its wordlist
     get-order get-current    \ Save search state
@@ -490,11 +488,11 @@ public
 : csee ( -- <word-name> )
     \ Display contract information for word
     ' >contract ?dup 0= if
-        cr ." No contract found for that word. "
+        ." No contract found for that word. " cr
     else
         [[
-            cr ." Pre: " pre-val @ .validation
-            cr ." Post: " post-val @ .validation
+            ." Pre: " pre-val @ .validation cr
+            ." Post: " post-val @ .validation cr
         ]]
     then ;  
 
@@ -607,7 +605,7 @@ public
 || : ?disable-validation ( validation - )
     [[ 
         xt @ validator-xt @ = if
-            cr ." disabling for "
+            ." disabling for "
             the-contract @ body> >name count 9 - type 
             enabled off
         then
@@ -624,7 +622,7 @@ public
 || : ?enable-validation ( validation - f )
     [[ 
         xt @ validator-xt @ = if
-            cr ." enabling for "
+            ." enabling for "
             the-contract @ body> >name count 9 - type 
             enabled on
         then

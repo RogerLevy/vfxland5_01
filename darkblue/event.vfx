@@ -43,7 +43,10 @@ class: event
 class;   
 
 : (suicidal) ( - )
-    act> ." Event finished: " unload me peek cr ;   
+    act> 
+        ." Event finished: " cr 
+        unload 
+        me info cr ;   
 
 : start-event ( - )
     at@ 2>r
@@ -111,10 +114,10 @@ class;
         drop -1 abort" event not found! did you forget :event ? "
     then ;
 
-: scene ( - )
-    \ Clear the stage of other events, skipping ME.
-    0 0 at
-    actives> me you = ?exit unload ;
+\ : clear ( - )
+\     \ Clear the stage of other events, skipping ME.
+\     0 0 at
+\     actives> me you = ?exit unload ;
 
 || : my-curve? ( fn len - )
     {: fn len :} 
