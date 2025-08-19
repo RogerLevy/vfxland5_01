@@ -715,7 +715,7 @@ borrow nib2/ init-nib
 \ Reloading
 \ =============================================================================
 
-: reload ( - )
+: rld ( - )
     honing off
     cartridge
     repl on ;
@@ -724,7 +724,7 @@ borrow nib2/ init-nib
     honing @ reload-shift? not and if
         try-again
     else
-        reload
+        rld
     then ;
 
 \ =============================================================================
