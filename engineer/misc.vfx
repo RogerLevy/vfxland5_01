@@ -260,7 +260,10 @@ aka file-exists? fileexists?
     -1 to source-id
     0 >in !
     'SourceFile off
-    ['] interpret catch ;
+    ['] interpret catch 
+    dup 0= if
+        -1 >in !  \ prevent erroneous source text display on later errors
+    then ;
 
 : strip-exe   \ c-addr u -- 'c-addr 'u
   dup 0= if  exit  then
