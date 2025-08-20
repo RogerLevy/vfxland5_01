@@ -1,8 +1,5 @@
 # CLAUDE.md
 
-## Thinking Mode
-  - Always use extended thinking
-
 ## VFXLand 5 
 
 - Custom game engine and 2D games written in VFX Forth.
@@ -71,19 +68,6 @@ Custom Forth OOP implementation
 - When code doesn't work, first check for simple typos (wrong function names, missing parameters, etc.) before launching into technical analysis
 - If you wrote incorrect code, acknowledge the mistake directly rather than overexplaining why the wrong code is wrong
 - "I wrote X when I meant Y" is often better than detailed technical rationalization
-
-## Communication Requirements
-
-**Don't ask the user to select from among options you give.**  You can list possible alternatives, but it is overstepping to presume that they are the only possibilities.
-
-The user prefers these phrases to be avoided, but will accept these alternatives.
-
-- "Perfect!" "Good!" -> "OK." 
-- "You're right!" "You're absolutely right!" -> "Understood." or "It is possible/likely that..." 
-- "Good observation!" -> "I see." 
-- "I see the problem!" "I see the issue!" -> "Error(s) located." 
-
-**Don't tell the user what to do** unless they specifically ask for guidance or recommendations.
 
 ## Development Workflow
 
@@ -190,10 +174,6 @@ When creating status.txt files, follow the format established in doc/engineer/st
 - Git credentials configured:
   - user.name: "Roger"
   - user.email: "roger.levy@gmail.com"
-
-## Codebase Backups
-
-Location: ../01_backups
 
 ## VFX Forth
 
