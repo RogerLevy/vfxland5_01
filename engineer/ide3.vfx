@@ -32,9 +32,6 @@ create (pen) 0 , 0 ,
 \ History I/O device
 \ =============================================================================
 
-create str 256 allot
-0 value >str
-
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 aligned-page hist-stack
@@ -42,40 +39,50 @@ variable hsp   hist-stack hsp !
 : hist-push ( ? - ) hsp @ !  4 hsp c+! ;
 : hist-pop ( - ? ) -4 hsp c+!  hsp @ @ ;
 
-: hist-emit ( c sid - )
-    drop  
-    >str 256 = if drop exit then
-    str >str + c!  1 +to >str  1 out +! ;
-
-: hist-type ( a len - )
-    drop  bounds ?do  i c@ 0 hist-emit  loop ;
-
-: (echo) ( - )
-    \ Echo to VFX console
-    {: | skip :} 
-    >str -exit
+variable vfx-skip
+: vfx-emit ( c - )
+    \ Echo a character to VFX console
+    {: c :}
     op-handle @ >r
     consoledev op-handle !
-    str >str bounds do
-        1 to skip
-        i c@ ATTR_FG = if 3 to skip then
-        i c@ ATTR_BG = if 3 to skip then
-        skip 1 = if
-            i c@ 10 ATTR_CODES 1 - within if i c@ emit then
-        then
-    skip +loop
+\    out @ >r
+    vfx-skip @ 0= if
+        c ATTR_FG = if 2 vfx-skip ! then
+        c ATTR_BG = if 2 vfx-skip ! then
+    then
+    vfx-skip @ if
+        -1 vfx-skip +! 
+    else
+        c 10 ATTR_CODES 1 - within if c emit then
+    then
+\    r> out !
     r> op-handle ! ;
 
-: hist-cr
+: hist-cr ( sid - )
     drop
     10 emit
-    refresh-attribute
-    (echo)
-    str >str add-history
-    0 to >str
-    0 out !
-    ;
-    
+    0 out ! 
+    refresh-attribute ;
+
+: hist-emit ( c sid - ) 
+    \ TODO: maintain two offsets, one for alphanumerics and one for bytes
+    drop 
+    dup 10 <>
+    out @ monw 8 / 2 / >= and if 
+        0 hist-cr
+    then
+    dup history-emit  vfx-emit
+    ; \ 1 out +! ;
+
+: hist-type ( a len sid - )
+    drop  
+    bounds ?do  i c@ emit  loop ;
+
+: hist-page ( sid - )
+    drop
+    free-history
+    init-history ;
+
 create vectors
   ' drop ,
   ' drop ,
@@ -91,7 +98,7 @@ create vectors
   ' hist-type ,
   ' hist-cr ,
   ' drop ,
-  ' drop ,
+  ' hist-page ,
   ' drop ,
   ' drop ,
   ' drop ,
@@ -108,15 +115,11 @@ create hist-dev   0 , vectors ,
 : hist[ ( - )
     op-handle @ hist-push
     textmode @ hist-push textmode on 
-    >str out !
     hist-dev op-handle ! ;
 
 : hist] ( - )
     hist-pop textmode ! 
-    hist-pop op-handle !
-    str >str add-history
-    (echo)
-    0 to >str ;
+    hist-pop op-handle ! ;
 
 \ =============================================================================
 \ IDE Components Display
@@ -160,7 +163,7 @@ borrow engineer/ draw-game
     
     hist[
     (2x-game)
-    >str if cr then
+    out @ if cr then
     hist]
   
 
@@ -285,7 +288,7 @@ borrow engineer/ func[]
             counter 20 / 8 and if ." _" then
         then
     s] print ;
-    
+
 : ide-layout ( - )
     textmode off
     \ title-bar
@@ -362,7 +365,7 @@ assign (DoErrorMessage) to-do DoErrorMessage
     osp @ >r uiosp @ osp !
     .tib cr 
     tib #tib @ >interpret
-    >str if cr then
+    out @ if cr then
     ?dup if .throw cr rs state off then 
     0 #tib ! 
     osp @ uiosp ! r> osp !

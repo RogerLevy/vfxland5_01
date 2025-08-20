@@ -107,23 +107,18 @@ variable last-line-start
     then
     cells line-offsets @ + ! ;
 
-: add-history ( addr len - )
-    \ Add string to history, handling embedded CRs
-    {: addr len | char[ 1 ] :}
-    len -exit
-    addr len bounds do
-        i c@ dup char[ c!
-        1 ensure-space
-        char[ 1 history-buffer @ wappend
-        10 = if
-            last-line-start @ add-line-offset
-            current-history-length last-line-start !
-            1 line-count +!
-            visible-lines @ if
-                line-count @ visible-lines @ - 0 max scroll-pos !
-            then
+variable (c)
+: history-emit ( n - )
+    (c) ! 1 ensure-space
+    (c) 1 history-buffer @ wappend
+    (c) c@ 10 = if 
+        last-line-start @ add-line-offset
+        current-history-length last-line-start !
+        1 line-count +!
+        visible-lines @ if
+            line-count @ visible-lines @ - 0 max scroll-pos !
         then
-    loop  ; 
+    then ;
 
 : scroll-up ( - )
     scroll-pos @ 0> if -1 scroll-pos +! then ;
