@@ -14,7 +14,7 @@ require scripts\ship.vfx
 actor-class turret
     prop shooting
     prop shaking     \ 0 ~ 1.0
-    prop aim
+    prop aim <fixed <save
     prop charging
 
 turret.png 32 32 tileset turret.ts

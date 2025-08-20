@@ -4,11 +4,11 @@
 \ WIP
 \ ------------------------------------------------------------------------------
 
-prop hp
-prop fac
-prop falling
-prop in-air
-prop climbing
+prop hp <int save
+prop fac <int save
+prop falling <save
+prop in-air <save
+prop climbing <save
 
 static gravity
 static terminal-vy

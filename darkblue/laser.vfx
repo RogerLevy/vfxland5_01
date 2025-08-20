@@ -1,7 +1,9 @@
-actor-class laser
+class: laser
+    actor derive
     is-a projectile
-    prop dest-w 
-    prop dest-atk 
+    prop dest-w <fixed
+    prop dest-atk <int
+class;
 
 : draw-laser ( - )
     w @ p>f f>ds >r

@@ -9,44 +9,6 @@
 #actors 3 * ?constant #pb-slots
 
 \ =============================================================================
-\ Path class
-\ =============================================================================
-
-class: path
-    prop segments   \ addr -> array[segment]
-    prop alpdata    \ addr -> array[x., y.]
-    prop easedata   \ addr -> array[segment]
-class;
-
-\ =============================================================================
-\ Playback class
-\ =============================================================================
-
-class: playback
-    is-a thinker
-    prop path0                  \ addr - pointer to path definition
-    prop seg                    \ n - current segment index
-    prop journey                \ fixed - path progress 0-1.0  
-    prop startx property starty \ fixed - starting position
-    prop starttime              \ n - milliseconds when started
-    prop speed                  \ fixed - speed multiplier
-    prop scalex property scaley \ fixed - runtime scaling
-    prop rotation               \ fixed - runtime rotation angle
-    prop active                 \ flag - slot is active
-    prop #loops                 \ n - completed loops
-    prop ppdir                  \ n - pingpong direction 1/-1
-\    || property lastevent            \ n - last event index fired
-    prop alp                    \ a - arc-length parameterized coordinates
-                                \ (optional)
-class;
-
-\ =============================================================================
-\ Playback array
-\ =============================================================================
-
-#pb-slots playback object-array playbacks
-
-\ =============================================================================
 \ Path structure definition
 \ =============================================================================
 
@@ -58,17 +20,61 @@ class;
 \ =============================================================================
 
 class: segment
-    prop segtype                \ n - segment type (waypoint/event)
-    prop x prop y               \ fixed - target position
-    prop c1x prop c1y           \ fixed - curve control point
-    prop c2x prop c2y           \ fixed - curve control point 2
-    prop duration               \ n - milliseconds
-    prop easetype               \ n - easing function ID
-    prop in-amt                 \ fixed - easing in amount
-    prop out-amt                \ fixed - easing out amount
-    prop data                   \ n - general purpose data
-    prop string                 \ addr - event string (event only)
+    prop segtype <int           \ segment type (waypoint/event)
+    prop x <fixed               \ target position
+    prop y <fixed               \ 
+    prop c1x <fixed             \ curve control point
+    prop c1y <fixed             \ 
+    prop c2x <fixed             \ curve control point 2
+    prop c2y <fixed             \ 
+    prop duration <int          \ milliseconds
+    prop easetype <int          \ easing function ID
+    prop in-amt <fixed          \ easing in amount
+    prop out-amt <fixed         \ easing out amount
+    prop data <int              \ general purpose data
+    prop string <addr           \ event string (event only)
 class;
+
+\ =============================================================================
+\ Path class
+\ =============================================================================
+
+class: path
+    \ TODO: These should just be embedded
+    prop segments <ref _array   \ addr -> array[segment]
+    prop alpdata <ref _array    \ addr -> array[x., y.]
+    prop easedata <ref _array   \ addr -> array[segment]
+class;
+
+\ =============================================================================
+\ Playback class
+\ =============================================================================
+
+class: playback
+    is-a thinker
+    prop path0 <ref _path       \ pointer to path definition
+    prop seg <int               \ current segment index
+    prop journey <fixed         \ path progress 0-1.0  
+    prop startx <fixed          \ starting position
+    prop starty <fixed          \ 
+    prop starttime <int         \ milliseconds when started
+    prop speed <fixed           \ speed multiplier
+    prop scalex <fixed          \ runtime scaling
+    prop scaley <fixed          \ 
+    prop rotation <fixed        \ runtime rotation angle
+    prop active <flag           \ slot is active
+    prop #loops <int            \ completed loops
+    prop ppdir <int             \ pingpong direction 1/-1
+    prop alp <addr              \ arc-length parameterized coordinates
+                                \ (optional)
+\   property lastevent            \ n \ last event index fired
+class;
+
+\ =============================================================================
+\ Playback array
+\ =============================================================================
+
+#pb-slots playback object-array playbacks
 
 \ =============================================================================
 \ Playback slot management

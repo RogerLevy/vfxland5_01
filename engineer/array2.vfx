@@ -3,7 +3,7 @@
 \ ------------------------------------------------------------------------------
 
 trait: _iterable
-    prop item-count
+    prop item-count <int <save
 trait;
 
 : #items ( iterable - n ) -> item-count @ ;
@@ -127,9 +127,9 @@ _fifo :: peek-ref ( - item ) stub ;
 
 class: _array
     is-a _iterable
-    prop max-items
-    prop item-size
-    prop data
+    prop max-items <int <save
+    prop item-size <int <save
+    prop data <addr
 class;
 
 2 _array :construct ( max-items item-size - )

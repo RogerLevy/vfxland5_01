@@ -5,29 +5,28 @@ trait: vessel
     prop m  <fixed <save \ mass
     prop atk <int <save
     prop bounty <int <save
-    prop firing-rate 
+    prop firing-rate <int
 trait;
 
 trait: projectile
     prop r <fixed <save \ radius
-    prop firer
+    prop firer <ref _object
     prop atk <int <save
     prop a <fixed <save \ angle
-    prop w \ width
-    prop l \ length
+    prop w <fixed \ width 
+    prop l <fixed \ length
 trait;
 
 trait: pickup
     prop worth <int <save \ when non-zero, makes object a collectible source of energy
 trait;
 
-c: actor "vessel" "projectile" "pickup" owner ;
-\ class: actor
-\     works-with vessel
-\     works-with projectile
-\     works-with pickup
-\     prop owner
-\ class;
+class: actor
+    works-with vessel
+    works-with projectile
+    works-with pickup
+    prop owner <ref actor
+class;
 
 \ Common protocols
 _object :: damage ( n - ) negate hp +! ;
@@ -36,6 +35,7 @@ _object :: kill ( - ) unload ;
 
 \ Common logic
 : fired? ( firer actor - b )
+    over 0= if 2drop 0 exit then
     -> firer @ = ;
  
 \ Global variables

@@ -36,10 +36,10 @@
 
 class: event
     actor derive
-    prop delay-xt
-    prop delay-secs
-    prop starting-xt
-    prop curves         \ array
+    prop delay-xt <xt
+    prop delay-secs <fixed
+    prop starting-xt <xt
+    prop curves <ref _array
 class;   
 
 : (suicidal) ( - )
