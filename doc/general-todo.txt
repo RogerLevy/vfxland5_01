@@ -1,3 +1,14 @@
+2025/08/20
+[ ] (Engineer) Improve history buffer API 
+    - It should provide an "emit" style interface, not a line-based interface.
+    - Get rid of the string buffer in ide3.vfx; this will prevent memory corruption
+
+[ ] (NIBS) Make it illegal to do "<object> -> <static>" when validations enabled
+    Prevent using -> operator to access static fields from object instances.
+    The two ways to access statics are implicit or through a class.
+        - `[[ mystatic @ ]]`
+        - `cla @ -> mystatic @`  or  `myclass -> mystatic @`
+
 2025/08/17
 [ ] (Engineer) Investigate floating point exception after calling LOAD-BITMAPS
     Discovered while running test-tileset2.vfx
@@ -14,7 +25,7 @@
     Add global immutable hotkey to cycle between display types.
 
 2025/08/16
-[ ] (Asset System) Validate totem names in ?ASSET
+[ ] (Asset System) Validate totem names in *TOTEM
     Ensure totem names match expected format and extension for the totem class.
 
 [ ] (NIBS) Add runtime protocol reassignment word REASSIGN
@@ -38,7 +49,7 @@
     Research Tab Nav extension implementation to create a custom extension that fixes
     VSCode's word navigation behavior for Forth code.
 
-[ ] (VSCode Extension) Add code formatter to vfx-forth-simple extension
+[x] (VSCode Extension) Add code formatter to vfx-forth-simple extension
     Implement automatic code formatting for VFX Forth source files.
     Should handle indentation, alignment, and standard Forth formatting conventions.
 
@@ -66,14 +77,6 @@
     [ ] Runtime lineage validation for explicit parent calls (safety feature)
 
 2025/08/11
-[ ] Idea: Enhance :: to create psuedo-methods when the protocol doesn't exist.
-    The purpose would be to make method-writing transparent.
-    No more AS> or [[ ]] all the time.
-    This would make things easier for both me and Claude.
-    Ask Claude if this is a good idea or not.
-    They would be plain functions.  Unless it would be better to make them 
-    use the protocol system.  (But we'd run out of static space faster.)
-
 [x] (NIBS) Update compact class syntax parser
     Every classifier token has distinguishing syntax now:
     %class - derive a class
@@ -113,25 +116,20 @@
 [x] (NIBS) Keep track of class protocols in their protocol list.
     Classes should maintain their protocol-list for introspection and debugging.
 
-[ ] (NIBS) Add validations support for protocols.
-    Verify protocol implementations match expected signatures and behaviors.
-
-[ ] (NIBS) Experiment with dot syntax custom parser.
-    Implement `object.member` notation as alternative to `object method`
-    or `object 's property`.
-    Look in old code for possibly pre-existing implementation.
+[ ] (NIBS) Add compile-time validations support for protocols.
+    Verify protocol implementations match expected signatures.
 
 [ ] Modify VFX Forth locals parser to handle buf[ ] patterns correctly.
     Currently creates locals named `buf[` instead of `buf`, making code less readable.
 
-[ ] Make use of :DERIVE to replace ACTOR-CLASS and :EVENT.
+[x] Make use of :DERIVE to replace ACTOR-CLASS and :EVENT.
     Use on-derive hooks to automatically set up actor and event-specific behavior
     without special syntax.
-    [ ] Replace ACTOR-CLASS with standard class: syntax plus :DERIVE hook
+    [x] Replace ACTOR-CLASS with standard class: syntax plus :DERIVE hook
     [ ] Replace :EVENT with standard class: syntax plus :DERIVE hook
 
-[ ] Experimentally write a static totem analyzer.
-    Implement bracket notation dependency discovery for automatic totem loading.
+[ ] Experimentally write a static asset analyzer.
+    Implement bracket notation dependency discovery for automatic asset loading.
     Think through implications for interactive development and error reporting.
 
 2025/08/08
