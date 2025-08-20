@@ -35,18 +35,28 @@
 
 : serbin ( obj - )
     \ serialize object into dictionary in binary format
-    {: obj | property0 &count :}
+    {: obj | property0 &count tmpl-addr :}
     obj [[ 
         cla @ >name count $,
         here to &count 0 , 
         cla @ -> property-list dup list-count for
             @next to property0
             property0 serialize? if
-                \ serialize the property
-                1 &count +!
+                
+                \ get the property address in the instance and in the template
                 me property0 -> offset @ prop+ to val-addr
-                property0 >name count $,
-                property0 -> property-type @ cells bin-ser-table + @ execute
+                cla @ defaults property0 -> offset @ prop+ to tmpl-addr
+
+                \ check if the value differs from the class's template
+                val-addr   property0 -> property-size @ 
+                tmpl-addr   property0 -> property-size @ 
+                compare 0<> if
+                    \ it differs: serialize the property
+                    1 &count +!
+                    property0 >name count $,
+                    property0 -> property-type @ cells bin-ser-table + @ execute
+                then
+
             then
         loop drop 
     ]] ;
