@@ -23,137 +23,29 @@ include %idir%\checks.vfx
 \ Dependencies
 \ =============================================================================
 
-\ Shaders 
-require %idir%\shader.vfx
-
-\ CRT shader
-require %idir%\crt.vfx
-
-\ Audio engine
-require %idir%\waveplay.vfx
-
-\ =============================================================================
-\ Utilities
-\ =============================================================================
-
-: 4s>p  2s>p 2>r 2s>p 2r> ;
-: 2?  2@ swap . . ;
-: cput ( n - ) dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
-: batch>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;
-: h|  $1000000 or ;
-: v|  $2000000 or ;
-: hv|  h| v| ;
-: named? ( xt $ - f ) >r >name count r> count 2dup upper compare 0= ; 
-: bmpw bmpwh drop ;
-: bmph bmpwh nip ;
-
-\ =============================================================================
-\ Trigonometry
-\ =============================================================================
-
-: fscale ( f: x y s - f: x y ) fswap fover f* frot frot f* fswap ;
-: uvec ( deg. - x. y. ) p>f deg>rad fdup fcos f>p fsin f>p ;  
-: fuvec ( f: deg - f: x f: y ) deg>rad fdup fcos fswap fsin ;  
-: vec ( deg. len. - x. y. ) p>f p>f fuvec frot fscale f>p f>p swap ;
-: ang ( x. y. - deg. ) p>f p>f fatan2 rad>deg 360e f+ 360e fmod f>p ;
-: hypot ( x. y. - n. ) p>f fdup f* p>f fdup f* f+ fsqrt f>p ;
-: dist ( x. y. x. y. - n. ) 2- hypot ;   
-
-\ =============================================================================
-\ Other math helpers
-\ =============================================================================
-
-|| 0e fvalue t
-: alerp ( F: angle1 angle2 t -- result )
-  to t
-  FOVER F-                                \ diff = angle2 - angle1  
-  FDUP 180.0e F> IF 360.0e F- THEN        \ wrap to [-180,180]
-  FDUP -180.0e F< IF 360.0e F+ THEN 
-  t F* F+                                 \ angle1 + t*diff
-  FDUP 0.0e F< IF 360.0e F+ THEN          \ wrap to [0,360)
-  FDUP 360.0e F>= IF 360.0e F- THEN ;
-
-\ =============================================================================
-\ Streaming audio
-\ =============================================================================
-
-: bgm ( - <name> <filename> ) ( - )
-    create bl parse $, does> count streamL ;
-: audioclip ( - <name> <filename> ) ( - )
-    create bl parse $, does> count stream ;
-
-\ =============================================================================
-\ Blank the screen
-\ =============================================================================
-
-: blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;
+require %idir%\shader.vfx    \ Shaders 
+require %idir%\crt.vfx       \ CRT shader
+require %idir%\waveplay.vfx  \ Audio engine
+require %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
 
 \ =============================================================================
 \ Stage
 \ =============================================================================
 
-include %idir%\stage.vfx
-include %idir%\traits.vfx
-include %idir%\scene.vfx
+include %idir%\stage.vfx     \ Actor/sprite system
+include %idir%\traits.vfx    \ Object traits
+include %idir%\scene.vfx     \ Scene management
+include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 
 \ =============================================================================
 \ Tilemap
 \ =============================================================================
 
-include %idir%\tilemap.vfx
-include %idir%\udlr.vfx
-include %idir%\tmcol.vfx
-include %idir%\tread.vfx
-
-\ =============================================================================
-\ Sprite animation
-\ =============================================================================
-
-class: actor
-    prop anm prop a.ts prop a.spd prop a.len
-    prop a.ofs prop a.done prop a.flp
-class;
-
-|| variable aspd \ pointer to len in animation header
-|| : >frames ( anim - a ) cell+ cell+ ;
-|| : ?baseid  a.ts @ dup if baseid@ then ;
-|| : !bmp  a.ofs @ p>s cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
-|| : ?done  a.ofs @ a.spd @ + a.len @ s>p >= -exit  a.done on ;
-: cycle ( anim spd. - ) \ to stop, say `anm off`
-    a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  !bmp ;
-: animation ( ts - <name> )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
-    create , here aspd ! 0 , ;
-: frame, ( n - )
-    , 1 aspd @ +! ;
-: range, ( n n - )
-    2dup < if 1 + swap do i frame, loop
-    else swap do i frame, -1 +loop then ;
-|| : +animation ( - )
-    anm @ -exit
-    a.spd @ a.ofs @ + a.len @ s>p mod a.ofs !
-    !bmp ?done ;
-: animate ( - )
-    hold @ ?exit actives> +animation ;
-
-\ =============================================================================
-\ Create classes from bitmaps automatically
-\ =============================================================================
-
-|| : (create-autoclass) ( a n - )
-    -path | n a |
-    a n -ext >pad find nip ?exit
-    \ ." Creating auto-class from bitmap " a n type cr
-    a n -ext 2dup
-    f" class: %s actor derive is-a autoclass class;" evaluate 
-    a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
-
-: create-autoclasses
-    ." Creating autoclasses" cr
-    s" gfx" >datadir dir-exists? -exit
-    get-order get-current
-        s" gfx" >datadir
-        ['] (create-autoclass) each-file
-    set-current set-order ;
+include %idir%\tilemap.vfx  \ Tilemap rendering Tileset class
+include %idir%\udlr.vfx     \ Movement utilities
+include %idir%\tmcol.vfx    \ Tilemap collision detection
+include %idir%\tread.vfx    \ Tilemap data reading
+include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 
 \ =============================================================================
 \ Load scripts
@@ -180,7 +72,6 @@ class;
     reload-bitmaps
     reload-tilesets ;
 
-
 \ =============================================================================
 \ Initialization
 \ =============================================================================
@@ -198,6 +89,6 @@ class;
 
 
 debug @ [if]
-    include %idir%/tools.vfx
-    include %idir%/tools/sketchpad.vfx
+    include %idir%/tools.vfx           \ Development tools
+    include %idir%/tools/sketchpad.vfx \ Graphics editor
 [then]

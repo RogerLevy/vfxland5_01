@@ -1,0 +1,30 @@
+\ =============================================================================
+\ Sprite animation
+\ =============================================================================
+
+class: actor
+    prop anm prop a.ts prop a.spd prop a.len
+    prop a.ofs prop a.done prop a.flp
+class;
+
+|| variable aspd \ pointer to len in animation header
+|| : >frames ( anim - a ) cell+ cell+ ;
+|| : ?baseid  a.ts @ dup if baseid@ then ;
+|| : !bmp  a.ofs @ p>s cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
+|| : ?done  a.ofs @ a.spd @ + a.len @ s>p >= -exit  a.done on ;
+: cycle ( anim spd. - ) \ to stop, say `anm off`
+    a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  !bmp ;
+: animation ( ts - <name> )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
+    create , here aspd ! 0 , ;
+: frame, ( n - )
+    , 1 aspd @ +! ;
+: range, ( n n - )
+    2dup < if 1 + swap do i frame, loop
+    else swap do i frame, -1 +loop then ;
+|| : +animation ( - )
+    anm @ -exit
+    a.spd @ a.ofs @ + a.len @ s>p mod a.ofs !
+    !bmp ?done ;
+: animate ( - )
+    hold @ ?exit actives> +animation ;
+

@@ -1,0 +1,19 @@
+\ =============================================================================
+\ Create classes from bitmaps automatically
+\ =============================================================================
+
+: (create-autoclass) ( a n - )
+    -path | n a |
+    a n -ext >pad find nip ?exit
+    \ ." Creating auto-class from bitmap " a n type cr
+    a n -ext 2dup
+    f" class: %s actor derive is-a autoclass class;" evaluate 
+    a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
+
+: create-autoclasses
+    ." Creating autoclasses" cr
+    s" gfx" >datadir dir-exists? -exit
+    get-order get-current
+        s" gfx" >datadir
+        ['] (create-autoclass) each-file
+    set-current set-order ;
