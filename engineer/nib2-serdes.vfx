@@ -88,15 +88,24 @@
 : readbin ( a cb - a' ) ( member val-addr - )
     {: data cb | property0 :}
     data 
+
     $@+ \ fetch class name
-    >pad find 0= abort" READBIN >> Encountered unknown class name."
-    >body dup valid-class? not abort" READBIN >> Encountered invalid class."
+    >pad find 0= if
+        pad count f" READBIN >> Encountered unknown class name: `%s`" -1 -rot .abort
+    then
+    >body dup valid-class? not if
+        pad count f" READBIN >> Not a property: `%s`" -1 -rot .abort
+    then
     ( class ) 0 cb execute
     \ Walk properties:
     @+ for
         $@+ \ fetch property name
-        >pad find 0= abort" READBIN >> Encountered unknown property name."
-        >body dup -> cla @ _property <> abort" READBIN >> Encountered invalid property."
+        >pad find 0= if
+            pad count f" READBIN >> Encountered unknown property name: `%s`" -1 -rot .abort
+        then
+        >body dup -> cla @ _property <> if
+            pad count f" READBIN >> Not a property: `%s`" -1 -rot .abort
+        then
         to property0
 
         \ fetch the value
