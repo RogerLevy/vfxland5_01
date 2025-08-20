@@ -13,8 +13,9 @@
 [ ] (Engineer) Investigate floating point exception after calling LOAD-BITMAPS
     Discovered while running test-tileset2.vfx
 
-[ ] (NIBS) Investigate protocol redefinition propagation not working as expected
+[-] (NIBS) Investigate protocol redefinition propagation not working as expected
     Redefining _OBJECT:INFO doesn't seem to propagate to dependents such as _ARRAY.
+    Update: Couldn't reproduce with a simple test.  Could be a subtle case.
 
 [ ] (IDE) Harden the IDE against errors and ensure graceful recovery
     Protect against possible errors everywhere in the IDE codebase.
