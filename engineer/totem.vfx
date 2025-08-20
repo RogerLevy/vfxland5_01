@@ -75,8 +75,14 @@ _totem :: load-content ( totem - )
 
 : load-dir ( path-a path-len class - )
     \ Load all totems from given directory (runtime/startup)
+    \ Not recursive.
     \ TODO: filter by extension
     to class0   ['] (load-totem) each-file ;
+
+: load-default-dir ( class - )
+    \ TODO: filter by default extension
+    \ Not recursive.
+    dup defaults default-path rot load-dir ;
 
 : reload ( totem - )
     \ Reload totem from disk (dev-time)
@@ -89,6 +95,7 @@ _totem :: load-content ( totem - )
 
 : reload-dir ( path-a path-len class - )
     \ Reload all totems in given irectory (dev-time hot-reload)
+    \ Not recursive.
     \ TODO: filter by extension
     to class0   ['] (reload-totem) each-file ;
 
@@ -97,3 +104,4 @@ _totem _totem-fresh copy drop
 
 : reset-totem-trait
     _totem-fresh _totem copy drop ;
+
