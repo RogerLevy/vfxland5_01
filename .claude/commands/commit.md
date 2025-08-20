@@ -6,6 +6,8 @@ Commit the staged changes.  If there are no staged changes inform the user.
 3. Based on the diff, write implementation details for the description (if needed)
 4. Commit with the user's subject line and your description
 
+**IMPORTANT**: If the user forgot to precede the subject line with the component e.g. (Engineer) or (NIBS), add it for them based on the component the changes are part of.
+
 The commit message format:
 ```
 <user-provided subject line>
@@ -25,8 +27,6 @@ The commit message format:
 **IMPORTANT**: DO NOT stage additional files.
 
 **IMPORTANT**: Write each separate change in a line item
-
-**IMPORTANT**: ALWAYS check for staged changes with `git status` first.
 
 **IMPORTANT**: ALWAYS thoroughly read the changes with `git diff --staged` to determine the commit message.  The actual changes should override whatever has been said in the conversation.  If you don't do this, you will be fined $100.
 
