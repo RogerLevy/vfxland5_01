@@ -46,7 +46,6 @@ class;
 \ =============================================================================
 
 : free? ( actor - f ) -> en @ 0= ;
-: as> ( actor - ) [[ r> execute ]] ;
 : actor[] ( n - actor ) actors [] ;
 : actor# ( actor - n ) -> id @ ;
 : act> ( - ) ( - ) 0 time !  r> beha ! ; 
@@ -63,10 +62,10 @@ fast[
 : actives> ( - ) ( - )
     r> {: xt :}
     0 actor[] [[
-    #actors for
-        en @ if xt execute then
-        /actor +to me
-    loop
+        #actors for
+            en @ if xt execute then
+            /actor +to me
+        loop
     ]] ; 
 
 fast]
