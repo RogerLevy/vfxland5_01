@@ -6,9 +6,10 @@
     -path | n a |
     a n -ext >pad find nip ?exit
     \ ." Creating auto-class from bitmap " a n type cr
-    a n -ext 2dup
-    f" class: %s actor derive is-a autoclass class;" evaluate 
-    a n 2swap f" %s :: init %s bmp ! ;" evaluate ;
+    a n -ext f" class: %s actor derive autoclass on" 2dup type cr evaluate
+    a n f"     defaults [[ %s bmp ! ]]" 2dup type cr evaluate 
+    s" class;" 2dup type cr evaluate ;
+    
 
 : create-autoclasses
     ." Creating autoclasses" cr
