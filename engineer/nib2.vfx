@@ -103,8 +103,17 @@ cstring name$
         @next dest add-to
     loop drop ;
 
+\ : .list ( list - ) 
+\     cr dup list-count for @next 2 indent .name cr loop drop ;  
+
 : .list ( list - )
-    cr dup list-count for @next ."         " .name cr loop drop ; 
+    {: | cnt :}
+    0 to cnt cr
+    dup list-count for 
+        cnt 0 = if 2 indent then
+        @next .name space cr
+        cnt 1 + 10 mod to cnt  
+    loop drop ;
 
 \ ==============================================================================
 \ Object stack
