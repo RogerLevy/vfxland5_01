@@ -1,0 +1,20 @@
+\ Test ELSE indentation
+
+: test-else
+    x @ 0>
+    if
+        ." positive"
+    else
+        ." negative"
+    then
+;
+
+\ Should look like:
+\ : test-else
+\     x @ 0>
+\     if
+\         ." positive"
+\     else
+\         ." negative"
+\     then
+\ ;

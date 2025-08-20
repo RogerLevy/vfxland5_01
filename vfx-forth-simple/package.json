@@ -2,7 +2,7 @@
   "name": "vfx-forth-simple",
   "displayName": "VFX Forth Simple",
   "description": "Simple syntax highlighting for VFX Forth",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "publisher": "vfxland",
   "engines": {
     "vscode": "^1.60.0"
