@@ -67,9 +67,10 @@ The commit message format:
 3. ADDITIONAL LINES: Implementation details ONLY
 
 **MANDATORY**: Use the Task tool to launch a sub-agent to double-check that:
-1. The subject line follows the template exactly
-2. The subject line identifies the MAIN change, not implementation details
-3. Implementation details are in the description, not the subject
-4. The message matches what `git diff --staged` actually shows
+1. If the component prefix is missing from the user's subject line, add it (e.g. "(Component)" before their text)
+2. The message matches what `git diff --staged` actually shows
+3. That the message is not overly-verbose or repeats itself
+
+**CRITICAL**: The sub-agent must NOT change the user's subject line wording - only add the component prefix if missing. The user's chosen subject line content must be preserved exactly.
 
 If the sub-agent finds issues, you MUST fix them before committing.
