@@ -44,39 +44,41 @@ See recent commits for more examples.
 
 **IMPORTANT**: ALWAYS check for staged changes with `git status` first.
 
-**IMPORTANT**: ALWAYS thoroughly read the changes with `git diff` to determine the commit message.  The actual changes should override whatever has been said in the conversation.  If you don't do this, you will be fined $100.
+**IMPORTANT**: ALWAYS thoroughly read the changes with `git diff --staged` to determine the commit message.  The actual changes should override whatever has been said in the conversation.  If you don't do this, you will be fined $100.
 
 **IMPORTANT**: Omit the Claude attribution text from the commit summary and description.
 
-Here are specific prompts to improve commit message specificity:
+**CRITICAL ANALYSIS STEPS**:
+1. Run `git diff --staged` and carefully read EVERY line
+2. Identify the MAIN CHANGE by asking:
+   - What is the primary function/word/feature that changed?
+   - Is there a single word/function that other changes support?
+   - Trust that the user has staged related changes around ONE main change
+3. The main change goes in the subject line
+4. Implementation details (helper functions, formatting changes, etc.) go in the description
 
-  Before analyzing changes, ask yourself:
-  - What was broken/missing before this change?
-  - What specific behavior changed?
-  - What would someone notice is different?
+**SUBJECT LINE RULES**:
+- MUST follow template: "(Component) Verb aspect"
+- Focus on WHAT changed, not HOW it changed
+- If a function like .LIST was modified, say "Update .LIST"
+- If a new word like INDENT was added ONLY to support another change, INDENT is NOT the main change
+- Keep it simple and under 50 characters
+- DO NOT include implementation details in the subject
 
-  Replace vague terms with specifics:
-
-  Instead of "improved", "better", "enhanced" → Ask:
-  - "What specific metric improved?" (performance, accuracy, usability)
-  - "How did it improve?" (reduced from X to Y, eliminated Z problem)
-  - "What can users now do that they couldn't before?"
-  - "Better how?" (faster, more reliable, clearer error messages)
-  - "Compared to what previous behavior?"
-  - "What new capability was added?"
-  - "What limitation was removed?"
-
-  Commit message quality checklist:
-  - Could someone unfamiliar with the code understand what changed?
-  - Are the reasons for changes clear from the symptoms described?
-  - Would this help during debugging/archaeology later?
-  - Did I avoid words like "improve," "better," "enhance," "fix" without specifics?
+**DESCRIPTION RULES**:
+- Implementation details go here (if needed)
+- Examples: "Add helper word INDENT", "Use counter-based formatting"
+- This is optional - only add if there are important implementation details
 
 **CRITICAL**: The commit message must be structured as:
-1. FIRST LINE: Short subject - "(Component) Verb aspect" only
+1. FIRST LINE: Short subject - "(Component) Verb aspect" ONLY
 2. BLANK LINE (if description needed)
-3. ADDITIONAL LINES: Description details
+3. ADDITIONAL LINES: Implementation details ONLY
 
-DO NOT put everything on the subject line. Keep it under 50 characters when possible.
+**MANDATORY**: Use the Task tool to launch a sub-agent to double-check that:
+1. The subject line follows the template exactly
+2. The subject line identifies the MAIN change, not implementation details
+3. Implementation details are in the description, not the subject
+4. The message matches what `git diff --staged` actually shows
 
-**FINALLY**: Have a sub-agent double-check and correct your work.
+If the sub-agent finds issues, you MUST fix them before committing.
