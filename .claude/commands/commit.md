@@ -1,42 +1,26 @@
 Commit the staged changes.  If there are no staged changes inform the user.
 
-The commit message format should generally follow this pattern:
+**PROCESS**:
+1. Use this commit subject line provided by the user: "$ARGUMENTS"
+2. Run `git diff --staged` to analyze the actual changes
+3. Based on the diff, write implementation details for the description (if needed)
+4. Commit with the user's subject line and your description
 
-<template>
-(MajorComponent) Verb aspect
-Description line if needed
-</template>
-
-<explanations>
-MajorComponent = which component the commit is mainly about. (e.g. Engineer, Supershow, NIBS, Oversight, DarkBlue, Claude)
-
-Verb = Action taken (e.g. Add, Update, Fix, Remove, Refactor)
-
-Aspect = What was changed:
-- For file changes: use the filename (e.g. commit.md, tilemap.vfx)  
-- For functions: use ALLCAPS (e.g. LOAD-BITMAP, DRAW-SPRITE)
-- For features: use descriptive name (e.g. collision detection, path system)
-
-The FIRST LINE should be concise: just (Component) Verb aspect
-Additional details go on SEPARATE LINES below as the description.
-
-Examples:
+The commit message format:
 ```
-(Claude) Update commit.md
-Add commit message format template
+<user-provided subject line>
+
+<your implementation details if needed>
 ```
 
-```
-(Supershow) Fix DRAW-SPRITE
-Correct pen position after rotation
-```
-
-```
-(DarkBlue) Add enemy spawning system
-```
-
-See recent commits for more examples.
-</explanations>
+**DESCRIPTION GUIDELINES**:
+- Only add a description if there are important implementation details to document
+- Keep descriptions concise and technical
+- Focus on HOW the change was implemented
+- Examples of good descriptions:
+  - "Add helper word INDENT for consistent formatting"
+  - "Switch from showing count to listing names"
+  - "Use counter-based layout with modulo 10"
 
 **IMPORTANT**: DO NOT stage additional files.
 
@@ -50,12 +34,19 @@ See recent commits for more examples.
 
 **CRITICAL ANALYSIS STEPS**:
 1. Run `git diff --staged` and carefully read EVERY line
-2. Identify the MAIN CHANGE by asking:
-   - What is the primary function/word/feature that changed?
-   - Is there a single word/function that other changes support?
-   - Trust that the user has staged related changes around ONE main change
-3. The main change goes in the subject line
-4. Implementation details (helper functions, formatting changes, etc.) go in the description
+2. **STEP BACK FROM THE CODE** - Ask yourself:
+   - What behavior or capability changed from the USER'S perspective?
+   - What would someone USING this system notice is different?
+   - What is the conceptual change, not the mechanical change?
+3. Identify the RIGHT LEVEL OF ABSTRACTION:
+   - NOT the file that changed (nib2-tools.vfx)
+   - NOT the implementation detail (dependents .list)
+   - BUT the user-visible change (dependency display)
+4. Identify the LOGICAL COMPONENT:
+   - NOT where the file lives (engineer/)
+   - BUT what system it belongs to (NIBS, Supershow, etc.)
+5. The conceptual change goes in the subject line
+6. Implementation details go in the description
 
 **SUBJECT LINE RULES**:
 - MUST follow template: "(Component) Verb aspect"
