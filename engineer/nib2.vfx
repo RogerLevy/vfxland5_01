@@ -149,6 +149,7 @@ variable osp   os osp ! \ object stack pointer
     cell field constructor-xt
     cell field constructor-#params
     cell field on-derive-xt
+    cell field on-reopen-xt
     /list field dependents              \ classifier dependents (classes that applied the trait or classes that derived the class)
     cell field #openings
 dup constant /classifier-base
@@ -504,6 +505,14 @@ create _protocol  _class make [[
    
 : class: ( <name> - )
     _class already? if
+        \ Execute on-reopen if set
+        preword find drop >body to classifier
+        classifier -> on-reopen-xt @ ?dup if
+            classifier swap execute  \ ( class - )
+        then
+    then
+
+    _class already? if
         ' >body to classifier
         exit
     then
@@ -570,9 +579,9 @@ defer protocol-validations ( obj protocol - obj protocol )
         ( xt ) oexec
     ]] ;
 
-|| : :protocol ( protocolname-a protocolname-len classname-a classname-len - xt )
+|| : :method ( classname-a classname-len protocolname-a protocolname-len - xt )
     push-order only forth definitions
-    f" : %s:%s" 2dup upper
+    2swap f" : %s:%s" 2dup upper
     evaluate
     pop-order 
     state on
@@ -584,9 +593,9 @@ defer protocol-validations ( obj protocol - obj protocol )
     {: protocol0 c | name[ 256 ] :} 
     protocol0 [[
         me body> >name count name[ place
-        name[ count
         c body> >name count 
-        :protocol ( xt ) c offset @ + !
+        name[ count
+        :method ( xt ) c offset @ + !
         s" ?compile-validate-dispatch" evaluate
         c c offset @ + >origin !  \ Store class as origin when class implements protocol
     ]] ;
@@ -730,8 +739,22 @@ defer protocol-validations ( obj protocol - obj protocol )
 ;
 
 : :derive ( class - ) ( source-class derived-class - )
-    dup >cla @ _class <> abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
-    [[ :noname on-derive-xt ! ]] ;
+    dup >cla @ _class <> 
+        abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+    [[ 
+        me body> >name count
+        s" derive"
+        :method on-derive-xt ! 
+    ]] ;
+
+: :reopen ( class - ) ( class - )
+    dup >cla @ _class <> 
+        abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
+    [[ 
+        me body> >name count
+        s" reopen"
+        :method on-reopen-xt ! 
+    ]] ;
 
 \ ==============================================================================
 \ Misc

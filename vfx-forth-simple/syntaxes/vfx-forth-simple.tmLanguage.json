@@ -218,7 +218,7 @@
       "patterns": [
         {
           "name": "keyword.other.defining.vfx-forth",
-          "match": "(?<=\\s|^)(\\d+\\s+)?(\\S+)\\s+(:construct|:derive)(?=\\s)",
+          "match": "(?<=\\s|^)(\\d+\\s+)?(\\S+)\\s+(:construct|:derive|:reopen)(?=\\s)",
           "captures": {
             "1": {
               "name": "constant.numeric.integer.vfx-forth"
