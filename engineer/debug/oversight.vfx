@@ -1,6 +1,6 @@
 \ ------------------------------------------------------------------------------
-\ Oversight Contract System
-\ Contract-oriented debugging with inline self-healing and hybrid syntax
+\ Oversight Validation System
+\ Contract-based debugging with inline self-healing and hybrid syntax
 \  made in collaboration with Claude Sonnet 4
 \ ------------------------------------------------------------------------------
 
@@ -238,14 +238,16 @@ cstring wordname$
     caller-rp @ ip>nfa caller-name !
     res 0= if
         val -> validator @ >name count
-        c -> word-name$ count f" %s >> VALIDATION FAILED: %s" log-error
+        c -> word-name$ count 
+        f" %s >> VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
         .s
         -999 throw
     then
     res 1 = if
         val -> validator @ >name count 
-        c -> word-name$ count f" %s >> VALIDATION NOTE: %s" log-warning
+        c -> word-name$ count 
+        f" %s >> VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
         .s
     then ;
