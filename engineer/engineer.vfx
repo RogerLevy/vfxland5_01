@@ -7,6 +7,7 @@
 \ =============================================================================
 
 include %idir%\vfxcore2.vfx
+include %idir%\error2.vfx  \ TODO: Make platform-agnostic
 
 variable dump#
 
@@ -78,7 +79,6 @@ debug @ 0= [if]
 
 include %idir%/../lib/wstring.vfx
 include %idir%/strout.vfx
-include %idir%/error2.vfx  \ TODO: Make platform-agnostic
 
 \ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
 include %idir%/counter.vfx  \ required by mersenne

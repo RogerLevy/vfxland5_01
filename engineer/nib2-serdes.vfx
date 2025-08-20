@@ -2,10 +2,6 @@
 \ Serialization Support
 \ ==============================================================================
 
-\ : <array ( - )
-\     current-property 0= abort" <ARRAY >> No property being defined"
-\     TYPE_ARRAY current-property -> property-type ! ;
-
 : serialize? ( property - flag )
     -> serialize-flag @ ;
 

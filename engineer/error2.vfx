@@ -2,8 +2,6 @@
 \ Better VFX error reporting
 \ ------------------------------------------------------------------------------
 
-fast[
-
 private
 
 0
@@ -65,26 +63,6 @@ create ds 16 cells allot
         $-DEAD                              of Z" Translated to THROW" endof	\ MPE004
         drop Z" Undefined"
     end-case ;
-
-: .ip ( a - )
-    dup body> inForth? if
-        dup ip>nfa dup count ltype
-        name> - ?dup if
-            ." +" .
-        else
-            space
-        then
-    else . then ;
-
-: .data ( a - )
-    dup body> inForth? if
-        dup ip>nfa dup count ltype
-        name> >body - ?dup if
-            ." +" .
-        else
-            space
-        then
-    else . then ;
 
 \    >r
 \    r@ 0= if
@@ -163,5 +141,3 @@ private
 
 \ ' null-catch-save ' debug-catch-restore extends-catch
 ' console-debugger to-callback debugger
-
-fast]

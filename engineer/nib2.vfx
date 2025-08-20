@@ -249,6 +249,7 @@ create _property  _class make [[
         cell field next-property
         cell field property-size
         cell field property-type
+        cell field property-reftype
         cell field serialize-flag
     dup instance-size ! next-ofs !
 ]]
@@ -843,36 +844,79 @@ aka instance make  \ Backward compatibility
 4 constant TYPE_CSTRING  \ note: meant for embedded cstring fields
 \ 5 constant TYPE_ARRAY
 
+100 constant TYPE_ADDR
+101 constant TYPE_XT
+102 constant TYPE_OBJREF
+
+
 \ Metadata words - operate on current-property
+: ?no-property
+    current-property 0= abort" No property being defined" ;
+
+: ?not-supported
+    current-property -> property-type @ TYPE_ADDR >=
+\    current-property -> property-type @ TYPE_ARRAY = or
+        abort" Saving this property type is not supported!" ;
+
+: ?not-saved-supported
+    current-property -> serialize-flag @ 
+        abort" Saving this property type is not supported!" ;
+
 : <save ( - )
-    current-property 0= abort" <SAVE >> No property being defined"
+    ?no-property ?not-supported
     -1 current-property -> serialize-flag ! ;
 
 : <int ( - )
-    current-property 0= abort" <INT >> No property being defined"
+    ?no-property
     TYPE_INT current-property -> property-type ! ;
 
 : <fixed ( - )
-    current-property 0= abort" <FIXED >> No property being defined"
+    ?no-property
     TYPE_FIXED current-property -> property-type ! ;
 
 : <float ( - )
-    current-property 0= abort" <FLOAT >> No property being defined"
+    ?no-property
     TYPE_FLOAT current-property -> property-type ! ;
 
 : <cstring ( - )
-    current-property 0= abort" <CSTRING >> No property being defined"
+    ?no-property
     TYPE_CSTRING current-property -> property-type ! ;
+
+\ : <array ( - )
+\     ?no-property ?not-saved-supported
+\     TYPE_ARRAY current-property -> property-type ! ;
+
+: <xt ( - )
+    ?no-property ?not-saved-supported
+    TYPE_XT current-property -> property-type ! ;
+    
+: <addr ( - )
+    ?no-property ?not-saved-supported
+    TYPE_ADDR current-property -> property-type ! ;
+
+: <ref ( - class|trait )
+    ?no-property ?not-saved-supported
+    TYPE_OBJREF current-property -> property-type ! 
+    ' >body dup valid-classifier? not
+        abort" Not a valid classifier!" 
+        current-property -> property-reftype ! ;
+
+: .object ( object - )
+    dup valid-object? not if .name exit then
+    [[ cla @ .name me .name me . ]] ;
 
 : inspect-property ( property val-addr - )
     {: property val-addr :} 
     property .name ." : " 
     property -> property-type @ case
-        TYPE_CELL      of val-addr ? endof  
-        TYPE_INT       of val-addr ? endof 
-        TYPE_FIXED     of val-addr p? endof   
-        TYPE_FLOAT     of val-addr sf@ f. endof   
-        TYPE_CSTRING   of val-addr count type endof                 
+        TYPE_CELL       of val-addr ? endof  
+        TYPE_INT        of val-addr ? endof 
+        TYPE_FIXED      of val-addr p? endof   
+        TYPE_FLOAT      of val-addr sf@ f. endof   
+        TYPE_CSTRING    of val-addr count type endof
+        TYPE_ADDR       of val-addr @ .data endof
+        TYPE_XT         of val-addr @ .ip endof
+        TYPE_OBJREF     of val-addr @ .object endof
     endcase cr ;
 
 : .props ( object - )
@@ -884,8 +928,6 @@ aka instance make  \ Backward compatibility
         loop drop 
     ]] ;
 
-: .object ( object - )
-    [[ me . cla @ .name me .name ]] ;
 
 \ ==============================================================================
 \ _OBJECT Base Protocols

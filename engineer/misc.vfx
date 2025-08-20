@@ -33,6 +33,30 @@ include %idir%/../textmode/textmode-tools.vfx
         pop-attribute
     else . then ;
 
+: .ip ( a - )
+    dup body> inForth? if
+        9 push-attribute
+        dup ip>nfa dup count ltype
+        name> - ?dup if
+            ." +" .
+        else
+            space
+        then
+        pop-attribute
+    else . then ;
+
+: .data ( a - )
+    dup body> inForth? if
+        9 push-attribute
+        dup ip>nfa dup count ltype
+        name> >body - ?dup if
+            ." +" .
+        else
+            space
+        then
+        pop-attribute
+    else . then ;
+
 : f>ds  0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 
@@ -319,5 +343,4 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
         err ERROR_FILE_EXISTS =
         err ERROR_ALREADY_EXISTS = or not 
         err 0<> and abort" Error creating directory!" ;
-
 
