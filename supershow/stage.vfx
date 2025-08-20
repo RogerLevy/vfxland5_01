@@ -212,7 +212,7 @@ actor defaults [[
     en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
 
 : just ( - )
-    cr ." JUST >> All actors cleared!"
+    ." JUST >> Clearing all actors!" cr
     0 next# !  actives>  unload ;
 
 0 actor :construct ( - )
