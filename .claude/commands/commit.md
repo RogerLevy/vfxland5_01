@@ -1,5 +1,43 @@
 Commit the staged changes.  If there are no staged changes inform the user.
 
+The commit message format should generally follow this pattern:
+
+<template>
+(MajorComponent) Verb aspect
+Description line if needed
+</template>
+
+<explanations>
+MajorComponent = which component the commit is mainly about. (e.g. Engineer, Supershow, NIBS, Oversight, DarkBlue, Claude)
+
+Verb = Action taken (e.g. Add, Update, Fix, Remove, Refactor)
+
+Aspect = What was changed:
+- For file changes: use the filename (e.g. commit.md, tilemap.vfx)  
+- For functions: use ALLCAPS (e.g. LOAD-BITMAP, DRAW-SPRITE)
+- For features: use descriptive name (e.g. collision detection, path system)
+
+The FIRST LINE should be concise: just (Component) Verb aspect
+Additional details go on SEPARATE LINES below as the description.
+
+Examples:
+```
+(Claude) Update commit.md
+Add commit message format template
+```
+
+```
+(Supershow) Fix DRAW-SPRITE
+Correct pen position after rotation
+```
+
+```
+(DarkBlue) Add enemy spawning system
+```
+
+See recent commits for more examples.
+</explanations>
+
 **IMPORTANT**: DO NOT stage additional files.
 
 **IMPORTANT**: Write each separate change in a line item
@@ -34,4 +72,11 @@ Here are specific prompts to improve commit message specificity:
   - Would this help during debugging/archaeology later?
   - Did I avoid words like "improve," "better," "enhance," "fix" without specifics?
 
-  **FINALLY*: Have a sub-agent double-check and correct your work.
+**CRITICAL**: The commit message must be structured as:
+1. FIRST LINE: Short subject - "(Component) Verb aspect" only
+2. BLANK LINE (if description needed)
+3. ADDITIONAL LINES: Description details
+
+DO NOT put everything on the subject line. Keep it under 50 characters when possible.
+
+**FINALLY**: Have a sub-agent double-check and correct your work.
