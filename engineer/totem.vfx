@@ -31,10 +31,13 @@ trait;
     \ Find or create totem object by name or path (dev/compile/runtime)
     {: fn len class0 :}
     fn len -path >pad find-totem ?dup 
-    if dup -> existed on exit then 
-    class0 fn len -path $object
-    [[ gen-path srcpath!   me ]] ;
-
+    if 
+        dup -> existed on 
+    else 
+        class0 fn len -path $object
+        [[ gen-path srcpath!   me ]]
+    then ;
+    
 : *totem ( class <name> - obj )
     \ Parse name and materialize totem (dev/compile-time)
     bl parse rot materialize ;

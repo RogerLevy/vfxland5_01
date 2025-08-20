@@ -277,7 +277,8 @@ create _protocol  _class make [[
     -> field-space-size @ 0<> ;
     
 : field-space ( n - )
-    classifier >cla @ _trait = abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
+    classifier >cla @ _trait = 
+        abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
     classifier [[
         field-space-size !
         field-space-size @ instance-size !
@@ -297,7 +298,8 @@ create _protocol  _class make [[
     -> #openings @ 1 > ;
 
 : allocate-static-offset ( n - )
-    dup /static + /classifier > abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
+    dup /static + /classifier > 
+        abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
     /static offset !
     +to /static ;
     
@@ -338,7 +340,8 @@ create _protocol  _class make [[
     [[
         classifier has-field-space? if
             classifier -> next-ofs @ property-size @ +
-            classifier -> field-space-size @ > abort" MAP-PROPERTY >> Cannot map property - out of field space!"
+            classifier -> field-space-size @ > 
+                abort" MAP-PROPERTY >> Cannot map property - out of field space!"
         then
     
         classifier -> next-ofs @ offset @ classifier + !
@@ -391,7 +394,8 @@ create _protocol  _class make [[
 : nproperty ( size <name> - ) ( - a )
     {: | property0 :}
 
-    classifier 0= abort" NPROPERTY >> Can't define a property outside of a classifier definition."
+    classifier 0= 
+        abort" NPROPERTY >> Can't define a property outside of a classifier definition."
 
     _property already? if
         ' >body ?size-changed
