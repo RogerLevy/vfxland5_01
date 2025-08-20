@@ -534,7 +534,17 @@ create _protocol  _class make [[
         _object classifier -1 apply-trait 
     ]] ;
 
+: defaults ( [class] - a )
+    {: | class0 :}
+    classifier dup 0= if drop then to class0 
+    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
+    class0 -> template @ ?dup 0= if
+        class0 make class0 -> template !
+        class0 -> template @
+    then ;
+
 : class; ( - )
+    defaults drop
     end-classifier ;
 
 : is-a ( [class] <trait> - )
@@ -684,23 +694,6 @@ defer protocol-validations ( obj protocol - obj protocol )
         :noname constructor-xt !
         constructor-#params !
     ]] ;
-
-\ : defaults ( - a )
-\     classifier 0= abort" DEFAULTS >> Can't define defaults outside of a class definition."
-\     classifier >cla @ trait% = abort" DEFAULTS >> Cannot create defaults for traits - use in classes only"
-\     classifier -> template @ ?dup if else
-\         classifier instance classifier -> template !
-\         classifier -> template @
-\     then ;
-
-: defaults ( [class] - a )
-    {: | class0 :}
-    classifier dup 0= if drop then to class0 
-    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
-    class0 -> template @ ?dup 0= if
-        class0 make class0 -> template !
-        class0 -> template @
-    then ;
 
 : derive ( class - )
     {: source-class :}
