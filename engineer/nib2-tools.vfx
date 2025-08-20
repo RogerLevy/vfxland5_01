@@ -85,7 +85,7 @@
     ."     Classifier #: " classifier# @ . cr
     ."     Properties: " property-list .list
     ."     Protocols: (not currently tracked!)" cr \ protocol-list .list
-    ."     Dependents: " dependents list-count . cr
+    ."     Dependents: " dependents .list 
     
     me .traits
     me .parents
@@ -101,7 +101,7 @@
     ."     Classifier #: " classifier# @ . cr
     ."     Properties: " property-list .list
     ."     Protocols: " protocol-list .list
-    ."     Dependents: " dependents list-count . cr
+    ."     Dependents: " dependents .list
     
     me .parents
     ]] ;
