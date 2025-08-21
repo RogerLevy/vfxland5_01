@@ -17,7 +17,7 @@ create flamtbl
     
 : ?destroy
     dup @ | t a |
-    t solid? if explode unload then
+    t solid? if explode me unload then
     t destructible? if 0 a ! then ;
 
 flame :: init

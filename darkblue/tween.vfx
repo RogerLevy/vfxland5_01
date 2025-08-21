@@ -50,7 +50,7 @@ class;
 
 || : val n1 @ n2 @ over - s1 @ 1. min d @ execute ease @ execute ;
 || : step spd @ s1 +! ;
-: ?done s1 @ 1. >= if ( xt @ parent @ [[ ?execute ]] ) unload then ;
+: ?done s1 @ 1. >= if ( xt @ parent @ [[ ?execute ]] ) me unload then ;
 || : tween-act  act> step val adr @ ! ?done ;
 || : len! 1. swap p/ 60 / spd ! ;
 

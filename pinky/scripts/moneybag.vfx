@@ -7,7 +7,7 @@ class: moneybag
 : win?  #moneybags 0= ;
 : win  160 120 at  900 priority  wintext% one [[ ]]  *zelda13* ;
 : ?win  win? if win then ;
-: ?collect  p1 me hit? if unload ?win *zelda6* then ;
+: ?collect  p1 me hit? if me unload ?win *zelda6* then ;
 : ?hidden?  x 2@ 2p>s gap dup 2/ bg0 spot @ 0<> dup not moneybag.png and bmp ! ;
 
 moneybag :: init

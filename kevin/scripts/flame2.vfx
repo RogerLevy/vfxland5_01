@@ -4,4 +4,5 @@ flame2.png 20 20 tileset flame2.ts
 flame2.ts animation flame2.anm 0 15 range,
 
 flame2 :: init
-    throwaway flame2.anm 0.5 cycle act> a.done @ -exit unload ;
+    throwaway flame2.anm 0.5 cycle 
+    act> a.done @ -exit me unload ;

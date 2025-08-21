@@ -45,7 +45,7 @@ class;
 : (suicidal) ( - )
     act> 
         ." Event finished: " cr 
-        unload 
+        me unload 
         me info cr ;   
 
 : start-event ( - )
@@ -119,7 +119,7 @@ public
 \ : clear ( - )
 \     \ Clear the stage of other events, skipping ME.
 \     0 0 at
-\     actives> me you = ?exit unload ;
+\     actives> me you = ?exit me unload ;
 
 || : my-curve? ( fn len - )
     {: fn len :} 

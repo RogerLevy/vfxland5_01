@@ -31,7 +31,7 @@ vacuum :: kill
     my-bubble @ to bub
     blowout-tris
     my-bubble @ out
-    unload ;
+    me unload ;
 
 : constraint-physics
     owner @ ` me ` owner @ -> r @ p>f ` 0e ` bubble-constraint-force
@@ -110,7 +110,7 @@ path]
 
 : sprinkle  for somewhere at tri one drop loop ;
 
-: cleanup  actives> me tri is? -exit unload ;
+: cleanup  actives> me tri is? -exit me unload ;
 
 just 200 150 at *vacuum as
 200 sprinkle

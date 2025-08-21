@@ -14,7 +14,8 @@ defer paying
 ;
 : skipable
     *actor as> act>
-        <start> pressed? -exit unload
+        <start> pressed? -exit 
+        me unload
         next
 ;
 

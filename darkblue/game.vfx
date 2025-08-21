@@ -18,7 +18,7 @@ require scripts\ship.vfx
     *ship drop ;
 
 : (reset) ( - )
-    0 next# ! actives> you me = ?exit unload ;
+    0 next# ! actives> you me = ?exit me unload ;
 
 : reset ( - )
     (reset)

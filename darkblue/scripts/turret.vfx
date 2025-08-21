@@ -85,7 +85,7 @@ array] drop
             exponential2 ease-out w 0.0 0.1 tween
         act>
             0.1 passed? -exit
-            unload ;
+            me unload ;
 
 : fire-wide ( atk - )
     *shoot*
@@ -105,7 +105,7 @@ array] drop
             0 atk !            
         act>
             0.5 passed? -exit
-            unload ;
+            me unload ;
 
 ( ease dir adr n2. len. - )        
 create charge-levels 4 cells array[

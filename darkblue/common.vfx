@@ -30,7 +30,7 @@ class;
 
 \ Common protocols
 _object :: damage ( n - ) negate hp +! ;
-_object :: kill ( - ) unload ;
+_object :: kill ( - ) me unload ;
 : die  me kill ;
 
 \ Common logic
@@ -67,7 +67,7 @@ aka <start> <enter>
 : in? ( - f )
     x @ 0. r @ 2 * - gamew. r @ 2 * + within?
     y @ 0. r @ 2 * - gameh. r @ 2 * + within? and ;
-: ?cull in? ?exit unload ;
+: ?cull in? ?exit me unload ;
 : center-pos  160. 120. ;
 : player-pos  player0 pos@ ;
 : chance ( dividend divisor -- f ) rnd swap < ;

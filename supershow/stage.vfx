@@ -9,13 +9,20 @@
 variable gamelife
 0 0 2value gametime
 
-trait: thinker trait;
-thinker :: init ( - ) ;
-thinker :: deinit ( - ) ;
-thinker :: think ( - ) ;
+trait: thinker 
+    :: init ( - ) ;
+    :: deinit ( - ) ;
+    :: think ( - ) ;
+trait;
+
+trait: unloadable
+    :: unload ( - ) ;
+trait;
+
 
 class: actor
     is-a thinker
+    is-a unlodable
     /actor field-space
     prop en
     prop x <fixed <save
@@ -206,14 +213,14 @@ actor defaults [[
 : priority ( n - )
     0 #actors 1 - clamp next# ! ;
 
-: unload ( - )
+actor :: unload ( - )
     \ ." Actor unloaded " me info cr
     \ .rs
     en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
 
 : just ( - )
     ." JUST >> Clearing all actors!" cr
-    0 next# !  actives>  unload ;
+    0 next# !  actives>  me unload ;
 
 0 actor :construct ( - )
     at@ 2s>p x 2! ;
@@ -276,9 +283,6 @@ aka .> p>s
     r> cla !
     vx 2! x 2! init ;
 
-: out ( actor - )
-    [[ unload ]] ;
-
 : vanish  y @ 16384. or y ! ;
 : appear  y @ 16384. invert and y ! ;
 : expanded ( a1 n - a2 )
@@ -300,10 +304,10 @@ aka .> p>s
 c: timer %actor xt1 dur ;
 
 : clear-timers ( -- )
-    actives> me timer is? -exit unload ;
+    actives> me timer is? -exit me unload ;
 
 || : act-timer
-    act&> dur @ passed? -exit unload xt1 @ >r ;
+    act&> dur @ passed? -exit me unload xt1 @ >r ;
     
 || : (timer) ( time. xt -- )
     xt1 ! 0 max dur ! act-timer ;
@@ -332,7 +336,7 @@ c: timer %actor xt1 dur ;
     loop drop ;
 
 : clear-temps ( - )
-    temps> unload ;
+    temps> me unload ;
 
 \ =============================================================================
 \ Script Classes

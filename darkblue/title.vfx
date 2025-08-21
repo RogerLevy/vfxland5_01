@@ -39,7 +39,7 @@ variable gamemode
     230 150 at text-resilient one [[ ]]
     *selector
     0.1 timer>  *actor as>  act>
-        <start> pressed? if unload  part4 then ;
+        <start> pressed? if me unload  part4 then ;
 
 : part2
     1.0 timer>  part3 ;

@@ -7,6 +7,6 @@ security% :: init
         bmp off
         p1 -> x @ x @ 8. + >= -exit
         *beep1*
-        unload 186 0 0 +tile! ;
+        me unload 186 0 0 +tile! ;
 
 class;

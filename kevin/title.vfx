@@ -79,15 +79,15 @@ caverns-of-kevin-crop.png value b
         *title drop
         s out
     then 
-    0.1 timer>  *actor as>  act>  <start> pressed? -exit  unload  part4 ;
+    0.1 timer>  *actor as>  act>  <start> pressed? -exit  me unload  part4 ;
 || : part2
     160 -20 at  *kevin to k
-    s out *crumbler to s
+    s unload  *crumbler to s
     5.0 timer>  0 part3 ;
 || : part1
     clear  *scroller to s  2.0 timer>  part2 ;
 || : movie  part1 ;
-|| : skippable  *actor as> act> <start> pressed? -exit unload 1 part3 ;
+|| : skippable  *actor as> act> <start> pressed? -exit  me unload 1 part3 ;
 || : title-bg  0 0 at  bgt lay ;
 
 : title

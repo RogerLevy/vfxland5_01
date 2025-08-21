@@ -40,7 +40,7 @@ class;
 
 : stash ( - )
     r# @ -1 <> if room# @ r# ! then
-    me actor# a# !  me *temp /actor move  unload ;
+    me actor# a# !  me *temp /actor move  me unload ;
 
 : throwaway ( - )
     -2 r# ! ;
@@ -52,7 +52,7 @@ timer :: init ( - )
     -1 r# ! ;
 
 : stow ( - )
-    actives> r# @ -2 = if unload else stash then ;
+    actives> r# @ -2 = if me unload else stash then ;
 
 : takeout ( - )
     temps>
@@ -60,7 +60,7 @@ timer :: init ( - )
         belong? -exit
         a# @ priority
         me *actor /actor move
-        unload ;
+        me unload ;
 
 \ =============================================================================
 \ Room control

@@ -12,4 +12,4 @@ variable tsp \ index
 : <temp  ( a - )
     tsp @ 1 - #temps 1 - and tsp !
     ttop swap /actor move
-    ttop [[ unload ]] ;
+    ttop unload ;

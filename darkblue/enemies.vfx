@@ -85,7 +85,7 @@ private
 
 enemy :: kill
     me 0 0 from bounty @ burst-ring
-    unload 
+    me unload 
     ; \ regen ;
 
 \ variable orbs-next#  4096 orbs-next# !
@@ -117,7 +117,7 @@ enemy :: damage ( n - )
         player0 me fired? -exit
         you me rhit? if
             atk @ you damage
-            unload
+            me unload
         then ;
 
 : enemy-physics

@@ -5,4 +5,4 @@
 
 \ Fireball
 require scripts\fireball.vfx
-: explode  *zelda2*  8 fireball spawn  unload ;
+: explode  *zelda2*   8 fireball spawn   me unload ;

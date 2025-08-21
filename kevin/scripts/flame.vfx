@@ -15,7 +15,7 @@ create flamtbl
 : ?destroy
     dup @ | t a |
     t destructible? if 0 a ! then 
-    t solid? if explode unload then ;
+    t solid? if explode me unload then ;
 
 flame :: init
     flame.ts 0 tile bmp !

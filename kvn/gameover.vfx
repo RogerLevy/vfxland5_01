@@ -12,7 +12,8 @@ private
 : skipable
     0.25 timer>
     *actor as> act>
-        <start> pressed? -exit unload
+        <start> pressed? -exit 
+        me unload
         s" restart" gevent 
 ;
 

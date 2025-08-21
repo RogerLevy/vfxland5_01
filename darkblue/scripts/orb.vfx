@@ -22,7 +22,7 @@ class;
 : ?laser
     0.1 passed? -exit
     me beam laser-hit? -exit
-    unload ;
+    me unload ;
 
 orb :: init
     orb2.png bmp !
