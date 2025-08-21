@@ -1,4 +1,5 @@
-actor-class trafficlight%
+class: trafficlight
+    actor derive
 trafficlight.png 20 40 tileset ts
 : bottom  y @ bmp @ bmpwh nip 2 / s>p + ;
 : stand   bottom y @ - gap 2 / s>p - negate y +! ;
@@ -9,3 +10,4 @@ public
 : greenlight  it ?dup -exit as> ts bmp ! ;
 trafficlight :: init redlight stand ;
 
+class;

@@ -11,11 +11,13 @@ require scripts\shot.vfx
 require tween.vfx
 require scripts\ship.vfx
 
-actor-class turret
+class: turret
+    actor derive
     prop shooting
     prop shaking     \ 0 ~ 1.0
     prop aim <fixed <save
     prop charging
+class;
 
 turret.png 32 32 tileset turret.ts
 

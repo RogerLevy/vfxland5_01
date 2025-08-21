@@ -14,8 +14,10 @@ create orb-anim cell array[
     orb.ts 0 tile ,
 array] drop
 
-actor-class orb
+class: orb
+    actor derive
     is-a vessel
+class;
 
 : ?laser
     0.1 passed? -exit

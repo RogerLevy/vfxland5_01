@@ -2,12 +2,14 @@ require ../lib/claude-math.vfx
 
 tri.png 17 17 tileset tri.ts
 
-actor-class tri
+class: tri
+    actor derive
     prop r
     prop m
     prop ang
     prop vang
     prop bounced
+class;
 
 : repel
     player0  -exit

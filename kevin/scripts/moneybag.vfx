@@ -1,4 +1,5 @@
-actor-class moneybag%
+class: moneybag
+    actor derive
 
 : #moneybags  0 actives> me moneybag% is? -exit 1 + ;
 
@@ -13,3 +14,5 @@ public
 
 : enlighten  actives>  me moneybag% is? -exit appear ;
 : veil  actives>  me moneybag% is? -exit vanish ;
+
+class;

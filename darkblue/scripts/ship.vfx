@@ -3,10 +3,12 @@ require scripts\tri.vfx
 
 ship-v1.png 27 27 tileset ship.ts
 
-actor-class ship
+class: ship
+    actor derive
     prop r
     prop m
     prop flash-ctr
+class;
 
 variable paralysis                \ paralyzes player when >0
 0 value recovering?

@@ -1,4 +1,5 @@
-actor-class water%
+class: water
+    actor derive
 
 lemwater_4.png 20 20 tileset water.ts
 
@@ -12,3 +13,5 @@ create tbl water1.anm , water2.anm , water3.anm , water4.anm ,
 water :: init
     me actor# 4 mod cells tbl + @ 0.25 cycle
     act> p1 me hit? -exit s" death" evaluate ;
+
+class;

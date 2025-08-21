@@ -1,6 +1,9 @@
-actor-class enemy13
+class: enemy13
+    actor derive
 
 enemy13 :: init ( - )
     enemy13.png bmp !
     act>
         ;
+
+class;

@@ -1,4 +1,5 @@
-actor-class bugaboo%
+class: bugaboo
+    actor derive
 
 : -+  2 rnd 2 * 1 - ;
 : somewhere  320 240 2rnd ;
@@ -16,3 +17,5 @@ bugaboo :: init
         y @ 0 240. within not if vy @ negate vy ! then ;
         
 : ?bugaboo  somewhere at bugaboo one drop ;
+
+class;

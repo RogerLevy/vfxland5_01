@@ -1,4 +1,5 @@
-actor-class lift1%
+class: lift1
+    actor derive
 
 : physics
     me p1 hit? -exit
@@ -11,3 +12,5 @@ lift1% :: init
     ['] physics phys !
     -4 -2 x1 2! 8 4 w1 2!
     act> y @ -8. <= -exit 248. y ! ;
+
+class;

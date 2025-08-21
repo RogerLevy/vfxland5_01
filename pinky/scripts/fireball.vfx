@@ -1,4 +1,5 @@
-actor-class fireball%
+class: fireball
+    actor derive
 
 : decel  vx 2@ 0.89 dup 2p* vx 2! ;
 
@@ -6,3 +7,5 @@ fireball :: init
     fireball.png bmp !
     360. rnd 3.0 vec vx 2!
     act> ?out ?exit  decel  0.3 passed? -exit  unload ;
+
+class;

@@ -76,13 +76,15 @@ variable was-hit
         
 \ ------------------------------------------------------------------------------
 
-actor-class kevin%
+class: kevin
+    actor derive
     0.3 gravity !
     2.87 jumppower !
     0.245 risepower !
     1.64 walkspeed !
     0.98 inertia !
     3.5 terminal-vy !
+class;
 
 
 \ : ?plummet

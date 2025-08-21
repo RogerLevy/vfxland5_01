@@ -1,4 +1,5 @@
-actor-class bolo%
+class: bolo
+    actor derive
 
 bolo.png 32 32 tileset bolo.ts
 bolo.ts animation bolo-idle.anm 2 frame, 3 0 range,
@@ -19,3 +20,5 @@ bolo :: _idle
     act> p1 me hit? -exit burst ;
 
 bolo :: init  idle ;
+
+class;

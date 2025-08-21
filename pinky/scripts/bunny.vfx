@@ -2,7 +2,8 @@ prop kind
 
 bunny.png 32 32 tileset bunny.ts
 
-actor-class bunny%
+class: bunny
+    actor derive
 
 : ?h  vx @ 0< if h| then ;
 : ?dir  p1 -> x @ x @ > if negate then ;
@@ -22,3 +23,5 @@ bunny :: init
     \ 1 kind !
     kind @ 0 #kinds 1 - clamp cells kinds + @ execute
 ;
+
+class;

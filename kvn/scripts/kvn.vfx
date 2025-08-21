@@ -149,7 +149,8 @@ variable was-hit
         
 \ ------------------------------------------------------------------------------
 
-actor-class kvn%
+class: kvn
+    actor derive
     0.12 gravity !
     1.5 terminal-vy !
     1.55 jumppower !
@@ -286,3 +287,5 @@ public
     p1 ;
 
 : ?spawn-kvn  ?kvn drop ;
+
+class;

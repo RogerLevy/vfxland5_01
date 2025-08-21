@@ -12,7 +12,12 @@ prop lockstate
 1 constant locked
 2 constant oneway
 
-actor-class door%
+class: door
+    actor derive
+class;
+
+
+
 door-g.png 40 20 tileset door-g.ts
 door-s.png 40 20 tileset door-s.ts
 door-g.ts animation g-open.anm    0 9 range,

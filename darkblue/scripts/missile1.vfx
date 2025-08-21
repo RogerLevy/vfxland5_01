@@ -1,5 +1,8 @@
-actor-class missile1
+class: missile1
+    actor derive
     is-a projectile
     
 missile1 :: init
     missile1.png bmp ! ;
+
+class;

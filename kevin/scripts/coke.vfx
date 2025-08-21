@@ -2,7 +2,8 @@ require scripts\fireball.vfx
 
 coke.png 16 16 tileset coke.ts
 
-actor-class coke%
+class: coke
+    actor derive
 
 coke.ts animation spin.anm 19 0 range,
 
@@ -13,3 +14,5 @@ coke :: init
     act>
         p1 me hit? if p1 burn explode exit then
         x1 2@ w1 2@ bg0 tmcol> explode ; \ unhit? ?exit explode ;
+
+class;

@@ -2,7 +2,8 @@ require scripts/flame.vfx
 
 pinky.png 32 32 tileset pinky.ts
 
-actor-class pinky%
+class: pinky
+    actor derive
 
 ( a n - )
 : tooth  drop 0 swap !  *zelda1* ;
@@ -42,3 +43,5 @@ pinky :: init
     me to p1  -3. y +!
     down fac !  \ 1 y1 +!  
     idle  act>  animate ?turnwalk ?shoot tread col-room ;
+
+class;

@@ -1,4 +1,5 @@
-actor-class security%
+class: security
+    actor derive
 
 security% :: init
     bg.ts 186 tile bmp !
@@ -7,3 +8,5 @@ security% :: init
         p1 -> x @ x @ 8. + >= -exit
         *beep1*
         unload 186 0 0 +tile! ;
+
+class;

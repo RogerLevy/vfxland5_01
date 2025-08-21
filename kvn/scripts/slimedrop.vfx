@@ -1,4 +1,5 @@
-actor-class slimedrop%
+class: slimedrop
+    actor derive
     0.025 gravity !
     1. terminal-vy !
 
@@ -12,3 +13,5 @@ slimedrop% :: init
     ['] physics phys !
     -1 -1 x1 2! 2 2 w1 2!
     act> me p1 hit? -exit unload s" slimed" evaluate ;
+
+class;

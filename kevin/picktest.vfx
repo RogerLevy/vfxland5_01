@@ -5,8 +5,12 @@ variable mbuttons
     bmp @ bmpwh | h w |
     x 2@ 2p>s w h 2 2 2/ 2- 2dup w h 2+ ;
 
-actor-class picktest%
-0 value mx 0 value my
+class: picktest
+    actor derive
+class;
+
+
+    0 value mx 0 value my
 : pick
     mouse to my to mx
     actives> 

@@ -1,4 +1,5 @@
-actor-class pumpkinknight%
+class: pumpkinknight
+    actor derive
 
 
 : !vx  fac @ dir>v  1.5 dup 2p*  vx 2! ;
@@ -15,3 +16,5 @@ pumpkinknight :: init
     act> 
     pumpkinhead1.png 4 8 ticks cycle
     dirkeysup? if  turn/idle  else  ?walk  then ;
+
+class;

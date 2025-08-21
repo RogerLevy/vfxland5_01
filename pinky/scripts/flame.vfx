@@ -1,6 +1,7 @@
 require scripts/fireball.vfx
 
-actor-class flame%
+class: flame
+    actor derive
 
 create flamtbl
     flame.png ,
@@ -22,3 +23,5 @@ create flamtbl
 flame :: init
     flame.png bmp !
     act> ?out ?exit  ?face  -4 -2 6 6 bg0 tread> ?destroy ;
+
+class;

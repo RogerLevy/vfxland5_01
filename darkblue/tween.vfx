@@ -36,7 +36,8 @@ constant EASE-IN-OUT
 
 \ Tween object
 
-actor-class tween
+class: tween
+    actor derive
     prop d <xt
     prop adr <addr
     prop xt <xt
@@ -45,6 +46,7 @@ actor-class tween
     prop n2 
     prop s1 <fixed
     prop spd <fixed
+class;
 
 || : val n1 @ n2 @ over - s1 @ 1. min d @ execute ease @ execute ;
 || : step spd @ s1 +! ;
@@ -63,4 +65,3 @@ actor-class tween
 
 : tween ( ease dir adr n2. len. - )
     *tween drop ;
-

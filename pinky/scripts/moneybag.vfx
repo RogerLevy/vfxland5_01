@@ -1,6 +1,7 @@
 require scripts\wintext.vfx
 
-actor-class moneybag%
+class: moneybag
+    actor derive
 
 : #moneybags  0 actives> cla @ moneybag% = -exit 1 + ;
 : win?  #moneybags 0= ;
@@ -13,3 +14,5 @@ moneybag :: init
     moneybag.png bmp !  vanish
     act> ?collect \ ?hidden? not if ?collect then
 ;
+
+class;

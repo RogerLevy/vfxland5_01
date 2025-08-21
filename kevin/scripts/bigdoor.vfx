@@ -1,6 +1,7 @@
 require scripts\door.vfx \ shares some public stuff
 
-actor-class bigdoor%
+class: bigdoor
+    actor derive
 
 door-big.png 50 50 tileset bigdoor.ts
 bigdoor.ts animation bigdoor-open.anm  0 5 range,
@@ -30,3 +31,5 @@ bigdoor :: open
         *shut*
         bigdoor-open.anm 0 cycle
         idle ;
+
+class;
