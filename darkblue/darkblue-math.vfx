@@ -159,6 +159,7 @@ fast[ \ disable validations for speed
     o1 pos@ o2 pos@ dist d <= ;
 
 : rhit? ( obj obj - f )
+    2dup = if 2drop 0 exit then
     over exists? over exists? and not if 2drop 0 exit then
     {: o1 o2 | rd :}
     o1 -> r @
