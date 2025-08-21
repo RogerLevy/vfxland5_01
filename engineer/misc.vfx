@@ -169,9 +169,7 @@ variable saved-dp
 : .rs ( -- )
     rp@ (.rs) ;
 
-: cstring ( -- <name> )
-    create 256 allot&erase ;
-  
+
 : clamp >r max r> min ;
 : umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
 
@@ -350,3 +348,10 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
 : indent ( n - )
     4 * spaces ;
+
+: cstring ( -- <name> )
+    create 256 allot&erase ;
+  
+cstring lastword
+: '  preword count lastword place  ' ;
+: find  dup count lastword place  find ;
