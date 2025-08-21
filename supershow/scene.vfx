@@ -2,7 +2,6 @@
 
 class: scene
     is-a _totem
-    is-a loadable
     :: default-path ( - path len ) s" dat/scn" ;
 class;
 
@@ -11,7 +10,7 @@ class;
 
 || : enabled?  -> en @ ;
 
-scene :: save-content ( - )
+scene :: _commit ( - )
     \ save actors on stage to disk
     temp[ 
         SCENE_FORMAT_VERSION ,
@@ -21,17 +20,17 @@ scene :: save-content ( - )
 
 : load-scene-data ( a - )
     @+ dup SCENE_FORMAT_VERSION <> if
-        -1 swap f" SCENE:LOAD >> Unsupported scene format version %n" .abort
+        -1 swap f" Unsupported scene format version %n" .abort
     else drop then 
     ['] into-me desbin
     ['] one ['] desbin desmulti 
     drop ;
 
-scene :: load ( - )
+scene :: _load ( - )
     \ load actors from disk to stage
     srcpath count ['] file@ catch nip abort" File read error"
     dup load-scene-data
     free throw ;
 
-: *scene ( <name> - scene ) 
-    scene *totem dup manifest ;
+: +scene ( <name> - scene ) 
+    scene +totem manifest ;

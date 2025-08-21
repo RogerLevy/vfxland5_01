@@ -22,7 +22,7 @@ trait;
 
 class: actor
     is-a thinker
-    is-a unlodable
+    is-a unloadable
     /actor field-space
     prop en
     prop x <fixed <save
@@ -92,16 +92,6 @@ actor :: info ( actor - )
     .status
     ." at: " x 2@ 2p>s swap . . 
     ." ] " pop-attribute ;
-
-: !" ( - <var>" )
-    '"' parse 2dup 2>r
-    f" %s ?" evaluate
-    2r> fe" .\" %s ! \"" evaluate ; immediate
-
-: p!" ( - <var>" )
-    '"' parse 2dup 2>r
-    f" %s p?" evaluate
-    2r> fe" %p .\" %s ! \"" evaluate ; immediate
 
 \ =============================================================================
 \ Actor Errors
@@ -370,12 +360,12 @@ class: actor-script
     is-a _totem
     :: default-path ( - path len )
         s" scripts" ;
-    :: load-content ( - )
+    :: _intake ( - )
         srcpath count included ;
 class;
 
 : load-scripts
-    actor-script load-default-dir ;
+    actor-script reheat-default-dir ;
 
 actor :: on-error ( xt err# - )
     {: xt err :} 

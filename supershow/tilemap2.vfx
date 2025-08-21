@@ -4,17 +4,11 @@
 \ (Untested)
 \ ------------------------------------------------------------------------------
 
-
 variable pile
 
 \ =============================================================================
 \ tileset
 \ =============================================================================
-
-\ here ," dat/gfx" constant tilesets-path$
-: tilesets-path$ c" dat/gfx" ;
-
-\ create tileset _class make drop
 
 class: tileset
     tileset is-a usable
@@ -27,7 +21,7 @@ class: tileset
     prop #tiles <save <int 
 
    :: default-path ( - path len )
-       tilesets-path$ count ;
+       c" dat/gfx" ;
 
 class;
 
@@ -51,12 +45,12 @@ class;
 tileset :: use ( - )
    baseid @ pile ! ;
 
-tileset :: setup ( - )
+tileset :: _load ( - )
     me new? if next-bmp# @ baseid ! then
     bmp @ bitmap@ tw @ th @ slice-tiles 
     me new? if #tiles @ next-bmp# +! then ;
 
-tileset :: cleanup ( - )
+tileset :: _unload ( - )
     baseid @ #tiles @ bounds do
          i bitmap@ al_destroy_bitmap
     loop ;
@@ -65,26 +59,23 @@ tileset :: cleanup ( - )
     my-name -ext f" %s.png" >pad find 0= abort" tileset source bitmap not found!"
     execute bmp ! ;   \ Bitmap words return their own bitmap ID's
 
-tileset :: load-content ( - )
+tileset :: _intake ( - )
     _totem:load-content
     reconnect-bmp ;
 
-: *tileset ( bmp# tw th <name> - )
-    tileset *totem 
+: +tileset ( bmp# tw th <name> - )
+    tileset +totem 
     [[ th ! tw ! bmp ! me ]]
-    manifest ;
+    manifest drop ;
 
 : tile ( tileset n - n )
     swap -> baseid @ + ;
 
-: load-tileset ( fn len - tileset )
-    tileset load-totem ;
-
-: load-tilesets ( - )
-    tilesets-path$ count  tileset load-dir ;
+: reheat-tilesets ( - )
+    tileset reheat-default-dir ;
 
 : reload-tilesets ( - )
-    tilesets-path$ count  tileset reload-dir ;
+    tileset reload-default-dir ;
 
 : is-tile? ( n - f )
     bitmap@ dup -exit al_is_sub_bitmap ;
