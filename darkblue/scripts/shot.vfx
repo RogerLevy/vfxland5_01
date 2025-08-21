@@ -1,5 +1,5 @@
 class: shot
-    actor derive
+    enemy derive
     is-a projectile
 
 shot :: init

@@ -4,7 +4,7 @@ require scripts\tri.vfx
 ship-v1.png 27 27 tileset ship.ts
 
 class: ship
-    actor derive
+    enemy derive
     prop r
     prop m
     prop flash-ctr

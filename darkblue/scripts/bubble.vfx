@@ -1,5 +1,5 @@
 class: bubble
-    actor derive
+    enemy derive
     prop r
 
 bubble :: init ( - )

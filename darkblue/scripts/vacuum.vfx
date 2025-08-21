@@ -3,9 +3,11 @@ require scripts\bubble.vfx
 require darkblue-math.vfx
 require path.vfx
 
-enemy-class vacuum
+class: vacuum
+    enemy derive
     0 firing-rate ! 
     prop my-bubble
+class;
 
 0 value bub
 \ : blowout-r  bub -> r @ 100. p* p>f  ;
@@ -74,7 +76,7 @@ vacuum :: kill
 : bubble-act
     act> owner @ embody physics> ;
 
-vacuum :: post-init ( - )
+vacuum :: init ( - )
     suck ;
 
 public

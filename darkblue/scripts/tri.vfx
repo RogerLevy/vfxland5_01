@@ -3,7 +3,7 @@ require ../lib/claude-math.vfx
 tri.png 17 17 tileset tri.ts
 
 class: tri
-    actor derive
+    enemy derive
     prop r
     prop m
     prop ang

@@ -18,8 +18,8 @@ require scripts\shot.vfx
 require tween.vfx
 require scripts\ship.vfx
 
-class: turret
-    actor derive-exp
+class: turret-exp
+    enemy derive
     prop shooting
     prop shaking     \ 0 ~ 1.0
     prop aim

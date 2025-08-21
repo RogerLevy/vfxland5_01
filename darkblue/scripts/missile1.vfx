@@ -1,5 +1,5 @@
 class: missile1
-    actor derive
+    enemy derive
     is-a projectile
     
 missile1 :: init

@@ -15,7 +15,7 @@ create orb-anim cell array[
 array] drop
 
 class: orb
-    actor derive
+    enemy derive
     is-a vessel
 class;
 

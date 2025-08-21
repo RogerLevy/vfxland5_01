@@ -57,6 +57,8 @@ class;
     \ r> !sp
     2r> at ;
 
+public
+
 : delay ( secs. - )
     delay-secs ! r> delay-xt ! 
     act>

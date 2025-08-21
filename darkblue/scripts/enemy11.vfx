@@ -1,5 +1,5 @@
 class: enemy11
-    actor derive
+    enemy derive
 
 enemy11 :: init ( - )
     enemy11.png bmp !

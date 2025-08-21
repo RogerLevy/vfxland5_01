@@ -52,7 +52,7 @@ class;
 
 class: playback
     is-a thinker
-    prop path0 <ref _path       \ pointer to path definition
+    prop path0 <ref path        \ pointer to path definition
     prop seg <int               \ current segment index
     prop journey <fixed         \ path progress 0-1.0  
     prop startx <fixed          \ starting position
@@ -62,7 +62,7 @@ class: playback
     prop scalex <fixed          \ runtime scaling
     prop scaley <fixed          \ 
     prop rotation <fixed        \ runtime rotation angle
-    prop active <flag           \ slot is active
+    prop active                 \ slot is active
     prop #loops <int            \ completed loops
     prop ppdir <int             \ pingpong direction 1/-1
     prop alp <addr              \ arc-length parameterized coordinates
