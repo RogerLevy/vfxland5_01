@@ -108,12 +108,12 @@ cstring name$
 
 : .list ( list - )
     {: | cnt :}
-    0 to cnt cr
+    0 to cnt 
     dup list-count for 
-        cnt 0 = if 2 indent then
-        @next .name space cr
+        cnt 0 = if cr 2 indent then
+        @next .name space
         cnt 1 + 10 mod to cnt  
-    loop drop ;
+    loop drop cr ;
 
 \ ==============================================================================
 \ Object stack
