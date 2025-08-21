@@ -1,3 +1,5 @@
+fast[
+
 || 4 constant #buffers
 || 32768 constant /buffer
 || create buffers #buffers /buffer * allot&erase
@@ -62,3 +64,5 @@
 : z]  0 emit  str  strout-pop op-handle !  buf- ;
 : s[  z[ ;
 : s]  z] wcount 1 - ;
+
+fast]
