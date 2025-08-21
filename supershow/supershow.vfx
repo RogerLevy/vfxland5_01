@@ -48,22 +48,6 @@ include %idir%\tread.vfx    \ Tilemap data reading
 include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 
 \ =============================================================================
-\ Load scripts
-\ =============================================================================
-
-|| : load-script ( a n - )
-    2dup '.' ending s" vfx" compare 0= if
-        -path f" scripts\%s" required
-    else
-        2drop
-    then ;
-
-: load-scripts ( - )
-    create-autoclasses
-    s" scripts" dir-exists? -exit
-    s" scripts" ['] load-script each-file ;
-
-\ =============================================================================
 \ Automatically refresh bitmaps and tilesets
 \ =============================================================================
 
