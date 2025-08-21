@@ -39,8 +39,8 @@ class: enemy-script
         s" scripts/enemies" ;
 class;
 
-: load-enemies
-    enemy-script load-default-dir ;
+: reheat-enemies
+    enemy-script reheat-default-dir ;
 
 class: enemy
     actor derive
