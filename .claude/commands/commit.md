@@ -16,13 +16,14 @@ The commit message format:
 ```
 
 **DESCRIPTION GUIDELINES**:
-- Only add a description if there are important implementation details to document
+- Only add a description if there are important implementation details to document, OR, if the changes are primarily documentation
 - Keep descriptions concise and technical
 - Focus on HOW the change was implemented
 - Examples of good descriptions:
   - "Add helper word INDENT for consistent formatting"
   - "Switch from showing count to listing names"
   - "Use counter-based layout with modulo 10"
+- Multiple line-items must be formatted as bullet-point lists.
 
 **IMPORTANT**: DO NOT stage additional files.
 
