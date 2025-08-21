@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## VFXLand 5 
 
 - Custom game engine and 2D games written in VFX Forth.
@@ -40,27 +42,32 @@
    - `pinky/` - Action platformer
    - `kvn/` - Precision platformer
 
-### Object-Oriented System
+### Object-Oriented System (Nib 2.0)
 
-Custom Forth OOP implementation
+Modern trait-based OOP system with ~99% feature completion
 
-- **Classes**: Defined with `class:` ... `class;`, create private namespaces
-- **Objects**: User allocated.  First cell = class pointer
-- **Actors**: (in Supershow) 512-byte fixed-size instances 
-- **Messages**: Late-bound method dispatch declared with `m:` and implemented with `::`
-- **Fields**: Declared via `var` (instance) or `static` (class-level)
-- **Context**: `me` points to current object, scoped with `[[` ... `]]`
-- **Property access**: Use `'s propertyname` syntax for objects on stack.  Use `propertyname` for scoped objects e.g. `[[ propertyname @ ]]`
+- **Classes**: Defined with `class:` ... `class;` or compact `c: name [traits...] [props...] ;`
+- **Traits**: Defined with `trait:` ... `trait;`, provide reusable behavior and properties
+- **Objects**: User allocated, first cell = class pointer, automatic constructor execution - contructors are for compiling only
+- **Protocols**: Late-bound method dispatch declared and implemented with `::`
+- **Properties**: Dynamic field allocation via `property` or `prop`, always public
+- **Statics**: Class-level storage via `static`, always public  
+- **Fields**: Direct offset allocation via `field` (context-dependent scope, not for classes, only classic structs)
+- **Context**: `me` points to current object, scoped with `[[` ... `]]` and `as>`
+- **Property access**: Use `-> propertyname` syntax for objects on stack, `propertyname` for scoped objects
+- **Inheritance**: `derive` copies class structure, `is-a` adds trait identity
+- **Composition**: `works-with` applies trait without identity inheritance
+- **Instantiation**: `make` (unnamed), `object` (named), `construct` (pre-allocated memory)
+- **Type queries**: `is?` for runtime type/trait checking, `can?` for capability checking
+- **Base trait**: All objects inherit `_object` trait with lifecycle protocols
 
 ### Conventions
 
 - **VFXLand5 Dialect**: doc/claude/vfxland5-dialect.md
 - **Stack notation**: doc/claude/stack-comment-conventions.txt
 - **Continuation patterns**: `show>` executes code as caller's continuation
-- **Actor scripting**: `act>` assigns per-frame behavior, `draw>` for rendering
+- **Actor scripting**: `act>` assigns per-frame behavior, `draw>` for rendering (UI elements only)
 - **File extensions**: `.vfx` for VFX Forth source, `.dat` for binary data
-- **Output formatting**: `cr` goes at the beginning of line outputs, not the end
-- **Backup files**: naming convention `original-filename-backup-YYYYMMDD-HHMMSS.ext`
 - When referring to Forth words outside of code, write them in ALL-CAPS to help distinguish them.
 - Don't use the classic "1" and "2" words like 1- 1+ 2+ 2- 2* 2/ . They should be considered useless legacy words.
 
@@ -68,6 +75,24 @@ Custom Forth OOP implementation
 - When code doesn't work, first check for simple typos (wrong function names, missing parameters, etc.) before launching into technical analysis
 - If you wrote incorrect code, acknowledge the mistake directly rather than overexplaining why the wrong code is wrong
 - "I wrote X when I meant Y" is often better than detailed technical rationalization
+
+## Common Development Commands
+
+### Testing VFX Code
+```bash
+# Run VFX commands with 5-second timeout
+(echo "command1"; echo "command2"; echo "bye"; sleep 1) | timeout 5 vfxlin include engineer/vfxcore2.vfx
+
+# Example: Basic arithmetic test  
+(echo "1 2 + . bye"; sleep 1) | timeout 5 vfxlin include engineer/vfxcore2.vfx
+
+# Load and test files
+(echo "include test/test-as.vfx"; echo "bye"; sleep 1) | timeout 5 vfxlin include engineer/vfxcore2.vfx
+```
+
+### Git Operations
+- Use `/commit "message"` command for structured commits with automatic component prefixes
+- Use `/snapshot` command to create incrementing snapshot-stable tags
 
 ## Development Workflow
 
@@ -153,6 +178,21 @@ The system has different entry points depending on build type:
 - Contract-oriented zero-overhead runtime validations 
 - Automatically loaded by Engineer
 - Several system-wide validations provided (engineer/debug/core-checks.vfx, engineer/checks.vfx)
+
+### Accessing Private Words
+When words are defined in `private` blocks, use namespace access.
+
+Interactively, switch to a file's namespace.  (Only one can be active at a time.)
+```forth
+filename-without-extension/    \ switch to file's namespace 
+private-word                   \ now accessible
+```
+
+In code, import words from other namespaces into the current one.
+```forth
+borrow filename-without-extension/ borrowed-word   \ import another file's private word
+: word  borrowed-word ;        \ now accessible within this file as a private word
+```
 
 ## File Organization
 
