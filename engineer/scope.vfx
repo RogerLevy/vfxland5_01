@@ -28,11 +28,6 @@ variable public-xt  ' forth public-xt !
 : public ( - )
     only public-xt @ execute definitions wlname ?wordlist +order ;
 : || private 0 parse evaluate public ; immediate
-: borrow ( - <scope> <word> )
-    ' >body @ +order
-    bl parse 2dup 
-    s" synonym " >pad -rot $+ s"  " $+ -rot $+ count evaluate
-    previous ;
 
 \ Search order stack
 : pagealign ( - )  here $ff and 256 swap - allot ;
@@ -45,6 +40,14 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
 : sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
 : push-order ( - ) get-order sos-pushes get-current sos-push ;
 : pop-order ( - ) sos-pop set-current sos-pops set-order ;
+
+\ Importing words from other files
+: borrow ( - <scope> <word> )
+    push-order private
+    ' >body @ +order
+    bl parse 2dup 
+    s" synonym " >pad -rot $+ s"  " $+ -rot $+ count evaluate
+    pop-order ;
 
 \ Extend include words to preserve the search order
 : preserve-order ( a:file len:file xt - )
