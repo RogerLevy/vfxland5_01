@@ -32,24 +32,29 @@ create (pen) 0 , 0 ,
 \ History I/O device
 \ =============================================================================
 
-create str 32768 allot
+create str 256 allot
 0 value >str
 
-16 cell stack hist-stack
+: pagealign ( - )  here $ff and 256 swap - allot ;
+: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
+aligned-page hist-stack
+variable hsp   hist-stack hsp ! 
+: hist-push ( ? - ) hsp @ !  4 hsp c+! ;
+: hist-pop ( - ? ) -4 hsp c+!  hsp @ @ ;
 
-\ : ?+out  dup $80 and ?exit 1 out +! ;
-: hist-emit  drop  str >str + c!  1 +to >str  1 out +! ;
-: hist-type  drop  bounds ?do  i c@ 0 hist-emit  loop ;
+: hist-emit ( c sid - )
+    drop  
+    >str 256 = if drop exit then
+    str >str + c!  1 +to >str  1 out +! ;
 
-borrow engineer/ frame 
-borrow engineer/ draw-ide
-borrow engineer/ refresh
+: hist-type ( a len - )
+    drop  bounds ?do  i c@ 0 hist-emit  loop ;
 
 : (echo) ( - )
     \ Echo to VFX console
     {: | skip :} 
     >str -exit
-    op-handle @ hist-stack push
+    op-handle @ >r
     consoledev op-handle !
     str >str bounds do
         1 to skip
@@ -59,7 +64,7 @@ borrow engineer/ refresh
             i c@ 10 ATTR_CODES 1 - within if i c@ emit then
         then
     skip +loop
-    hist-stack pop op-handle ! ;
+    r> op-handle ! ;
 
 : hist-cr
     drop
@@ -101,14 +106,14 @@ create vectors
 create hist-dev   0 , vectors ,
 
 : hist[ ( - )
-    op-handle @ hist-stack push
-    textmode @ hist-stack push textmode on 
+    op-handle @ hist-push
+    textmode @ hist-push textmode on 
     >str out !
     hist-dev op-handle ! ;
 
 : hist] ( - )
-    hist-stack pop textmode ! 
-    hist-stack pop op-handle !
+    hist-pop textmode ! 
+    hist-pop op-handle !
     str >str add-history
     (echo)
     0 to >str ;
@@ -567,7 +572,6 @@ is draw-ide
     running off
     textmode off
     consoledev setio
-    hist-stack vacate
     ((quit))
 ;
 
