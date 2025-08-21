@@ -195,13 +195,6 @@ _stack :: pop-ref ( - a )
 : stack ( max width - <name> )
     _stack object ;
 
-: object-table: ( a <name> - ) ( - object )
-    create , cell array[
-    does> @+ @ swap [] @ ;
-
-: object-table; ( - )
-    array] drop ;
-
 class: _object-array
     _array derive
     :: deref-index ( n - ? ) me [] ;
@@ -214,3 +207,22 @@ class;
             class0 i me [] construct
         loop
     ]] ;
+
+\ ------------------------------------------------------------------------------
+
+: sermulti ( iterable filter-xt ser-xt - ) ( obj - flag ) ( obj - ) 
+    {: arr filter-xt ser-xt | &count :}
+    here to &count 0 ,
+    arr #items for
+        i arr deref-index 
+        dup filter-xt execute if
+            1 &count +!
+            ser-xt execute 
+        else drop then
+    loop ;
+
+: desmulti ( a instance-xt deser-xt - a' ) ( class - obj ) ( a instance-xt - a' ) 
+    {: a instance-xt deser-xt :}
+    a @+ for
+        instance-xt deser-xt execute
+    loop ;

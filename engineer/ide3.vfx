@@ -488,9 +488,8 @@ ide-mode object ide-mode0
 full-mode object full-mode0
 window-mode object window-mode0
 
-display-mode object-table: current-mode
-    ide-mode0 , full-mode0 , window-mode0 ,
-object-table;
+display-mode jumptable current-mode
+    ' ide-mode0 , ' full-mode0 , ' window-mode0 ,
 
 \ Redefine ide and repl to point to current mode's properties
 :noname ( - a ) current-mode -> _ide ; is ide

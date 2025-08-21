@@ -1,14 +1,14 @@
 || 4 constant #buffers
 || 32768 constant /buffer
-|| #buffers /buffer array buffers 
+|| create buffers #buffers /buffer * allot&erase
 || variable buffer-index
 
 : reset-strout-buffers ( - )
     0 buffer-index !
-    buffers -> data @  #buffers /buffer * erase ;
+    buffers #buffers /buffer * erase ;
 
 || : str ( - a )
-    buffer-index @ buffers [] ;
+    buffer-index @ /buffer * buffers + ;
 
 || : buf+ ( - )
     buffer-index @ 1 + #buffers umod buffer-index !
@@ -48,10 +48,17 @@
   ' drop ,
   ' drop ,
 
-|| 8 cell stack op-stack 
+
+|| : pagealign ( - )  here $ff and 256 swap - allot ;
+|| : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
+|| aligned-page strout-stack
+|| variable ssp   strout-stack ssp ! 
+|| : strout-push ( ? - ) ssp @ !  4 ssp c+! ;
+|| : strout-pop ( - ? ) -4 ssp c+!  ssp @ @ ;
+
 || create strdev   0 , string-vectors ,
 
-: z[  buf+  op-handle @ op-stack push  strdev op-handle ! ;
-: z]  0 emit  str  op-stack pop op-handle !  buf- ;
+: z[  buf+  op-handle @ strout-push  strdev op-handle ! ;
+: z]  0 emit  str  strout-pop op-handle !  buf- ;
 : s[  z[ ;
 : s]  z] wcount 1 - ;
