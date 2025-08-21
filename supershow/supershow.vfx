@@ -23,10 +23,11 @@ include %idir%\checks.vfx
 \ Dependencies
 \ =============================================================================
 
-require %idir%\shader.vfx    \ Shaders 
-require %idir%\crt.vfx       \ CRT shader
-require %idir%\waveplay.vfx  \ Audio engine
-require %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
+include %idir%\..\lib\array2.vfx  \ Array support
+include %idir%\shader.vfx    \ Shaders 
+include %idir%\crt.vfx       \ CRT shader
+include %idir%\waveplay.vfx  \ Audio engine
+include %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
 
 \ =============================================================================
 \ Stage
