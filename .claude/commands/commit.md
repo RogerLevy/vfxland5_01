@@ -16,14 +16,24 @@ The commit message format:
 ```
 
 **DESCRIPTION GUIDELINES**:
-- Only add a description if there are important implementation details to document, OR, if the changes are primarily documentation
-- Keep descriptions concise and technical
-- Focus on HOW the change was implemented
+Add a description when ANY of these conditions are met:
+- Multiple distinct changes in the commit (different files, different types of fixes)
+- Bug fixes that change behavior or fix specific issues
+- Changes are primarily documentation
+- Any change that affects user-visible behavior
+- Architectural changes (inheritance, class structure, etc.)
+
+Keep descriptions concise and technical, focusing on HOW the change was implemented:
 - Examples of good descriptions:
   - "Add helper word INDENT for consistent formatting"
   - "Switch from showing count to listing names"
   - "Use counter-based layout with modulo 10"
 - Multiple line-items must be formatted as bullet-point lists.
+
+**EXAMPLES OF COMMITS REQUIRING DESCRIPTIONS**:
+- Bug fix affecting multiple files: "- Fix collision detection in player class - Update enemy inheritance hierarchy - Add safety check for self-damage"
+- Documentation updates: "- Add Nib 2.0 object system documentation - Update testing command examples - Add namespace access patterns"
+- Architectural changes: "- Move validation from private to public scope - Rename property access operator from 's to -> - Add constructor execution to object creation"
 
 **IMPORTANT**: DO NOT stage additional files.
 
@@ -70,8 +80,19 @@ The commit message format:
 **MANDATORY**: Use the Task tool to launch a sub-agent to double-check that:
 1. If the component prefix is missing from the user's subject line, add it (e.g. "(Component)" before their text)
 2. The message matches what `git diff --staged` actually shows
-3. That the message is not overly-verbose or repeats itself
+3. Whether a description is needed based on these criteria:
+   - Multiple files changed with different types of fixes
+   - Bug fixes that change behavior
+   - Any architectural/inheritance changes
+   - Documentation changes
+   - When in doubt, include a description rather than omit it
+4. That the message is not overly-verbose or repeats itself
 
 **CRITICAL**: The sub-agent must NOT change the user's subject line wording - only add the component prefix if missing. The user's chosen subject line content must be preserved exactly.
+
+**SUB-AGENT GUIDANCE**: 
+- DEFAULT to including descriptions for multi-file commits or behavior changes
+- Better to over-document than under-document for future reference
+- If there are 2+ distinct changes, always recommend a description with bullet points
 
 If the sub-agent finds issues, you MUST fix them before committing.
