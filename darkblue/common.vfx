@@ -6,6 +6,8 @@ trait: vessel
     prop atk <int <save
     prop bounty <int <save
     prop firing-rate <int
+
+    :: recovering? ( - flag ) 0 ;
 trait;
 
 trait: projectile
@@ -39,7 +41,7 @@ _object :: kill ( - ) me unload ;
     -> firer @ = ;
  
 \ Global variables
-0 value player0
+dummy value player0
 variable energy  1000 energy !
 variable automatic
 variable charge

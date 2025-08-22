@@ -1,5 +1,6 @@
 require scripts\orb.vfx
 require scripts\tri.vfx
+require scripts\turret.vfx
 
 ship-v1.png 27 27 tileset ship.ts
 
@@ -8,15 +9,17 @@ class: ship
     prop r
     prop m
     prop flash-ctr
+    prop turret0
+    prop paralysis              \ paralyzes player when >0
 class;
-
-variable paralysis                \ paralyzes player when >0
-0 value recovering?
 
 5 tweak sbp            \ screen bounce paralysis length
 .3 tweak spd           \ normal movement speed
 0.93 tweak ine         \ inertia
 \ .03 tweak dec           \ deceleration
+
+ship :: recovering? ( - flag )
+    flash-ctr @ 0 >= ;
 
 : ?flash ( n - n )
     flash-ctr @ 0< ?exit
@@ -90,7 +93,7 @@ ship :: damage ( n - )
     2 + flash-ctr @ + 62 min flash-ctr ! ;
 
 : hit-orb 
-    recovering? ?exit
+    me recovering? ?exit
     ( you = player )
     5 you damage
     you [[
@@ -103,7 +106,7 @@ ship :: damage ( n - )
     1 energy +! me unload ;
 
 : hit-enemy
-    recovering? ?exit
+    me recovering? ?exit
     30 you damage
     you [[
         you me collision-force3 3 3 2* vx 2+!  \ knockback
@@ -118,13 +121,12 @@ ship :: damage ( n - )
 
 : &objects
     en @ -exit
-    flash-ctr @ 0 >= to recovering?
     actives>
         r @ -exit
         you me rhit? -exit
         me enemy is? if hit-enemy exit then
         me orb is? if hit-orb exit then
-        recovering? ?exit
+        me recovering? ?exit
         worth @ if hit-tri exit then ;
 
 : collisions
@@ -133,7 +135,7 @@ ship :: damage ( n - )
 : countdown ( a - )
     dup @ 1 - 0 max swap ! ;
     
-: speed spd @ recovering? if 2.5 p/ then ;
+: speed spd @   me recovering? if 2.5 p/ then ;
 : -speed speed negate ;
 
 : controls
@@ -151,11 +153,20 @@ ship :: damage ( n - )
 : physics
     decel collisions vx 2@ x 2+! ;
 
+: /turret
+    turret0 @ ?exit
+    turret one turret0 ! 
+    me turret0 @ -> owner ! ;
+
 ship :: init
     me to player0
+    /turret
     ship.ts 0 tile bmp !
     13. r !
     10. m !
     ['] physics phys !
     act>
         !bmp controls ;
+
+ship :: deinit
+    turret0 @ ?unload ;

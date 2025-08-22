@@ -201,7 +201,7 @@ charge-levels #items cell array bars
         then
     loop
     charging @ if
-        owner @ -> flash-ctr @ 0 >= if  \ -1 = not flashing
+        owner @ recovering? if 
             cancel-charge exit
         then
         charge-key @ letgo? if

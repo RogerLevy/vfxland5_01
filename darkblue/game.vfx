@@ -11,11 +11,8 @@ require scripts\ship.vfx
 
 \ Global commands
 
-: *ship ( - ship )
-    ship one [[ me turret one -> owner ! me ]] ;
-
 : *player ( - )
-    *ship drop ;
+    ship one drop ;
 
 : (reset) ( - )
     0 next# ! actives> you me = ?exit me unload ;

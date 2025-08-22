@@ -24,7 +24,7 @@ class: actor
     prop beha <xt
     prop phys <xt
     prop time <fixed                \ secs
-    prop n1 prop n2 prop n3 prop n4 \ General purpose props
+    prop n1 prop n2 prop n3 prop n4 \ General purpose props (legacy)
     prop prio <int <save            \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
     prop id <int <save

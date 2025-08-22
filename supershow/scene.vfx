@@ -1,7 +1,8 @@
 1 constant SCENE_FORMAT_VERSION
 
 class: actor
-    prop owner <ref actor
+    prop owner <ref actor       \ actors with owners are discarded
+                                \ it is up to the owner actor to recreate
 class;
 
 class: scene

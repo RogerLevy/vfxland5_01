@@ -9,6 +9,8 @@ trait: unloadable
     :: unload ( - ) ;
 trait;
 
+: ?unload  ?dup if unload then ;
+
 trait: usable
     :: use ( - ) ;
 trait;
