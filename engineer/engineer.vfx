@@ -630,7 +630,7 @@ is frame
     \ going @ ?exit
     debug @ if >ide else >display then
     frame frame hold off \ fix IDE starting with hold enabled because of the initial window switch to VFX
-    pre going on begin frame again ;
+    pre going on begin ['] frame catch ?dup until throw ;
 
 \ =============================================================================
 \ Entry Points  
