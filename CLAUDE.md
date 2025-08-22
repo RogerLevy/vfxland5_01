@@ -42,15 +42,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - `pinky/` - Action platformer
    - `kvn/` - Precision platformer
 
-### Object-Oriented System (Nib 2.0)
+### Object-Oriented System (NIBS, a.k.a. Nib 2.0)
 
 Modern trait-based OOP system with ~99% feature completion
+
+This is a custom system developed by the user specifically for their game development. It is not a part of VFX Forth.
 
 - **Classes**: Defined with `class:` ... `class;` or compact `c: name [traits...] [props...] ;`
 - **Traits**: Defined with `trait:` ... `trait;`, provide reusable behavior and properties
 - **Objects**: User allocated, first cell = class pointer, automatic constructor execution - contructors are for compiling only
 - **Protocols**: Late-bound method dispatch declared and implemented with `::`
-- **Properties**: Dynamic field allocation via `property` or `prop`, always public
+- **Properties**: Dynamic field allocation via `prop`, always public
 - **Statics**: Class-level storage via `static`, always public  
 - **Fields**: Direct offset allocation via `field` (context-dependent scope, not for classes, only classic structs)
 - **Context**: `me` points to current object, scoped with `[[` ... `]]` and `as>`
