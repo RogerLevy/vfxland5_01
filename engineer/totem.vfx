@@ -104,10 +104,14 @@ _totem :: unload ( - )
         me load 
     ]] ;
 
+|| : !default-path
+    me body> >name count
+    me default-path f" %s/%s" me srcpath! ;
+
 : +totem ( class <name> - obj )
     \ Parse name and materialize totem (dev-time or compile-time)
     bl parse rot materialize 
-    [[ me default-path srcpath place   me ]] ;
+    [[ !default-path   me ]] ;
 
 : serialize ( obj path len - )
     2>r temp[ ( obj ) serbin temp]
