@@ -320,9 +320,9 @@ include %idir%/../textmode/textmode.vfx
 : kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
 : pressed? ( - f )  kdelta 1 = ;
 : letgo? ( - f )  kdelta -1 = ;
-: shift? ( - f )  215 held? 216 held? or ;
-: ctrl? ( - f )  217 held? 218 held? or ;
 0 value alt?
+0 value ctrl?
+0 value shift?
     
 \ =============================================================================
 \ Framerate independence
@@ -485,7 +485,10 @@ magic-id MAGIC_TWEAK TWK
     r> dup 'show ! cls execute ; 
 
 || : poll ( - )
-    poll-keyboard  <alt> held? <altgr> held? or to alt? ;
+    poll-keyboard  
+    <alt> held? <altgr> held? or to alt? 
+    <lshift> held? <rshift> held? or to shift? 
+    <lctrl> held? <rctrl> held? or to ctrl? ;
 
 : refresh ( - )
     ustime 
