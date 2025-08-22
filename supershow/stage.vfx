@@ -9,17 +9,6 @@
 variable gamelife
 0 0 2value gametime
 
-trait: thinker 
-    :: init ( - ) ;
-    :: deinit ( - ) ;
-    :: think ( - ) ;
-trait;
-
-trait: unloadable
-    :: unload ( - ) ;
-trait;
-
-
 class: actor
     is-a thinker
     is-a unloadable

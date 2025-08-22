@@ -33,8 +33,8 @@ include %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
 \ Stage
 \ =============================================================================
 
-include %idir%\stage.vfx     \ Actor/sprite system
 include %idir%\traits.vfx    \ Object traits
+include %idir%\stage.vfx     \ Actor/sprite system
 include %idir%\scene.vfx     \ Scene management
 include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 

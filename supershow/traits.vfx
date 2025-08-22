@@ -1,6 +1,12 @@
 
-trait: loadable
-    :: load ( - ) ;
+trait: thinker 
+    :: init ( - ) ;
+    :: deinit ( - ) ;
+    :: think ( - ) ;
+trait;
+
+trait: unloadable
+    :: unload ( - ) ;
 trait;
 
 trait: usable
