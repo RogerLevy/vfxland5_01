@@ -229,11 +229,11 @@ borrow engineer/ func[]
     s[
         .hotkeys cr
         ." CWD: " path '\' ending type cr
-        ." Pen: " (pen) 2@ swap . .
-        ." Me: " .me cr
+        ." Me: " .me cr 
         ." Current: " current @ .name space
-        ." State: " .state 
-        ." Hold: " .hold cr
+        ." Pen: " (pen) 2@ swap . . space
+        ." State: " .state space
+        ." Hold: " .hold space
         ." Dict free: " .unused cr 
         ." Honing: " .honing cr
         ." Watch: " cr .watch cr
