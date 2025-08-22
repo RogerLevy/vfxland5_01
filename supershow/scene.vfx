@@ -35,7 +35,8 @@ scene :: _commit ( - )
 
 scene :: _load ( - )
     \ load actors from disk to stage
-    srcpath count ['] file@ catch nip abort" File read error"
+    srcpath count file-exists? -exit
+    srcpath count file@ drop
     dup load-scene-data
     free throw ;
 
