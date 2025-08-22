@@ -18,12 +18,19 @@ scene :: _commit ( - )
         actors ['] enabled? ['] serbin sermulti
     temp] srcpath count ['] write catch abort" File write error" ;
 
+: load-actor ( class - actor )
+    dup actor is? not if
+        body> >name count
+        f" Class %s does not inherit from ACTOR." -1 -rot .abort 
+    then 
+    one ;
+
 : load-scene-data ( a - )
     @+ dup SCENE_FORMAT_VERSION <> if
         -1 swap f" Unsupported scene format version %n" .abort
     else drop then 
     ['] into-me desbin
-    ['] one ['] desbin desmulti 
+    ['] load-actor ['] desbin desmulti 
     drop ;
 
 scene :: _load ( - )
@@ -33,4 +40,4 @@ scene :: _load ( - )
     free throw ;
 
 : +scene ( <name> - scene ) 
-    scene +totem manifest ;
+    scene +totem ;

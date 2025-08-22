@@ -36,7 +36,7 @@ private
         abort" No current scene!  Say `SAVEAS <scene>` or `EDIT <scene>` first."
     this commit ;    
 
-: (friendly-scene)  bl parse f" >scene %s.scn" evaluate ;
+: (friendly-scene)  bl parse f" +scene %s.scn" evaluate ;
 
 : saveas ( <name> - )
     (friendly-scene) to this   save ; 
