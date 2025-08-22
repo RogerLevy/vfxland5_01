@@ -33,7 +33,7 @@ private
 
 : save ( - )
     this 0= 
-        abort" No current scene!  Say `SAVEAS <scene>` or `EDIT <scene>` first."
+        abort" No current scene!  Required: `SAVEAS <scene>` or `EDIT <scene>`"
     this commit ;    
 
 : (friendly-scene)  bl parse f" +scene %s.scn" evaluate ;
@@ -86,15 +86,21 @@ private
     get-mouse
     dragging ;
 
+borrow forth hold  \ import system variable
+aka _hold hold     \ and shadow it
+variable hold      \ new private variable will work with f8 and persist
+
 \ ------------------------------------------------------------------------------
 
 public
 
 : sketchpad
-    sketchpad/ show> step sprites input ;
+    hold on
+    repl on
+    sketchpad/ 
+    show> hold @ _hold ! step sprites input ;
 
 honing @ [if]
 sketchpad
 push-order
 [then]
-step

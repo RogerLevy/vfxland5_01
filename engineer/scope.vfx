@@ -42,7 +42,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
 : pop-order ( - ) sos-pop set-current sos-pops set-order ;
 
 \ Importing words from other files
-: borrow ( - <scope> <word> )
+: borrow ( - <vocabulary> <word> )
     push-order private
     ' >body @ +order
     bl parse 2dup 
