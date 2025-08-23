@@ -54,7 +54,7 @@ aka hone update
 
 || : has-image? f" %s.png" >pad find nip ;
 
-: script ( - <name> )
+: +script ( - <name> )
     \ Create an actor script containing some boilerplate.
     {: | n[ 256 ] #1 :}
     bl parse n[ place

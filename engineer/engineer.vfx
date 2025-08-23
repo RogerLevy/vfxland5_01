@@ -838,7 +838,7 @@ borrow nib2/ init-nib
                     \ interfere with interpreter state. Exact mechanism unknown.
 ;
 
-: project ( - <path> )
+: +project ( - <name> )
     home-path$ count $cwd
     bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
     200 ms
