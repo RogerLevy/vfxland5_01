@@ -1,3 +1,7 @@
+2025/08/23
+[ ] (Engineer) Implement new LD tool
+    Consolidate TRY, UPDATE, and RUN functionality with smart path searching and project detection.
+
 2025/08/22
 [ ] (Supershow) Implement owner-extension for the scene class
     Add method override pattern to serialize/deserialize actor owner references.
