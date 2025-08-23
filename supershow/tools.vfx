@@ -75,16 +75,17 @@ aka hone update
     n[ count f" locate %s" evaluate ;
     
 : edit ( - <classname> )
-    \ Edit a class (minus the %).
+    {: | name len :}
+    \ Edit a word.
     \ If no name given, edit the class inferred from the current object (ME).
-    \ Switch to the class's vocabulary.
-    0 preparse nip 0= if
-        cla @ body> >name count
-    else
-        bl parse 
+    \ Switch to matching vocabulary if it exists.
+    bl parse to len to name
+    len 0= if
+        cla @ body> >name count to len to name
     then
-    2dup f" %s/" evaluate
-    f" locate %s" evaluate ;
+
+    name len f" %s/" >pad find if execute else drop then
+    name len f" locate %s" evaluate ;
 
 || : s= compare 0= ;
 
