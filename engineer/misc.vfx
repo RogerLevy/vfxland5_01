@@ -353,5 +353,12 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
     create 256 allot&erase ;
   
 cstring lastword
-: '  preword count lastword place  ' ;
 : find  dup count lastword place  find ;
+: !lastword  preword count lastword place ;
+: '  !lastword  ' ;
+: [']  !lastword  postpone ['] ; immediate    
+: locate  !lastword locate ;
+: see  !lastword see ;
+: show  !lastword show ;
+
+
