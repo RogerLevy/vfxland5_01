@@ -29,6 +29,7 @@ defer onSwitchIn ( - ) \ Window gets focus
 variable going
 variable bye-chain
 cstring home-path$
+cstring prj-path$
 create funcs 256 12 * allot&erase
 0 value reload-shift?
 variable _repl  _repl on   \ enable commandline
@@ -731,6 +732,7 @@ borrow nib2/ init-nib
 \ =============================================================================
 
 : rld ( - )
+    prj-path$ count $cwd
     honing off
     cartridge
     repl on ;
@@ -795,16 +797,15 @@ borrow nib2/ init-nib
     0 parse 2dup f" :noname %s ;" evaluate watch-xt !
     watch$ place ;
 
-
-: ld ( - <path> )
+: ldp ( - <path> )
     bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
         bl parse fe" \"%s\" doesn't exist or is not a project!" type cr
         exit 
     then
     bl parse 2dup 2dup upper f" Loading %s..." type cr
-    home-path$ count f" %s\%s" $cwd
+    home-path$ count f" %s\%s" prj-path$ place
+    prj-path$ count $cwd
     200 ms
-    \ ['] dir >r
     ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
                     \ SHELLCMD operations. Return stack anchor is a common
                     \ pattern to stabilize memory layout when host OS calls
@@ -815,7 +816,7 @@ borrow nib2/ init-nib
     home-path$ count $cwd
     bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
     200 ms
-    ld
+    ldp
 ;
 
 \ =============================================================================
