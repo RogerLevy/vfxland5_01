@@ -26,7 +26,7 @@ cstring update-name$
     bl parse
     dup if
         >pad find not abort" Class not found!"
-        >body to class0
+        execute to class0
         pad count update-name$ place
     else
         2drop
