@@ -60,7 +60,7 @@ aka hone update
     bl parse n[ place
     n[ count f" scripts\%s.vfx" file-exists? not if
         n[ count f" scripts\%s.vfx" actor-script materialize drop
-        n[ count f" scripts\%s.vfx" file[
+        n[ count f" scripts\%s.vfx" write[
             n[ count 
             f" class: %s" line,
             f"     actor derive" line,
@@ -74,7 +74,7 @@ aka hone update
             f" %s :: init ( - )" line,
             s"     act> ;" line,
             nl,
-        file]
+        write]
         n[ count f" scripts\%s.vfx" included
     else
         -1 abort" Script already exists"

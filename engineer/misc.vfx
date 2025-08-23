@@ -176,11 +176,11 @@ variable saved-dp
 aka se" s\"        \ " \ syntax highlight guard
 
 0 value #1
-: file[ w/o create-file throw to #1 ;
+: write[ w/o create-file throw to #1 ;
 : data, #1 write-file throw ;
 : line, #1 write-line throw ;
 : nl,  s" " line, ;
-: file] #1 close-file drop ;
+: write] #1 close-file drop ;
 
 aka file-exists? fileexists?
 
