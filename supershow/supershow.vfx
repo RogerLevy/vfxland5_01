@@ -23,7 +23,6 @@ include %idir%\checks.vfx
 \ Dependencies
 \ =============================================================================
 
-include %idir%\..\lib\array2.vfx  \ Array support
 include %idir%\shader.vfx    \ Shaders 
 include %idir%\crt.vfx       \ CRT shader
 include %idir%\waveplay.vfx  \ Audio engine

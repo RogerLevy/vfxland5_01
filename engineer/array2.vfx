@@ -226,3 +226,24 @@ class;
     a @+ for
         instance-xt deser-xt execute
     loop ;
+
+\ ------------------------------------------------------------------------------
+
+|| : move,  dup >r here swap move r> allot ;
+|| : fresh,  dup , /classifier move, ;
+
+|| create fresh-array-classifiers 
+/classifier cell+ array[
+    _iterable fresh,
+    _lifo fresh,
+    _fifo fresh,
+    _array fresh,
+    _stack fresh,
+     _object-array fresh,
+array]
+
+|| : reset-classifier ( a - )
+    @+ swap /classifier move ;
+
+: reset-array-classifiers ( - )
+    ['] reset-classifier fresh-array-classifiers each ;
