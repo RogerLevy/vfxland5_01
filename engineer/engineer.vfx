@@ -128,7 +128,7 @@ GetForegroundWindow value vfx-hwnd
         repeat
         e al_close_directory drop    
     else
-        abort" Couldn't open directory"
+        -1 abort" Couldn't open directory"
     then 
     e al_destroy_fs_entry ;
 
@@ -166,7 +166,7 @@ wordlist constant honing-wl
     honing @ if honing-wl -order then
     throw ;
 
-|| : try-again ( - )
+|| : ld-again ( - )
     honing @ -1 0 within? if
         retry-filepath$ count >try 
     else
@@ -175,12 +175,38 @@ wordlist constant honing-wl
         honing @ if honing-wl -order then
     then ;
 
-: try ( - <file-noext> )
-    bl preparse nip 0= if
-        bl parse 2drop try-again exit
+: ld ( - <namespec> )
+    \ Usage: 
+    \ - ld projectname
+    \ - ld filename (no extension)
+    \ - ld ../test/filename (no extension)
+
+    {: | fn len :}
+    bl parse to len to fn
+
+    \ Load last file again?
+    len 0= if
+        ld-again exit
     then
+
+    \ Project?
+    fn len home-path$ count f" %s/%s/main.vfx" file-exists? if
+        fn len f" ldp %s" evaluate
+        exit
+    then
+
+    \ Normal
+    fn len f" %s.vfx" >abspath to len to fn
+
+    fn len file-exists? not
+        abort" File not found."
+
+    prj-path$ count fn len instring not if
+        fn len -file $cwd
+    then
+
     honing on
-    bl parse f" %s.vfx" >try ;
+    fn len >try ;
 
 honing-wl +order definitions
 : require include ;
@@ -739,7 +765,7 @@ borrow nib2/ init-nib
 
 : ?reload ( - )
     honing @ reload-shift? not and if
-        try-again
+        ld-again
     else
         rld
     then ;

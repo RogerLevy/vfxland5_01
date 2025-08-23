@@ -1,5 +1,5 @@
-include %idir%/../../engineer/nib2-serdes.vfx
-include %idir%/../../engineer/totem2.vfx
+include %idir%/../engineer/nib2-serdes.vfx
+include %idir%/../engineer/totem.vfx
 
 class: abc 
     is-a _totem 
@@ -16,6 +16,6 @@ class;
 
 \ test.abc [[ 0 a ! 0 b ! 0 c ! ]]
 \ s" test.abc" abc load-totem [[ a ? b ? c ? ]]
-s" test/abc" abc reheat-dir
+s" abc" abc reheat-dir
 test.abc [[ a ? b ? c ? ]]
 test2.abc [[ a ? b ? c ? ]]

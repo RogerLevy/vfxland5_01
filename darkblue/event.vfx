@@ -100,7 +100,7 @@ public
     \ Development tool; find, load and execute an event.
     \ Turns on honing, so everything it depends on is reloaded and f5 runs it
     \ again via honing as an xt.
-    \ TODO: support saving the data stack in TRY for TRY-AGAIN to recreate in
+    \ TODO: support saving the data stack in TRY for ld-again to recreate in
     \ honing mode; or just put that mechanism in RUN and HONE-EVENT.
     {: | a len :}
     bl parse to len to a
