@@ -59,6 +59,7 @@ aka hone update
     {: | n[ 256 ] #1 :}
     bl parse n[ place
     n[ count f" scripts\%s.vfx" file-exists? not if
+        n[ count f" scripts\%s.vfx" actor-script materialize drop
         n[ count f" scripts\%s.vfx" file[
             n[ count f" actor-class %s" line,
             nl,
@@ -73,7 +74,7 @@ aka hone update
         -1 abort" Script already exists"
     then
     n[ count f" locate %s" evaluate ;
-    
+
 : edit ( - <classname> )
     {: | name len :}
     \ Edit a word.

@@ -71,6 +71,7 @@ trait;
 
 _totem :: load ( - ) 
     me _load ;
+
 _totem :: unload ( - ) 
     me _unload ; 
 
@@ -86,7 +87,7 @@ _totem :: unload ( - )
 : srcpath! ( path len totem - )
     [[ >abspath srcpath place ]] ;
 
-: materialize ( path len class - obj )
+: materialize ( path len class - totem ) ( - totem )
     \ Find or create totem object by name or path (dev/compile/runtime)
     {: path len class0 :}
     path len -path >pad find-totem ?dup 
@@ -97,8 +98,8 @@ _totem :: unload ( - )
         [[ path len me srcpath!   me ]]
     then ;
 
-: manifest ( obj - obj )
-    \ Initialize totem for use (dev-time or runtime)
+: manifest ( totem - totem )
+    \ Initialize totem for use (dev-time)
     [[
         me new? not if me unload then
         me load 
@@ -108,7 +109,7 @@ _totem :: unload ( - )
     me body> >name count
     me default-path f" %s/%s" me srcpath! ;
 
-: +totem ( class <name> - obj )
+: +totem ( class <name> - totem ) ( - totem )
     \ Parse name and materialize totem (dev-time or compile-time)
     bl parse rot materialize 
     [[ !default-path   me ]] ;
