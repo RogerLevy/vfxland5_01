@@ -42,12 +42,15 @@ class;
 : reheat-enemies
     enemy-script reheat-default-dir ;
 
+: +enemy ( - <name> )
+    bl parse f" %s.vfx" enemy-script +script drop ;
+
 class: enemy
     actor derive
     works-with vessel
 class;
 
-\ aka enemies enemy
+aka enemies enemy
 
 enemy defaults [[
     enemy1.png bmp !
@@ -138,17 +141,6 @@ enemy :derive ( parent derived - )
     2dup actor:derive
     nip auto-bitmap ;
 
-\ : register-enemy-class ( class - )
-\     dup body> >name enemy-classes lookup ! ;
-
-\ : (include-enemy-class) ( 1 key$ a - 1 )
-\     rot >r drop count f" scripts\%s.vfx"
-\     ?included r> ;
-
-\ : hot-reload-enemies ( - )
-\     \ ['] (include-enemy-class) enemy-classes walk-dictionary
-\     actives> enemy is? -exit me init ;
-
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
@@ -162,7 +154,6 @@ enemy :derive ( parent derived - )
 
 public
 
-
 ." Loading enemy table..." cr
 \ id            hp          atk         gold        rad         bmp                 spd         path
 enm: enemy1     hp: 1       atk: 10     gold: 20                                    \ spd: 1.0    path: path1 
@@ -173,5 +164,5 @@ enm: vacuum     hp: 20      atk: 5      gold: 0                 bmp: enemy23.png
 
 honing @ [if]
     ." Hot-reloading enemies..." cr
-    hot-reload-enemies
+    reheat-enemies
 [then]

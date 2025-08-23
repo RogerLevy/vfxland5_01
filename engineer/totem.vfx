@@ -90,6 +90,7 @@ _totem :: unload ( - )
 : materialize ( path len class - totem ) ( - totem )
     \ Find or create totem object by name or path (dev/compile/runtime)
     {: path len class0 :}
+    path len -file ensure-dir 
     path len -path >pad find-totem ?dup 
     if 
         dup -> existed on 
@@ -122,8 +123,7 @@ _totem :: _commit ( - )
     me srcpath count serialize ;    
 
 : commit ( totem - )
-    [[ 
-        srcpath count -file ensure-dir 
+    [[         
         me _commit 
     ]] ;
 

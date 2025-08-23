@@ -329,7 +329,7 @@ actor :derive ( source-class derived-class - )
 
 : hide-autoclass ( a len - )
     \ Hide existing autoclass if any to fix LOCATE,
-    \ which would otherwise take us to the call to LOAD-SCRIPTS
+    \ which would otherwise take us to the call to reheat-scripts
     \ in cases where we want to (re)define it within a script.
     >pad find if
         dup execute -> autoclass @ if
@@ -347,13 +347,17 @@ actor :reopen ( class - )
 
 class: actor-script
     is-a _totem
+    static script-class \ <ref _class
+    actor actor-script -> script-class !
+
     :: default-path ( - path len )
         s" scripts" ;
+
     :: _intake ( - )
         srcpath count included ;
 class;
 
-: load-scripts
+: reheat-scripts
     actor-script reheat-default-dir ;
 
 actor :: on-error ( xt err# - )
@@ -367,4 +371,41 @@ actor :: on-error ( xt err# - )
     
 : find-class ( a len - class | actor )
     >pad find if execute else drop actor then ;
+
+|| : has-image? f" %s.png" >pad find nip ;
+
+: >default-path ( fn len - path len )
+    -> default-path @ execute f" %s\%s" ;
+
+: +script ( fn len script-totem-class - actor-script )
+    \ Create an actor script containing some boilerplate.
+    {: fn len class0 | n[ 256 ] #1 :}
+    fn len class0 >default-path 2dup
+    file-exists? abort" Script already exists"
+    class0 materialize as>    
+        my-name -ext n[ place
+        srcpath count file-exists? not if
+            srcpath count write[
+                n[ count 
+                f" class: %s" line,
+                script-class @ body> >name count
+                f"     %s derive" line,
+                n[ count has-image? if
+                    n[ count 
+                    f"     defaults [[ %s.png bmp ! ]]" line,
+                then
+                s" class;" line,
+                nl,
+                n[ count 
+                f" %s :: init ( - )" line,
+                s"     act> ;" line,
+                nl,
+            write]
+            srcpath count included
+        then
+        n[ count f" locate %s" evaluate 
+        me ;
+
+: +actor ( - <name> )
+    bl parse f" %s.vfx" actor-script +script drop ;
 

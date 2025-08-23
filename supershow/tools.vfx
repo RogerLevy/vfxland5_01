@@ -46,35 +46,6 @@ cstring update-name$
 : .temps ( - )
     temps> me free? ?exit me .summary cr ;
 
-|| : has-image? f" %s.png" >pad find nip ;
-
-: +script ( - <name> )
-    \ Create an actor script containing some boilerplate.
-    {: | n[ 256 ] #1 :}
-    bl parse n[ place
-    n[ count f" scripts\%s.vfx" file-exists? not if
-        n[ count f" scripts\%s.vfx" actor-script materialize drop
-        n[ count f" scripts\%s.vfx" write[
-            n[ count 
-            f" class: %s" line,
-            f"     actor derive" line,
-            n[ count has-image? if
-                n[ count 
-                f"     defaults [[ %s.png bmp ! ]]" line,
-            then
-            s" class;" line,
-            nl,
-            n[ count 
-            f" %s :: init ( - )" line,
-            s"     act> ;" line,
-            nl,
-        write]
-        n[ count f" scripts\%s.vfx" included
-    else
-        -1 abort" Script already exists"
-    then
-    n[ count f" locate %s" evaluate ;
-
 : edit ( - <classname> )
     {: | name len :}
     \ Edit a word.

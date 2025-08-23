@@ -345,7 +345,6 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
         err ERROR_ALREADY_EXISTS = or not 
         err 0<> and abort" Error creating directory!" ;
 
-
 : indent ( n - )
     4 * spaces ;
 
