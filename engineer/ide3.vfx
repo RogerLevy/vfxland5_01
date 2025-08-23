@@ -190,14 +190,10 @@ borrow engineer/ func[]
     loop ;
 
 : .honing ( - )
-    honing @ 0= if ." OFF  " exit then
-    honing @ if
-        honing @ -1 = if
-            retry-filepath$ count -path ?type space space
-        else
-            honing @ .name space
-        then
-    then ;
+    honing @ if ." ON  " else ." OFF  " then ;
+
+: .ld-action ( - )
+    ld-action$ count ?type space space ;
 
 : .state ( - )
     state @ if ." COMPILING  " else ." INTERPRETING  " then ;
@@ -235,7 +231,8 @@ borrow engineer/ func[]
         ." State: " .state space
         ." Hold: " .hold space
         ." Dict free: " .unused cr 
-        ." Honing: " .honing cr
+        ." Honing: " .honing
+        ." Load action: " .ld-action cr
         ." Watch: " cr .watch cr
     s] 12 print2 ;
 

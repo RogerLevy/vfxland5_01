@@ -89,27 +89,18 @@ public
     buf[ count >event-path required
     pop-order ;
 
-|| cstring event$
-\ || 2variable last-event-at
-
-|| : hone-event ( - )
-    \ last-event-at 2@ at
-    event$ count f" run %s" evaluate ;
-
 : run ( - <event> )
     \ Development tool; find, load and execute an event.
     \ Turns on honing, so everything it depends on is reloaded and f5 runs it
     \ again via honing as an xt.
-    \ TODO: support saving the data stack in TRY for ld-again to recreate in
+    \ TODO: support saving the data stack in TRY for hone to recreate in
     \ honing mode; or just put that mechanism in RUN and HONE-EVENT.
     {: | a len :}
     bl parse to len to a
     a len check-event-file
-    a len event$ place
-    \ at@ last-event-at 2!
-    ['] hone-event honing !    
+    a len f" run %s" hone!
     a len f" %s/" $private 
-    a len >event-path >try
+    a len >event-path f" ?hone %s" evaluate
     a len >pad find if
         execute
     else
@@ -153,7 +144,7 @@ public
     currsourcename -path -ext >pad $create
     here event instance [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
 
-\ : event ( - <name> )   \ TODO: automated event file creation
+\ : +event ( - <name> )   \ TODO: automated event file creation
 
 : curve ( n - )
     dup curves @ ?bounds not if drop exit then

@@ -15,9 +15,6 @@ also engineer/
     
 cstring update-name$
 
-|| : hone-class ( - )
-    update-name$ count f" update %s" evaluate ;
-    
 : update ( - [<class>] )
     \ Live update actor class
     \ Activates honing mode with custom command (see HONE-CLASS)
@@ -35,16 +32,13 @@ cstring update-name$
         class0 body> >name count update-name$ place
     then
     
-    ['] hone-class honing !
     update-name$ count f" %s.vfx" file-exists? if
-        update-name$ count f" %s.vfx" >try
+        update-name$ count f" ?hone %s.vfx" >hone
     else
-        update-name$ count f" scripts\%s.vfx" >try
+        update-name$ count f" ?hone scripts\%s.vfx" >hone
     then
     class0 init-by-class
     update-name$ count f" %s/" $private ;
-
-aka hone update
 
 : .actors ( - )
     actives> me .summary cr ;
@@ -99,12 +93,13 @@ aka hone update
 : [testing] ( - )
     \ Conditionally compile test code - active only in honing mode
     \ And only with actor classes
-    honing @ ['] hone-class =
-    update-name$ count 
-    currsourcename -path -ext
-    s= and not
-    if postpone \\ exit then
-    private ;
+    honing @ 0<>
+    currsourcename -path -ext f" update %s" 
+    ld-action$ count s= and if
+        private
+    else
+        postpone \\ 
+    then ;
 
 engineer/
 : fp ( - )

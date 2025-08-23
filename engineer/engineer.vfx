@@ -147,33 +147,27 @@ include %idir%/totem.vfx
 
 \ Try/Honing - Convenient code testing
 
-variable honing     \ boolean XT, controls forced reloading of REQUIRE'd files
-                    \ as well as the action of the F5 key.
-                    \ ( off = reload game, on = reload module or other action )
-                    \ if not 0 or -1, HONING is treated as an XT to execute 
-                    \ instead of re-INCLUDEing the last TRY'd file.
-
-cstring retry-filepath$
+variable honing
+cstring ld-action$
 
 wordlist constant honing-wl
 
-: >try ( a len - )
-    dup 0= if 2drop exit then
+: ?hone ( - <path> )
     honing @ if honing-wl +order then
-    2dup >abspath
-    retry-filepath$ place
-    ['] included catch
-    honing @ if honing-wl -order then
+    bl parse ['] included catch
+    honing @ if honing-wl -order then 
     throw ;
 
-|| : ld-again ( - )
-    honing @ -1 0 within? if
-        retry-filepath$ count >try 
-    else
-        honing @ if honing-wl +order then
-        honing @ execute
-        honing @ if honing-wl -order then
-    then ;
+: >ld ( a len - )
+    dup 0= if 2drop exit then
+    2dup ld-action$ place
+    evaluate ;
+
+: >hone
+    honing on  >ld ;
+
+: ld-again ( - )
+    ld-action$ count >ld ;
 
 : ld ( - <namespec> )
     \ Usage: 
@@ -201,13 +195,18 @@ wordlist constant honing-wl
     fn len file-exists? not
         abort" File not found."
 
-    prj-path$ count fn len instring not if
+    prj-path$ count fn len instring not 
+    prj-path$ count nip 0= or if
         fn len -file $cwd
     then
 
-    honing on
-    fn len >try ;
-
+    fn len f" ?hone %s" >ld ;
+    
+: hone! ( a len - ) 
+    dup 0= abort" Tried to set load action to null string."
+    ld-action$ place
+    honing on ;
+    
 honing-wl +order definitions
 : require include ;
 : required included ;
@@ -694,7 +693,8 @@ borrow nib2/ init-nib
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn
-    honing @ -1 <> if honing off then ;
+    honing off 
+    ld-action$ off ;
 
 ' engineer-cleanup bye-chain-root cell+ !
 
@@ -764,7 +764,7 @@ borrow nib2/ init-nib
     repl on ;
 
 : ?reload ( - )
-    honing @ reload-shift? not and if
+    honing @ 0<> reload-shift? not and if
         ld-again
     else
         rld
