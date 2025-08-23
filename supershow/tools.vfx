@@ -61,13 +61,19 @@ aka hone update
     n[ count f" scripts\%s.vfx" file-exists? not if
         n[ count f" scripts\%s.vfx" actor-script materialize drop
         n[ count f" scripts\%s.vfx" file[
-            n[ count f" actor-class %s" line,
-            nl,
-            n[ count f" %s :: init ( - )" line,
+            n[ count 
+            f" class: %s" line,
+            f"     actor derive" line,
             n[ count has-image? if
-                n[ count f"     %s.png bmp !" line,
+                n[ count 
+                f"     defaults [[ %s.png bmp ! ]]" line,
             then
+            s" class;" line,
+            nl,
+            n[ count 
+            f" %s :: init ( - )" line,
             s"     act> ;" line,
+            nl,
         file]
         n[ count f" scripts\%s.vfx" included
     else
