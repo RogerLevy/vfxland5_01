@@ -285,11 +285,11 @@ create _protocol  _class make [[
     ]] ;       
 
 : begin-classifier ( class - )
-    push-order only forth definitions
+    \ push-order only forth definitions
     create make to classifier
     1 classifier -> #openings +!
     allocate-classifier-bit
-    pop-order ;
+    ; \ pop-order ;
 
 : end-classifier ( - )
     0 to classifier ;
