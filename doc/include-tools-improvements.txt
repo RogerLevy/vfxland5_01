@@ -7,6 +7,7 @@ current words:
 		reload current project
 	update (supershow/tools.vfx)
 		loads actor scripts and updates instances
+		**PROBLEM**: This word can be used to update the current actor's class.  So we need to keep it around, directly usable and as a factor of the new LD.
 	run (darkblue/event.vfx)
 		loads and executes events, creates private vocab
 	require-event <filename.vfx>
