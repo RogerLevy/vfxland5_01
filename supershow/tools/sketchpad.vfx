@@ -77,7 +77,7 @@ private
 : dragging ( - )
     lb <lb - 
     case
-        1 of pick ?dup if ?copy dup info to dragee then endof
+        1 of pick ?dup if ?copy dup .summary to dragee then endof
         0 of dragee ?dup if [[ lb if mickey 2s>p x 2+! then ]] then endof
         -1 of 0 to dragee endof
     endcase ;

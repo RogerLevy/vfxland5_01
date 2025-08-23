@@ -74,7 +74,7 @@ fast]
     benched @ if ." (BENCHED) " exit then
     en @ 0= if ." (FREE) " then ;
 
-actor :: info ( actor - )
+actor :: .summary ( actor - )
     11 push-attribute ." [ "
     me actor# dup 0 >= if ." #" . else drop me .name then
     cla @ .name
@@ -99,11 +99,11 @@ actor :: info ( actor - )
         \ Compare SP to previous SP.
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if  
-            s[ ." Positive stack imbalance in logic for actor " me info cr 
+            s[ ." Positive stack imbalance in logic for actor " me .summary cr 
             s] log-warning .s
         then
         dup sp@ cell+ cell+ < if
-            s[ ." Negative stack imbalance in logic for actor " me info cr
+            s[ ." Negative stack imbalance in logic for actor " me .summary cr
             s] log-warning .s
         then
     then
@@ -193,7 +193,7 @@ actor defaults [[
     0 #actors 1 - clamp next# ! ;
 
 actor :: unload ( - )
-    \ ." Actor unloaded " me info cr
+    \ ." Actor unloaded " me .summary cr
     \ .rs
     en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
 
@@ -361,7 +361,7 @@ actor :: on-error ( xt err# - )
     err -exit
     me bench
     xt .name ." >> Actor threw an error - disabling "
-    me ['] info catch drop cr
+    me ['] .summary catch drop cr
     .s
     err throw ;
     

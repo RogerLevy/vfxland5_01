@@ -47,10 +47,10 @@ cstring update-name$
 aka hone update
 
 : .actors ( - )
-    actives> me info cr ;
+    actives> me .summary cr ;
 
 : .temps ( - )
-    temps> me free? ?exit me info cr ;
+    temps> me free? ?exit me .summary cr ;
 
 || : has-image? f" %s.png" >pad find nip ;
 

@@ -940,6 +940,8 @@ aka instance make  \ Backward compatibility
         loop drop 
     ]] ;
 
+: inspect ( object - )
+    dup .object cr .props ;
 
 \ ==============================================================================
 \ _OBJECT Base Protocols
@@ -947,10 +949,9 @@ aka instance make  \ Backward compatibility
 
 0 to classifier
 
-_object :: info ( - )
-    \ Default inspection - show class name, address, and properties
-    me .object  cr
-    me .props ;
+_object :: .summary ( - )
+    \ Default : show class, name, and address
+    me .object ;
 
 _object :: on-error ( xt err# - )
     throw ;

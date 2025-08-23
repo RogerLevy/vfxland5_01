@@ -46,7 +46,7 @@ class;
     act> 
         ." Event finished: " cr 
         me unload 
-        me info cr ;   
+        me .summary cr ;   
 
 : start-event ( - )
     at@ 2>r
