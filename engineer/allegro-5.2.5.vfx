@@ -362,7 +362,7 @@ extern "C" int al_get_font_line_height( void * font );
 \ extern "C" al_get_font_ranges( );
 \ extern "C" al_get_fs_entry_atime( );
 \ extern "C" al_get_fs_entry_ctime( );
-\ extern "C" al_get_fs_entry_mode( );
+extern "C" void * al_get_fs_entry_mode( void * e );
 extern "C" int al_get_fs_entry_mtime( void * entry );
 extern "C" void * al_get_fs_entry_name( void * e );
 \ extern "C" al_get_fs_entry_size( );
@@ -1216,7 +1216,7 @@ enum ALLEGRO_PIXEL_FORMAT {
    ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3  = 29,
    ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5  = 30,
    ALLEGRO_NUM_PIXEL_FORMATS
-}
+};
 
 enum ALLEGRO_BITMAP_FLAGS {
    ALLEGRO_MEMORY_BITMAP            = 0x0001,
@@ -1226,18 +1226,27 @@ enum ALLEGRO_BITMAP_FLAGS {
    ALLEGRO_MIPMAP                   = 0x0100,
    ALLEGRO_VIDEO_BITMAP             = 0x0400,
    ALLEGRO_CONVERT_BITMAP           = 0x1000
-}
+};
 
 enum ALLEGRO_SHADER_PLATFORM {
     ALLEGRO_SHADER_AUTO = 0,
     ALLEGRO_SHADER_GLSL = 1,
     ALLEGRO_SHADER_HLSL = 2
-}
+};
 
 enum ALLEGRO_SHADER_TYPE {
     ALLEGRO_VERTEX_SHADER = 1,
     ALLEGRO_PIXEL_SHADER = 2,
-}
+};
+
+enum ALLEGRO_FILE_MODE {
+   ALLEGRO_FILEMODE_READ    = 1,
+   ALLEGRO_FILEMODE_WRITE   = 2, 
+   ALLEGRO_FILEMODE_EXECUTE = 4, 
+   ALLEGRO_FILEMODE_HIDDEN  = 8, 
+   ALLEGRO_FILEMODE_ISFILE  = 16,
+   ALLEGRO_FILEMODE_ISDIR   = 32,
+};
 
 extern "C" void * al_create_shader( void * ALLEGRO_SHADER_PLATFORM-platform );
 extern "C" bool al_attach_shader_source( void * ALLEGRO_SHADER-shader, int ALLEGRO_SHADER_TYPE-type,
@@ -1258,3 +1267,4 @@ extern "C" void * al_get_default_shader_source( int ALLEGRO_SHADER_PLATFORM-plat
    int ALLEGRO_SHADER_TYPE-type );
 \ extern "C" void al_get_opengl_texture_size( void * ALLEGRO_BITMAP-*bitmap, void * int-*w, void * int-*h );
 \ "
+
