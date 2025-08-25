@@ -7,6 +7,7 @@ class;
 
 class: scene
     is-a _totem
+    defaults [[ s" scn" extension$ place ]]
     :: default-path ( - path len ) s" dat/scn" ;
 class;
 
@@ -15,13 +16,13 @@ class;
 
 || : serialize?  [[ en @   owner @ 0= and ]] ;
 
-scene :: _commit ( - )
+scene :: keep ( - )
     \ save actors on stage to disk
     temp[ 
         SCENE_FORMAT_VERSION ,
         me serbin
         actors ['] serialize? ['] serbin sermulti
-    temp] srcpath count ['] write catch abort" File write error" ;
+    temp] srcpath$ count ['] write catch abort" File write error" ;
 
 : load-actor ( class - actor )
     dup actor is? not if
@@ -38,10 +39,10 @@ scene :: _commit ( - )
     ['] load-actor ['] desbin desmulti 
     drop ;
 
-scene :: _load ( - )
+scene :: load ( - )
     \ load actors from disk to stage
-    srcpath count file-exists? -exit
-    srcpath count file@ drop
+    srcpath$ count file-exists? -exit
+    srcpath$ count file@ drop
     dup load-scene-data
     free throw ;
 

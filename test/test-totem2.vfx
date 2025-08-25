@@ -31,19 +31,19 @@ class: world
             ts-name$ count tileset manifest ts ! 
         then ;
 
-    :noname ( path len class - )
-        {: path len class0 :} 
-        path len s" ." instring not if
-            path len slashes '\' ending
-            2dup 
-            class0 -> default-path$ count
-            f" %s/%s/%s.wld" 
-            class0 materialize reload
-        then
-    ;
-    world -> on-discovery-xt !
-
 class;
+
+: load-wld-file ( path len class - )
+    {: path len class0 :} 
+    path len s" ." instring not if
+        path len slashes '\' ending
+        2dup 
+        class0 -> default-path$ count
+        f" %s/%s/%s.wld" 
+        class0 materialize reload
+    then ;
+
+' load-wld-file world -> on-discovery-xt !
 
 : +world ( <name> - )
     bl parse 
@@ -62,7 +62,7 @@ houses.wld [[
     s" terrain.ts" ts-name$ place 
     123 _room# !
 ]]
-houses.wld backup
+houses.wld keep
 ))
 
 sync
