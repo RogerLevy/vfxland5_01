@@ -17,7 +17,7 @@ SAVE
     then optionally call LOAD to load more external resources, or defer for later
     INTAKE default: deserialize self
 
-:: backup
+:: keep
     save relevant data to disk - any/all of the following:
         1. serialize self
         2. serialize some other objects
@@ -40,7 +40,7 @@ trait: _totem
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
     :: intake ( - ) ;                   \ Load from filesystem.
-    :: backup ( - ) ;                   \ Save to disk.
+    :: keep ( - ) ;                   \ Save to disk.
     
 trait;
 
@@ -71,9 +71,9 @@ _totem :apply ( class - )
 \ =============================================================================
 
 : materialize ( path len class - totem ) ( - totem )
-	\ ensure totem is in dictionary
-    \ takes file name or path
-	\ if we create the word, set its srcpath$ and set DIRTY flag
+	\ ensure totem is in dictionary.
+    \ takes file name or path.
+	\ if we create the totem word, set its srcpath$ and set DIRTY flag.
     \ if word already existed, set EXISTED flag
     {: path len class0 :}
     path len find-totem ?dup 
@@ -191,7 +191,8 @@ _totem :apply ( class - )
     as>   
         dirty @ -exit   
         srcpath$ count -file ensure-dir
-        me backup   
+        me keep   
+        my-name f" Saved %s" type
         dirty off ;
 
 : save ( - )
@@ -222,7 +223,7 @@ _totem :apply ( class - )
 _totem :: intake ( - )
     srcpath$ count me deserialize ;
 
-_totem :: backup ( - )
+_totem :: keep ( - )
     me srcpath$ count serialize ;
 
 \ =============================================================================
