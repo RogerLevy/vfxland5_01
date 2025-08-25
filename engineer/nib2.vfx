@@ -750,12 +750,15 @@ defer protocol-validations ( obj protocol - obj protocol )
     \ Copy constructor
     source-class -> constructor-xt @ classifier -> constructor-xt !
     source-class -> constructor-#params @ classifier -> constructor-#params !
-    
+
+    \ Add class to dependents
+classifier source-class -> dependents add-to 
+
     \ Execute on-derive if set
     source-class -> on-derive-xt @ ?dup if
         source-class classifier rot execute  \ ( source-class derived-class - )
     then
-    
+;
 
 : :apply ( trait  - ) ( trait dest-class - )
     dup >cla @ _trait <> 
