@@ -157,6 +157,7 @@ variable osp   os osp ! \ object stack pointer
     cell field template
     cell field constructor-xt
     cell field constructor-#params
+    cell field on-apply-xt
     cell field on-derive-xt
     cell field on-reopen-xt
     /list field dependents              \ classifier dependents (classes that applied the trait or classes that derived the class)
@@ -515,7 +516,12 @@ create _protocol  _class make [[
     loop drop
     
     \ Add class to dependents
-    class0 trait0 -> dependents add-to ;
+    class0 trait0 -> dependents add-to 
+    
+    \ Execute on-apply if set
+    trait0 -> on-apply-xt @ ?dup if
+        trait0 class0 rot execute  \ ( trait class - )
+    then ;
    
 : class: ( <name> - )
     _class already? if
@@ -541,7 +547,7 @@ create _protocol  _class make [[
 : defaults ( [class] - a )
     {: | class0 :}
     classifier dup 0= if drop then to class0 
-    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults. (Only classes.)"
+    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults, only classes."
     class0 -> template @ ?dup 0= if
         class0 make class0 -> template !
         class0 -> template @
@@ -747,9 +753,15 @@ defer protocol-validations ( obj protocol - obj protocol )
         source-class classifier rot execute  \ ( source-class derived-class - )
     then
     
-    \ Add class to dependents
-    classifier source-class -> dependents add-to 
-;
+
+: :apply ( trait  - ) ( trait dest-class - )
+    dup >cla @ _trait <> 
+        abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
+    [[ 
+        me body> >name count
+        s" apply"
+        :method on-apply-xt ! 
+    ]] ;
 
 : :derive ( class - ) ( source-class derived-class - )
     dup >cla @ _class <> 
