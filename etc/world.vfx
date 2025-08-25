@@ -1,0 +1,46 @@
+((
+filesystem:
+    worlds/
+        worldname.wld
+        worldname.map
+        nnnn.scn
+))
+
+class: tilemap
+    is-a _totem
+    prop w <save <int
+    prop h <save <int
+    prop data <addr
+class;
+
+: data-size  w @ h @ * cells ;
+: ?allot-tilemap  me new? if here data ! data-size allot&erase then ;
+
+tilemap :: intake ( - )
+    ?allot-tilemap
+    data @ data-size srcpath$ count read ;
+
+class: world
+    is-a _totem
+    prop mtm <ref tilemap \ main tilemap
+    prop mts <ref tileset \ main tileset
+    256 prop mts-path$ <save <cstring
+
+    prop _room# <save <int 
+class;
+
+: mts-path  mts-path$ count ;
+: mtm-path  srcpath$ count -ext f" %s.map" ;
+
+world :: intake ( - )
+    srcpath$ count me deserialize 
+    mts-path tileset manifest mts ! 
+    mtm-path tilemap manifest mtm ! ;
+
+
+((
+1. dev-time: create, manifest, commit
+2. compile-time: materialize, manifest, reload
+3. run-time: reheat, reload
+))
+ 
