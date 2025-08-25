@@ -1,0 +1,372 @@
+================================================================================
+TOTEM SYSTEM DOCUMENTATION
+================================================================================
+
+The totem system provides persistent, file-backed objects that live in the 
+Forth dictionary. Totems automatically load from disk, track modifications, 
+and can be saved back. They form the foundation for VFXLand5's asset 
+management and hot-reload development workflow.
+
+================================================================================
+CORE CONCEPTS
+================================================================================
+
+WHAT IS A TOTEM?
+----------------
+A totem is a named Forth word that:
+- Represents a persistent game asset (tileset, scene, script, etc.)
+- Automatically loads its data from disk
+- Tracks whether it needs saving (dirty flag)
+- Can be reloaded during development for hot updates
+- Lives in the dictionary, accessible by name
+
+KEY CHARACTERISTICS
+-------------------
+- Dictionary-resident: Totems are Forth words, directly executable
+- File-backed: Each totem has a srcpath$ pointing to its file
+- Class-based: Totems belong to classes that define their behavior
+- Auto-discovery: Can scan directories and load matching files
+- Lazy/eager loading: Can defer or immediate load external resources
+- Hot-reloadable: Changes on disk can be synced to running game
+
+================================================================================
+TRAIT STRUCTURE
+================================================================================
+
+The _totem trait provides:
+
+    prop existed             - Flag: word already existed in dictionary
+    prop dirty               - Flag: needs saving to disk
+    256 nprop srcpath$       - Full filesystem path (cstring)
+    
+Class-level (static):
+    4 nstatic extension$     - File extension filter (e.g., "scn", "ts")
+    /list nstatic instances  - List tracking all instances of this class
+    static on-discovery-xt   - Optional override for discovery behavior
+    256 nstatic default-path$ - Where to look for assets by default
+
+Protocols (methods):
+    :: load                  - Load/create external resources (optional)
+    :: unload                - Free external resources (optional)
+    :: intake                - Load data from filesystem
+    :: commit                - Save data to disk
+
+Default implementations:
+    intake: Deserializes from srcpath$ into self
+    commit: Serializes self to srcpath$
+
+================================================================================
+LIFECYCLE OPERATIONS
+================================================================================
+
+MATERIALIZATION
+---------------
+Creating or finding a totem in the dictionary:
+
+    path len class MATERIALIZE -> totem
+
+- Searches dictionary for existing word
+- If found: marks as existed
+- If not found: creates new word via $OBJECT, sets srcpath$
+- Adds to class's instances list
+
+MANIFESTATION
+-------------
+Materializing and loading in one step:
+
+    path len class MANIFEST -> totem
+
+- Calls MATERIALIZE
+- If newly created, calls INTAKE to load data
+- Used for loading dependencies
+
+MANUAL CREATION
+---------------
+Creating a totem with parsed name:
+
+    class +TOTEM <name> -> totem
+
+Example:
+    tileset +totem forest-tiles
+
+RELOADING
+---------
+Force reload from disk:
+
+    totem RELOAD -> totem
+
+- Calls UNLOAD if not new
+- Clears dirty flag
+- Calls INTAKE to reload data
+
+================================================================================
+DISCOVERY & SYNCHRONIZATION
+================================================================================
+
+DIRECTORY SCANNING
+------------------
+The system can scan directories for assets:
+
+    path len class LOAD-DIR
+
+- Iterates all files in directory
+- Checks extension if specified
+- Materializes and reloads matching files
+
+SYNC OPERATION
+--------------
+Global synchronization:
+
+    SYNC
+
+- Iterates all registered totem classes
+- Loads from each class's default directory
+- Updates existing totems, creates new ones
+
+================================================================================
+PERSISTENCE
+================================================================================
+
+SAVING
+------
+Save all dirty totems:
+
+    SAVE
+
+- Iterates all totem classes
+- For each class, iterates instances
+- Commits dirty instances
+
+MARKING DIRTY
+-------------
+Flag totem for saving:
+
+    totem MARK-DIRTY
+
+SERIALIZATION FLOW
+------------------
+Deserialize:
+    file -> DESERIALIZE -> temp buffer -> DESBIN -> object
+
+Serialize:
+    object -> SERBIN -> temp buffer -> WRITE -> file
+
+================================================================================
+PRACTICAL EXAMPLES
+================================================================================
+
+EXAMPLE 1: TILESET (supershow/tilemap2.vfx)
+--------------------------------------------
+
+class: tileset
+    tileset is-a _totem              \ Inherit totem behavior
+    
+    prop baseid <save <int           \ First bitmap ID
+    prop bmp                         \ Source bitmap
+    prop tw <save <int               \ Tile width
+    prop th <save <int               \ Tile height
+    prop #tiles <save <int           \ Number of tiles
+    
+    defaults [[
+        s" ts" extension$ place      \ Look for .ts files
+    ]]
+    
+    :: default-path ( - path len )
+        c" dat/gfx" ;                \ Default directory
+        
+    :: load ( - )
+        \ Slice bitmap into tiles when loaded
+        me slice-tiles ;
+        
+    :: intake ( - )
+        _totem:intake                \ Load serialized data
+        reconnect-bmp                \ Reconnect to PNG file
+        me load ;                    \ Slice tiles
+class;
+
+Usage:
+    grass.png 16 16 +tileset grass  \ Create tileset from PNG
+    grass manifest drop              \ Load if needed
+    grass use                        \ Set as current tileset
+
+EXAMPLE 2: SCENE (supershow/scene.vfx)
+---------------------------------------
+
+class: scene
+    is-a _totem
+    
+    defaults [[ 
+        s" scn" extension$ place     \ Look for .scn files
+    ]]
+    
+    :: default-path ( - path len ) 
+        s" dat/scn" ;
+        
+    :: commit ( - )
+        \ Custom serialization with format version
+        temp[ 
+            SCENE_FORMAT_VERSION ,
+            me serbin
+            actors ['] serialize? ['] serbin sermulti
+        temp] srcpath$ count write ;
+        
+    :: load ( - )
+        \ Load actors from disk to stage
+        srcpath$ count file-exists? -exit
+        srcpath$ count file@ drop
+        dup load-scene-data
+        free throw ;
+class;
+
+Usage:
+    scene +totem level1              \ Create scene totem
+    level1 load                      \ Load actors from disk
+    level1 mark-dirty                \ Flag for saving
+    save                             \ Commit all dirty totems
+
+EXAMPLE 3: ACTOR SCRIPTS (darkblue/enemies.vfx)
+------------------------------------------------
+
+class: enemy-script
+    actor-script derive              \ Inherit from actor-script
+    
+    :: default-path ( - path len )
+        s" scripts/enemies" ;        \ Enemy script directory
+class;
+
+class: actor-script
+    is-a _totem
+    static script-class              \ Class to derive from
+    
+    defaults [[
+        actor script-class !
+        s" vfx" extension$ place     \ Look for .vfx files
+    ]]
+    
+    :: default-path ( - path len )
+        s" scripts" ;
+        
+    :: intake ( - )
+        srcpath$ count included ;    \ Load by including source
+class;
+
+Usage:
+    +enemy goblin                    \ Create enemy script
+    \ Creates scripts/enemies/goblin.vfx with boilerplate
+    
+    reheat-enemies                   \ Reload all enemy scripts
+    \ Scans scripts/enemies/ and reloads all .vfx files
+
+EXAMPLE 4: HOT-RELOAD WORKFLOW
+-------------------------------
+
+During development:
+
+1. Edit tileset properties in external tool
+2. In game console: SYNC
+   - Finds modified .ts files
+   - Reloads tileset data
+   - Updates live game
+
+3. Modify enemy script
+4. Run: reheat-enemies
+   - Reloads all enemy scripts
+   - Updates active enemies
+
+5. After changes: SAVE
+   - Commits all dirty totems
+   - Preserves modifications
+
+================================================================================
+EXTENSION PATTERNS
+================================================================================
+
+CUSTOM DISCOVERY
+----------------
+Override discovery for special handling:
+
+class: my-totem
+    is-a _totem
+    
+    defaults [[
+        ['] my-discovery on-discovery-xt !
+    ]]
+class;
+
+: my-discovery ( path len class - )
+    \ Custom logic for finding/loading
+    ... ;
+
+DEPENDENCY LOADING
+------------------
+Load related assets automatically:
+
+my-totem :: intake ( - )
+    _totem:intake                    \ Load self
+    s" tileset1" tileset manifest    \ Load dependency
+    -> my-tileset ! ;
+
+LAZY RESOURCES
+--------------
+Defer expensive operations:
+
+my-totem :: load ( - )
+    loaded @ ?exit                   \ Skip if already loaded
+    \ Create GPU resources, load samples, etc.
+    loaded on ;
+
+================================================================================
+BEST PRACTICES
+================================================================================
+
+1. SEPARATION OF CONCERNS
+   - INTAKE: Load essential data (deserialize)
+   - LOAD: Create external resources (bitmaps, sounds)
+   - UNLOAD: Free external resources
+   - COMMIT: Save modified data
+
+2. DEPENDENCY MANAGEMENT
+   - Use MANIFEST for dependencies (won't reload if exists)
+   - Use RELOAD for forced updates
+   - Track circular dependencies with existed flag
+
+3. PERFORMANCE
+   - Mark dirty only when actually modified
+   - Use lazy loading for expensive resources
+   - Batch saves with SAVE rather than individual commits
+
+4. DEVELOPMENT WORKFLOW
+   - Use SYNC during development for hot updates
+   - Override INTAKE for custom file formats
+   - Leverage discovery for automatic asset loading
+
+5. ERROR HANDLING
+   - Check file-exists? before loading
+   - Handle missing dependencies gracefully
+   - Provide fallback assets where appropriate
+
+================================================================================
+IMPLEMENTATION NOTES
+================================================================================
+
+DICTIONARY INTEGRATION
+----------------------
+Totems are standard Forth words created with $OBJECT. This means:
+- Accessible by name: "tileset1.ts" becomes executable word TILESET1.TS
+- Can be found with FIND
+- Subject to vocabulary/namespace rules
+- Can be hidden/revealed like any word
+
+INSTANCE TRACKING
+-----------------
+Each totem class maintains a list of instances. This enables:
+- Batch operations (save all, reload all)
+- Resource management (unload all)
+- Development tools (list all scenes, etc.)
+
+FILE PATH HANDLING
+------------------
+- Paths stored as cstrings in srcpath$
+- Relative paths resolved from project root
+- Extension checking for type safety
+- Directory scanning non-recursive

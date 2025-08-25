@@ -1,0 +1,69 @@
+empty
+
+class: tileset
+
+    is-a _totem
+    prop tw <save
+    prop th <save
+
+    extension: ts
+    default-path: dat/gfx
+
+class;
+
+: +tileset ( tw th <name> - )
+    tileset +totem [[ tw 2!   me ]] commit ;
+
+class: world
+
+    is-a _totem
+
+    prop ts <ref tileset
+    32 nprop ts-name$ <save <cstring
+    prop _room# <save <int 
+
+    ( no extension: worlds are stored in subfolders )
+    default-path: dat/wld
+
+    :: intake
+        srcpath$ count me deserialize
+        ts-name$ c@ if 
+            ts-name$ count tileset manifest ts ! 
+        then ;
+
+    :noname ( path len class - )
+        {: path len class0 :} 
+        path len s" ." instring not if
+            path len slashes '\' ending
+            2dup 
+            class0 -> default-path$ count
+            f" %s/%s/%s.wld" 
+            class0 materialize reload
+        then
+    ;
+    world -> on-discovery-xt !
+
+class;
+
+: +world ( <name> - )
+    bl parse 
+    2dup -ext
+    world -> default-path$ count 
+    f" %s/%s/%s" world materialize commit ;
+
+((
+16 16 +tileset pipes.ts
+16 16 +tileset terrain.ts
+
++world houses.wld
++world pipes1.wld
+
+houses.wld [[ 
+    s" terrain.ts" ts-name$ place 
+    123 _room# !
+]]
+houses.wld backup
+))
+
+sync
+houses.wld inspect

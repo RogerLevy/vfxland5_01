@@ -1,185 +1,229 @@
 ((
-: MATERIALIZE
-	ensure totem exists
-	if creating one, set its srcpath
 
-: MANIFEST
-    if not new, UNLOAD
-    LOAD
+[ ] IMPORT
+[ ] IMPORT-DIR
 
-: +TOTEM 
-    convenience word for parse-ahead MATERIALIZE
+SYNC
+    go through all totem classes, loading totems from default directories
+    according to their extension.  can be overriden by setting DISCOVER-XT
+    of any totem class.
+    
+SAVE
+    commits all dirty totems
 
-:: LOAD
-:: _LOAD
-    load/create external resources
-    _LOAD default: none
+:: INTAKE 
+    load totem at discovery
+    first load anything essential into the dictionary
+    then optionally call LOAD to load more external resources, or defer for later
+    INTAKE default: deserialize self
 
-:: UNLOAD 
-:: _UNLOAD
-    free external resources
-    _UNLOAD default: none
-
-: INTAKE 
-:: _INTAKE
-    load initial data into the dictionary 
-    _INTAKE default: deserialize totem
-
-: COMMIT
-:: _COMMIT
-    save relevant data to disk - any of the following:
-        1. serialize totem (_COMMIT default)
+:: backup
+    save relevant data to disk - any/all of the following:
+        1. serialize self
         2. serialize some other objects
         3. save other data (such as bitmaps)
-
-: REHEAT (formerly LOAD-TOTEM)
-    Load on startup.
-    MATERIALIZE
-    INTAKE
-    LOAD
-
-: RELOAD 
-    Hot-reload.
-:: _RELOAD 
-    default:
-        INTAKE
-        UNLOAD
-        LOAD
-
-Added:
-    [x] SERIALIZE
-    [x] DESERIALIZE - deserialize if given path exists
+    COMMIT default: serialize self
 
 ))
 
 trait: _totem
+
     prop existed
-    256 nprop srcpath <cstring                  
-    \ :: extension ( - a len ) stub ;
-    :: default-path ( - path len )      \ Where TOTEM locates assets by default 
-        s" " ;                          \ - is supplied to MATERIALIZE
-                                        \ - the srcpath can always be overriden
-    :: _load ( - ) ;                    \ Load/create external resources
-    :: _unload ( - ) ;                  \ Free external resources (safe if empty)
-    :: _intake ( - ) ;                  \ Load initial data into dictionary
-    :: _commit ( - ) ;                  \ Save totem/other data to disk
-    :: _reload ( - ) ;                  \ Hot reload
+    prop dirty
+    256 nprop srcpath$ <cstring         \ cstring: main file path
+
+    4 nstatic extension$                \ cstring: main file extension
+    /list nstatic instances             \ nib2 list, track instances
+    static on-discovery-xt              \ ( path len class - ) 
+    256 nstatic default-path$           \ Where +TOTEM locates assets by default 
+
+    :: load ( - ) ;                     \ Load/create external resources.  optional.
+    :: unload ( - ) ;                   \ Free external resources.  optional.
+    :: intake ( - ) ;                   \ Load from filesystem.
+    :: backup ( - ) ;                   \ Save to disk.
+    
 trait;
+
+_totem :apply ( class - )
+    {: class0 :}
+    class0 reopened? not if
+        \ new totem classes get their own blank list
+        0 class0 -> instances list-count! 
+    then ;
+
+\ =============================================================================
+\ Utilities
+\ =============================================================================
 
 : my-name me body> >name count ;
 : new? -> existed @ not ;
+: srcpath! ( path len totem - ) [[ >abspath srcpath$ place ]] ;
+: find-totem ( a len - totem|0 )
+    -path >pad find if >body dup _totem is? and else drop 0 then ;
+: ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
+: correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
+: ?toolong  udup > abort" Extension must be 3 chars or less." ;
+: extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
+: default-path: ( <path> - ) bl parse classifier -> default-path$ place ;
 
-_totem :: load ( - ) 
-    me _load ;
-
-_totem :: unload ( - ) 
-    me _unload ; 
-
-: intake ( totem - )
-     _intake ;
-    
-: reload  ( totem - ) 
-    _reload ;
-
-: find-totem ( $ - totem|0 )
-    find if >body dup _totem is? and else drop 0 then ;
-
-: srcpath! ( path len totem - )
-    [[ >abspath srcpath place ]] ;
+\ =============================================================================
+\ Materialization
+\ =============================================================================
 
 : materialize ( path len class - totem ) ( - totem )
-    \ Find or create totem object by name or path (dev/compile/runtime)
+	\ ensure totem is in dictionary
+    \ takes file name or path
+	\ if we create the word, set its srcpath$ and set DIRTY flag
+    \ if word already existed, set EXISTED flag
     {: path len class0 :}
-    path len -file ensure-dir 
-    path len -path >pad find-totem ?dup 
+    path len find-totem ?dup 
     if 
         dup -> existed on 
     else 
         class0 path len -path $object
-        [[ path len me srcpath!   me ]]
+        [[ 
+            path len me srcpath!
+            dirty on
+        me ]]
+        dup class0 -> instances add-to
     then ;
 
-: manifest ( totem - totem )
-    \ Initialize totem for use (dev-time)
-    [[
-        me new? not if me unload then
-        me load 
-    ]] ;
-
-|| : !default-path
-    me body> >name count
-    me default-path f" %s/%s" me srcpath! ;
+|| : @default-path
+    my-name
+    default-path$ count f" %s/%s" me srcpath! ;
 
 : +totem ( class <name> - totem ) ( - totem )
-    \ Parse name and materialize totem (dev-time or compile-time)
-    bl parse rot materialize 
-    [[ !default-path   me ]] ;
+    \ usage: +totem <name> ...
+    bl parse   rot materialize  
+    [[ 
+        @default-path   
+    me ]] ;
 
-: serialize ( obj path len - )
-    2>r temp[ ( obj ) serbin temp]
-    2r> ['] write catch abort" File write error" ;
+: manifest ( path len class - totem )
+    \ materialize (create/find) and if created, intake (load).
+    \ accepts either names or paths.
+    \ if a name is given, the class's default path becomes the totem's dir path.
+    \ use this to load dependencies.
+    \ example: world totem that loads tilemaps and tilesets
+    {: path len class0 :}
+    path len file-exists? not if
+        path len
+        class0 -> default-path$ count f" %s/%s" to len to path
+    then
 
-_totem :: _commit ( - )
-    me srcpath count serialize ;    
+    path len class0 materialize dup new? if 
+        dup -> dirty off dup intake 
+    then ;
 
-: commit ( totem - )
-    [[         
-        me _commit 
+\ =============================================================================
+\ Loading/reloading
+\ =============================================================================
+
+: reload ( totem - )
+    [[
+        me new? not if me unload then
+        dirty off
+        me intake
     ]] ;
+
+|| 0 value class0
+
+|| : (discover) ( fn len - )
+
+    \ execute on-discovery override if any
+    class0 -> on-discovery-xt @ ?dup if
+        >r 2dup type cr r>
+        class0 swap ( fn len class xt ) execute
+        exit
+    then
+
+    \ check extension
+    class0 -> extension$ @ if
+        2dup class0 correct-ext? not if
+            2drop exit 
+        then 
+    then
+
+    class0 materialize reload ;
+
+: load-dir ( path-a path-len class - )
+    \ (Re-)load all totems in given directory
+    \ Not recursive.
+    \ If class's extension$ is empty, include directories in discovery
+    dup body> >name count f" Loading %s totems..." type cr
+    to class0   
+    
+    ['] (discover) 
+    
+    class0 -> extension$ c@ if
+        each-file
+    else
+        each-file-and-dir 
+    then ;
+
+: load-default-dir ( class - )
+    \ Not recursive.
+    dup -> default-path$ count rot load-dir ;
+
+\ =============================================================================
+\ I/O
+\ =============================================================================
 
 || 0 value (dest)
 || : into-dest ( class - obj )
 ||     drop   (dest) ;
 
+: into-me ( class - obj )
+    drop   me ;
+
 : deserialize ( path len dest-a - )
     (dest) >r
-    to (dest)  ['] file@ catch nip abort" File read error"
+    to (dest)   ['] file@ catch nip abort" File read error"
     ( a ) dup >r ['] into-dest desbin drop  
     r> free throw
     r> to (dest) ;
 
-_totem :: _intake ( - )
-    srcpath count me deserialize ;
+: serialize ( obj path len - )
+    2>r temp[ ( obj ) serbin temp]
+    2r> ['] write catch abort" File write error" ;
 
-: reheat ( fn len class - totem )
-    \ Load single totem from file (runtime/startup)
-    materialize dup intake dup load ;
+: commit ( totem - )
+    as>   
+        dirty @ -exit   
+        srcpath$ count -file ensure-dir
+        me backup   
+        dirty off ;
 
-|| 0 value class0
-|| : (reheat) ( fn len - )
-    class0 reheat drop ;
+: save ( - )
+    _totem -> dependents dup list-count for
+        @next 
+        dup body> >name count f" Saving %s totems..." type cr
+        -> instances dup list-count for
+            @next commit
+        loop drop
+    loop drop ;
 
-: reheat-dir ( path-a path-len class - )
-    \ Load all totems from given directory (runtime/startup)
-    \ Not recursive.
-    \ TODO: filter by extension
-    to class0   ['] (reheat) each-file ;
+: sync ( - )
+    \ (re)load everything; adds undefined totems and updates existing ones
+    \ (NOTE: currently from default directories only)
+    \ TODO: update/create intelligently (in default dirs) and support 
+    \ syncing all instances, even those not in default directories.
 
-: reheat-default-dir ( class - )
-    \ TODO: filter by extension
-    \ Not recursive.
-    dup defaults default-path rot reheat-dir ;
+    _totem -> dependents dup list-count for
+        @next load-default-dir
+    loop drop ;
 
-: reload ( totem - )
-    \ Reload totem from disk (dev-time)
-    dup intake dup unload load ;
+: mark-dirty ( totem - )
+    -> dirty on ;
 
-|| : (reload) ( fn len - )
-    class0 materialize reload ;
+\ =============================================================================
+\ Defaults
 
-: reload-dir ( path-a path-len class - )
-    \ Reload all totems in given irectory (dev-time hot-reload)
-    \ Not recursive.
-    \ TODO: filter by extension
-    to class0   ['] (reload) each-file ;
+_totem :: intake ( - )
+    srcpath$ count me deserialize ;
 
-: reload-default-dir ( class - )
-    \ TODO: filter by extension
-    \ Not recursive.
-    dup defaults default-path rot reload-dir ;
-
-: into-me ( class - obj )
-    drop me ;
+_totem :: backup ( - )
+    me srcpath$ count serialize ;
 
 \ =============================================================================
 
