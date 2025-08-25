@@ -195,8 +195,7 @@ wordlist constant honing-wl
     \ - ld filename (no extension)
     \ - ld ../test/filename (no extension)
 
-    {: | fn len :}
-    bl parse to len to fn
+    bl parse {: fn len :}
 
     \ Load last file again?
     len 0= if
@@ -220,7 +219,7 @@ wordlist constant honing-wl
         fn len -file $cwd
     then
 
-    fn len f" ?hone %s" >ld ;
+    fn len f" ?hone %s" >hone ;
     
 : hone! ( a len - ) 
     dup 0= abort" Tried to set load action to null string."
@@ -713,8 +712,7 @@ borrow nib2/ init-nib
     ['] noop is boot
 \    ['] noop is .apperr
     ['] noop is onSwitchIn
-    honing off 
-    ld-action$ off ;
+    honing off ;
 
 ' engineer-cleanup bye-chain-root cell+ !
 
