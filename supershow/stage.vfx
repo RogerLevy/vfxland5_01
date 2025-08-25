@@ -348,17 +348,17 @@ actor :reopen ( class - )
 class: actor-script
     is-a _totem
     static script-class \ <ref _class
-    actor actor-script -> script-class !
+    
+    defaults [[
+        actor script-class !
+        s" vfx" extension$ place
+    ]]
 
-    :: default-path ( - path len )
-        s" scripts" ;
+    default-path: scripts
 
-    :: _intake ( - )
-        srcpath count included ;
+    :: intake ( - )
+        srcpath$ count included ;
 class;
-
-: reheat-scripts
-    actor-script reheat-default-dir ;
 
 actor :: on-error ( xt err# - )
     {: xt err :} 
@@ -384,8 +384,8 @@ actor :: on-error ( xt err# - )
     file-exists? abort" Script already exists"
     class0 materialize as>    
         my-name -ext n[ place
-        srcpath count file-exists? not if
-            srcpath count write[
+        srcpath$ count file-exists? not if
+            srcpath$ count write[
                 n[ count 
                 f" class: %s" line,
                 script-class @ body> >name count
@@ -401,7 +401,7 @@ actor :: on-error ( xt err# - )
                 s"     act> ;" line,
                 nl,
             write]
-            srcpath count included
+            srcpath$ count included
         then
         n[ count f" locate %s" evaluate 
         me ;

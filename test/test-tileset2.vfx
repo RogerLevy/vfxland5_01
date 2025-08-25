@@ -14,7 +14,7 @@ bg.ts info
 \ bg.png 20 20 *tileset bg.ts
 \ bg.ts commit
 
-bg.ts -> srcpath count file@ dump
+bg.ts -> srcpath$ count file@ dump
 
 \\
 

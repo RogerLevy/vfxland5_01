@@ -35,8 +35,7 @@ SPECIAL FEATURES:
 
 class: enemy-script
     actor-script derive
-    :: default-path ( - path len )
-        s" scripts/enemies" ;
+    default-path: scripts/enemies
 class;
 
 : reheat-enemies
@@ -152,6 +151,10 @@ enemy :derive ( parent derived - )
 : rad:  val r ! ;
 : bmp:  val bmp ! ;
 
+\ =========================================================================================================================================
+\ Enemy Table
+\ =========================================================================================================================================
+
 public
 
 ." Loading enemy table..." cr
@@ -161,6 +164,8 @@ enm: enemy2     hp: 5       atk: 20     gold: 30                                
 enm: bigbug     hp: 100     atk: 100    gold: 400   rad: 50.                        \ spd: 2.0    path: path2
 enm: vacuum     hp: 20      atk: 5      gold: 0                 bmp: enemy23.png
 ." Done loading enemy table." cr
+
+\ =========================================================================================================================================
 
 honing @ [if]
     ." Hot-reloading enemies..." cr

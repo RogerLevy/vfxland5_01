@@ -11,6 +11,7 @@ variable pile
 \ =============================================================================
 
 class: tileset
+
     tileset is-a usable
     tileset is-a _totem
 
@@ -20,8 +21,11 @@ class: tileset
     prop th <save <int 
     prop #tiles <save <int 
 
-   :: default-path ( - path len )
-       c" dat/gfx" ;
+    defaults [[
+        s" ts" extension$ place
+    ]]
+
+    default-path: dat/gfx
 
 class;
 
@@ -31,26 +35,40 @@ class;
 || : bmpw  dup if al_get_bitmap_width then ;
 || : bmph  dup if al_get_bitmap_height then ;
 
-: slice-tiles ( bmp tw th - )
-    {: b tw th :}
-    b -exit
-    next-bmp# @ >r   baseid @ next-bmp# !
-    b bmph th - 1 + for
-        b bmpw tw - 1 + for
-            b i j tw th al_create_sub_bitmap +bitmap drop
-        tw +loop
-    th +loop
-    next-bmp# @ baseid @ - #tiles !   r> next-bmp# ! ;
+: slice-tiles ( tileset - )
+    \ slice up the source bitmap into tile sub-bitmaps.
+    \ write them to the global bitmap registry starting at baseid.
+    \ preserve next-bmp#.
+    >r bmp @ bitmap@ tw @ th @ r> {: b tw th ts :}
+    ts as>
+        b -exit
+        next-bmp# @ >r   baseid @ next-bmp# !
+        b bmph th - 1 + for
+            b bmpw tw - 1 + for
+                b i j tw th al_create_sub_bitmap +bitmap drop
+            tw +loop
+        th +loop
+        next-bmp# @ baseid @ - #tiles !   r> next-bmp# ! ;
+
+: reslice-tileset ( tw th tileset - )
+    \ slice up source bitmap, creating a new range of sub-bitmaps
+    \ use this at dev-time to change the tile size or if the bitmap's size increased.
+    next-bmp# @ baseid !
+    me slice-tiles
+    #tiles @ next-bmp# +! 
+    me mark-dirty ;
 
 tileset :: use ( - )
    baseid @ pile ! ;
 
-tileset :: _load ( - )
+tileset :: load ( - )
+    \ slice up the tileset's source bitmap.
+    \ if the tileset was just defined, initialize baseid and increment next-bmp#
     me new? if next-bmp# @ baseid ! then
-    bmp @ bitmap@ tw @ th @ slice-tiles 
+    me slice-tiles 
     me new? if #tiles @ next-bmp# +! then ;
 
-tileset :: _unload ( - )
+tileset :: unload ( - )
     baseid @ #tiles @ bounds do
          i bitmap@ al_destroy_bitmap
     loop ;
@@ -59,9 +77,8 @@ tileset :: _unload ( - )
     my-name -ext f" %s.png" >pad find 0= abort" tileset source bitmap not found!"
     execute bmp ! ;   \ Bitmap words return their own bitmap ID's
 
-tileset :: _intake ( - )
-    _totem:load-content
-    reconnect-bmp ;
+tileset :: intake ( - )
+    _totem:intake   reconnect-bmp   me load ;
 
 : +tileset ( bmp# tw th <name> - )
     tileset +totem 
@@ -70,12 +87,6 @@ tileset :: _intake ( - )
 
 : tile ( tileset n - n )
     swap -> baseid @ + ;
-
-: reheat-tilesets ( - )
-    tileset reheat-default-dir ;
-
-: reload-tilesets ( - )
-    tileset reload-default-dir ;
 
 : is-tile? ( n - f )
     bitmap@ dup -exit al_is_sub_bitmap ;

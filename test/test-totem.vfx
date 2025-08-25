@@ -1,12 +1,11 @@
-include %idir%/../engineer/nib2-serdes.vfx
-include %idir%/../engineer/totem.vfx
+empty
 
 class: abc 
     is-a _totem 
     prop a <save 
     prop b <save 
     prop c <save 
-    :: default-path ( - path len ) f" test/abc" ;
+    default-path: test/abc
 class;
 
 \ abc +totem test 
