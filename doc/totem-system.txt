@@ -49,11 +49,15 @@ Protocols (methods):
     :: load                  - Load/create external resources (optional)
     :: unload                - Free external resources (optional)
     :: intake                - Load data from filesystem
-    :: commit                - Save data to disk
+    :: keep                  - Save data to disk (overridable protocol)
 
 Default implementations:
     intake: Deserializes from srcpath$ into self
-    commit: Serializes self to srcpath$
+    keep: Serializes self to srcpath$
+
+Configuration words:
+    extension: <ext>         - Set file extension filter (e.g., extension: vfx)
+    default-path: <path>     - Set default directory (e.g., default-path: scripts)
 
 ================================================================================
 LIFECYCLE OPERATIONS
@@ -76,6 +80,8 @@ Materializing and loading in one step:
 
     path len class MANIFEST -> totem
 
+- Accepts either full paths or simple names
+- If simple name given, prepends class's default-path
 - Calls MATERIALIZE
 - If newly created, calls INTAKE to load data
 - Used for loading dependencies
@@ -133,9 +139,21 @@ Save all dirty totems:
 
     SAVE
 
-- Iterates all totem classes
+- Iterates all totem classes (via _totem -> dependents)
 - For each class, iterates instances
-- Commits dirty instances
+- Calls COMMIT on each instance
+
+COMMIT OPERATION
+----------------
+Public interface for saving:
+
+    totem COMMIT
+
+- Checks if dirty, exits if not
+- Ensures parent directory exists
+- Calls KEEP protocol to perform save
+- Prints "Saved <name>" confirmation
+- Clears dirty flag
 
 MARKING DIRTY
 -------------
@@ -167,12 +185,8 @@ class: tileset
     prop th <save <int               \ Tile height
     prop #tiles <save <int           \ Number of tiles
     
-    defaults [[
-        s" ts" extension$ place      \ Look for .ts files
-    ]]
-    
-    :: default-path ( - path len )
-        c" dat/gfx" ;                \ Default directory
+    extension: ts                    \ Look for .ts files
+    default-path: dat/gfx            \ Default directory
         
     :: load ( - )
         \ Slice bitmap into tiles when loaded
@@ -195,14 +209,10 @@ EXAMPLE 2: SCENE (supershow/scene.vfx)
 class: scene
     is-a _totem
     
-    defaults [[ 
-        s" scn" extension$ place     \ Look for .scn files
-    ]]
-    
-    :: default-path ( - path len ) 
-        s" dat/scn" ;
+    extension: scn                   \ Look for .scn files
+    default-path: dat/scn
         
-    :: commit ( - )
+    :: keep ( - )
         \ Custom serialization with format version
         temp[ 
             SCENE_FORMAT_VERSION ,
@@ -230,8 +240,7 @@ EXAMPLE 3: ACTOR SCRIPTS (darkblue/enemies.vfx)
 class: enemy-script
     actor-script derive              \ Inherit from actor-script
     
-    :: default-path ( - path len )
-        s" scripts/enemies" ;        \ Enemy script directory
+    default-path: scripts/enemies    \ Enemy script directory
 class;
 
 class: actor-script
@@ -240,11 +249,10 @@ class: actor-script
     
     defaults [[
         actor script-class !
-        s" vfx" extension$ place     \ Look for .vfx files
     ]]
     
-    :: default-path ( - path len )
-        s" scripts" ;
+    extension: vfx                   \ Look for .vfx files
+    default-path: scripts
         
     :: intake ( - )
         srcpath$ count included ;    \ Load by including source
@@ -323,7 +331,8 @@ BEST PRACTICES
    - INTAKE: Load essential data (deserialize)
    - LOAD: Create external resources (bitmaps, sounds)
    - UNLOAD: Free external resources
-   - COMMIT: Save modified data
+   - KEEP: Implement save logic (serialize)
+   - COMMIT: Public save interface (handles dirty flag)
 
 2. DEPENDENCY MANAGEMENT
    - Use MANIFEST for dependencies (won't reload if exists)
@@ -337,8 +346,10 @@ BEST PRACTICES
 
 4. DEVELOPMENT WORKFLOW
    - Use SYNC during development for hot updates
-   - Override INTAKE for custom file formats
+   - Override KEEP for custom save formats
+   - Override INTAKE for custom load formats
    - Leverage discovery for automatic asset loading
+   - Use extension: and default-path: for cleaner configuration
 
 5. ERROR HANDLING
    - Check file-exists? before loading
