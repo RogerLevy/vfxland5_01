@@ -444,16 +444,19 @@ create _protocol  _class make [[
 : property ( <name> - ) ( - a )
     cell nproperty ;
 
-: static ( <name> - ) ( - a )
+: nstatic ( size <name> - ) ( - a )
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
-    _static already? if ' drop exit then
+    _static already? if drop ' drop exit then
     push-order only forth definitions
     create _static make [[
-        cell allocate-static-offset
+        ( size ) allocate-static-offset
         MAGIC_FIELD magic !
     ]]
     pop-order
     does> -> offset @ cla @ + ;
+
+: static ( <name> - ) ( - a )
+    cell nstatic ;
 
 \ ==============================================================================
 \ Classifier definition
