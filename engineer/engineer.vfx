@@ -783,7 +783,7 @@ borrow nib2/ init-nib
             debug off
             hold off
             fullscreen
-            save cr
+            save-exe cr
         hold ! debug !
     if fullscreen else windowed then ;
 
@@ -797,7 +797,7 @@ borrow nib2/ init-nib
                       \ Counter-intuitive because we want to debug the game not Engineer.
             hold off
             windowed
-            save cr
+            save-exe cr
         hold ! debug ! repl ! ide !
     if fullscreen else windowed then ;
 
@@ -808,7 +808,7 @@ borrow nib2/ init-nib
             repl on
             hold off
             windowed
-            save cr
+            save-exe cr
         hold ! repl ! ide !
     if fullscreen else windowed then ;
 

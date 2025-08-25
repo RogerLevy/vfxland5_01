@@ -360,4 +360,4 @@ cstring lastword
 : see  !lastword see ;
 : show  !lastword show ;
 
-
+aka save-exe save
