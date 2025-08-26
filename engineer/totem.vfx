@@ -94,10 +94,7 @@ _totem :apply ( class - )
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize  
-    [[ 
-        @default-path   
-    me ]] ;
+    bl parse   rot materialize [[ @default-path   me ]] ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).

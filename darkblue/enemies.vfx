@@ -38,8 +38,8 @@ class: enemy-script
     default-path: scripts/enemies
 class;
 
-: +enemy ( - <name> )
-    bl parse f" %s.vfx" enemy-script +script drop ;
+: +enemy ( <name> - )
+    enemy-script +script drop ;
 
 class: enemy
     actor derive
@@ -140,7 +140,7 @@ enemy :derive ( parent derived - )
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
-: enm:  str f" class: %s enemy derive class;" evaluate  enemies/  defaults [[ ;
+: enm:  str f" class: %s enemy derive class;" evaluate  enemies/  defaults as ;
 : hp:  val hp ! ;
 : atk:  val atk ! ;
 : gold:  val bounty ! ;
