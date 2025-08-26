@@ -17,17 +17,18 @@ class;
 : deser-actor ( a - a' )
     ['] one desbin ;
 
-|| : serialize?  [[ en @   owner @ 0= and ]] ;
+actor :: serializable? ( - flag )
+    en @   owner @ 0= and ; 
 
 scene :: keep ( - )
     \ save actors on stage to disk
     temp[ 
         SCENE_FORMAT_VERSION ,
         me serbin
-        actors ['] serialize? ['] serbin sermulti
+        actors ['] serializable? ['] serbin sermulti
     temp] srcpath$ count ['] write catch abort" File write error" ;
 
-: load-actor ( class - actor )
+: actor-instance ( class - actor )
     dup actor is? not if
         body> >name count
         f" Class %s does not inherit from ACTOR." -1 -rot .abort 
@@ -39,7 +40,7 @@ scene :: keep ( - )
         -1 swap f" Unsupported scene format version %n" .abort
     else drop then 
     ['] into-me desbin
-    ['] load-actor ['] desbin desmulti 
+    ['] actor-instance ['] desbin desmulti 
     drop ;
 
 scene :: load ( - )
