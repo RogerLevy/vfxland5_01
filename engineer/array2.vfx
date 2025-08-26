@@ -210,14 +210,21 @@ class;
 
 \ ------------------------------------------------------------------------------
 
+trait: _object
+    :: serializable? ( - flag ) -1 ;
+trait;
+_object _object-fresh /classifier move
+
 : sermulti ( iterable filter-xt ser-xt - ) ( obj - flag ) ( obj - ) 
     {: arr filter-xt ser-xt | &count :}
     here to &count 0 ,
     arr #items for
         i arr deref-index 
-        dup filter-xt execute if
-            1 &count +!
-            ser-xt execute 
+        dup serializable? if
+            dup filter-xt execute if
+                1 &count +!
+                ser-xt execute 
+            else drop then
         else drop then
     loop ;
 

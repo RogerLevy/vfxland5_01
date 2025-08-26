@@ -998,11 +998,11 @@ _static is-a _object
 \ Init/Reset
 \ ==============================================================================
 
-|| _trait object object%-fresh  
-_object object%-fresh copy drop
+_trait object _object-fresh  
+_object _object-fresh copy drop
 
 || : reset-object-trait ( - )
-||     object%-fresh _object copy drop ;
+||     _object-fresh _object copy drop ;
 
 || variable fresh-next-classifier#
 || variable fresh-/static
