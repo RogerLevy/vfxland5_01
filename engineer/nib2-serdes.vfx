@@ -39,7 +39,7 @@
     obj [[ 
         cla @ >name count $,
         here to &count 0 , 
-        cla @ -> property-list dup list-count for
+        cla @ -> property-list list-count for
             @next to property0
             property0 serialize? if
                 

@@ -77,8 +77,8 @@ cstring name$
 
 3 cells constant /list
 
-: list-count ( list - c )
-    cell+ cell+ @ ;
+: list-count ( list - list c )
+    dup cell+ cell+ @ ;
 
 : list-count! ( c list - )
     cell+ cell+ ! ;
@@ -87,7 +87,7 @@ cstring name$
     \ list (head): [ next-node , item , count , ]
     \ node: [ next-node , item , ]
     {: item head | count :}
-    head list-count to count
+    head list-count nip to count
     count 0= if
         item head cell+ !
     else
@@ -99,17 +99,17 @@ cstring name$
 : copy-list ( src dest - )
     {: src dest :}
     dest /list erase  \ re-initialize head
-    src dup list-count for
+    src list-count for
         @next dest add-to
     loop drop ;
 
 \ : .list ( list - ) 
-\     cr dup list-count for @next 2 indent .name cr loop drop ;  
+\     cr list-count for @next 2 indent .name cr loop drop ;  
 
 : .list ( list - )
     {: | cnt :}
     0 to cnt 
-    dup list-count for 
+    list-count for 
         cnt 0 = if cr 2 indent then
         @next .name space
         cnt 1 + 10 mod to cnt  
@@ -365,7 +365,7 @@ create _protocol  _class make [[
 
 : has-unmapped-properties? ( trait - bool )
     {: trait0 :}
-    trait0 -> property-list dup list-count for
+    trait0 -> property-list list-count for
         @next ( property ) is-property-mapped? not if
             -1 leave
         then
@@ -434,7 +434,7 @@ create _protocol  _class make [[
     
     \ Propagate the property to dependents
     ( property ) to property0
-    classifier -> dependents dup list-count for
+    classifier -> dependents list-count for
         @next classifier >r to classifier
             property0 ?add-property
         r> to classifier
@@ -488,7 +488,7 @@ create _protocol  _class make [[
     trait0 -> classifier# @ class0 -> can-table set-bit
     
     \ Merge protocols
-    trait0 -> protocol-list dup list-count for
+    trait0 -> protocol-list list-count for
         @next to protocol0
         
         \ Avoid clobbering already supported protocols if "upgrading"
@@ -513,7 +513,7 @@ create _protocol  _class make [[
     loop drop
     
     \ Merge properties
-    trait0 -> property-list dup list-count for
+    trait0 -> property-list list-count for
         @next
         dup is-property-mapped? if drop else dup add-property map-property then
     loop drop
@@ -663,7 +663,7 @@ defer protocol-validations ( obj protocol - obj protocol )
     protocol0 trait0 implement-protocol
     
     \ Propagate the protocol to dependents
-    trait0 -> dependents dup list-count for
+    trait0 -> dependents list-count for
         @next to class0
         \ Only propagate if class doesn't have implementation from different source
         protocol0 class0 supports-protocol? if
@@ -951,7 +951,7 @@ aka instance make  \ Backward compatibility
 
 : .props ( object - )
     [[
-        cla @ -> property-list dup list-count for
+        cla @ -> property-list list-count for
             @next                       \ get property
             me over -> offset @ prop+   \ get field address
             ."     " inspect-property

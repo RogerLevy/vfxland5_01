@@ -197,10 +197,10 @@ _totem :apply ( class - )
         dirty off ;
 
 : save ( - )
-    _totem -> dependents dup list-count for
+    _totem -> dependents list-count for
         @next 
         dup body> >name count f" Saving %s totems..." type cr
-        -> instances dup list-count for
+        -> instances list-count for
             @next commit
         loop drop
     loop drop ;
@@ -211,7 +211,7 @@ _totem :apply ( class - )
     \ TODO: update/create intelligently (in default dirs) and support 
     \ syncing all instances, even those not in default directories.
 
-    _totem -> dependents dup list-count for
+    _totem -> dependents list-count for
         @next load-default-dir
     loop drop ;
 
