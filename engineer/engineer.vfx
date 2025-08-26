@@ -42,6 +42,7 @@ defer pump ' noop is pump
 cstring watch$
 variable watch-xt
 variable watch-context
+|| variable need-pump
 
 \ =============================================================================
 \ System Integration
@@ -509,7 +510,8 @@ magic-id MAGIC_TWEAK TWK
 
 || : pre ( - )
     0 #tib ! postpone \\ 
-    !delta !delta ;
+    !delta !delta 
+    need-pump on ;
     
 || : ?throw ( n - ) 
     dup -1 = if drop exit then
@@ -631,8 +633,6 @@ defer frame ( - ) ' noop is frame
     alqueue e al_get_next_event 0<>
     dup -exit
     >r global-events ide-events r> ;
-
-|| variable need-pump
     
 || : (pump) ( - )
     need-pump @ -exit
