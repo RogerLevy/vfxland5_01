@@ -48,7 +48,7 @@ class;
 
 aka enemies enemy
 
-enemy defaults [[
+enemy template [[
     enemy1.png bmp !
     1 hp !
     12. r !
@@ -130,7 +130,7 @@ enemy :: init
 
 : auto-bitmap ( - )
     classifier body> >name count f" %s.png" >pad find if
-        execute defaults -> bmp !
+        execute template -> bmp !
     else drop then ;
 
 enemy :derive ( parent derived - )
@@ -140,7 +140,7 @@ enemy :derive ( parent derived - )
 \ Enemy table definition DSL
 : val  bl parse evaluate ;
 : str  bl parse ;
-: enm:  str f" class: %s enemy derive class;" evaluate  enemies/  defaults as ;
+: enm:  str f" class: %s enemy derive class;" evaluate  enemies/  template [[ ;
 : hp:  val hp ! ;
 : atk:  val atk ! ;
 : gold:  val bounty ! ;

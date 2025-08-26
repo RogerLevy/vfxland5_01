@@ -29,7 +29,7 @@ class: actor
     prop benched                    \ controls behavior and physics    
     prop id <int <save
 
-    defaults [[ -1 id ! ]]
+    template [[ -1 id ! ]]
 
     static autoclass 
 class;
@@ -182,7 +182,7 @@ variable next#
 : floating ( - )
     physics> vx 2@ x 2+! ;
 
-actor defaults [[
+actor template [[
     en on
     prio on
     -5 -5 x1 2!  10 10 w1 2!
@@ -324,7 +324,7 @@ c: timer %actor xt1 dur ;
 actor :derive ( source-class derived-class - )
     2drop
     private
-    defaults [[  \ allows immediate assignment of defaults (TODO: revisit)
+    template [[  \ allows immediate assignment of template (TODO: revisit)
 ;
 
 : hide-autoclass ( a len - )
@@ -349,7 +349,7 @@ class: actor-script
     is-a _totem
     static script-class \ <ref _class
     
-    defaults [[
+    template [[
         actor script-class !
         s" vfx" extension$ place
     ]]
@@ -393,7 +393,7 @@ actor :: on-error ( xt err# - )
                 f"     %s derive" line,
                 n[ count has-image? if
                     n[ count 
-                    f"     defaults [[ %s.png bmp ! ]]" line,
+                    f"     template [[ %s.png bmp ! ]]" line,
                 then
                 s" class;" line,
                 nl,

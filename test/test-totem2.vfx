@@ -2,7 +2,7 @@ empty
 
 : <totem ( ext len defpath len - )
     _totem classifier -1 apply-trait 
-    defaults [[ default-path$ place extension$ place ]] ;
+    template [[ default-path$ place extension$ place ]] ;
 
 
 class: tileset   s" ts" s" dat/gfx" <totem

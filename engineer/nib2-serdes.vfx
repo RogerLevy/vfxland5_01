@@ -45,7 +45,7 @@
                 
                 \ get the property address in the instance and in the template
                 me property0 -> offset @ prop+ to val-addr
-                cla @ defaults property0 -> offset @ prop+ to tmpl-addr
+                cla @ template property0 -> offset @ prop+ to tmpl-addr
 
                 \ check if the value differs from the class's template
                 val-addr   property0 -> property-size @ 

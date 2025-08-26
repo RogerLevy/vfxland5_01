@@ -154,7 +154,7 @@ variable osp   os osp ! \ object stack pointer
     /bit-table field can-table          \ Capability table
     /list field property-list
     /list field protocol-list
-    cell field template
+    cell field class-template
     cell field constructor-xt
     cell field constructor-#params
     cell field on-apply-xt
@@ -221,8 +221,8 @@ _object [[
 : (sizeof) ( object - n )
     >cla @ -> instance-size @ ;
 
-: !defaults ( object - )
-    dup >cla @ -> template @ ?dup if
+: !template ( object - )
+    dup >cla @ -> class-template @ ?dup if
         cell+ over dup cell+ swap (sizeof) cell- move
     else
         dup cell+ over (sizeof) cell- erase
@@ -232,7 +232,7 @@ _object [[
 : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
     [[
-        me !defaults
+        me !template
         cla @ -> constructor-xt @ ?dup if execute then
     ]] ;
     
@@ -547,17 +547,17 @@ create _protocol  _class make [[
         _object classifier -1 apply-trait 
     ]] ;
 
-: defaults ( [class] - a )
+: template ( [class] - a )
     {: | class0 :}
     classifier dup 0= if drop then to class0 
-    class0 >cla @ _trait = abort" DEFAULTS >> Traits cannot have defaults, only classes."
-    class0 -> template @ ?dup 0= if
-        class0 make class0 -> template !
-        class0 -> template @
+    class0 >cla @ _trait = abort" template >> Traits cannot have templates, only classes."
+    class0 -> class-template @ ?dup 0= if
+        class0 make class0 -> class-template !
+        class0 -> class-template @
     then ;
 
 : class; ( - )
-    defaults drop
+    template drop
     end-classifier ;
 
 : is-a ( [class] <trait> - )
@@ -742,9 +742,9 @@ defer protocol-validations ( obj protocol - obj protocol )
     \ source-class -> classifier# @ classifier -> can-table set-bit
     
     \ Copy template if one exists, updating its class
-    source-class -> template @ ?dup if
-        ( source-template ) defaults source-class -> instance-size @ move
-        classifier defaults >cla !
+    source-class -> class-template @ ?dup if
+        ( source-template ) template source-class -> instance-size @ move
+        classifier template >cla !
     then
     
     \ Copy constructor
