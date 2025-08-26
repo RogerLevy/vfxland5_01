@@ -155,8 +155,7 @@ ship :: damage ( n - )
 
 : /turret
     turret0 @ ?exit
-    turret one turret0 ! 
-    me turret0 @ -> owner ! ;
+    turret one own turret0 ! ;
 
 ship :: init
     me to player0

@@ -98,7 +98,7 @@ path]
 
 : *vacuum
     vacuum one [[
-        me *bubble [[ owner ! bubble-act me ]] my-bubble !
+        *bubble own [[ bubble-act me ]] my-bubble !
         infinity-path pb1 path-follow
         0.5 pb1 path-speed
         1.5 2. pb1 path-scale

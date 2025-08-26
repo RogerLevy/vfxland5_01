@@ -5,6 +5,9 @@ class: actor
                                 \ it is up to the owner actor to recreate
 class;
 
+: own ( actor - actor )
+    me over -> owner ! ;
+
 class: scene  
     is-a _totem
     extension: scn

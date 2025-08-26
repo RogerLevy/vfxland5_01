@@ -73,11 +73,10 @@ array] drop
 : fire-thin ( atk - )
     *shoot*
     me 0 0 from
-    me
-    a @ 20. 5. *beam as>
+    a @ 20. 5. *beam own as>
+        atk !
         w @ dest-w ! 20. w !
         exponential ease-out w dest-w @ 0.25 tween
-        owner ! atk !
         ['] laser-physics phys !
         act>
             80. l +!
@@ -90,9 +89,8 @@ array] drop
 : fire-wide ( atk - )
     *shoot*
     me 0 0 from
-    me
-    aim @ 2000. 100. *beam as>
-        owner ! atk !
+    aim @ 2000. 100. *beam own as>
+        atk !
         ['] laser-physics phys !
         w @ dest-w ! 1.0 w !
         atk @ dest-atk ! 0 atk !
