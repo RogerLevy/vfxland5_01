@@ -77,14 +77,21 @@ private
 : dragging ( - )
     lb <lb - 
     case
-        1 of pick ?dup if ?copy dup .summary to dragee then endof
+        1 of pick ?dup if dup as ?copy dup .summary to dragee then endof
         0 of dragee ?dup if [[ lb if mickey 2s>p x 2+! then ]] then endof
         -1 of 0 to dragee endof
     endcase ;
 
+: deleting ( - )
+    rb <rb - 
+    case
+        1 of pick ?dup if unload then endof
+    endcase ;
+
 : input 
     get-mouse
-    dragging ;
+    dragging 
+    deleting ;
 
 borrow forth hold  \ import system variable
 aka _hold hold     \ and shadow it
