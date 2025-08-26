@@ -50,9 +50,6 @@ fast[
   ' drop ,
   ' drop ,
 
-
-|| : pagealign ( - )  here $ff and 256 swap - allot ;
-|| : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 || aligned-page strout-stack
 || variable ssp   strout-stack ssp ! 
 || : strout-push ( ? - ) ssp @ !  4 ssp c+! ;

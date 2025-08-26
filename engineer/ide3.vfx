@@ -35,8 +35,6 @@ create (pen) 0 , 0 ,
 create str 256 allot
 0 value >str
 
-: pagealign ( - )  here $ff and 256 swap - allot ;
-: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 aligned-page hist-stack
 variable hsp   hist-stack hsp ! 
 : hist-push ( ? - ) hsp @ !  4 hsp c+! ;
