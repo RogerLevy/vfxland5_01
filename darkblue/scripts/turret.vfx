@@ -124,7 +124,7 @@ charge-levels #items cell array bars
 
 : *bars ( - )
     charge-levels #items 1 do
-        bar one i bars [] !
+        bar one own i bars [] !
     loop ;
 
 : !bars ( - )

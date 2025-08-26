@@ -36,6 +36,12 @@ _object :: kill ( - ) me unload ;
 : die  me kill ;
 
 \ Common logic
+actor :: serializable? ( - flag ) 
+    \ TODO: this is fine because we know that alls Dark Blue actors have firers,
+    \ but if we wanted more modularity, implementing this across traits has to be
+    \ accumulative, rather than destructive.
+    actor:serializable? firer @ 0= and ;
+
 : fired? ( firer actor - b )
     over 0= if 2drop 0 exit then
     -> firer @ = ;

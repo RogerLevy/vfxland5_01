@@ -89,16 +89,20 @@ enemy :: kill
 
 \ variable orbs-next#  4096 orbs-next# !
 
-: ?shoot
-    firing-rate @ -exit
-    gamelife @ firing-rate @ mod ?exit
+: shoot ( - )
     next# @ >r
     4096 512 + next# !
     me 0 0 from s" orb" find-class one [[
+        you firer !
         player0 pos@ me pos@ 2- ang 1. vec vx 2!
     ]]
     \ next# @ orbs-next# !
     r> next# ! ;
+
+: ?shoot ( - )
+    firing-rate @ -exit
+    gamelife @ firing-rate @ mod ?exit
+    shoot ;
 
 enemy :: damage ( n - )
     ?dup -exit
