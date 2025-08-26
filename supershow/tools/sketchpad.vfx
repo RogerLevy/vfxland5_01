@@ -31,6 +31,8 @@ private
 
 0 value this
 
+\ Commands
+
 : save ( - )
     this 0= 
         abort" No current scene!  Required: `SAVEAS <scene>` or `EDIT <scene>`"
@@ -46,12 +48,15 @@ private
 
 : ctrl+s  save ;
 
-\ ------------------------------------------------------------------------------
+\ =============================================================================
 
 0 value mx 
 0 value my
 0 value dragee
 \ create anchor 0 , 0 ,
+
+: editable? ( obj - flag ) 
+    serializable? ;
 
 : bmpbox
     {: | w h :}
@@ -62,6 +67,7 @@ private
     0
     actives> 
         bmp @ -exit
+        me editable? -exit
         mouse 2dup bmpbox overlap? if
             \ bmp @ bitmap-file type cr
             drop me 
@@ -88,10 +94,19 @@ private
         1 of pick ?dup if unload then endof
     endcase ;
 
-: input 
+: input ( - )
     get-mouse
     dragging 
-    deleting ;
+    deleting 
+;
+
+variable flicker-ctr
+
+: flicker ( - )
+    1 flicker-ctr +!  flicker-ctr @ 1 and ?exit sprite ;
+
+: sprites ( - )
+    batch> actives> me editable? if sprite else flicker  then ;
 
 borrow forth hold  \ import system variable
 aka _hold hold     \ and shadow it
