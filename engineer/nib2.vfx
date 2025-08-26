@@ -954,7 +954,7 @@ aka instance make  \ Backward compatibility
         cla @ -> property-list dup list-count for
             @next                       \ get property
             me over -> offset @ prop+   \ get field address
-            inspect-property
+            ."     " inspect-property
         loop drop 
     ]] ;
 

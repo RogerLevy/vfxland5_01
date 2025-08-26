@@ -150,7 +150,11 @@ _totem :apply ( class - )
     \ (Re-)load all totems in given directory
     \ Not recursive.
     \ If class's extension$ is empty, include directories in discovery
+    
+    11 push-attribute
     dup body> >name count f" Loading %s totems..." type cr
+    pop-attribute
+    
     to class0   
     
     ['] (discover) 
