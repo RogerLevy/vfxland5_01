@@ -374,8 +374,8 @@ actor :: on-error ( xt err# - )
 
 || : has-image? f" %s.png" >pad find nip ;
 
-: >default-path ( fn len - path len )
-    -> default-path @ execute f" %s\%s" ;
+: >default-path ( fn len class - path len )
+    -> default-path$ count f" %s\%s" ;
 
 : +script ( fn len script-totem-class - actor-script )
     \ Create an actor script containing some boilerplate.

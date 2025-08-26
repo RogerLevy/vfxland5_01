@@ -7,15 +7,15 @@ include ../supershow/tilemap2.vfx
 
 load-bitmaps
 
-s" dat/gfx/bg.ts" tileset load-totem
+s" dat/gfx/bg.ts" tileset manifest drop
 
-bg.ts info
+bg.ts inspect
 
 \ bg.png 20 20 *tileset bg.ts
 \ bg.ts commit
 
-bg.ts -> srcpath$ count file@ dump
-
 \\
 
-bg.ts info
+bg.ts -> srcpath$ count file@ dump
+
+bg.ts inspect

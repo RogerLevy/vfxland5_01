@@ -38,9 +38,6 @@ class: enemy-script
     default-path: scripts/enemies
 class;
 
-: reheat-enemies
-    enemy-script reheat-default-dir ;
-
 : +enemy ( - <name> )
     bl parse f" %s.vfx" enemy-script +script drop ;
 

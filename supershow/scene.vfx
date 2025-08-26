@@ -5,10 +5,10 @@ class: actor
                                 \ it is up to the owner actor to recreate
 class;
 
-class: scene
+class: scene  
     is-a _totem
-    defaults [[ s" scn" extension$ place ]]
-    :: default-path ( - path len ) s" dat/scn" ;
+    extension: scn
+    default-path: dat/scn
 class;
 
 : deser-actor ( a - a' )

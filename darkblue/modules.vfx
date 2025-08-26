@@ -1,20 +1,20 @@
-." Loading common words" cr
+." Loading common words..." cr
 s" common.vfx" ?included
 
-." Loading modules" cr
+." Loading modules..." cr
 require event.vfx
 require darkblue-math.vfx
 require starfield.vfx
 require laser.vfx
 require enemies.vfx
 
-." Creating autoclasses" cr
+." Creating autoclasses..." cr
 create-autoclasses
 
-." Loading scripts" cr
-reheat-scripts
+." Loading totems..." cr
+sync
 
-." Loading game modes" cr
+." Loading game modes..." cr
 require title.vfx
 require game.vfx
 \ require gameover.vfx  

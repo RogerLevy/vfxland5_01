@@ -11,21 +11,17 @@ variable pile
 \ =============================================================================
 
 class: tileset
+    is-a _totem
+    extension: ts
+    default-path: dat/gfx
 
     tileset is-a usable
-    tileset is-a _totem
 
     prop baseid <save <int 
     prop bmp
     prop tw <save <int 
     prop th <save <int 
     prop #tiles <save <int 
-
-    defaults [[
-        s" ts" extension$ place
-    ]]
-
-    default-path: dat/gfx
 
 class;
 

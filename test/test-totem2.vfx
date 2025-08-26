@@ -1,35 +1,29 @@
 empty
 
-class: tileset
+: <totem ( ext len defpath len - )
+    _totem classifier -1 apply-trait 
+    defaults [[ default-path$ place extension$ place ]] ;
 
-    is-a _totem
+
+class: tileset   s" ts" s" dat/gfx" <totem
+
     prop tw <save
     prop th <save
-
-    extension: ts
-    default-path: dat/gfx
 
 class;
 
 : +tileset ( tw th <name> - )
     tileset +totem [[ tw 2!   me ]] commit ;
 
-class: world
-
-    is-a _totem
+class: world   s" "   s" dat/wld" <totem
 
     prop ts <ref tileset
     32 nprop ts-name$ <save <cstring
     prop _room# <save <int 
 
-    ( no extension: worlds are stored in subfolders )
-    default-path: dat/wld
-
     :: intake
         srcpath$ count me deserialize
-        ts-name$ c@ if 
-            ts-name$ count tileset manifest ts ! 
-        then ;
+        ts-name$ count tileset manifest ts ! ;
 
 class;
 
