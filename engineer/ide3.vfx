@@ -446,7 +446,11 @@ ide-mode :: activate ( - )
     fullscreen winmode ;
 
 : ide-mode-draw ( - )
-    at@ (pen) 2! ['] ide-layout catch drop (pen) 2@ at ;
+    at@ (pen) 2! 
+    hold @ if repl on then
+    ['] ide-layout catch drop 
+    (pen) 2@ at ;
+
 ' ide-mode-draw ide-mode -> draw-xt !
 
 0 ide-mode :construct ( - )
@@ -463,6 +467,7 @@ full-mode :: activate ( - )
 : full-mode-draw ( - )
     draw-tv
     ( draw repl here ) ;
+
 ' full-mode-draw full-mode -> draw-xt !
 
 \ Window mode
@@ -476,6 +481,7 @@ window-mode :: activate ( - )
 : window-mode-draw ( - )
     ?border draw-game
     ( draw repl here ) ;
+
 ' window-mode-draw window-mode -> draw-xt !
 
 \ Create array of display modes
