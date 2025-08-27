@@ -4,8 +4,8 @@
 gamew to appw
 gameh to apph
 
-gamew s>p constant gamew.
-gameh s>p constant gameh.
+gamew >. constant gamew.
+gameh >. constant gameh.
 gamew s>f fconstant f-gamew
 gameh s>f fconstant f-gameh
 

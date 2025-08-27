@@ -46,7 +46,7 @@
         r# @ 0< ?exit
         s[
             me actor# . ." priority " 
-            x 2@ 2p>s swap . . ." at " 
+            x 2@ 2.> swap . . ." at " 
             cla @ .name ."  *[[ "
             me peeked
             ." ]] " cr

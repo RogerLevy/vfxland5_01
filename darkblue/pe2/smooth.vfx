@@ -111,8 +111,8 @@ create corner-flags #max-coords cells allot&erase
     then
     
     \ Blend original with averaged
-    sum-x cnt s>p p/ to sum-x
-    sum-y cnt s>p p/ to sum-y
+    sum-x cnt >. p/ to sum-x
+    sum-y cnt >. p/ to sum-y
     
     x 1.0 weight - p* sum-x weight p* +
     y 1.0 weight - p* sum-y weight p* + ;
@@ -274,7 +274,7 @@ variable smooth-radius     \ spatial radius for neighbor selection
         i center - abs to distance
         distance radius <= if
             \ Calculate linear falloff weight
-            1.0 distance s>p radius s>p p/ - 0.0 1.0 clamp to weight
+            1.0 distance >. radius >. p/ - 0.0 1.0 clamp to weight
             
             \ Apply smoothing with distance-based weight
             i coords weight smooth-point-with-weight i coords [] 2!

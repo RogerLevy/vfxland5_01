@@ -11,7 +11,7 @@ bigdoor.ts animation bigdoor-close.anm  5 0 range,
 
 : stand
     gap 2 p/ x +!
-    y @ gap 2 / + h1 @ 2 / s>p - y ! ;
+    y @ gap 2 / + h1 @ 2 / >. - y ! ;
 
 bigdoor :: init
     bigdoor-open.anm 0 cycle 0 h| a.flp !

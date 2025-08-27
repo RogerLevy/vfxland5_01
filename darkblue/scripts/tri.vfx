@@ -18,7 +18,7 @@ class;
 
 : ang>bmp ( ts n. - n )
     360. umod dup >r
-    5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
+    5. p/ .> 36 mod tile r> 180. >= if hv| then ;
 
 : flicker  gamelife @ 2 / 1 and 0<> and ;
 

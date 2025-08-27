@@ -15,8 +15,8 @@
 
 : tread> ( x y w h a - code ; ) ( pen=xy a - )
      to a  to lh to lw to ly to lx  r> to xt
-     x @ p>s lx + dup to lx  lw + 1 - to lx2 
-     y @ p>s ly + dup to ly  lh + 1 - to ly2
+     x @ .> lx + dup to lx  lw + 1 - to lx2 
+     y @ .> ly + dup to ly  lh + 1 - to ly2
      ly2 gap + ly do
         lx2 gap + lx do
             i lx2 min j ly2 min at  pen-colrow a spot xt execute

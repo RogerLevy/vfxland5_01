@@ -25,7 +25,7 @@ laser object beam
     laser beam construct
     beam as>
         w ! l ! a !
-        at@ 2s>p x 2!
+        at@ 2>. x 2!
         halt
         en on me ;
 

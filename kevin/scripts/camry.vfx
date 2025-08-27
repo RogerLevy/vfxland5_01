@@ -2,8 +2,8 @@ require scripts\trafficlight.vfx
 
 class: camry
     actor derive
-: bottom  y @ y1 @ s>p + h1 @ s>p + ;
-: stand   bottom y @ - gap 2 / s>p - negate y +! ;
+: bottom  y @ y1 @ >. + h1 @ >. + ;
+: stand   bottom y @ - gap 2 / >. - negate y +! ;
 : hitbox!  2dup -2 -2 2/ x1 2! w1 2! ;
 camry :: init
     0 prio !
@@ -11,14 +11,14 @@ camry :: init
     bmp @ bmpwh hitbox!
     stand 
     begin
-        bmp @ bmpw negate s>p x !
+        bmp @ bmpw negate >. x !
         0 vx !
         act> redlight
         act> 1.0 passed? -exit
             greenlight 8. vx !
         act> 
             p1 me hit? if me p1 collide then
-            x @ x1 @ s>p + 320. >= -exit
+            x @ x1 @ >. + 320. >= -exit
     again ;
 
 class;

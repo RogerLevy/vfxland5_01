@@ -37,8 +37,8 @@ defer physics
 : ?dirkey  fac @ left = if <left> else <right> then ;
 : ?stick  ?dirkey held? not if vx 2@ .666 dup 2p* vx 2! then ;
 
-: bottom  y @ y1 @ s>p + h1 @ s>p + ;
-: stand   bottom vy @ + gap s>p umod 1. + negate y +!  0 vy ! ;
+: bottom  y @ y1 @ >. + h1 @ >. + ;
+: stand   bottom vy @ + gap >. umod 1. + negate y +!  0 vy ! ;
 
 : land
     sfx @ beep13.ogg = if 0 sfx ! then
@@ -140,7 +140,7 @@ variable was-hit
             then
         else
             floor? if
-                x 2@ y1 @ s>p + h1 @ s>p +
+                x 2@ y1 @ >. + h1 @ >. +
                     vx 2@ 2+ xy>cr bg0 spot @ climbable?
                         if drop 0 else 0 a.spd ! then
             then
@@ -192,7 +192,7 @@ is physics
 : ?-  vx @ 0< if negate then ;
 : hop
     climbing off
-    x @ gap s>p ?- + n1 ! 2. ?- 0 vx 2!
+    x @ gap >. ?- + n1 ! 2. ?- 0 vx 2!
     floating
     act>
         vx @ 0< if x @ n1 @ <= -exit
@@ -202,15 +202,15 @@ is physics
 
 : ?unclimb
     0 0 +tile@ climbable? ?exit
-    vy @ 0> if fall else gap -2 / s>p y +! idle then ;
+    vy @ 0> if fall else gap -2 / >. y +! idle then ;
 : ?hop  +tile@ climbable? if hop then ;
 : ?dismount
-    x 2@ y1 @ s>p + h1 @ s>p + 1. + xy>cr bg0 spot @ climbable? ?exit 
+    x 2@ y1 @ >. + h1 @ >. + 1. + xy>cr bg0 spot @ climbable? ?exit 
     fac @ walk ;
 
 kvn% :: _climb
     falling off  climbing on  climb.anm 0 cycle  0 vx !
-    x @ dup gap s>p mod - gap s>p 2 / + x !
+    x @ dup gap >. mod - gap >. 2 / + x !
     act>
         <up> held? <down> held? or if 1. 3 / else 0 then a.spd !
         <up> held? if -.5 else

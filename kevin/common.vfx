@@ -63,7 +63,7 @@ create layout
 : dying  can-travel off ;  \ disables saving and traveling
 
 \ Movement between rooms
-: !startxy  x 2@ 2p>s start-xy 2! ;
+: !startxy  x 2@ 2.> start-xy 2! ;
 
 : travel ( x. y. n - )
     +warp

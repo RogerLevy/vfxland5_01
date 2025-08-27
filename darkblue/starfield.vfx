@@ -15,7 +15,7 @@ create seeds 2000 seeds,
     17 RSHIFT $7FFF AND S>F $7FFF S>F F/ star-bias f**
     0.75e f* 0.05e f+ F>P negate ; 
 variable ctr
-: x dup startx swap speed ctr @ p* p>s + 511 and ;
+: x dup startx swap speed ctr @ p* .> + 511 and ;
 : star dup x swap y at star.png put ;
 
 public

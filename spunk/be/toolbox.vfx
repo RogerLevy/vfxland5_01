@@ -23,7 +23,7 @@ create anchor 0 , 0 ,
     lb <lb over to <lb -
     case
         1 of in? -exit mouse anchor 2! me to dragee endof
-        0 of me dragee = -exit lb if mickey 2s>p x 2+! then endof
+        0 of me dragee = -exit lb if mickey 2>. x 2+! then endof
         -1 of 0 to dragee endof
     endcase ;
 toolbox% :: init

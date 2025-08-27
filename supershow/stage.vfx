@@ -79,7 +79,7 @@ actor :: .summary ( actor - )
     me actor# dup 0 >= if ." #" . else drop me .name then
     cla @ .name
     .status
-    ." at: " x 2@ 2p>s swap . . 
+    ." at: " x 2@ 2.> swap . . 
     ." ] " pop-attribute ;
 
 \ =============================================================================
@@ -165,7 +165,7 @@ actor :: .summary ( actor - )
     then ;
 
 : sprite ( - )
-    x 2@ 2p>s at bmp @ cput ;
+    x 2@ 2.> at bmp @ cput ;
 
 : backsprites ( - )
     batch> actives> prio @ ?exit sprite ?pillory ;
@@ -202,7 +202,7 @@ actor :: unload ( - )
     0 next# !  actives>  me unload ;
 
 0 actor :construct ( - )
-    at@ 2s>p x 2! ;
+    at@ 2>. x 2! ;
 
 : (one) ( class - actor )
     {: c | saved-me :} 
@@ -229,7 +229,7 @@ actor object dummy
 \ =============================================================================
 
 : hitbox@ ( - x1 y1 x2 y2 )
-    x 2@ 2p>s x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;
+    x 2@ 2.> x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;
     
 : hit? ( obj obj - f )
     over free? over free? or if 2drop 0 exit then
@@ -238,9 +238,6 @@ actor object dummy
 \ =============================================================================
 \ Scripting utilities
 \ =============================================================================
-
-aka >. s>p
-aka .> p>s
 
 : att ( col row - ) gap dup 2*  gap 2 / dup 2+  at ;
 
@@ -251,10 +248,10 @@ aka .> p>s
     ']' parse evaluate  1 >in +!
     s" me init ]]" evaluate ; immediate
 
-\ : in? ( - f ) x 2@ 2p>s 0 239 within >r 0 319 within r> and ;
+\ : in? ( - f ) x 2@ 2.> 0 239 within >r 0 319 within r> and ;
 \ : ?out ( - f ) in? not dup if unload then ;
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;
-: from ( actor x y - ) rot as> x 2@ 2p>s 2+ at  ; \ me actor# priority ;
+: from ( actor x y - ) rot as> x 2@ 2.> 2+ at  ; \ me actor# priority ;
 : halt  beha off  0 0 vx 2! ;
 : morph ( class - )
     >r x 2@ vx 2@

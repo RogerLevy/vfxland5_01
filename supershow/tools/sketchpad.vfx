@@ -61,7 +61,7 @@ private
 : bmpbox
     {: | w h :}
     bmp @ bmpwh to h to w
-    x 2@ 2p>s w h 2 2 2/ 2- 2dup w h 2+ ;
+    x 2@ 2.> w h 2 2 2/ 2- 2dup w h 2+ ;
 
 : pick ( - obj | 0 )
     0
@@ -84,7 +84,7 @@ private
     lb <lb - 
     case
         1 of pick ?dup if dup as ?copy dup .summary to dragee then endof
-        0 of dragee ?dup if [[ lb if mickey 2s>p x 2+! then ]] then endof
+        0 of dragee ?dup if [[ lb if mickey 2>. x 2+! then ]] then endof
         -1 of 0 to dragee endof
     endcase ;
 

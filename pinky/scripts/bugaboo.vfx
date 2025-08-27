@@ -7,7 +7,7 @@ class: bugaboo
 
 bugaboo :: init
     1000 rnd ts + bmp !
-    -+ -+ 2s>p vx 2!
+    -+ -+ 2>. vx 2!
     act>
         gamelife @ 31 and 0= if 
             4 rnd 24 << bmp @ $FFFF and or bmp !

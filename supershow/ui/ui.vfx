@@ -25,7 +25,7 @@ require %idir%\..\dltree.vfx
         then  drop
         1 enext# +!
     loop  -1 abort" Out of elements" ;
-|| : 1element  cla !  at@ 2s>p x 2!  vis on  1. 1. sx 2!  en on ;
+|| : 1element  cla !  at@ 2>. x 2!  vis on  1. 1. sx 2!  en on ;
 : el ( class - actor )
     me >r alloc-element [[
         me r> dlpush
@@ -66,7 +66,7 @@ require %idir%\..\dltree.vfx
 \ Rendering
 || : middle ( - x y )  bmp @ bmpwh 2 2 2/ ;
 || : sprite ( - )  at@ middle 2negate +at bmp @ put at ;
-|| : +t  x 2@ 2p>s 2s>f `` sx 2@ 2p>f 0e ``` transform ;
+|| : +t  x 2@ 2.> 2s>f `` sx 2@ 2p>f 0e ``` transform ;
 || : (draw) ( - )
     en @ -exit vis @ -exit
     +m +t 0 0 at
@@ -96,7 +96,7 @@ require %idir%\..\dltree.vfx
 : p>local ( x. y. - x. y. )
     parent @ ?dup if [[ recurse ]] then x 2@ 2- sx 2@ 2p/ ;
 : >local ( x y - x y )
-    2s>p p>local 2p>s ;
+    2>. p>local 2.> ;
 
 \ Update
 || 0 value c

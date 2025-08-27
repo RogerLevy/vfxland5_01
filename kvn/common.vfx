@@ -83,7 +83,7 @@ dictionary inventory
     end-case ;
 
 \ Movement between rooms
-: !startxy  x 2@ 2p>s start-xy 2! ;
+: !startxy  x 2@ 2.> start-xy 2! ;
 : travel ( x. y. n - )
     +warp x 2! !startxy
     blank s" game" gevent ;

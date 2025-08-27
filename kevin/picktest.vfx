@@ -3,7 +3,7 @@ variable mbuttons
 : mouse  mousex 2@ ;
 : bmpbox
     bmp @ bmpwh | h w |
-    x 2@ 2p>s w h 2 2 2/ 2- 2dup w h 2+ ;
+    x 2@ 2.> w h 2 2 2/ 2- 2dup w h 2+ ;
 
 class: picktest
     actor derive
@@ -23,7 +23,7 @@ class;
 : events
     begin event? while
         ALLEGRO_EVENT_MOUSE_AXES happened? if
-            the-mouse 2s>p +m inverse 2p*m -m 2p>s mousex 2!
+            the-mouse 2>. +m inverse 2p*m -m 2.> mousex 2!
         then
         ALLEGRO_EVENT_MOUSE_BUTTON_DOWN happened? if
             pick

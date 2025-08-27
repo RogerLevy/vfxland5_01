@@ -35,7 +35,7 @@ turret.png 32 32 tileset turret.ts
 
 : ang>bmp ( tileset n. - n )
     360. umod dup >r
-    5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
+    5. p/ .> 36 mod tile r> 180. >= if hv| then ;
 
 : flicker  gamelife @ 1 and if drop 0 then ;
 
@@ -199,7 +199,7 @@ aka ?; ?exit
     \ charging
         : afford? 0 max level[] cost@ energy @ swap - 10 >= ;
         : ?jam level-reached afford? ?; charge @ 1 - 0 max charge ! ;
-        : shake ( n- ) s>p 60. p/ shaking ! ;
+        : shake ( n- ) >. 60. p/ shaking ! ;
         d: +charge charge @ 1 + 120 min charge ! ?jam ?+level charge @ shake ;
         : go? level-ctr @ 0= ;
         : juice go? if +charge else -1 level-ctr +! then ;
@@ -228,10 +228,10 @@ aka ?; ?exit
     : !ang a @ p>f aim @ p>f 0.2e alerp f>p a ! ;
 \ display
     : hide [[ -9999. -9999. x 2! ]] ;
-    : show [[ at@ 2s>p x 2! ]] ;
+    : show [[ at@ 2>. x 2! ]] ;
     : bar[] bars [] @ ;
     : bar-spacing 0 bar.png bmph 1 + negate ;
-    : bars-pos 13 -13 owner @ -> vx 2@ 2p>s 2+ ;
+    : bars-pos 13 -13 owner @ -> vx 2@ 2.> 2+ ;
     : !bars 
         owner @ bars-pos from
         bars #items 1 do

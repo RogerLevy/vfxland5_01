@@ -101,7 +101,7 @@ tileset :: intake ( - )
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
 
 : xy>cr ( x. y. - col row )
-    gap dup 2/ 2p>s ;
+    gap dup 2/ 2.> ;
 
 \ =============================================================================
 \ Tile metadata

@@ -116,7 +116,7 @@ playback :: init ( - )
     a #items for
         i a [] -> duration @ to segdur
         accum segdur + target > if
-            i ` target accum - s>p segdur s>p p/ ` unloop exit
+            i ` target accum - >. segdur >. p/ ` unloop exit
         then
         segdur +to accum
     loop
@@ -240,13 +240,13 @@ playback :: init ( - )
 
 || : step ( playback ) ( - ) \ Update progress by one frame
     path0 @ -exit
-    speed @ 1000. fps / p*  path0 @ timespan s>p p/  ppdir @ * +journey ;
+    speed @ 1000. fps / p*  path0 @ timespan >. p/  ppdir @ * +journey ;
 
 || : vel ( playback ) ( -- vx. vy. )
     path0 @ ?dup 0= if 0 0 exit then
     {: p | n1 n2 :}
     journey @ to n1
-    speed @ 1000. fps / p*  p timespan s>p p/  ppdir @ *
+    speed @ 1000. fps / p*  p timespan >. p/  ppdir @ *
         n1 + 0 1. clamp to n2
     n2 p leg p pinpoint-eased 
     n1 p leg p pinpoint-eased 2- ;
@@ -355,8 +355,8 @@ variable drift-error-y
        raw-x raw-y corrected-x corrected-y :}
 
     progress alp @ #items * to frame-index
-    frame-index p>s to floor-frame
-    frame-index floor-frame s>p - to fract
+    frame-index .> to floor-frame
+    frame-index floor-frame >. - to fract
     floor-frame 1 + alp @ #items mod to ceil-frame
 
     \ DEBUG:
@@ -470,9 +470,9 @@ variable drift-error-y
     segment instance [[ 
         1000 p* duration !   \ temporary: convert fixed seconds to integer milliseconds 
         SEG_WAYPOINT segtype !
-        at@ 2s>p x 2!
+        at@ 2>. x 2!
         1. in-amt ! 1. out-amt !
-        last-coord 2@ 2s>p
+        last-coord 2@ 2>.
             x 2@ (linear) curve
         at@ last-coord 2!
     me ]] ;

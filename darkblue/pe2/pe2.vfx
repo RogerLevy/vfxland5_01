@@ -53,7 +53,7 @@ create pmousex 0 , 0 ,
             then
         then
         waiting @ not if
-            mouse 2s>p pmousex 2!
+            mouse 2>. pmousex 2!
             pmousex raw-coords push-data
         then
     then ;
@@ -75,7 +75,7 @@ ui-path :: init
         ?record ?smooth
     draw>
         ?coords #items for
-            i ?coords [] 2@ 2p>s at
+            i ?coords [] 2@ 2.> at
             pixel.png put
         loop ;
 

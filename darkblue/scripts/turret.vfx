@@ -23,7 +23,7 @@ turret.png 32 32 tileset turret.ts
 
 : ang>bmp ( ts n. - n )
     360. umod dup >r
-    5. p/ p>s 36 mod tile r> 180. >= if hv| then ;
+    5. p/ .> 36 mod tile r> 180. >= if hv| then ;
 
 : flicker ( n - n )
     gamelife @ 1 and if drop 0 then ;
@@ -128,10 +128,10 @@ charge-levels #items cell array bars
     loop ;
 
 : !bars ( - )
-    owner @ 13 -13 owner @ -> vx 2@ 2p>s 2+ from
+    owner @ 13 -13 owner @ -> vx 2@ 2.> 2+ from
     bars #items 1 do
         i charge-level @ <= if
-            i bars [] @ [[ at@ 2s>p x 2! ]]
+            i bars [] @ [[ at@ 2>. x 2! ]]
         else
             i bars [] @ [[ -9999. -9999. x 2! ]]
         then

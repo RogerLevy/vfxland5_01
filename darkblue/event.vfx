@@ -50,7 +50,7 @@ class;
 
 : start-event ( - )
     at@ 2>r
-    at@ 2s>p x 2! 
+    at@ 2>. x 2! 
     (suicidal)
     \ sp@ cell+ >r
     starting-xt @ execute
@@ -63,14 +63,14 @@ public
     delay-secs ! r> delay-xt ! 
     act>
         delay-secs @ passed? -exit
-        x 2@ 2p>s at    \ restore pen from event's position
+        x 2@ 2.> at    \ restore pen from event's position
         (suicidal)      \ unless another delay (or act>) is called, event 
                         \ unalives itself on the next frame.
         delay-xt @ execute
 ;
 
 : spawn ( class - actor )
-    at@ 2s>p x 2!  \ save pen in event's position 
+    at@ 2>. x 2!  \ save pen in event's position 
     one ;
 
 : >event-path  f" events\%s.vfx" ;
