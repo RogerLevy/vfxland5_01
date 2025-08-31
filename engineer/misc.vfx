@@ -115,13 +115,17 @@ include %idir%/../textmode/textmode-tools.vfx
     - ;
 : file, ( fn len - )
     expand
-    r/o open-file drop | #1 |
+    r/o open-file abort" File not found"
+    | #1 |
     here 
     #1 bytes-left allot
-    #1 bytes-left #1 read-file 2drop
+    #1 bytes-left #1 read-file abort" File read error" drop
     #1 close-file drop 0 , ;
-: filesize ( fn len - n )
-    r/o open-file throw dup file-size throw drop swap close-file throw ;
+aka file-exists? fileexists?
+: file-size ( fn len - n )
+    2dup file-exists? not abort" File not found"
+    r/o open-file abort" File open error" 
+    dup file-size throw drop swap close-file throw ;
 : parse  parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
@@ -175,24 +179,23 @@ variable saved-dp
 aka se" s\"        \ " \ syntax highlight guard
 
 0 value #1
-: write[ w/o create-file throw to #1 ;
-: data, #1 write-file throw ;
-: line, #1 write-line throw ;
+: write[ w/o create-file abort" File create error" to #1 ;
+: data, #1 write-file abort" File write error" ;
+: line, #1 write-line abort" File write error" ;
 : nl,  s" " line, ;
 : write] #1 close-file drop ;
 
-aka file-exists? fileexists?
-
 : write ( src len path len - )
-    2dup file-exists? if 2dup delete-file throw then
-    w/o create-file throw >r
-    r@ write-file throw
+\    2dup file-exists? if 2dup delete-file throw then
+    w/o create-file abort" File create error" >r
+    r@ write-file abort" File write error"
     r> close-file drop ;
 
 : read ( dest len path len - )
-    2dup file-exists? not if 2drop 2drop exit then
-    r/o open-file throw >r
-    ( dest len ) r@ read-file throw drop 
+    2dup file-exists? not abort" File not found"
+    r/o open-file abort" File open error" >r
+    ( dest len ) r@ file-size drop drop min
+    r@ read-file nip abort" File read error"
     r> close-file drop ;
 
 : walk-order ( xt - ) ( thread# nfa - f )
@@ -323,7 +326,7 @@ variable old-dp
 : file@ ( fn len - a len ) 
     \ returns allocated memory that has to be freed
     {: fn len | mem size :}
-    fn len filesize to size 
+    fn len file-size to size 
     size allocate throw to mem
     mem size fn len read 
     mem size ;
@@ -342,7 +345,7 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
     0 zstr[ 0 SHCreateDirectoryExA to err
         err ERROR_FILE_EXISTS =
         err ERROR_ALREADY_EXISTS = or not 
-        err 0<> and abort" Error creating directory!" ;
+        err 0<> and abort" Error creating directory" ;
 
 : indent ( n - )
     4 * spaces ;

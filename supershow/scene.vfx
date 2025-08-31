@@ -26,7 +26,7 @@ scene :: keep ( - )
         SCENE_FORMAT_VERSION ,
         me serbin
         actors ['] serializable? ['] serbin sermulti
-    temp] srcpath$ count ['] write catch abort" File write error" ;
+    temp] srcpath$ count write ;
 
 : actor-instance ( class - actor )
     dup actor is? not if

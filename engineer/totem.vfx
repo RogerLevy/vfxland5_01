@@ -178,15 +178,13 @@ _totem :apply ( class - )
     drop   me ;
 
 : deserialize ( path len dest-a - )
-    (dest) >r
-    to (dest)   ['] file@ catch nip abort" File read error"
-    ( a ) dup >r ['] into-dest desbin drop  
+    (dest) >r   to (dest)   
+    file@ ( a ) dup >r ['] into-dest desbin drop  
     r> free throw
     r> to (dest) ;
 
 : serialize ( obj path len - )
-    2>r temp[ ( obj ) serbin temp]
-    2r> ['] write catch abort" File write error" ;
+    2>r temp[ ( obj ) serbin temp] 2r> write ;
 
 : commit ( totem - )
     as>   
