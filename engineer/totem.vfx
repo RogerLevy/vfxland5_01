@@ -40,7 +40,7 @@ trait: _totem
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
     :: intake ( - ) ;                   \ Load from filesystem.
-    :: keep ( - ) ;                   \ Save to disk.
+    :: keep ( - ) ;                     \ Save to disk.
     
 trait;
 
@@ -57,7 +57,7 @@ _totem :apply ( class - )
 
 : my-name me body> >name count ;
 : new? -> existed @ not ;
-: srcpath! ( path len totem - ) [[ >abspath srcpath$ place ]] ;
+: srcpath! ( path len totem - ) [[ >abspath >lowercase srcpath$ place ]] ;
 : find-totem ( a len - totem|0 )
     -path >pad find if >body dup _totem is? and else drop 0 then ;
 : ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
