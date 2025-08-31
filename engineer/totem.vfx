@@ -215,8 +215,8 @@ _totem :apply ( class - )
         @next load-default-dir
     loop drop ;
 
-: mark-dirty ( totem - )
-    -> dirty on ;
+: change ( totem - totem )
+    dup -> dirty on ;
 
 \ =============================================================================
 \ Defaults
