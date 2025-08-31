@@ -9,7 +9,7 @@ SYNC
     of any totem class.
     
 SAVE
-    commits all dirty totems
+    commits all changed totems
 
 :: INTAKE 
     load totem at discovery
@@ -29,7 +29,7 @@ SAVE
 trait: _totem
 
     prop existed
-    prop dirty
+    prop changed
     256 nprop srcpath$ <cstring         \ cstring: main file path
 
     4 nstatic extension$                \ cstring: main file extension
@@ -73,7 +73,7 @@ _totem :apply ( class - )
 : materialize ( path len class - totem ) ( - totem )
 	\ ensure totem is in dictionary.
     \ takes file name or path.
-	\ if we create the totem word, set its srcpath$ and set DIRTY flag.
+	\ if we create the totem word, set its srcpath$ and set changed flag.
     \ if word already existed, set EXISTED flag
     {: path len class0 :}
     path len find-totem ?dup 
@@ -83,7 +83,7 @@ _totem :apply ( class - )
         class0 path len -path $object
         [[ 
             path len me srcpath!
-            dirty on
+            changed on
         me ]]
         dup class0 -> instances add-to
     then ;
@@ -109,7 +109,7 @@ _totem :apply ( class - )
     then
 
     path len class0 materialize dup new? if 
-        dup -> dirty off dup intake 
+        dup -> changed off dup intake 
     then ;
 
 \ =============================================================================
@@ -119,7 +119,7 @@ _totem :apply ( class - )
 : reload ( totem - )
     [[
         me new? not if me unload then
-        dirty off
+        changed off
         me intake
     ]] ;
 
@@ -188,11 +188,11 @@ _totem :apply ( class - )
 
 : commit ( totem - )
     as>   
-        dirty @ -exit   
+        changed @ -exit   
         srcpath$ count -file ensure-dir
         me keep   
         my-name f" Saved %s" type
-        dirty off ;
+        changed off ;
 
 : save ( - )
     _totem -> dependents list-count for
@@ -214,7 +214,7 @@ _totem :apply ( class - )
     loop drop ;
 
 : change ( totem - totem )
-    dup -> dirty on ;
+    dup -> changed on ;
 
 \ =============================================================================
 \ Defaults
