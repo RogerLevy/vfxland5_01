@@ -12,7 +12,7 @@
     next-bmp# @ n next-bmp# !
     b bmph th - 1 + for
         b bmpw tw - 1 + for
-            b i j tw th al_create_sub_bitmap +bitmap drop
+            b i j tw th al_create_sub_bitmap add-bitmap drop
         tw +loop
     th +loop
     next-bmp# ! ;

@@ -249,7 +249,7 @@ variable next-bmp# 1 next-bmp# !
 : bitmap@ ( n - bmp )
     bitmap[] @ ;
 
-: +bitmap ( bmp - n )
+: add-bitmap ( bmp - n )
     next-bmp# @ dup >r bitmap! 1 next-bmp# +! r> ;
 
 \ =============================================================================
@@ -300,7 +300,7 @@ create pen 0 , 0 , \ int
 
 || : add-bitmap-asset ( a n - ) \ path
     .adding 
-    2dup load-bitmap +bitmap ( n ) 
+    2dup load-bitmap add-bitmap ( n ) 
     >r -path >pad
     $global-create bitmap-assets link r> , 
     does> cell+ @ ;

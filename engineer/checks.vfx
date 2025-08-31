@@ -43,7 +43,7 @@ is protocol-validations
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;
 
-before +bitmap CHECK-BITMAPS-OVERFLOW
+before add-bitmap CHECK-BITMAPS-OVERFLOW
 
 charmful test: CHARMFUL-BITMAP-INDEX ( n - n res )
     dup $ffff and 0 #bitmaps 1 - within 

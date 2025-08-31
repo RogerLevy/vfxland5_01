@@ -55,7 +55,7 @@
 
 \ Example intercepts file format (debug-intercepts.vfx):
 \ bitmap: dup 0 65536 within 0= if cr ." Bitmap out of range: " . 0 exit then
-\ +bitmap: cr ." Adding bitmap " dup .
+\ add-bitmap: cr ." Adding bitmap " dup .
 \ bmp!: cr ." Setting bitmap to " dup .
 \ put: dup 0= if cr ." WARNING: Drawing null bitmap!" then
 \ eyedrop: cr ." Eyedropping at " at@ 2.
