@@ -74,6 +74,6 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 
 debug @ [if]
     include %idir%/tools.vfx           \ Development tools
-    include %idir%/tools/sketchpad.vfx \ Graphics editor
+    include %idir%/sketchpad/sketchpad.vfx \ Stage editor
     s" sketchpad" <f12> func
 [then]
