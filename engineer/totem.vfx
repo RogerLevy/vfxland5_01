@@ -177,13 +177,13 @@ _totem :apply ( class - )
 : into-me ( class - obj )
     drop   me ;
 
-: deserialize ( path len dest-a - )
+: deser-file ( path len dest-a - )
     (dest) >r   to (dest)   
-    file@ ( a ) dup >r ['] into-dest desbin drop  
+    file@ drop ( a ) dup >r ['] into-dest desbin drop  
     r> free throw
     r> to (dest) ;
 
-: serialize ( obj path len - )
+: ser-file ( obj path len - )
     2>r temp[ ( obj ) serbin temp] 2r> write ;
 
 : commit ( totem - )
@@ -220,10 +220,10 @@ _totem :apply ( class - )
 \ Defaults
 
 _totem :: intake ( - )
-    srcpath$ count me deserialize ;
+    srcpath$ count me deser-file ;
 
 _totem :: keep ( - )
-    me srcpath$ count serialize ;
+    me srcpath$ count ser-file ;
 
 \ =============================================================================
 

@@ -22,7 +22,7 @@ class: world   s" "   s" dat/wld" <totem
     prop _room# <save <int 
 
     :: intake
-        srcpath$ count me deserialize
+        srcpath$ count me deser-file
         ts-name$ count tileset manifest ts ! ;
 
 class;
