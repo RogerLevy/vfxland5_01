@@ -184,7 +184,7 @@ _totem :apply ( class - )
     r> to (dest) ;
 
 : ser-file ( obj path len - )
-    2>r temp[ ( obj ) serbin temp] 2r> write ;
+    2>r build[ ( obj ) serbin build] 2r> write ;
 
 : commit ( totem - )
     as>   

@@ -320,8 +320,8 @@ debug @ [if]
 : udup  over swap ;
 
 variable old-dp
-: temp[ ( - )  here old-dp ! ;
-: temp] ( - a len )  old-dp @ here over -  old-dp @ dp ! ;
+: build[ ( - )  here old-dp ! ;
+: build] ( - a len )  old-dp @ here over -  old-dp @ dp ! ;
 
 : file@ ( fn len - a len ) 
     \ returns allocated memory that has to be freed

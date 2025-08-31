@@ -22,11 +22,11 @@ actor :: serializable? ( - flag )
 
 scene :: keep ( - )
     \ save actors on stage to disk
-    temp[ 
+    build[ 
         SCENE_FORMAT_VERSION ,
         me serbin
         actors ['] serializable? ['] serbin sermulti
-    temp] srcpath$ count write ;
+    build] srcpath$ count write ;
 
 : actor-instance ( class - actor )
     dup actor is? not if
