@@ -19,8 +19,8 @@ aka cd cwd
 : 2-  rot swap - >r - r> ;
 : for  s" 0 ?do" evaluate ; immediate
 : @+  dup cell+ swap @ ;
-: >lower ( c -- c' ) dup 65 91 within if 32 + then ;
-: ltype for dup c@ >lower emit 1 + loop drop ;  
+: lc  ( n - n) dup 'A' 'Z' within? if $20 or then ;
+: ltype for dup c@ lc emit 1 + loop drop ;      
 
 include %idir%/../textmode/textmode-tools.vfx
 
@@ -134,8 +134,7 @@ include %idir%/../textmode/textmode-tools.vfx
 : ?value ( n - <name> ) ( - n )
     preword find nip if drop ' drop else value then ;
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
-: lpc ( n - n) dup 'A' >= over 'Z' <= and -exit $20 or ;
-: >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lpc swap c! loop ;
+: >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lc swap c! loop ;
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
 : h. ." $" base @ swap hex u. base ! ;
