@@ -263,12 +263,3 @@ _totem :: _intake ( - )
 
 _totem :: _keep ( - )
     me srcpath$ count ser-file ;
-
-\ =============================================================================
-
-|| _trait object _totem-fresh  
-_totem _totem-fresh copy drop
-
-: reset-totem-trait
-    _totem-fresh _totem copy drop ;
-

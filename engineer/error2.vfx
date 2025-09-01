@@ -78,9 +78,8 @@ create ds 16 cells allot
 \     .name ;
 
 : rtrace ( a n - )
-    ."         "
     swap over cells + swap
-    for cell- dup @ .ip loop drop ;
+    for ."         " cell- dup @ .ip cr loop drop ;
 
 : dtrace ( a n - )
     ."         "
@@ -124,10 +123,10 @@ private
     context -> ESP @ rs 16 cells move
     context -> EBP @ ds 16 cells move
     ."     In: " context -> EIP @ .ip cr
-    ."     Call stack: " cr 
-    rs 8 rtrace cr
     ."     Data stack: " cr
     ds
+    ."     Call stack: " cr 
+    rs 16 rtrace cr
     \ DOESN'T WORK!  s0 @ returns some other address; must be in a different user context here
     \  s0 @  context -> EBP @   .s  -  cell/  
     8 dtrace cr

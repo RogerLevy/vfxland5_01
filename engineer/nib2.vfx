@@ -989,20 +989,13 @@ _static is-a _object
 \ Init/Reset
 \ ==============================================================================
 
-_trait object _object-fresh  
-_object _object-fresh copy drop
-
-|| : reset-object-trait ( - )
-||     _object-fresh _object copy drop ;
-
 || variable fresh-next-classifier#
 || variable fresh-/static
 
 || : init-nib ( - )
 ||     fresh-next-classifier# @ next-classifier# ! 
 ||     fresh-/static @ to /static
-||     0 to classifier
-||     reset-object-trait ;
+||     0 to classifier ;
 
 || : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
