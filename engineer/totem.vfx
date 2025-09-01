@@ -250,6 +250,11 @@ _totem :apply ( class - )
 \         empty-instances
 \     loop drop ;
 
+: check-version ( n ver - )
+    over <> if
+        cla @ >name count f" Unsupported %s format version %n" -1 -rot .abort
+    else drop then ;
+
 \ =============================================================================
 \ Defaults
 

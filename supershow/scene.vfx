@@ -35,19 +35,15 @@ scene :: _keep ( - )
     then 
     one ;
 
-: load-scene-data ( a - )
-    @+ dup SCENE_FORMAT_VERSION <> if
-        -1 swap f" Unsupported scene format version %n" .abort
-    else drop then 
+: load-scene-data ( a - a' )
+    @+ SCENE_FORMAT_VERSION check-version
     ['] into-me desbin
-    ['] actor-instance ['] desbin desmulti 
-    drop ;
+    ['] actor-instance ['] desbin desmulti ;
 
 scene :: load ( - )
     \ load actors from disk to stage
-    srcpath$ count file-exists? -exit
     srcpath$ count file@ drop
-    dup load-scene-data
+    dup load-scene-data drop
     free throw ;
 
 : +scene ( <name> - scene ) 
