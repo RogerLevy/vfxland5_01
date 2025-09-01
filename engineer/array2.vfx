@@ -231,7 +231,7 @@ trait: _object
 trait;
 _object _object-fresh /classifier move
 
-: sermulti ( iterable filter-xt ser-xt - ) ( obj - flag ) ( obj - ) 
+: sermulti, ( iterable filter-xt ser-xt - ) ( obj - flag ) ( obj - ) 
     {: arr filter-xt ser-xt | &count :}
     here to &count 0 ,
     arr #items for
@@ -244,7 +244,7 @@ _object _object-fresh /classifier move
         else drop then
     loop ;
 
-: desmulti ( a instance-xt deser-xt - a' ) ( class - obj ) ( a instance-xt - a' ) 
+: desmulti+ ( a instance-xt deser-xt - a' ) ( class - obj ) ( a instance-xt - a' ) 
     {: a instance-xt deser-xt :}
     a @+ for
         instance-xt deser-xt execute

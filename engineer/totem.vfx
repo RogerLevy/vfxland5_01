@@ -188,12 +188,12 @@ _totem :apply ( class - )
 
 : deser-file ( path len dest-a - )
     (dest) >r   to (dest)   
-    file@ drop ( a ) dup >r ['] into-dest desbin drop  
+    file@ drop ( a ) dup >r ['] into-dest desbin+ drop  
     r> free throw
     r> to (dest) ;
 
 : ser-file ( obj path len - )
-    2>r build[ ( obj ) serbin build] 2r> write ;
+    2>r build[ ( obj ) serbin, build] 2r> write ;
 
 : keep ( totem - )
     as>   

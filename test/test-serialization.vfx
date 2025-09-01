@@ -36,12 +36,12 @@ test-obj [[
 ]]
 
 \ Serialize
-create result here test-obj serbin here swap - 
+create result here test-obj serbin, here swap - 
 cr ." Serialized " . ." bytes" cr
 
 \ Inspect the data
 cr ." Serialized data: " cr
-result ' inspect-member readbin
+result ' inspect-member readbin+
 
 \ Create allocator for testing
 : test-instantiator ( class - object ) 
@@ -51,7 +51,7 @@ result ' inspect-member readbin
 
 \ Deserialize 
 create back-obj
-result ' test-instantiator desbin drop
+result ' test-instantiator desbin+ drop
 
 cr ." Deserialized object:" cr
 back-obj [[ 

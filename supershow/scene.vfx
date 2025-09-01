@@ -15,7 +15,7 @@ class: scene
 class;
 
 : deser-actor ( a - a' )
-    ['] one desbin ;
+    ['] one desbin+ ;
 
 actor :: serializable? ( - flag )
     en @   owner @ 0= and ; 
@@ -24,8 +24,8 @@ scene :: _keep ( - )
     \ save actors on stage to disk
     build[ 
         SCENE_FORMAT_VERSION ,
-        me serbin
-        actors ['] serializable? ['] serbin sermulti
+        me serbin,
+        actors ['] serializable? ['] serbin, sermulti,
     build] srcpath$ count write ;
 
 : actor-instance ( class - actor )
@@ -37,8 +37,8 @@ scene :: _keep ( - )
 
 : load-scene-data ( a - a' )
     @+ SCENE_FORMAT_VERSION check-version
-    ['] into-me desbin
-    ['] actor-instance ['] desbin desmulti ;
+    ['] into-me desbin+
+    ['] actor-instance ['] desbin+ desmulti+ ;
 
 scene :: load ( - )
     \ load actors from disk to stage

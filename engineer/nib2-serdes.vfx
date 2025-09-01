@@ -33,7 +33,7 @@
 ||     ' bin-deser-float ,
 ||     ' bin-deser-cstring ,
 
-: serbin ( obj - )
+: serbin, ( obj - )
     \ serialize object into dictionary in binary format
     {: obj | property0 &count tmpl-addr :}
     obj [[ 
@@ -61,7 +61,7 @@
         loop drop 
     ]] ;
 
-: desbin ( a instance-xt - a' ) ( class - obj )
+: desbin+ ( a instance-xt - a' ) ( class - obj )
     \ deserialize object from given buffer address in binary format
     \ returns updated buffer address
     {: data xt | property0 :}
@@ -69,15 +69,15 @@
     \ dup 100 dump
     $@+ \ fetch class name
     \ 2dup type cr
-    >pad find 0= abort" desbin >> Encountered unknown class name."
-    >body dup valid-class? not abort" desbin >> Encountered invalid class."
+    >pad find 0= abort" desbin+ >> Encountered unknown class name."
+    >body dup valid-class? not abort" desbin+ >> Encountered invalid class."
     ( class ) xt execute [[
         \ fetch properties
         @+ for
             $@+ \ fetch property name
             \ 2dup type cr
-            >pad find 0= abort" desbin >> Encountered unknown property name."
-            >body dup -> cla @ _property <> abort" desbin >> Encountered invalid property."
+            >pad find 0= abort" desbin+ >> Encountered unknown property name."
+            >body dup -> cla @ _property <> abort" desbin+ >> Encountered invalid property."
             to property0
             \ deserialize the property
             me property0 -> offset @ prop+ to val-addr
@@ -95,26 +95,26 @@
         inspect-property
     then ;
 
-: readbin ( a cb - a' ) ( member val-addr - )
+: readbin+ ( a cb - a' ) ( member val-addr - )
     {: data cb | property0 :}
     data 
 
     $@+ \ fetch class name
     >pad find 0= if
-        pad count f" READBIN >> Encountered unknown class name: `%s`" -1 -rot .abort
+        pad count f" readbin+ >> Encountered unknown class name: `%s`" -1 -rot .abort
     then
     >body dup valid-class? not if
-        pad count f" READBIN >> Not a property: `%s`" -1 -rot .abort
+        pad count f" readbin+ >> Not a property: `%s`" -1 -rot .abort
     then
     ( class ) 0 cb execute
     \ Walk properties:
     @+ for
         $@+ \ fetch property name
         >pad find 0= if
-            pad count f" READBIN >> Encountered unknown property name: `%s`" -1 -rot .abort
+            pad count f" readbin+ >> Encountered unknown property name: `%s`" -1 -rot .abort
         then
         >body dup -> cla @ _property <> if
-            pad count f" READBIN >> Not a property: `%s`" -1 -rot .abort
+            pad count f" readbin+ >> Not a property: `%s`" -1 -rot .abort
         then
         to property0
 
@@ -132,4 +132,4 @@
     ( a' ) ;
 
 : .bin ( data - )
-    ['] inspect-member readbin drop ;
+    ['] inspect-member readbin+ drop ;
