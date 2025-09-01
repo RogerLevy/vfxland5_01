@@ -35,7 +35,7 @@ trait: _totem
     4 nstatic extension$                \ cstring: main file extension
     /list nstatic instances             \ nib2 list, track instances
     static on-discovery-xt              \ ( path len class - ) 
-    32 nstatic default-path$            \ Where +TOTEM locates assets by default 
+    32 nstatic default-dir$            \ Where +TOTEM locates assets by default 
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
@@ -64,8 +64,8 @@ _totem :apply ( class - )
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
-: default-path: ( <path> - ) bl parse classifier -> default-path$ place ;
-: default-path@  -> default-path$ count ;
+: default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
+: default-dir@  -> default-dir$ count ;
 
 \ =============================================================================
 \ Materialization
@@ -89,13 +89,13 @@ _totem :apply ( class - )
         dup class0 -> instances add-to
     then ;
 
-|| : @default-path
+|| : @default-dir
     my-name
-    me default-path@ f" %s/%s" me srcpath! ;
+    me default-dir@ f" %s/%s" me srcpath! ;
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize [[ @default-path   me ]] ;
+    bl parse   rot materialize [[ @default-dir   me ]] ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).
@@ -106,7 +106,7 @@ _totem :apply ( class - )
     {: path len class0 :}
     path len file-exists? not if
         path len
-        class0 default-path@ f" %s/%s" to len to path
+        class0 default-dir@ f" %s/%s" to len to path
     then
 
     path len class0 materialize dup new? if 
@@ -165,7 +165,7 @@ _totem :apply ( class - )
 
 : load-default-dir ( class - )
     \ Not recursive.
-    dup default-path@ rot load-dir ;
+    dup default-dir@ rot load-dir ;
 
 \ =============================================================================
 \ I/O

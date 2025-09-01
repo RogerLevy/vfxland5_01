@@ -351,7 +351,7 @@ class: actor-script
         s" vfx" extension$ place
     ]]
 
-    default-path: scripts
+    default-dir: scripts
 
     :: intake ( - )
         srcpath$ count included ;
@@ -371,14 +371,14 @@ actor :: on-error ( xt err# - )
 
 || : has-image? f" %s.png" >pad find nip ;
 
-: >default-path ( fn len class - path len )
-    -> default-path$ count f" %s\%s" ;
+: >default-dir ( fn len class - path len )
+    -> default-dir$ count f" %s\%s" ;
 
 : +script (  script-totem-class <basename> - actor-script )
     \ Create an actor script containing some boilerplate.
     {: class0 | n[ 256 ] fn len :}
     bl parse f" %s.vfx" to len to fn
-    fn len class0 >default-path 2dup
+    fn len class0 >default-dir 2dup
     file-exists? abort" Script already exists"
     class0 materialize as>    
         my-name -ext n[ place

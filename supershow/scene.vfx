@@ -11,7 +11,7 @@ class;
 class: scene  
     is-a _totem
     extension: scn
-    default-path: dat/scn
+    default-dir: dat/scn
 class;
 
 : deser-actor ( a - a' )

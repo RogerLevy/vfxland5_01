@@ -2,7 +2,7 @@ empty
 
 : <totem ( ext len defpath len - )
     _totem classifier -1 apply-trait 
-    template [[ default-path$ place extension$ place ]] ;
+    template [[ default-dir$ place extension$ place ]] ;
 
 
 class: tileset   s" ts" s" dat/gfx" <totem
@@ -32,7 +32,7 @@ class;
     path len s" ." instring not if
         path len slashes '\' ending
         2dup 
-        class0 -> default-path$ count
+        class0 -> default-dir$ count
         f" %s/%s/%s.wld" 
         class0 materialize reload
     then ;
@@ -42,7 +42,7 @@ class;
 : +world ( <name> - )
     bl parse 
     2dup -ext
-    world -> default-path$ count 
+    world -> default-dir$ count 
     f" %s/%s/%s" world materialize commit ;
 
 ((

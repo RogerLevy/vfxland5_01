@@ -5,7 +5,7 @@ class: abc
     prop a <save 
     prop b <save 
     prop c <save 
-    default-path: test/abc
+    default-dir: test/abc
 class;
 
 \ abc +totem test 

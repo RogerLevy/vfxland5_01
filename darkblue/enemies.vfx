@@ -35,7 +35,7 @@ SPECIAL FEATURES:
 
 class: enemy-script
     actor-script derive
-    default-path: scripts/enemies
+    default-dir: scripts/enemies
 class;
 
 : +enemy ( <name> - )
