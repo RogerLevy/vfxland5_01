@@ -55,9 +55,6 @@ _totem :apply ( class - )
 : intake ( totem - ) 
     dup >r _intake   r> -> existed on ;
 
-: keep ( totem - )
-    dup >r _keep   r> -> changed off ; 
-
 \ =============================================================================
 \ Utilities
 \ =============================================================================
@@ -118,7 +115,7 @@ _totem :apply ( class - )
     then
 
     path len class0 materialize dup new? if 
-        dup -> changed off dup intake 
+        dup intake 
     then ;
 
 \ =============================================================================
@@ -202,13 +199,16 @@ _totem :apply ( class - )
 : ser-file ( obj path len - )
     2>r build[ ( obj ) serbin build] 2r> write ;
 
-: commit ( totem - )
+: keep ( totem - )
     as>   
-        changed @ -exit   
+        \ changed @ -exit   
         srcpath$ count -file ensure-dir
         me keep   
         my-name f" Saved %s" type
         changed off ;
+
+: ?commit ( totem - )
+    as> changed @ -exit me keep ;
 
 : save-totems ( - )
     _totem -> dependents list-count for
