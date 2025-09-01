@@ -7,9 +7,6 @@ SYNC
     go through all totem classes, loading totems from default directories
     according to their extension.  can be overriden by setting DISCOVER-XT
     of any totem class.
-    
-SAVE
-    commits all changed totems
 
 :: _intake 
     load totem at discovery
@@ -29,7 +26,7 @@ SAVE
 trait: _totem
 
     prop existed
-    prop changed
+    \ prop changed
     256 nprop srcpath$ <cstring         \ cstring: main file path
 
     4 nstatic extension$                \ cstring: main file extension
@@ -78,7 +75,7 @@ _totem :apply ( class - )
 : materialize ( path len class - totem ) ( - totem )
 	\ ensure totem is in dictionary.
     \ takes file name or path.
-	\ if we create the totem word, set its srcpath$ and set changed flag.
+	\ if we create the totem word, set its srcpath$
     \ if word already existed, set EXISTED flag
     {: path len class0 :}
     path len find-totem ?dup 
@@ -100,7 +97,7 @@ _totem :apply ( class - )
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize [[ @default-dir   changed on   me ]] ;
+    bl parse   rot materialize [[ @default-dir   ( changed on )   me ]] ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).
@@ -125,7 +122,7 @@ _totem :apply ( class - )
 : reload ( totem - )
     [[
         me unload
-        changed off
+        \ changed off
         me intake
     ]] ;
 
@@ -203,21 +200,21 @@ _totem :apply ( class - )
     as>   
         \ changed @ -exit   
         srcpath$ count -file ensure-dir
-        me keep   
+        me _keep   
         my-name f" Saved %s" type
-        changed off ;
+        ; \ changed off ;
 
-: ?commit ( totem - )
-    as> changed @ -exit me keep ;
+\ : ?commit ( totem - )
+\     as> changed @ -exit me keep ;
 
-: save-totems ( - )
-    _totem -> dependents list-count for
-        @next 
-        dup body> >name count f" Saving %s totems..." type cr
-        -> instances list-count for
-            @next commit
-        loop drop
-    loop drop ;
+\ : save-totems ( - )
+\     _totem -> dependents list-count for
+\         @next 
+\         dup body> >name count f" Saving %s totems..." type cr
+\         -> instances list-count for
+\             @next commit
+\         loop drop
+\     loop drop ;
 
 \ : sync-totems ( - )
 \     \ (re)load everything; adds undefined totems and updates existing ones
@@ -229,8 +226,8 @@ _totem :apply ( class - )
 \         @next load-default-dir
 \     loop drop ;
 
-: change ( totem - totem )
-    dup -> changed on ;
+\ : change ( totem - totem )
+\     dup -> changed on ;
 
 : unload-instances ( class - )
     {: class0 :}
