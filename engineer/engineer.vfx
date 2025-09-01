@@ -246,8 +246,12 @@ create pen 0 , 0 , \ int
 : albmpw ( albmp - w ) dup if al_get_bitmap_width then ;
 : albmph ( albmp - h ) dup if al_get_bitmap_height then ;
 
-: draw-bitmap ( bmp n - )
+: draw-bitmap ( albmp n - )
     over if at@f al_draw_bitmap else 2drop then ;
+
+: *subbmp ( albmp w h - albmp' )
+    at@ 2swap al_create_sub_bitmap ?dup 
+    0= abort" al_create_sub_bitmap error" ;
 
 include %idir%/matrix.vfx
 include %idir%/print.vfx
