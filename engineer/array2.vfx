@@ -4,19 +4,22 @@
 
 trait: _iterable
     prop item-count <int <save
+    :: vacate ( - ) 0 item-count ! ;
+    :: index ( a - n ) stub ; 
+    :: deref-index ( n - ? ) stub ;
+    :: [] ( n - a )
+        \ pronounced "box"
+        stub ;
+    :: resize ( #items - )
+        stub ;
+
 trait;
 
 : #items ( iterable - n ) -> item-count @ ;
-_iterable :: vacate ( - ) 0 item-count ! ;
-_iterable :: index ( a - n ) stub ; 
-_iterable :: deref-index ( n - ? ) stub ;
 
 variable (enough)
 : enough  (enough) on ;
     
-_iterable :: [] ( n - a )
-    \ pronounced "box"
-    stub ;
 
 : (each) ( xt - ) ( ... a - ... )
     {: xt :}
@@ -150,12 +153,20 @@ _array :: [] ( n - a )
 _array :: deref-index ( n - ? )
     me [] @ ;
 
+_array :: resize ( #items - )
+    item-size @ max-items @ * >r   data @ >r
+    ( #items ) item-size @ _array:construct 
+    r> data @   item-size @ max-items @ *   r> min   move ;
+
+\ ------------------------------------------------------------------------------
+
 class: _stack
     _array derive
     is-a _lifo
 class;
 
 2 _stack :construct ( max-items item-size - )
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
     here data ! * allot&erase ;
 
@@ -174,6 +185,11 @@ _stack :: push-copy ( a - )
 _stack :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
     me tail  -1 item-count +! ;
+
+_stack :: resize ( #items - )
+    item-size @ max-items @ * >r   data @ >r
+    ( #items ) item-size @ _stack:construct 
+    r> data @   item-size @ max-items @ *   r> min   move ;
 
 \ ------------------------------------------------------------------------------
 
