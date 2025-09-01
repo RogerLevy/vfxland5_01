@@ -243,8 +243,8 @@ create pen 0 , 0 , \ int
 : at@f ( - f:x f:y ) at@ 2s>f ;
 : +at ( x y - ) pen 2+! ;
 
-: abmpw ( albmp - w ) dup if al_get_bitmap_width then ;
-: abmph ( albmp - h ) dup if al_get_bitmap_height then ;
+: albmpw ( albmp - w ) dup if al_get_bitmap_width then ;
+: albmph ( albmp - h ) dup if al_get_bitmap_height then ;
 
 : draw-bitmap ( bmp n - )
     over if at@f al_draw_bitmap else 2drop then ;

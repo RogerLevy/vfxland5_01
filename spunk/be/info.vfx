@@ -2,9 +2,9 @@ element-class info%
 borrow be/ the-bmp
 borrow be/ file$
 : first-tile ( a c - n)
-    evaluate dup bitmap@ | p n |
+    evaluate dup >albmp | p n |
     #bitmaps n - for
-        i n + bitmap@ ?dup if
+        i n + >albmp ?dup if
             al_get_parent_bitmap p = if i n + unloop exit then
         then
     loop n ;

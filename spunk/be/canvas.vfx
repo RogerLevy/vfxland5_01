@@ -22,10 +22,10 @@ borrow be/ rb
         c1 4f@ ```` al_draw_filled_rectangle ;
 : opaque ALLEGRO_ADD ALLEGRO_ONE ALLEGRO_ZERO al_set_blender ;
 : transparent ALLEGRO_ADD ALLEGRO_ALPHA ALLEGRO_INVERSE_ALPHA al_set_blender ;
-: onto  bitmap@ ?dup -exit al_set_target_bitmap ;
+: onto  >albmp ?dup -exit al_set_target_bitmap ;
 : -onto  display al_get_backbuffer al_set_target_bitmap ;
 : dot  the-bmp @ onto +m identity opaque pixel -m -onto transparent ;
-: eyedrop  the-bmp @ bitmap@ ?dup -exit c1 swap at@ al_get_pixel ;
+: eyedrop  the-bmp @ >albmp ?dup -exit c1 swap at@ al_get_pixel ;
 : in?  mouse >local 2dup ```` 0 0 `` the-bmp @ bmpwh 1 1 2- `` overlap? ;
 : act-paint
     act>

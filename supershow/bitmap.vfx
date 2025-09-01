@@ -7,7 +7,7 @@ public
 variable next-bmp# 1 next-bmp# !
 
 || : bitmap[]  $FFFF and cells bitmaps + ;
-: bitmap@ ( n - bmp ) bitmap[] @ ;
+: >albmp ( n - bmp ) bitmap[] @ ;
 : alloc-bmp#  next-bmp# @   1 next-bmp# +! ;
 : add-bitmap ( bmp - n ) alloc-bmp# dup >r bitmap[] ! r> ;
 
@@ -49,10 +49,10 @@ bitmap :: unload ( - )
     0 albmp ! ;
 
 : put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
-    dup bitmap@ swap 24 rshift draw-bitmap ;
+    dup >albmp swap 24 rshift draw-bitmap ;
 
 : bmpwh ( n - w h )
-    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
+    >albmp ?dup if dup albmpw swap albmph else 0 0 then ;
 
 : init-bitmaps ( - )
     bitmap load-default-dir ;
