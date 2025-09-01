@@ -581,7 +581,7 @@ borrow error2/ console-debugger
 : ide-debugger
     running @ if hist[ 4 push-attribute then
     console-debugger
-    running @ if hist] then
+    running @ if pop-attribute hist] then
 ;
 
 ' ide-debugger to-callback debugger
