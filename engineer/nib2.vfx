@@ -23,6 +23,9 @@ magic-id MAGIC_CLASSIFIER CLAS
 \ Low-level stuff
 \ ==============================================================================
 
+: my-name ( - a len )
+    me body> >name count ;
+
 : field ( ofs size <name> - n ) ( a - a )
     create 0 , MAGIC_FIELD , over , +
     does> 2 cells + @ me + ;
@@ -629,7 +632,7 @@ defer protocol-validations ( obj protocol - obj protocol )
 : implement-protocol ( protocol classifier - )
     {: protocol0 c | name[ 256 ] :} 
     protocol0 [[
-        me body> >name count name[ place
+        my-name name[ place
         c body> >name count 
         name[ count
         :method ( xt ) c offset @ + !
@@ -702,8 +705,8 @@ defer protocol-validations ( obj protocol - obj protocol )
     classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
     dup >cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
     [[
-        :noname constructor-xt !
-        constructor-#params !
+        constructor-#params !    
+        my-name s" construct" :method constructor-xt !
     ]] ;
 
 : derive ( class - )
@@ -761,29 +764,17 @@ classifier source-class -> dependents add-to
 : :apply ( trait  - ) ( trait dest-class - )
     dup >cla @ _trait <> 
         abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
-    [[ 
-        me body> >name count
-        s" apply"
-        :method on-apply-xt ! 
-    ]] ;
+    [[ my-name s" apply" :method on-apply-xt ! ]] ;
 
 : :derive ( class - ) ( source-class derived-class - )
     dup >cla @ _class <> 
         abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
-    [[ 
-        me body> >name count
-        s" derive"
-        :method on-derive-xt ! 
-    ]] ;
+    [[ my-name s" derive" :method on-derive-xt ! ]] ;
 
 : :reopen ( class - ) ( class - )
     dup >cla @ _class <> 
         abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
-    [[ 
-        me body> >name count
-        s" reopen"
-        :method on-reopen-xt ! 
-    ]] ;
+    [[ my-name s" reopen" :method on-reopen-xt ! ]] ;
 
 \ ==============================================================================
 \ Misc

@@ -56,7 +56,6 @@ _totem :apply ( class - )
 \ Utilities
 \ =============================================================================
 
-: my-name me body> >name count ;
 : new? -> existed @ not ;
 : srcpath! ( path len totem - ) [[ >abspath >lowercase srcpath$ place ]] ;
 : find-totem ( a len - totem|0 )
