@@ -77,22 +77,3 @@ Keep descriptions concise and technical, focusing on HOW the change was implemen
 2. BLANK LINE (if description needed)
 3. ADDITIONAL LINES: Implementation details ONLY
 
-**MANDATORY**: Use the Task tool to launch a sub-agent to double-check that:
-1. If the component prefix is missing from the user's subject line, add it (e.g. "(Component)" before their text)
-2. The message matches what `git diff --staged` actually shows
-3. Whether a description is needed based on these criteria:
-   - Multiple files changed with different types of fixes
-   - Bug fixes that change behavior
-   - Any architectural/inheritance changes
-   - Documentation changes
-   - When in doubt, include a description rather than omit it
-4. That the message is not overly-verbose or repeats itself
-
-**CRITICAL**: The sub-agent must NOT change the user's subject line wording - only add the component prefix if missing. The user's chosen subject line content must be preserved exactly.
-
-**SUB-AGENT GUIDANCE**: 
-- DEFAULT to including descriptions for multi-file commits or behavior changes
-- Better to over-document than under-document for future reference
-- If there are 2+ distinct changes, always recommend a description with bullet points
-
-If the sub-agent finds issues, you MUST fix them before committing.
