@@ -83,11 +83,11 @@ defer voice? ( smp - f )
 || : ?sample ( a n - ) \ path
     2dup -path >pad find if
         >r
-        .loading
+        \ .loading
         load-sample r> >body @ sample[] !
     else
         drop
-        .adding
+        \ .adding
         add-sample-asset
     then ;
 
@@ -192,6 +192,5 @@ defer voice? ( smp - f )
 \ Kickoff
 \ =============================================================================
 
-load-samples
 prune:  stop-sounds  destroy-samples ;
 ' destroy-samples AtExit

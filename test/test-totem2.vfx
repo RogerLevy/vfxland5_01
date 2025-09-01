@@ -21,7 +21,7 @@ class: world   s" "   s" dat/wld" <totem
     32 nprop ts-name$ <save <cstring
     prop _room# <save <int 
 
-    :: intake
+    :: _intake
         srcpath$ count me deser-file
         ts-name$ count tileset manifest ts ! ;
 

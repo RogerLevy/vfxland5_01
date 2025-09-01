@@ -1,5 +1,25 @@
 fast[
 
+crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
+    next-bmp# @ #bitmaps < ;
+
+before add-bitmap CHECK-BITMAPS-OVERFLOW
+
+charmful test: CHARMFUL-BITMAP-INDEX ( n - n res )
+    dup $ffff and 0 #bitmaps 1 - within 
+    dup 0= if
+        s" Invalid bitmap index (non-crucial, only reported on first failure for word)" log-warning
+        current-validation @ off \ validation disables individually for each word on its first failure
+    then ;
+
+crucial test: CRUCIAL-BITMAP-INDEX ( n - n res )
+    dup $ffff and 0 #bitmaps 1 - within ;
+
+before bitmap@ CHARMFUL-BITMAP-INDEX
+before put CHARMFUL-BITMAP-INDEX
+before bmpwh CHARMFUL-BITMAP-INDEX
+before bitmap-file CRUCIAL-BITMAP-INDEX
+
 crucial test: validate-class ( a - a n:res )
     dup valid-class? ;
         

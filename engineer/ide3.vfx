@@ -522,12 +522,16 @@ public
 : ide-events ( - )
     debug @ if
         hist[
-        ALLEGRO_EVENT_KEY_DOWN happened? if
-            the-key <f1> - 0 12 within? if
-                the-key ?func
+            ALLEGRO_EVENT_KEY_DOWN happened? if
+                the-key <f1> - 0 12 within? if
+                    the-key ?func
+                then
             then
-        then
-        repl-events
+            repl-events
+
+            ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
+                onSwitchIn
+            then
         hist] 
     then ;
 

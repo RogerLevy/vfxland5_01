@@ -23,6 +23,7 @@ include %idir%\checks.vfx
 \ Dependencies
 \ =============================================================================
 
+include %idir%\bitmap.vfx    \ Bitmaps
 include %idir%\shader.vfx    \ Shaders 
 include %idir%\crt.vfx       \ CRT shader
 include %idir%\waveplay.vfx  \ Audio engine
@@ -52,7 +53,7 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 \ =============================================================================
 
 : reload-graphics
-    cr ." Reloading graphics..."
+    ." Reloading graphics..." cr
     reload-bitmaps
     reload-tilesets ;
 
@@ -62,6 +63,7 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 
 : init-supershow ( - )
     hold off
+    init-bitmaps
     init-tilesets
     load-samples
     init-crt
@@ -71,6 +73,7 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
         display al_hide_mouse_cursor
     then ;
 
+init-supershow
 
 debug @ [if]
     include %idir%/tools.vfx           \ Development tools

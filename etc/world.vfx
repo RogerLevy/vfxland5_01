@@ -16,7 +16,7 @@ class;
 : data-size  w @ h @ * cells ;
 : ?allot-tilemap  me new? if here data ! data-size allot&erase then ;
 
-tilemap :: intake ( - )
+tilemap :: _intake ( - )
     ?allot-tilemap
     data @ data-size srcpath$ count read ;
 
@@ -32,7 +32,7 @@ class;
 : mts-path  mts-path$ count ;
 : mtm-path  srcpath$ count -ext f" %s.map" ;
 
-world :: intake ( - )
+world :: _intake ( - )
     srcpath$ count me deserialize 
     mts-path tileset manifest mts ! 
     mtm-path tilemap manifest mtm ! ;

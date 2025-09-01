@@ -36,6 +36,3 @@ require scripts\ship.vfx
 \ Assign BOOT hook
 : boot-darkblue  init-supershow eval" title" ;
 ' boot-darkblue is boot
-
-\ Init
-init-supershow

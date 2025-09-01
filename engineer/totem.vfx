@@ -11,13 +11,13 @@ SYNC
 SAVE
     commits all changed totems
 
-:: INTAKE 
+:: _intake 
     load totem at discovery
     first load anything essential into the dictionary
     then optionally call LOAD to load more external resources, or defer for later
     INTAKE default: deserialize self
 
-:: keep
+:: _keep
     save relevant data to disk - any/all of the following:
         1. serialize self
         2. serialize some other objects
@@ -35,12 +35,13 @@ trait: _totem
     4 nstatic extension$                \ cstring: main file extension
     /list nstatic instances             \ nib2 list, track instances
     static on-discovery-xt              \ ( path len class - ) 
-    32 nstatic default-dir$            \ Where +TOTEM locates assets by default 
+    static post-empty-instances-xt     \ ( class - )
+    32 nstatic default-dir$             \ Where +TOTEM locates assets by default 
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
-    :: intake ( - ) ;                   \ Load from filesystem.
-    :: keep ( - ) ;                     \ Save to disk.
+    :: _intake ( - ) ;                   \ Load from filesystem.
+    :: _keep ( - ) ;                     \ Save to disk.
     
 trait;
 
@@ -50,6 +51,12 @@ _totem :apply ( class - )
         \ new totem classes get their own blank list
         0 class0 -> instances list-count! 
     then ;
+
+: intake ( totem - ) 
+    dup >r _intake   r> -> existed on ;
+
+: keep ( totem - )
+    dup >r _keep   r> -> changed off ; 
 
 \ =============================================================================
 \ Utilities
@@ -65,7 +72,7 @@ _totem :apply ( class - )
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
 : default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
-: default-dir@  -> default-dir$ count ;
+: default-dir@ ( class - a len ) -> default-dir$ count ;
 
 \ =============================================================================
 \ Materialization
@@ -81,10 +88,11 @@ _totem :apply ( class - )
     if 
         dup -> existed on 
     else 
-        class0 path len -path $object
+        class0 path len -path 
+        \ ." Materializing " 2dup type cr
+        $object
         [[ 
             path len me srcpath!
-            changed on
         me ]]
         dup class0 -> instances add-to
     then ;
@@ -95,7 +103,7 @@ _totem :apply ( class - )
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize [[ @default-dir   me ]] ;
+    bl parse   rot materialize [[ @default-dir   changed on   me ]] ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).
@@ -114,18 +122,24 @@ _totem :apply ( class - )
     then ;
 
 \ =============================================================================
-\ Loading/reloading
+\ I/O
 \ =============================================================================
 
 : reload ( totem - )
     [[
-        me new? not if me unload then
+        me unload
         changed off
         me intake
     ]] ;
 
-|| 0 value class0
+: reload-instances ( class - )
+    {: class0 :}
+    class0 body> >name count f" Reloading %s totems..." type cr
+    class0 -> instances list-count for
+        @next reload
+    loop drop ;
 
+|| 0 value class0
 || : (discover) ( fn len - )
 
     \ execute on-discovery override if any
@@ -142,7 +156,7 @@ _totem :apply ( class - )
         then 
     then
 
-    class0 materialize reload ;
+    class0 materialize intake ;
 
 : load-dir ( path-a path-len class - )
     \ (Re-)load all totems in given directory
@@ -154,6 +168,11 @@ _totem :apply ( class - )
     pop-attribute
     
     to class0   
+
+    2dup dir-exists? not if 
+        >abspath f" Directory not found: %s" type cr
+        exit
+    then
     
     ['] (discover) 
     
@@ -166,10 +185,6 @@ _totem :apply ( class - )
 : load-default-dir ( class - )
     \ Not recursive.
     dup default-dir@ rot load-dir ;
-
-\ =============================================================================
-\ I/O
-\ =============================================================================
 
 || 0 value (dest)
 || : into-dest ( class - obj )
@@ -195,7 +210,7 @@ _totem :apply ( class - )
         my-name f" Saved %s" type
         changed off ;
 
-: save ( - )
+: save-totems ( - )
     _totem -> dependents list-count for
         @next 
         dup body> >name count f" Saving %s totems..." type cr
@@ -204,26 +219,48 @@ _totem :apply ( class - )
         loop drop
     loop drop ;
 
-: sync ( - )
-    \ (re)load everything; adds undefined totems and updates existing ones
-    \ (NOTE: currently from default directories only)
-    \ TODO: update/create intelligently (in default dirs) and support 
-    \ syncing all instances, even those not in default directories.
+\ : sync-totems ( - )
+\     \ (re)load everything; adds undefined totems and updates existing ones
+\     \ (NOTE: currently from default directories only)
+\     \ TODO: update/create intelligently (in default dirs) and support 
+\     \ syncing all instances, even those not in default directories.
 
-    _totem -> dependents list-count for
-        @next load-default-dir
-    loop drop ;
+\     _totem -> dependents list-count for
+\         @next load-default-dir
+\     loop drop ;
 
 : change ( totem - totem )
     dup -> changed on ;
 
+: unload-instances ( class - )
+    {: class0 :}
+    class0 body> >name count f" Unloading %s totems..." type cr
+    class0 -> instances list-count for
+        @next unload
+    loop drop ;
+
+\ : empty-instances ( class - )
+\     {: class0 :}
+\     class0 unload-instances
+\     0 swap list-count! 
+\     class0 -> post-empty-instances-xt @ ?dup if
+\         class0 swap execute 
+\     then ;
+
+\ : empty-totems ( - )
+\     _totem -> dependents list-count for
+\         @next 
+\         dup body> >name count f" Unloading %s totems..." type cr
+\         empty-instances
+\     loop drop ;
+
 \ =============================================================================
 \ Defaults
 
-_totem :: intake ( - )
+_totem :: _intake ( - )
     srcpath$ count me deser-file ;
 
-_totem :: keep ( - )
+_totem :: _keep ( - )
     me srcpath$ count ser-file ;
 
 \ =============================================================================

@@ -233,128 +233,23 @@ honing-wl +order definitions
 public
 
 \ =============================================================================
-\ Bitmap array
-\ =============================================================================
-
-public
-
-65536 ?constant #bitmaps
-|| create bitmaps #bitmaps cells allot&erase
-
-variable next-bmp# 1 next-bmp# !
-
-|| : bitmap[]  $FFFF and cells bitmaps + ;
-|| : bitmap! bitmap[] ! ;
-
-: bitmap@ ( n - bmp )
-    bitmap[] @ ;
-
-: add-bitmap ( bmp - n )
-    next-bmp# @ dup >r bitmap! 1 next-bmp# +! r> ;
-
-\ =============================================================================
 \ Graphics
 \ =============================================================================
 
-include %idir%/matrix.vfx
 create pen 0 , 0 , \ int
 
-: at ( x y - )
-    pen 2! ;
+: at ( x y - ) pen 2! ;
+: at@ ( - x y ) pen 2@ ;
+: at@f ( - f:x f:y ) at@ 2s>f ;
+: +at ( x y - ) pen 2+! ;
 
-: at@ ( - x y )
-    pen 2@ ;
+: abmpw ( albmp - w ) dup if al_get_bitmap_width then ;
+: abmph ( albmp - h ) dup if al_get_bitmap_height then ;
 
-: at@f ( - f:x f:y )
-    at@ 2s>f ;
-
-: +at ( x y - )
-    pen 2+! ;
-
-|| : draw-bitmap ( bmp n - )
+: draw-bitmap ( bmp n - )
     over if at@f al_draw_bitmap else 2drop then ;
 
-: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
-    dup bitmap@ swap 24 rshift draw-bitmap ;
-
-|| : abmpw  dup if al_get_bitmap_width then ;
-|| : abmph  dup if al_get_bitmap_height then ;
-
-: bmpwh ( n - w h )
-    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
-
-\ =============================================================================
-\ Automatic bitmap loader
-\ =============================================================================
-
-|| variable bitmap-assets \ list
-
-: .loading ; \ cr ." Loading " 2dup -path type ;
-: .adding ; \ cr ." Adding " 2dup -path type ;
-
-: load-bitmap ( a n - allegro-bitmap )
-    .loading >zpad al_load_bitmap ;
-
-: $global-create
-    current @ >r also forth definitions $create previous r> current ! ;
-
-|| : add-bitmap-asset ( a n - ) \ path
-    .adding 
-    2dup load-bitmap add-bitmap ( n ) 
-    >r -path >pad
-    $global-create bitmap-assets link r> , 
-    does> cell+ @ ;
-
-: bitmap-file ( n - a n )
-    bitmap@ | bmp |
-    bmp 0= abort" BITMAP-FILE Bitmap is null!" 
-    bmp al_is_sub_bitmap if
-        bmp al_get_parent_bitmap to bmp
-    then
-    bitmap-assets begin @ ?dup while
-        dup cell+ @ bitmap@ bmp = if
-            body> >name count exit
-        then
-    repeat  -1 abort" BITMAP-FILE Bitmap file not found!" ;
-
-|| : ?bitmap ( a n - ) \ path
-    2dup -path >pad find if
-        >body cell+ @ >r load-bitmap r> bitmap[] !
-    else
-        drop add-bitmap-asset
-    then ;
-
-|| : (load-bitmap) ( a n - ) \ path
-    ?bitmap ;
-
-: load-bitmaps ( - )
-    ." Loading bitmaps..." cr 
-    s" gfx" >datadir normalize
-    2dup dir-exists? not if 
-        f" %s not found, skipping..." type cr
-        exit
-    then
-    ['] (load-bitmap) each-file ;
-
-|| : (reload-bitmap) ( a n - ) \ path
-    \ TODO: reload only updated bitmaps
-    2dup -path >pad find if >body cell+ @ bitmap@ al_destroy_bitmap else drop then
-    (load-bitmap) ;
-
-: reload-bitmaps ( - )
-    ." Reloading bitmaps" cr 
-    s" gfx" >datadir ['] (reload-bitmap) each-file ;
-
-: destroy-bitmaps ( - )
-    ." Destroying bitmaps" cr 
-    65536 1 do
-        i bitmap[] dup @ ?dup if al_destroy_bitmap then off
-    loop  1 next-bmp# ! ;
-
-\ =============================================================================
-\ Text rendering
-\ =============================================================================
-
+include %idir%/matrix.vfx
 include %idir%/print.vfx
 include %idir%/../textmode/textmode.vfx
 
@@ -618,9 +513,6 @@ defer frame ( - ) ' noop is frame
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         reset-keyboard reset-mouse
     then
-    ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
-        onSwitchIn
-    then
     ALLEGRO_EVENT_DISPLAY_RESIZE happened? if
         display al_acknowledge_resize
     then ;
@@ -701,7 +593,6 @@ borrow nib2/ init-nib
 
 || : engineer-cleanup ( - )
     bye-chain-root bye-chain !
-    destroy-bitmaps
     reset-format-buffers
     reset-strout-buffers
     init-nib
@@ -726,16 +617,19 @@ borrow nib2/ init-nib
     only forth definitions
     s" anew gild" evaluate ;
 
-: cartridge
+\ : load-assets ( - )
+\     bitmap load-default-dir ;
+
+: cartridge ( - )
     \ Load user program
     empty
-    load-bitmaps
+    \ load-assets
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
 : turnkey? ( - b )
     home-path$ count nip 0<> ;
 
-: init-dev
+: init-dev ( - )
     \ Development-only initialization
     empty 
     +xrefs

@@ -7,4 +7,3 @@ game
 \ Integrations 
 : boot-fun  init-supershow game ; 
 ' boot-fun is boot 
-init-supershow 

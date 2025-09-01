@@ -12,7 +12,8 @@ require enemies.vfx
 create-autoclasses
 
 ." Loading totems..." cr
-sync
+actor-script load-default-dir
+scene load-default-dir
 
 ." Loading game modes..." cr
 require title.vfx

@@ -20,7 +20,7 @@ class;
 actor :: serializable? ( - flag )
     en @   owner @ 0= and ; 
 
-scene :: keep ( - )
+scene :: _keep ( - )
     \ save actors on stage to disk
     build[ 
         SCENE_FORMAT_VERSION ,

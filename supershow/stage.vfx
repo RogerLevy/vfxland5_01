@@ -348,12 +348,12 @@ class: actor-script
     
     template [[
         actor script-class !
-        s" vfx" extension$ place
     ]]
 
+    extension: vfx
     default-dir: scripts
 
-    :: intake ( - )
+    :: _intake ( - )
         srcpath$ count included ;
 class;
 

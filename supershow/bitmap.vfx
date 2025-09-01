@@ -1,0 +1,67 @@
+public
+
+65536 ?constant #bitmaps
+
+|| create bitmaps #bitmaps cells allot&erase
+
+variable next-bmp# 1 next-bmp# !
+
+|| : bitmap[]  $FFFF and cells bitmaps + ;
+: bitmap@ ( n - bmp ) bitmap[] @ ;
+: alloc-bmp#  next-bmp# @   1 next-bmp# +! ;
+: add-bitmap ( bmp - n ) alloc-bmp# dup >r bitmap[] ! r> ;
+
+|| #bitmaps cell array bitmap-totems
+
+class: bitmap
+    is-a _totem
+    prop id 
+    prop albmp
+    extension: png
+    default-dir: dat/gfx
+
+    : does-bitmap ( - ) 
+        does> -> id @ ;
+
+    : add-bitmap-totem ( - bmpid )
+        alloc-bmp# id ! 
+        me id @ bitmap-totems [] ! ;
+
+    :: load ( - ) 
+        srcpath$ count 
+        >zpad al_load_bitmap albmp ! 
+        me new? if add-bitmap-totem then 
+        albmp @ id @ bitmap[] ! ;
+
+    :: _intake ( - ) 
+        me load   me new? if does-bitmap then ;    
+
+class;
+
+: bmptotem  bitmap-totems [] @ ;
+: ?nullbmp  dup 0= abort" BITMAP-FILE Bitmap is null!" ;
+: ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
+: bitmap-file ( n - a n ) ?nullbmp ?subbmp bmptotem -> srcpath$ count ;
+   
+bitmap :: unload ( - )
+    albmp @ ?dup if al_destroy_bitmap then
+    0 id @ bitmap[] !
+    0 albmp ! ;
+
+: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
+    dup bitmap@ swap 24 rshift draw-bitmap ;
+
+: bmpwh ( n - w h )
+    bitmap@ ?dup if dup abmpw swap abmph else 0 0 then ;
+
+: init-bitmaps ( - )
+    bitmap load-default-dir ;
+
+: reload-bitmaps ( - )
+    bitmap reload-instances ;
+
+: unload-bitmaps ( - )
+    bitmap unload-instances ;
+
+prune: unload-bitmaps ;
+' unload-bitmaps AtExit
