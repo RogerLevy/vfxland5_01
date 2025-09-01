@@ -35,7 +35,7 @@ trait: _totem
     4 nstatic extension$                \ cstring: main file extension
     /list nstatic instances             \ nib2 list, track instances
     static on-discovery-xt              \ ( path len class - ) 
-    256 nstatic default-path$           \ Where +TOTEM locates assets by default 
+    32 nstatic default-path$            \ Where +TOTEM locates assets by default 
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
@@ -65,6 +65,7 @@ _totem :apply ( class - )
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
 : default-path: ( <path> - ) bl parse classifier -> default-path$ place ;
+: default-path@  -> default-path$ count ;
 
 \ =============================================================================
 \ Materialization
@@ -90,7 +91,7 @@ _totem :apply ( class - )
 
 || : @default-path
     my-name
-    default-path$ count f" %s/%s" me srcpath! ;
+    me default-path@ f" %s/%s" me srcpath! ;
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
@@ -105,7 +106,7 @@ _totem :apply ( class - )
     {: path len class0 :}
     path len file-exists? not if
         path len
-        class0 -> default-path$ count f" %s/%s" to len to path
+        class0 default-path@ f" %s/%s" to len to path
     then
 
     path len class0 materialize dup new? if 
@@ -164,7 +165,7 @@ _totem :apply ( class - )
 
 : load-default-dir ( class - )
     \ Not recursive.
-    dup -> default-path$ count rot load-dir ;
+    dup default-path@ rot load-dir ;
 
 \ =============================================================================
 \ I/O
