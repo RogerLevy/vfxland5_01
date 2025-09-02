@@ -57,7 +57,7 @@ _totem :apply ( class - )
 \ =============================================================================
 
 : new? -> existed @ not ;
-: srcpath! ( path len totem - ) [[ >abspath >lowercase srcpath$ place ]] ;
+: srcpath! ( path len totem - ) [[ >lowercase srcpath$ place ]] ;
 : find-totem ( a len - totem|0 )
     -path >pad find if >body dup _totem is? and else drop 0 then ;
 : ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
@@ -73,8 +73,8 @@ _totem :apply ( class - )
 
 : materialize ( path len class - totem ) ( - totem )
 	\ ensure totem is in dictionary.
-    \ takes file name or path.
-	\ if we create the totem word, set its srcpath$
+    \ takes filename or full path.
+	\ if we create the totem word, set its srcpath$ to absolute path
     \ if word already existed, set EXISTED flag
     {: path len class0 :}
     path len find-totem ?dup 
@@ -85,14 +85,14 @@ _totem :apply ( class - )
         \ ." Materializing " 2dup type cr
         $object
         [[ 
-            path len me srcpath!
+            path len >abspath me srcpath!
         me ]]
         dup class0 -> instances add-to
     then ;
 
 || : @default-dir
     my-name
-    me default-dir@ f" %s/%s" me srcpath! ;
+    cla @ default-dir@ >abspath f" %s/%s" me srcpath! ;
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
