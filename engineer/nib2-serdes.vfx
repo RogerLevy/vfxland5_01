@@ -69,8 +69,12 @@
     \ dup 100 dump
     $@+ \ fetch class name
     \ 2dup type cr
-    >pad find 0= abort" desbin+ >> Encountered unknown class name."
-    >body dup valid-class? not abort" desbin+ >> Encountered invalid class."
+    >pad find 0= if
+        pad count f" desbin+ >> Encountered unknown class name: `%s`" -1 -rot .abort
+    then
+    >body dup valid-class? not if
+        pad count f" desbin+ >> Not a class: `%s`" -1 -rot .abort
+    then
     ( class ) xt execute [[
         \ fetch properties
         @+ for
@@ -104,7 +108,7 @@
         pad count f" readbin+ >> Encountered unknown class name: `%s`" -1 -rot .abort
     then
     >body dup valid-class? not if
-        pad count f" readbin+ >> Not a property: `%s`" -1 -rot .abort
+        pad count f" readbin+ >> Not a class: `%s`" -1 -rot .abort
     then
     ( class ) 0 cb execute
     \ Walk properties:
