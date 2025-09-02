@@ -138,7 +138,7 @@ _totem :apply ( class - )
 
     \ execute on-discovery override if any
     class0 -> on-discovery-xt @ ?dup if
-        >r 2dup type cr r>
+        \ >r 2dup type cr r>
         class0 swap ( fn len class xt ) execute
         exit
     then
