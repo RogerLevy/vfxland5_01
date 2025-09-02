@@ -14,9 +14,6 @@ class: scene
     default-dir: dat/scn
 class;
 
-: deser-actor ( a - a' )
-    ['] one desbin+ ;
-
 actor :: serializable? ( - flag )
     en @   owner @ 0= and ; 
 
@@ -28,17 +25,17 @@ scene :: _keep ( - )
         actors ['] serializable? sermulti,
     build] srcpath$ count write ;
 
-: actor-instance ( class - actor )
+|| : actor-instance ( class - actor )
     dup actor is? not if
         body> >name count
         f" Class %s does not inherit from ACTOR." -1 -rot .abort 
     then 
     one ;
 
-: deser-actors+ ( a - a' ) 
+|| : deser-actors+ ( a - a' ) 
     ['] actor-instance desmulti+ ;
 
-: deser-scene+ ( a - a' )
+|| : deser-scene+ ( a - a' )
     @+ SCENE_FORMAT_VERSION check-version
     ['] into-me desbin+ ;
 
