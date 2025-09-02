@@ -45,7 +45,7 @@ create temp-path-buf$ 256 allot
     {: fn len | file sfstruct err sp :}
     EmptyIdle
     fn len expand normalize to len to fn
-    ."     Including " fn len -path type cr 
+    ." Including " fn len -path type cr 
     fn len AddSourceFile -rot to len to fn    \ Store canonical name
     fn len r/o ?Relative-Open-File #-258 ?throw to file to sfstruct
     fn len ++IncDir

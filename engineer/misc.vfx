@@ -122,7 +122,7 @@ include %idir%/../textmode/textmode-tools.vfx
     #1 bytes-left #1 read-file abort" File read error" drop
     #1 close-file drop 0 , ;
 aka file-exists? fileexists?
-: file-size ( fn len - n )
+: fsize ( fn len - n )
     2dup file-exists? not abort" File not found"
     r/o open-file abort" File open error" 
     dup file-size throw drop swap close-file throw ;
@@ -326,7 +326,7 @@ variable old-dp
 : file@ ( fn len - a len ) 
     \ returns allocated memory that has to be freed
     {: fn len | mem size :}
-    fn len file-size to size 
+    fn len fsize to size 
     size allocate throw to mem
     mem size fn len read 
     mem size ;

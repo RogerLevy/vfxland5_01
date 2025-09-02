@@ -15,7 +15,7 @@
     r@ @ + r> ! ;
 
 : wslurp ( fn-a fn-len - w$ )
-    here -rot  2dup file-size , file, ;
+    here -rot  2dup fsize , file, ;
 
 : *wstring ( a len - wstr )
     here -rot  dup cell+ allot here wplace ;
