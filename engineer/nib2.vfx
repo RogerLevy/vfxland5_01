@@ -143,6 +143,18 @@ variable osp   os osp ! \ object stack pointer
     >pad find if execute else drop then ;
 
 \ ==============================================================================
+\ CATCH/THROW support
+\ ==============================================================================
+
+aligned-page oes
+variable oesp  oes oesp !
+
+: >oes   oesp @ ! 4 oesp c+! ; 
+: oes>   -4 oesp c+! oesp @ @ ;
+: catch  me >oes osp @ >oes catch oes> osp ! oes> to me ;
+: throw  ?dup -exit oes> osp ! oes> to me throw ;
+
+\ ==============================================================================
 \ Classes
 \ ==============================================================================
 
