@@ -20,6 +20,12 @@ class: tileset
 
 class;
 
+|| : /metas ( - )
+    0 cell _array make metas-array ! ;
+
+tileset :construct ( - )
+    /metas ;
+
 : slice-tiles ( tileset - )
     \ slice up the source bitmap into tile sub-bitmaps.
     \ add them to the global bitmap registry.
@@ -31,7 +37,7 @@ class;
             tw @ +loop
         th @ +loop
         next-bmp# @ baseid @ - #tiles ! 
-        #tiles metas-array @ resize ;
+        #tiles @ metas-array @ redim ;
 
 : reslice-tileset ( tw th tileset - )
     \ slice up source bitmap, creating a new range of sub-bitmaps
@@ -57,28 +63,21 @@ tileset :: unload ( - )
     my-name -ext f" %s.png" >pad find 0= abort" tileset source bitmap not found!"
     execute bmp ! ;   \ Bitmap words return their own bitmap ID's
 
-|| : /metas ( - )
-    new? -exit   0 cell array make metas-array ! ;
-
-
 : array, ( array - )
     \ assumes cell array
-    as>
-        #items @ ,
-        data @ #items for
-            i me [] @ ,
-        loop ;
+    dup #items ,   ['] , swap each@ ;
 
 : @array+ ( a array - a' )
     \ assumes cell array
     {: | n :}
-    as>
+    [[
         @+ to n 
         n if
-            n me resize
+            n me redim
             dup data @ n cells move
             n cells +
-        then ;
+        then 
+    ]] ;
 
 || : deser-tileset ( - )
     srcpath$ count file@ drop
@@ -90,7 +89,7 @@ tileset :: unload ( - )
     free drop ;
 
 tileset :: _intake ( - )
-    /metas   deser-tileset   reconnect-bmp   me load ;
+    deser-tileset   reconnect-bmp   me load ;
 
 tileset :: _keep ( - )
     build[

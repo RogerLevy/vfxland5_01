@@ -1,18 +1,14 @@
-." Dictionary before empty: " checkdict cr
 empty 
 include ../supershow/supershow.vfx
 include ../supershow/tilemap2.vfx
 
-." Dictionary after tilemap2.vfx: " checkdict cr
+init-bitmaps
 
-load-bitmaps
-
-s" dat/gfx/bg.ts" tileset manifest drop
-
+\ s" dat/gfx/bg.ts" tileset manifest drop
+init-tilesets
 bg.ts inspect
 
-\ bg.png 20 20 *tileset bg.ts
-\ bg.ts commit
+\ bg.png 20 20 +tileset bg.ts
 
 \\
 

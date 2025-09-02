@@ -134,6 +134,7 @@ _totem :apply ( class - )
 
 || 0 value class0
 || : (discover) ( fn len - )
+    >lowercase
 
     \ execute on-discovery override if any
     class0 -> on-discovery-xt @ ?dup if
