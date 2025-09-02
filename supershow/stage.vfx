@@ -354,7 +354,7 @@ class: actor-script
     default-dir: scripts
 
     :: _intake ( - )
-        srcpath$ count included ;
+        srcpath$ count required ;
 class;
 
 actor :: on-error ( xt err# - )
