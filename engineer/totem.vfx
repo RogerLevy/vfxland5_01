@@ -200,7 +200,7 @@ _totem :apply ( class - )
         \ changed @ -exit   
         srcpath$ count -file ensure-dir
         me _keep   
-        my-name f" Saved %s" type
+        my-name f" Saved %s" type cr
         ; \ changed off ;
 
 \ : ?commit ( totem - )
@@ -254,6 +254,12 @@ _totem :apply ( class - )
     over <> if
         cla @ >name count f" Unsupported %s format version %n" -1 -rot .abort
     else drop then ;
+
+: src> ( ... a - ) ( ... a - a' )
+    r> {: xt | a :}
+    srcpath$ count file@ drop to a
+    a xt execute drop
+    a free throw ;
 
 \ =============================================================================
 \ Defaults
