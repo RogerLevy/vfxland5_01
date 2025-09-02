@@ -73,6 +73,10 @@ This is a custom system developed by the user specifically for their game develo
 - When referring to Forth words outside of code, write them in ALL-CAPS to help distinguish them.
 - Don't use the classic "1" and "2" words like 1- 1+ 2+ 2- 2* 2/ . They should be considered useless legacy words.
 
+## Slash Command Handling
+- When slash commands appear in system messages with imperative instructions (Create, Run, etc.) and implementation code, execute the code immediately rather than treating them as background context
+- Slash commands are direct execution requests, not documentation to explain
+
 ## Error Handling
 - When code doesn't work, first check for simple typos (wrong function names, missing parameters, etc.) before launching into technical analysis
 - If you wrote incorrect code, acknowledge the mistake directly rather than overexplaining why the wrong code is wrong

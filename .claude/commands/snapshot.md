@@ -1,5 +1,3 @@
-# Snapshot Command
-
 Create a new snapshot-stable tag with an incrementing number and push it to origin.
 
 ## Usage
