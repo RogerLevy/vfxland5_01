@@ -35,16 +35,19 @@ scene :: _keep ( - )
     then 
     one ;
 
-: load-scene-data ( a - a' )
-    @+ SCENE_FORMAT_VERSION check-version
-    ['] into-me desbin+
+: deser-actors+ ( a - a' ) 
     ['] actor-instance ['] desbin+ desmulti+ ;
+
+: deser-scene+ ( a - a' )
+    @+ SCENE_FORMAT_VERSION check-version
+    ['] into-me desbin+ ;
 
 scene :: load ( - )
     \ load actors from disk to stage
-    srcpath$ count file@ drop
-    dup load-scene-data drop
-    free throw ;
+    src> deser-scene+ deser-actors+ ;
+
+scene :: _intake ( - )
+    src> deser-scene+ ;
 
 : +scene ( <name> - scene ) 
     scene +totem ;
