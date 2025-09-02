@@ -921,8 +921,8 @@ aka instance make  \ Backward compatibility
         current-property -> property-reftype ! ;
 
 : .object ( object - )
-    dup valid-object? not if .name exit then
-    [[ cla @ .name me .name me . ]] ;
+    dup valid-object? not if .data exit then
+    [[ cla @ .name me .data me . ]] ;
 
 : inspect-property ( property val-addr - )
     {: property val-addr :} 
