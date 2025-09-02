@@ -7,19 +7,14 @@ trait: _iterable
     :: vacate ( - ) 0 item-count ! ;
     :: index ( a - n ) stub ; 
     :: deref-index ( n - ? ) stub ;
-    :: [] ( n - a )
-        \ pronounced "box"
-        stub ;
-    :: resize ( #items - )
-        stub ;
-
+    :: [] ( n - a ) stub ; \ pronounced "box"
+    :: redim ( #items - ) stub ;
 trait;
 
 : #items ( iterable - n ) -> item-count @ ;
 
 variable (enough)
 : enough  (enough) on ;
-    
 
 : (each) ( xt - ) ( ... a - ... )
     {: xt :}
@@ -153,7 +148,7 @@ _array :: [] ( n - a )
 _array :: deref-index ( n - ? )
     me [] @ ;
 
-_array :: resize ( #items - )
+_array :: redim ( #items - )
     item-size @ max-items @ * >r   data @ >r
     ( #items ) item-size @ _array:construct 
     r> data @   item-size @ max-items @ *   r> min   move ;
@@ -186,7 +181,7 @@ _stack :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
     me tail  -1 item-count +! ;
 
-_stack :: resize ( #items - )
+_stack :: redim ( #items - )
     item-size @ max-items @ * >r   data @ >r
     ( #items ) item-size @ _stack:construct 
     r> data @   item-size @ max-items @ *   r> min   move ;
