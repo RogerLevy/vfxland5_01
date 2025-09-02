@@ -49,6 +49,7 @@
     ts init-tileset ;    
 
 : reload-tilesets ( - )
+    ." Reloading tilesets..." cr
     last-tileset begin @ ?dup while dup reload-tileset repeat ;
 
 : is-tile? ( n - f )

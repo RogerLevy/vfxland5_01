@@ -53,7 +53,6 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 \ =============================================================================
 
 : reload-graphics
-    ." Reloading graphics..." cr
     reload-bitmaps
     reload-tilesets ;
 

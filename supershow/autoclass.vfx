@@ -14,7 +14,7 @@
     pop-order ;
 
 : create-autoclasses
-    ." Creating autoclasses" cr
+    ." Creating autoclasses..." cr
     s" gfx" >datadir dir-exists? -exit
     get-order get-current
         s" gfx" >datadir
