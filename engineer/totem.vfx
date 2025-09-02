@@ -60,7 +60,6 @@ _totem :apply ( class - )
 : srcpath! ( path len totem - ) [[ >lowercase srcpath$ place ]] ;
 : find-totem ( a len - totem|0 )
     -path >pad find if >body dup _totem is? and else drop 0 then ;
-: ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;

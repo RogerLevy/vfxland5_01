@@ -363,3 +363,5 @@ cstring lastword
 : show  !lastword show ;
 
 aka save-exe save
+
+: ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;

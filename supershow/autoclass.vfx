@@ -4,6 +4,7 @@
 
 : create-autoclass ( a n - )
     -path | n a |
+    a n s" png" ext? -exit
     a n -ext >pad find nip ?exit
     \ ." Creating auto-class from bitmap " a n type cr
     push-order only forth definitions
@@ -11,7 +12,6 @@
     a n f"     template [[ %s bmp ! ]]" 2dup type cr evaluate 
     s" class;" 2dup type cr evaluate 
     pop-order ;
-    
 
 : create-autoclasses
     ." Creating autoclasses" cr
