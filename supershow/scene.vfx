@@ -25,7 +25,7 @@ scene :: _keep ( - )
     build[ 
         SCENE_FORMAT_VERSION ,
         me serbin,
-        actors ['] serializable? ['] serbin, sermulti,
+        actors ['] serializable? sermulti,
     build] srcpath$ count write ;
 
 : actor-instance ( class - actor )
@@ -36,7 +36,7 @@ scene :: _keep ( - )
     one ;
 
 : deser-actors+ ( a - a' ) 
-    ['] actor-instance ['] desbin+ desmulti+ ;
+    ['] actor-instance desmulti+ ;
 
 : deser-scene+ ( a - a' )
     @+ SCENE_FORMAT_VERSION check-version
