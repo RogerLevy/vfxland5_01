@@ -1,3 +1,6 @@
+2025/09/02
+[ ] (Engineer) Add protection against circular dependencies when honing is enabled
+
 2025/08/23
 [ ] (Engineer) Implement new LD tool
     Consolidate TRY, UPDATE, and RUN functionality with smart path searching and project detection.
