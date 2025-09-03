@@ -24,7 +24,7 @@ aka cd cwd
 
 include %idir%/../textmode/textmode-tools.vfx
 
-: .name ( xt - )
+: .name ( a - )
     \ Smart name print
     \ NOTE: Slow!
     dup body> inForth? if
@@ -365,3 +365,4 @@ cstring lastword
 aka save-exe save
 
 : ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
+: ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
