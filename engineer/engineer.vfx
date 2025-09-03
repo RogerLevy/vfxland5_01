@@ -41,8 +41,6 @@ variable watch-context
 \ =============================================================================
 
 : bye ( - )  bye-chain do-chain  0 ExitProcess ;
-|| create buf 256 allot
-: path  buf 256 buf GetCurrentDirectory ;
 
 \ =============================================================================
 \ Oversight - Contract-orientation system
@@ -612,7 +610,7 @@ borrow nib2/ init-nib
     \ Initialize runtime environment
     rs
     debug @ if init-dev then
-    path home-path$ place
+    wd home-path$ place
     init-mersenne
     init-allegro
     *display
@@ -691,7 +689,7 @@ borrow nib2/ init-nib
         hold ! repl ! ide !
     if fullscreen else windowed then ;
 
-|| : prj ( - a len ) path '\' ending ;
+|| : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
     prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" cr 2dup type shellcmd

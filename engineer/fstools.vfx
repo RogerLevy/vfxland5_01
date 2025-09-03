@@ -2,6 +2,10 @@
 \ Filesystem
 \ =============================================================================
 
+|| create buf 256 allot
+: wd ( - a len )
+    buf 256 buf GetCurrentDirectory ;
+
 : evaluate-lines ( addr len -- )
     {: addr len | line-start line-len pos :}
     addr to line-start

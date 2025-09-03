@@ -223,7 +223,7 @@ borrow engineer/ func[]
     s[
         .hotkeys cr
         ." Me: " .me cr 
-        ." CWD: " path '\' ending type space space
+        ." CWD: " wd '\' ending type space space
         ." Current: " current @ .name space
         ." Pen: " (pen) 2@ swap . . space
         ." State: " .state space
