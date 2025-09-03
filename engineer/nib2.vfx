@@ -135,10 +135,9 @@ variable osp   os osp ! \ object stack pointer
 : that ( - object ) osp @ @ ;
 : as> ( actor - ) ( - ) [[ r> execute ]] ;
 
-
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
-    [[
+    to me
     cla @ body> >name count f" %s/"
     >pad find if execute else drop then ;
 
