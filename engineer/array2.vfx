@@ -134,7 +134,7 @@ class;
     dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
     max-items @ item-count !
-    here data ! * allot&erase ;
+    align here data ! * allot&erase ;
 
 : /item ( array - n )
     -> item-size @ ;
@@ -149,6 +149,7 @@ _array :: deref-index ( n - ? )
     me [] @ ;
 
 _array :: redim ( #items - )
+    dup max-items @ = if drop exit then
     item-size @ max-items @ * >r   data @ >r
     ( #items ) item-size @ _array:construct 
     r> data @   item-size @ max-items @ *   r> min   move ;
@@ -163,7 +164,7 @@ class;
 2 _stack :construct ( max-items item-size - )
     dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
-    here data ! * allot&erase ;
+    align here data ! * allot&erase ;
 
 _stack :: push ( item - )
     item-count @ max-items @ = abort" Overflow."
@@ -182,9 +183,11 @@ _stack :: pop-ref ( - a )
     me tail  -1 item-count +! ;
 
 _stack :: redim ( #items - )
+    dup max-items @ = if drop exit then
     item-size @ max-items @ * >r   data @ >r
     ( #items ) item-size @ _stack:construct 
-    r> data @   item-size @ max-items @ *   r> min   move ;
+    r> data @   item-size @ max-items @ *   r> min   move 
+    item-count @ max-items @ min item-count ! ;
 
 \ ------------------------------------------------------------------------------
 
