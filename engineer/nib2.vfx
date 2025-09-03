@@ -145,13 +145,15 @@ variable osp   os osp ! \ object stack pointer
 \ CATCH/THROW support
 \ ==============================================================================
 
-aligned-page oes
-variable oesp  oes oesp !
+\ aligned-page oes
+\ variable oesp  oes oesp !
 
-: >oes   oesp @ ! 4 oesp c+! ; 
-: oes>   -4 oesp c+! oesp @ @ ;
-: catch  me >oes osp @ >oes catch oes> osp ! oes> to me ;
-: throw  ?dup -exit oes> osp ! oes> to me throw ;
+\ : >oes   oesp @ ! 4 oesp c+! ; 
+\ : oes>   -4 oesp c+! oesp @ @ ;
+\ : catch  me >oes osp @ >oes catch oes> osp ! oes> to me ;
+\ : throw  ?dup -exit oes> osp ! oes> to me throw ;
+
+\ :noname  256 2 / cell / for  os i 2 * cells oes + !  loop ;  execute
 
 \ ==============================================================================
 \ Classes
