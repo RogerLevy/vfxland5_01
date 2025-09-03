@@ -34,6 +34,7 @@ cstring watch$
 variable watch-xt
 variable watch-context
 || variable need-pump
+variable esc-quits   esc-quits on 
 
 \ =============================================================================
 \ Oversight - Contract-orientation system
@@ -304,7 +305,7 @@ magic-id MAGIC_TWEAK TWK
 
 || : *display ( - )
     \ fullscreen? if fullscreen else windowed then
-    create-display ;
+    create-display  going off ;
 
 || : winmode ( - )
     2 to zoom
@@ -321,17 +322,11 @@ magic-id MAGIC_TWEAK TWK
 \ =============================================================================
 
 || create kbs2 /ALLEGRO_KEYBOARD_STATE allot
-
-: save-kb
-    kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move
-    kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
-
-: restore-kb
-    kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
-
-|| : ?kb-lock repl @ if save-kb then ; 
+|| : save-kb  kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move ;
+|| : erase-kb  kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
+|| : restore-kb  kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
+|| : ?kb-lock repl @ if save-kb erase-kb then ; 
 || : ?kb-unlock repl @ if restore-kb then ;
-    
 || : -keys  reset-keyboard ;
 
 || : spin ( - f: n )
@@ -476,7 +471,7 @@ magic-id MAGIC_TWEAK TWK
 \ =============================================================================
 
 || : ?quit
-    <esc> pressed? debug @ and if
+    <esc> pressed? esc-quits @ and if
         going off 
         fullscreen? if windowed winmode then
         >vfx
@@ -539,17 +534,17 @@ magic-id MAGIC_TWEAK TWK
 \ =============================================================================
 
 || : /console
-    debug @ -exit
     -1 line# !
     hWndMain to vfx-hwnd
-    vfx-hwnd z" Engineer Dev Console" SetWindowText drop ;
+    vfx-hwnd z" Engineer Dev Console" SetWindowText drop 
+    consoledev op-handle ! ;
 
 || : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
     [ ' EntryPoint >body @ compile, ] ;
 
 borrow nib2/ init-nib
 
-|| : engineer-cleanup ( - )
+|| : empty-engineer ( - )
     reset-format-buffers
     reset-strout-buffers
     init-nib
@@ -557,29 +552,18 @@ borrow nib2/ init-nib
     clear-funcs
     ['] noop 'show !
     ['] noop is boot
-\    ['] noop is .apperr
     ['] noop is onSwitchIn
     honing off ;
 
-\ ' engineer-cleanup atexit
-
-\ || : return ( - )
-\     home-path$ count $cwd ;
-
 : empty ( - )
     debug @ -exit
-    rs
-    engineer-cleanup
+    empty-engineer
     only forth definitions
     s" anew gild" evaluate ;
-
-\ : load-assets ( - )
-\     bitmap load-default-dir ;
 
 : cartridge ( - )
     \ Load user program
     empty
-    \ load-assets
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
 : turnkey? ( - b )
@@ -604,22 +588,15 @@ borrow nib2/ init-nib
     init-allegro
     *display
     init-vga-font
-    0 0 to ustime ;
+    0 0 to ustime 
+    init-history ;
 
 : cold ( - )
     \ Release cold start sequence - initialize all systems and begin execution
-    frigid
-    debug @ if init-ide then
-    cartridge boot go ;
+    frigid boot go ;
 
-\ =============================================================================
-\ Debugging tools
-\ =============================================================================
-
-\ include debug/logging.vfx \ TODO: test and fix
-\ debug @ [if]
-\ include debug/contracts.vfx
-\ [then]
+: debug-cold ( - )
+    vfxforth-entrypoint /console ;
 
 \ =============================================================================
 \ Reloading
@@ -646,15 +623,22 @@ borrow nib2/ init-nib
     ['] cold is EntryPoint
     fullscreen?
         debug @ hold @
+            ide off
+            repl off
             debug off
             hold off
             fullscreen
+            esc-quits off
+            0 to GenINI?
+            0 to InitSupport?
             save-exe cr
         hold ! debug !
-    if fullscreen else windowed then ;
+    if fullscreen else windowed then 
+    repl on
+    esc-quits on ;
 
 : save-debug ( - <path> )
-    ['] vfxforth-entrypoint is EntryPoint
+    ['] debug-cold is EntryPoint
     fullscreen?
         ide @ repl @ debug @ hold @
             ide off
@@ -663,6 +647,7 @@ borrow nib2/ init-nib
                       \ Counter-intuitive because we want to debug the game not Engineer.
             hold off
             windowed
+            ['] (.cold) is .cold
             save-exe cr
         hold ! debug ! repl ! ide !
     if fullscreen else windowed then ;
@@ -681,10 +666,11 @@ borrow nib2/ init-nib
 || : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
-    prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" cr 2dup type shellcmd
+    prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" 
+    2dup type cr shellcmd
     500 ms
-    prj prj f" save-release ..\..\rel\%s\%s" cr 2dup type evaluate
-    prj prj f" save-debug ..\..\rel\%s\%s-debug" cr 2dup type evaluate ;
+    prj prj f" save-release ..\..\rel\%s\%s" 2dup type cr evaluate
+    prj prj f" save-debug ..\..\rel\%s\%s-debug" 2dup type cr evaluate ;
 
 : watch ( - <code> )
     context @ watch-context !
@@ -697,7 +683,7 @@ borrow nib2/ init-nib
         exit 
     then
     bl parse 2dup 2dup upper f" Loading %s..." type cr
-    home-path$ count f" %s\%s" prj-path$ place
+    home-path$ count f" %s\%s" >lowercase prj-path$ place
     prj-path$ count $cwd
     200 ms
     ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
@@ -725,18 +711,18 @@ create zcommand 256 allot
 
 borrow ide3/ history-stats
 borrow ide3/ visible-lines
+
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args
     /console
     (.cold)
-    ."  ~~~ Engineer v1 ~~~ "
-    cr
+    ."  ~~~ Engineer v1 ~~~ " cr
     frigid init-ide
     zcommand zcount strip-exe ide-interpret
     dup 0= if drop go else .throw then ;
 
 ' engineer-entrypoint is EntryPoint
-assign engineer.cold to-do .cold
+' engineer.cold is .cold
 
 borrow nib2/ gild-nib
 gild-nib

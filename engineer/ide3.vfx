@@ -325,7 +325,7 @@ borrow engineer/ func[]
         ShowSourceOnError
     then
     pop-attribute
-    EditOnError ;
+    ide @ if EditOnError then ;
 
 assign (DoErrorMessage) to-do DoErrorMessage
 
