@@ -71,23 +71,9 @@ debug @ 0= [if]
 \ Additional Facilities
 \ =============================================================================
 
-include %idir%/../lib/wstring.vfx
-include %idir%/strout.vfx
-
 \ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
 include %idir%/counter.vfx  \ required by mersenne
 include %idir%/mersenne.vfx
-include %idir%/gamemath.vfx
-
-\ =============================================================================
-\ Allegro
-\ =============================================================================
-
-LIBRARY: allegro_monolith-5.2.dll
-include %idir%/allegro-5.2.5.vfx
-include %idir%/al-utils.vfx
-include %idir%/keys.vfx
-include %idir%/fstools.vfx
 
 \ =============================================================================
 \ Window bring-to-front

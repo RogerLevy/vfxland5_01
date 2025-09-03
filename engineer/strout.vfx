@@ -1,4 +1,4 @@
-fast[
+\ fast[
 
 || 4 constant #buffers
 || 32768 constant /buffer
@@ -62,4 +62,4 @@ fast[
 : s[  z[ ;
 : s]  z] wcount 1 - ;
 
-fast]
+\ fast]

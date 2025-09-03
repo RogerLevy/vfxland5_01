@@ -133,4 +133,7 @@ public
 : init-mersenne
     counter seed! ;
 
+: 2rnd ( n n - n' n' )
+    rnd swap rnd swap ;
+
 init-mersenne

@@ -2,6 +2,48 @@
 \ Filesystem
 \ =============================================================================
 
+: evaluate-lines ( addr len -- )
+    {: addr len | line-start line-len pos :}
+    addr to line-start
+    0 to pos
+    begin
+        pos len < while
+        addr pos + c@ 10 = if           \ Found newline
+            addr pos + line-start - to line-len
+            line-len if
+                \ line-start line-len type cr
+                line-start line-len evaluate
+            then
+            addr pos + 1+ to line-start \ Start of next line
+        then
+        1 +to pos
+    repeat
+    \ Handle last line if no trailing newline
+    addr pos + line-start - to line-len
+    line-len if
+        line-start line-len type cr
+        line-start line-len evaluate
+    then ;
+
+: bytes-left  ( id - n )
+    >r r@ file-size abort" Get file size error" drop
+    r> file-position abort" Get file position error" drop
+    - ;
+
+: file, ( fn len - )
+    expand
+    r/o open-file abort" File not found"
+    | #1 |
+    here 
+    #1 bytes-left allot
+    #1 bytes-left #1 read-file abort" File read error" drop
+    #1 close-file drop 0 , ;
+
+: fsize ( fn len - n )
+    2dup file-exists? not abort" File not found"
+    r/o open-file abort" File open error" 
+    dup file-size throw drop swap close-file throw ;
+
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
 
@@ -40,6 +82,7 @@
 : >datadir ( a n - a n )
     s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
 
+extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 : ensure-dir ( fp len - )
     {: | err zstr[ 256 ] :}
     normalize zstr[ zplace
@@ -52,10 +95,37 @@
         zstr[ zcount f" Created directory: %s" type cr
     then ;
 
-variable dump#
+|| 0 value #1
+: write[ w/o create-file abort" File create error" to #1 ;
+: data, #1 write-file abort" File write error" ;
+: line, #1 write-line abort" File write error" ;
+: nl,  s" " line, ;
+: write] #1 close-file drop ;
 
+: write ( src len path len - )
+\    2dup file-exists? if 2dup delete-file throw then
+    w/o create-file abort" File create error" >r
+    r@ write-file abort" File write error"
+    r> close-file drop ;
+
+: read ( dest len path len - )
+    2dup file-exists? not abort" File not found"
+    r/o open-file abort" File open error" >r
+    ( dest len ) r@ file-size drop drop min
+    r@ read-file nip abort" File read error"
+    r> close-file drop ;
+
+: file@ ( fn len - a len ) 
+    \ returns allocated memory that has to be freed
+    {: fn len | mem size :}
+    fn len fsize to size 
+    size allocate throw to mem
+    mem size fn len read 
+    mem size ;
+
+variable dump#
 : dumpsys
     s" dumps" ensure-dir
-    ['] vfxcore here over - 
+    debug here over - 
     dump# @ f" dumps/dump%03n.bin" write 
     1 dump# +! ;
