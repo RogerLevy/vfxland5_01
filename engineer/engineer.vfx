@@ -503,8 +503,6 @@ magic-id MAGIC_TWEAK TWK
 \ Interface Module
 \ =============================================================================
 
-defer frame ( - ) ' noop is frame
-
 ' engineer/ public-xt !
     include %idir%/ide3.vfx
 ' forth public-xt !
@@ -569,9 +567,8 @@ defer frame ( - ) ' noop is frame
 || : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else draw-tv then ;
 
-:noname ( - )
+: frame ( - )
     controls pump screen refresh ;
-is frame
 
 : go ( - )
     \ Main engine loop - enter IDE if debug mode, otherwise run normally
