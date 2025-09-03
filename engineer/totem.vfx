@@ -118,11 +118,7 @@ _totem :apply ( class - )
 \ =============================================================================
 
 : reload ( totem - )
-    [[
-        me unload
-        \ changed off
-        me intake
-    ]] ;
+    dup unload intake ;
 
 : reload-instances ( class - )
     {: class0 :}
@@ -149,6 +145,7 @@ _totem :apply ( class - )
         then 
     then
 
+    2dup -path type cr
     class0 materialize intake ;
 
 : load-dir ( path-a path-len class - )
@@ -257,9 +254,12 @@ _totem :apply ( class - )
 
 : src> ( ... a - ) ( ... a - a' )
     r> {: xt | a :}
+    srcpath$ c@ -exit
     srcpath$ count file@ drop to a
-    a xt execute drop
-    a free throw ;
+    a xt catch 
+    nip
+    a free drop
+    throw ;
 
 \ =============================================================================
 \ Defaults
