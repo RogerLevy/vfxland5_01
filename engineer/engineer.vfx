@@ -648,6 +648,8 @@ borrow nib2/ init-nib
             hold off
             windowed
             ['] (.cold) is .cold
+            -1 to GenINI?
+            0 to InitSupport?
             save-exe cr
         hold ! debug ! repl ! ide !
     if fullscreen else windowed then ;
