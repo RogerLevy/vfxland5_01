@@ -60,5 +60,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
 : require getPathSpec ['] required preserve-order ;
 : required ['] required preserve-order ;
 : ?included  2dup fileExist? if included else 2drop then ;
+: ?required  2dup fileExist? if required else 2drop then ;
+
 
 only forth definitions
