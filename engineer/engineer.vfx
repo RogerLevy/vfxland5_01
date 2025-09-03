@@ -9,14 +9,6 @@
 include %idir%\vfxcore2.vfx
 include %idir%\error2.vfx  \ TODO: Make platform-agnostic
 
-variable dump#
-
-: dumpsys
-    s" dumps" ensure-dir
-    ['] vfxcore here over - 
-    dump# @ f" dumps/dump%03n.bin" write 
-    1 dump# +! ;
-
 \ =============================================================================
 \ Engineer Variables
 \ =============================================================================
@@ -95,6 +87,7 @@ LIBRARY: allegro_monolith-5.2.dll
 include %idir%/allegro-5.2.5.vfx
 include %idir%/al-utils.vfx
 include %idir%/keys.vfx
+include %idir%/fstools.vfx
 
 \ =============================================================================
 \ Window bring-to-front
@@ -112,49 +105,6 @@ GetForegroundWindow value vfx-hwnd
 
 : >vfx ( - )
     vfx-hwnd SetForegroundWindow drop ;
-
-\ =============================================================================
-\ Filesystem
-\ =============================================================================
-
-: dir-exists? ( a n - f )
-    >zpad GetFileAttributes -1 <> ;
-
-: each-file ( path:a n xt - ) ( a n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
-    e al_open_directory if
-        begin  e al_read_directory ?dup while
-            >r 
-            r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
-                r@ al_get_fs_entry_name zcount xt execute
-            then
-            r> al_destroy_fs_entry
-        repeat
-        e al_close_directory drop    
-    else
-        -1 abort" Couldn't open directory"
-    then 
-    e al_destroy_fs_entry ;
-
-: each-file-and-dir ( path:a n xt - ) ( a n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
-    e al_open_directory if
-        begin  e al_read_directory ?dup while
-            >r 
-            \ r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
-                r@ al_get_fs_entry_name zcount xt execute
-            \ then
-            r> al_destroy_fs_entry
-        repeat
-        e al_close_directory drop    
-    else
-        -1 abort" Couldn't open directory"
-    then 
-    e al_destroy_fs_entry ;
-
-
-: >datadir ( a n - a n )
-    s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
 
 \ =============================================================================
 \ Persistence system
