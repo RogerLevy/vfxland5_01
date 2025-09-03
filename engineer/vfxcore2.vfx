@@ -1,5 +1,6 @@
 variable debug  debug on
-optimising off
+optimising off \ DO NOT REMOVE
+-idata \ DO NOT REMOVE
 
 \ =============================================================================
 \ Language extensions p.1

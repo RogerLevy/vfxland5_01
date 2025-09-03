@@ -247,11 +247,11 @@ aka se" s\"        \ " \ syntax highlight guard
 : .:  postpone (s") 0 parse $, postpone type postpone cr ; immediate
 
 \ Make variable names show up properly in data stack traces
-debug @ [if]
-: variable  create 0 , ;
-: dvariable  create 0 , 0 , ;
-: 2variable  create 0 , 0 , ;
-[then]
+\ debug @ [if]
+\ : variable  create 0 , ;
+\ : dvariable  create 0 , 0 , ;
+\ : 2variable  create 0 , 0 , ;
+\ [then]
 
 : toggle dup @ 0= swap ! ;
 : udup  over swap ;
