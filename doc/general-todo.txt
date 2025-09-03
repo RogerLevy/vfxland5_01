@@ -1,9 +1,13 @@
+
 2025/09/02
+[ ] (NIBS) Fix properties sharing serialization configuration across traits and classes
+    Each property needs to have an independent configuration per-classifier.
+
 [ ] (Engineer) Add protection against circular dependencies when honing is enabled
 
 2025/08/23
-[ ] (Engineer) Implement new LD tool
-    Consolidate TRY, UPDATE, and RUN functionality with smart path searching and project detection.
+[x] (Engineer) Implement new LD tool
+    Consolidate TRY and LD functionality.
 
 2025/08/22
 [ ] (Supershow) Implement owner-extension for the scene class
