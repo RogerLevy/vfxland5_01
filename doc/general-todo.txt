@@ -1,4 +1,8 @@
 
+2025/09/03
+[ ] (Engineer) Protect against buffer overrun when deserializing cstrings
+    Add bounds checking and safe string handling to prevent buffer overflow vulnerabilities.
+
 2025/09/02
 [ ] (NIBS) Fix properties sharing serialization configuration across traits and classes
     Each property needs to have an independent configuration per-classifier.
