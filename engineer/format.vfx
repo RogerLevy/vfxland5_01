@@ -102,17 +102,17 @@
 
 : f"
     state @ if
-        postpone (s") ", postpone safer-format
+        postpone (s") ", align postpone safer-format
     else
-        '"' parse >syspad fbuf+ format
+        '"' parse >syspad safer-format
     then ; immediate
 
 : fe"
     readEscaped count 
     state @ if
-        postpone (s") $, postpone safer-format
+        postpone (s") $, align postpone safer-format
     else
-        fbuf+ format
+        safer-format
     then ; immediate
 
 \ rs
