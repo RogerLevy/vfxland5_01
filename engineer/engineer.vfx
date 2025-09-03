@@ -270,7 +270,7 @@ synonym z zoom
 || : clear-funcs ( - )
     funcs 256 12 * erase
     s" ?reload" <f5> func
-    s" hold toggle" <f8> func ;
+    s" hold toggle" <f9> func ;
 
 : ?func ( n - )
     <f1> - dup 0 12 within? if
