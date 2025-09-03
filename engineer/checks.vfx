@@ -6,6 +6,9 @@ crucial test: check-object ( a - a n:res )
 before [[ check-object
 wrap-word [[
 
+before as check-object
+wrap-word as
+
 : ?prop ( n - n )
     validations @ -exit
     dup 0= abort" ?PROP >> Property not mapped for this class!" ;
