@@ -124,12 +124,11 @@ private
     context -> EBP @ ds 16 cells move
     ."     In: " context -> EIP @ .ip cr
     ."     Data stack: " cr
-    ds
+    ds 8 dtrace cr
     ."     Call stack: " cr 
     rs 16 rtrace cr
     \ DOESN'T WORK!  s0 @ returns some other address; must be in a different user context here
     \  s0 @  context -> EBP @   .s  -  cell/  
-    8 dtrace cr
     -1 ;
   
 \ : ?debugger ( err context - filter? )
