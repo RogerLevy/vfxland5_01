@@ -44,7 +44,7 @@ class;
 : bitmap-file ( n - a n ) ?nullbmp ?subbmp bmptotem -> srcpath$ count ;
    
 bitmap :: unload ( - )
-    albmp @ ?dup if al_destroy_bitmap then
+    albmp @ -albmp
     0 id @ bitmap[] !
     0 albmp ! ;
 

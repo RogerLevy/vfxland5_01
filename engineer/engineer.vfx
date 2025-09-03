@@ -253,6 +253,9 @@ create pen 0 , 0 , \ int
     at@ 2swap al_create_sub_bitmap ?dup 
     0= abort" al_create_sub_bitmap error" ;
 
+: -albmp ( albmp - )
+    ?dup -exit al_destroy_bitmap ;
+
 include %idir%/matrix.vfx
 include %idir%/print.vfx
 include %idir%/../textmode/textmode.vfx
@@ -535,7 +538,9 @@ defer frame ( - ) ' noop is frame
     begin ?event not until ;
 
 :noname ( - )
-    ['] (pump) catch ?throw need-pump on ;
+    ['] (pump) catch 
+    (me) to me
+    ?throw need-pump on ;
     is pump
 
 : event? ( - f )

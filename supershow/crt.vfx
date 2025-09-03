@@ -46,6 +46,6 @@
 \ Kickoff
 prune:
     ." Destroying CRT objects" cr 
-    buf:bmp al_destroy_bitmap
-    tv:bmp al_destroy_bitmap
+    buf:bmp -albmp
+    tv:bmp -albmp
     crtea:s al_destroy_shader ;
