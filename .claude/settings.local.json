@@ -41,7 +41,8 @@
       "Bash(sudo apt:*)",
       "Bash(apt search:*)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git log:*)"
     ],
     "deny": []
   }

@@ -61,6 +61,14 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 \ Initialization
 \ =============================================================================
 
+: cleanup-supershow ( - )
+    destroy-bitmaps
+    hush destroy-samples 
+    cleanup-crt ;
+
+prune: cleanup-supershow ;
+\ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
+
 : init-supershow ( - )
     hold off
     init-bitmaps
@@ -76,7 +84,7 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 init-supershow
 
 debug @ [if]
-    include %idir%/tools.vfx           \ Development tools
-    include %idir%/sketchpad/sketchpad.vfx \ Stage editor
+    include %idir%/tools.vfx                \ Development tools
+    include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
     s" sketchpad" <f12> func
 [then]

@@ -110,8 +110,8 @@ defer voice? ( smp - f )
     0 to strm
     0 next-smp# ! ;
 
-|| : destroy-samples ( - )
-    ." Destroying samples" cr 
+: destroy-samples ( - )
+    ." Destroying samples..." cr 
     #samples for
         i sample[] @ al_destroy_sample  
     loop
@@ -187,10 +187,3 @@ defer voice? ( smp - f )
 
 : playhead ( - f:secs )
     strm al_get_audio_stream_position_secs ;
-
-\ =============================================================================
-\ Kickoff
-\ =============================================================================
-
-prune:  stop-sounds  destroy-samples ;
-' destroy-samples AtExit

@@ -43,10 +43,10 @@ class;
 : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
 : bitmap-file ( n - a n ) ?nullbmp ?subbmp bmptotem -> srcpath$ count ;
    
-bitmap :: unload ( - )
-    albmp @ -albmp
-    0 id @ bitmap[] !
-    0 albmp ! ;
+\ bitmap :: unload ( - )
+\     albmp @ -albmp
+\     0 id @ bitmap[] !
+\     0 albmp ! ;
 
 : put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
     dup >albmp swap 24 rshift draw-bitmap ;
@@ -60,8 +60,11 @@ bitmap :: unload ( - )
 : reload-bitmaps ( - )
     bitmap reload-instances ;
 
-: unload-bitmaps ( - )
-    bitmap unload-instances ;
+: destroy-bitmaps ( - )
+    ." Destroying bitmaps" cr
+    65536 1 do
+        i bitmap[] dup @ ?dup if al_destroy_bitmap then off
+    loop  1 next-bmp# ! ;
 
-prune: unload-bitmaps ;
-' unload-bitmaps AtExit
+\ : unload-bitmaps ( - )
+\     bitmap unload-instances ;
