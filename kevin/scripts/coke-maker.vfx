@@ -8,7 +8,7 @@ coke-maker :: peeked  !" n1" ;
 : *coke  me 0 -20 from  coke% one kids ! ;
 : init-coke-maker  ( n - )
     period ! 
-    coke.ts baseid@ bmp !  
+    coke.ts 0 tile bmp !  
     act>
         bmp off
         1.0 passed? -exit  *coke

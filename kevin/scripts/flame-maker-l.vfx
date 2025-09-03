@@ -5,7 +5,7 @@ prop kids
 class flame-maker-l%
 : *flame  flame% one dup [[ left fac ! ]] ;
 flame-maker-l :: init
-    flame.ts baseid@ h| bmp !  
+    flame.ts 0 tile h| bmp !  
     act>
         bmp off 
         kids @ 0= if  2.0 passed? -exit  me 0 0 from *flame kids !  then 

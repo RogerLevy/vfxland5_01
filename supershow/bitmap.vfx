@@ -23,7 +23,7 @@ class: bitmap
     : does-bitmap ( - ) 
         does> -> id @ ;
 
-    : add-bitmap-totem ( - bmpid )
+    : add-bitmap-totem ( - )
         alloc-bmp# id ! 
         me id @ bitmap-totems [] ! ;
 

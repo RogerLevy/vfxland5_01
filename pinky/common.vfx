@@ -5,7 +5,7 @@
 bgm bgm1 crack.xm
 tileset.png 16 16 tileset ts
 bg.png 16 16 tileset bg.ts
-bg.ts baseid@ pile !
+bg.ts 0 tile pile !
 s" gfx\bg.dat" bg.ts load-metas 
 0 value p1 
 

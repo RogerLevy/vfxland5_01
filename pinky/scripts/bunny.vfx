@@ -18,7 +18,7 @@ create kinds
 here kinds - cell/ constant #kinds
 
 bunny :: init
-    bunny.ts baseid@ bmp !
+    bunny.ts 0 tile bmp !
     #kinds rnd kind !
     \ 1 kind !
     kind @ 0 #kinds 1 - clamp cells kinds + @ execute

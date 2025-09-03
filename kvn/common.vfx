@@ -33,7 +33,7 @@ include platformer.vfx
 
 \ Global assets
 bg.png 8 8 tileset bg.ts
-bg.ts baseid@ pile !
+bg.ts 0 tile pile !
 s" gfx\bg.dat" bg.ts load-metas 
 
 \ Inventory

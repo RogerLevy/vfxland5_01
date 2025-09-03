@@ -30,7 +30,7 @@ create walks  3 , 11 , 3 h| , 7 ,
     dirkeys? if walks 4 else idles 1 then
     >r  fac @ cells + @ pinky.ts swap tile  r> ;
 
-pinky :: _idle  0 0 vx 2!  pinky.ts baseid@ bmp ! ;
+pinky :: _idle  0 0 vx 2!  pinky.ts 0 tile bmp ! ;
 pinky :: _walk  !vx ;
 
 : ahead  dup fac @ dir>v 2p*  0 1 2+  me -rot from ;

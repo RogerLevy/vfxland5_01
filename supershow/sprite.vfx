@@ -9,7 +9,7 @@ class;
 
 || variable aspd \ pointer to len in animation header
 || : >frames ( anim - a ) cell+ cell+ ;
-|| : ?baseid  a.ts @ dup if baseid@ then ;
+|| : ?baseid  a.ts @ dup if 0 tile then ;
 || : !bmp  a.ofs @ .> cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
 || : ?done  a.ofs @ a.spd @ + a.len @ >. >= -exit  a.done on ;
 : cycle ( anim spd. - ) \ to stop, say `anm off`

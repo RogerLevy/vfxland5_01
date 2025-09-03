@@ -321,7 +321,7 @@ c: timer %actor xt1 dur ;
 actor :derive ( source-class derived-class - )
     2drop
     private
-    template [[  \ allows immediate assignment of template (TODO: revisit)
+    template as  \ allows immediate assignment of template (TODO: revisit)
 ;
 
 : hide-autoclass ( a len - )
@@ -342,6 +342,9 @@ actor :reopen ( class - )
     \       This will prevent any dangling references to autoclasses. 
     >name count hide-autoclass ;
 
+
+20 cell stack script-classes
+
 class: actor-script
     is-a _totem
     static script-class \ <ref _class
@@ -354,8 +357,15 @@ class: actor-script
     default-dir: scripts
 
     :: _intake ( - )
-        srcpath$ count required ;
+        me >r   srcpath$ count required   r> to me ;
 class;
+
+actor-script script-classes push
+
+actor-script :derive ( parent derived - )
+    nip 
+    dup script-classes contains? if drop exit then
+    script-classes push ;
 
 actor :: on-error ( xt err# - )
     {: xt err :} 
@@ -406,4 +416,3 @@ actor :: on-error ( xt err# - )
 
 : +actor ( - <name> )
     actor-script +script drop ;
-

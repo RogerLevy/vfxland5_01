@@ -213,4 +213,4 @@ public
 \     ' execute t0 ! ;
 
 \ revert-all  
-bg.ts baseid@ t0 !
+bg.ts 0 tile t0 !

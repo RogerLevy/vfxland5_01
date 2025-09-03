@@ -4,7 +4,7 @@
 require starfield.vfx
 require tween.vfx
 
-title-sheet.png 291 41 tileset title-ts
+\ title-sheet.png 291 41 tileset title.ts
 
 private
 variable gamemode
@@ -15,7 +15,7 @@ variable gamemode
 \ Logo
 : *title
     *actor as>
-        title-ts 0 tile bmp !
+        title.ts 0 tile bmp !
         me ;
 
 \ Movie
@@ -47,7 +47,7 @@ variable gamemode
 \ : ease-out
 \     1. n1 @ - 1. min p>f 2.2e f** f>p bmp @ bmph 1 - p* ;
 
-: logoh title-ts 0 tile bmph ;
+: logoh title.ts 0 tile bmph ;
 
 create ntable cell array[
     0 ,
@@ -79,7 +79,7 @@ array] drop
         1. n1 !
         linear ease-in n1 0 0.3 tween
         act&>
-            title-ts revealing tile bmp !
+            title.ts revealing tile bmp !
             n1 @ 0 = if halt part2 then ;
 
 : movie

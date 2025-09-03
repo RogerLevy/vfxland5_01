@@ -539,7 +539,6 @@ defer frame ( - ) ' noop is frame
 
 :noname ( - )
     ['] (pump) catch 
-    (me) to me
     ?throw need-pump on ;
     is pump
 

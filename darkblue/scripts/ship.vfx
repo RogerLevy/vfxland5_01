@@ -2,8 +2,6 @@ require scripts\orb.vfx
 require scripts\tri.vfx
 require scripts\turret.vfx
 
-ship-v1.png 27 27 tileset ship.ts
-
 class: ship
     actor derive
     prop r

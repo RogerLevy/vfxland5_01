@@ -1,25 +1,6 @@
-." Loading common words..." cr
-s" common.vfx" ?included
-
-." Loading modules..." cr
+require common.vfx
 require event.vfx
 require darkblue-math.vfx
 require starfield.vfx
 require laser.vfx
 require enemies.vfx
-
-." Creating autoclasses..." cr
-create-autoclasses
-
-." Loading totems..." cr
-actor-script load-default-dir
-scene load-default-dir
-
-." Loading game modes..." cr
-require title.vfx
-require game.vfx
-\ require gameover.vfx  
- 
-debug @ [if]
-include %idir%\testing.vfx
-[then]

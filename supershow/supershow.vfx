@@ -42,7 +42,8 @@ include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 \ Tilemap
 \ =============================================================================
 
-include %idir%\tilemap.vfx  \ Tilemap rendering Tileset class
+\ include %idir%\tilemap.vfx  \ Tilemap rendering Tileset class
+include %idir%\tilemap2.vfx
 include %idir%\udlr.vfx     \ Movement utilities
 include %idir%\tmcol.vfx    \ Tilemap collision detection
 include %idir%\tread.vfx    \ Tilemap data reading

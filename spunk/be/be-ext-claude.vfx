@@ -79,7 +79,7 @@ variable tileset-mode    \ flag: are we editing a tileset?
     editing-tileset @ to tileset0
     tileset0 if
         ." Tileset: " tileset0 .
-        tileset0 baseid@ ." base=" .
+        tileset0 0 tile ." base=" .
         tileset0 cell+ cell+ cell+ @ ." tw=" .
         tileset0 cell+ cell+ cell+ cell+ @ ." th=" .
         cr

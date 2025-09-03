@@ -95,6 +95,6 @@ public
 : te  te/ show> logic ui ;
 
 || : edit ( - <tileset> )
-    >in @ ' execute baseid@ t0 ! >in !
+    >in @ ' execute 0 tile t0 ! >in !
     bl parse -ext s" gfx\" >datadir f" %s%s.dat" load ;
 edit bg.ts

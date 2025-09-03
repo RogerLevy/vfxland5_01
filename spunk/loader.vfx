@@ -2,18 +2,13 @@
 \ spunk - Project loader
 \ ------------------------------------------------------------------------------
 
-." LOADER.VFX >> Loading constants" cr
 s" constants.vfx" ?included 
-
-." LOADER.VFX >> Loading Supershow" cr
 include %idir%\..\supershow\supershow.vfx
-
-." LOADER.VFX >> Loading Spunk" cr
 include %idir%\spunk.vfx
-
-." LOADER.VFX >> Loading validations" cr
 s" checks.vfx" ?included
-
-." LOADER.VFX >> Loading modules" cr
 s" modules.vfx" ?included
-
+create-autoclasses
+['] load-default-dir script-classes each@
+scene load-default-dir
+s" modes.vfx" ?included
+debug @ [if] s" testing.vfx" ?included [then]

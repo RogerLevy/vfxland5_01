@@ -28,7 +28,7 @@ include platformer.vfx
 \ Global assets
 \ bgm bgm1 crack.xm 
 bg.png 20 20 tileset bg.ts
-bg.ts baseid@ pile !
+bg.ts 0 tile pile !
 s" gfx\bg.dat" bg.ts load-metas 
 
 \ Inventory

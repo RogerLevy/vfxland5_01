@@ -10,6 +10,6 @@ include te.vfx
 
 \ test
 a.png 16 16 tileset a.ts
-a.ts baseid@ t0 !
+a.ts 0 tile t0 !
 1 t !
 load ..\dat\gfx\a.dat

@@ -11,7 +11,7 @@ class: tileset
 
     is-a usable
 
-    prop baseid <save <int 
+    prop baseid
     prop bmp
     prop tw <save <int 
     prop th <save <int 
@@ -26,7 +26,7 @@ class;
 tileset :construct ( - )
     /metas ;
 
-: slice-tiles ( tileset - )
+: slice-tileset ( tileset - )
     \ slice up the source bitmap into tile sub-bitmaps.
     \ add them to the global bitmap registry.
     as>
@@ -39,29 +39,28 @@ tileset :construct ( - )
         next-bmp# @ baseid @ - #tiles ! 
         #tiles @ metas-array @ redim ;
 
-: reslice-tileset ( tw th tileset - )
-    \ slice up source bitmap, creating a new range of sub-bitmaps
-    \ use this at dev-time to change the tile size or if the bitmap's size increased.
-    dup unload   as>   tw 2!   me slice-tiles   me keep ;
+\ : reslice-tileset ( tw th tileset - )
+\     \ slice up source bitmap, creating a new range of sub-bitmaps
+\     \ use this at dev-time to change the tile size or if the bitmap's size increased.
+\     dup unload   [[   tw 2!   me slice-tileset   me keep   ]] ;
 
-tileset :: use ( - )
-    baseid @ pile ! ;
+\ tileset :: use ( - )
+\     baseid @ pile ! ;
 
 tileset :: load ( - )
-    \ slice up the tileset's source bitmap.
+    \ slice up the tile set's source bitmap.
     \ if the tileset is being re-loaded, refresh the allocated bitmap range.
     me new? not if next-bmp# @ >r   baseid @ next-bmp# ! then
-    me slice-tiles 
+    me slice-tileset
     me new? not if r> next-bmp# ! then ;
 
-tileset :: unload ( - )
-    baseid @ #tiles @ bounds do
-         i >albmp al_destroy_bitmap
-    loop ;
+: tile ( tileset n - n )
+    swap -> baseid @ + ;
 
-|| : reconnect-bmp ( - ) 
-    my-name -ext f" %s.png" >pad find 0= abort" tileset source bitmap not found!"
-    execute bmp ! ;   \ Bitmap words return their own bitmap ID's
+tileset :: unload ( - )
+    #tiles @ for
+         me i tile >albmp -albmp
+    loop ;
 
 : array, ( array - )
     \ assumes cell array
@@ -80,13 +79,19 @@ tileset :: unload ( - )
     ]] ;
 
 || : deser-tileset ( - )
-    srcpath$ count file@ drop
-    dup
+    src>
         @+ TILESET_FORMAT_VERSION check-version
         ['] into-me desbin+
-        metas-array @ @array+
-    drop
-    free drop ;
+        metas-array @ @array+ ;
+
+|| : reconnect-bmp ( - ) 
+    my-name -ext f" %s.png" 
+    >pad find 0= if
+        drop 
+        pad count f" RECONNECT-BMP >> Tileset source bitmap %s not found" type
+        exit
+    then
+    execute bmp ! ;   \ Bitmap words return their own bitmap ID's
 
 tileset :: _intake ( - )
     deser-tileset   reconnect-bmp   me load ;
@@ -100,9 +105,6 @@ tileset :: _keep ( - )
 
 : +tileset ( bmp# tw th <name> - )
     tileset +totem [[ tw 2! bmp ! me ]] dup load keep ;
-
-: tile ( tileset n - n )
-    swap -> baseid @ + ;
 
 : is-tile? ( n - f )
     >albmp dup -exit al_is_sub_bitmap ;
