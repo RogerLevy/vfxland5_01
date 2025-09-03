@@ -6,7 +6,7 @@ class: tri
     actor derive
     prop r
     prop m
-    prop ang
+    prop a
     prop vang
     prop bounced
 class;
@@ -45,17 +45,17 @@ class;
 
 : move-tri
     \ repel
-    vang @ ang +!
+    vang @ a +!
     ?bounce/cull ;
 
 : !bmp
-    tri.ts ang @ ang>bmp ( ?flicker ) bmp ! ;
+    tri.ts a @ ang>bmp ( ?flicker ) bmp ! ;
 
 tri :: init
     tri.ts 0 tile bmp !
     4. r !
     0. m !
-    360. rnd ang !
+    360. rnd a !
     9. 2 rnd if negate then vang !
     1 worth !
     act>
