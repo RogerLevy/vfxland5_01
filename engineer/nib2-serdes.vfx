@@ -64,7 +64,7 @@
 : desbin+ ( a instance-xt - a' ) ( class - obj )
     \ deserialize object from given buffer address in binary format
     \ returns updated buffer address
-    {: data xt | property0 :}
+    {: data xt | property0 dummy[ 256 ] :}
     data
     \ dup 100 dump
     $@+ \ fetch class name
@@ -83,8 +83,13 @@
             >pad find 0= abort" desbin+ >> Encountered unknown property name."
             >body dup -> cla @ _property <> abort" desbin+ >> Encountered invalid property."
             to property0
+
             \ deserialize the property
-            me property0 -> offset @ prop+ to val-addr
+            property0 -> serialize-flag @ if
+                me property0 -> offset @ prop+ to val-addr
+            else
+                dummy[ to val-addr
+            then
             ( a ) 
             property0 -> property-type @ cells bin-deser-table + @ execute
             ( a' )
