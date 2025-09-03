@@ -46,6 +46,6 @@ require savegame.vfx
     p1 -> falling @ ?exit
     save ;
 
-bye-chain link ' ?save ,
+' ?save atexit
 
 ' boot-kvn is boot

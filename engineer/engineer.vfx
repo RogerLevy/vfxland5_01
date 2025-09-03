@@ -19,7 +19,6 @@ defer desktop ( - ) \ default behavior of SHOW (restored on EMPTY)
 defer boot ( - ) \ app startup code like loading assets
 defer onSwitchIn ( - ) \ Window gets focus
 variable going
-variable bye-chain
 cstring home-path$
 cstring prj-path$
 create funcs 256 12 * allot&erase
@@ -35,12 +34,6 @@ cstring watch$
 variable watch-xt
 variable watch-context
 || variable need-pump
-
-\ =============================================================================
-\ System Integration
-\ =============================================================================
-
-: bye ( - )  bye-chain do-chain  0 ExitProcess ;
 
 \ =============================================================================
 \ Oversight - Contract-orientation system
@@ -551,16 +544,12 @@ magic-id MAGIC_TWEAK TWK
     hWndMain to vfx-hwnd
     vfx-hwnd z" Engineer Dev Console" SetWindowText drop ;
 
-|| create bye-chain-root
-bye-chain link 0 ,
-
 || : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
     [ ' EntryPoint >body @ compile, ] ;
 
 borrow nib2/ init-nib
 
 || : engineer-cleanup ( - )
-    bye-chain-root bye-chain !
     reset-format-buffers
     reset-strout-buffers
     init-nib
@@ -572,7 +561,7 @@ borrow nib2/ init-nib
     ['] noop is onSwitchIn
     honing off ;
 
-' engineer-cleanup bye-chain-root cell+ !
+\ ' engineer-cleanup atexit
 
 \ || : return ( - )
 \     home-path$ count $cwd ;

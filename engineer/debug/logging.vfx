@@ -200,7 +200,7 @@ public
 
 \ Hooks
 \ ' logged-othrow is othrow
-bye-chain link ' shutdown-logging ,
+' shutdown-logging atexit
 
 \\
 \ Usage examples:
