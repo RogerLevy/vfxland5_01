@@ -199,7 +199,7 @@ actor :: unload ( - )
 
 : just ( - )
     ." JUST >> Clearing all actors!" cr
-    0 next# !  actives>  me unload ;
+    0 next# !  gamew 2 / gameh 2 / at  actives>  me unload ;
 
 0 actor :construct ( - )
     at@ 2>. x 2! ;
