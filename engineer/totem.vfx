@@ -23,6 +23,8 @@ SYNC
 
 ))
 
+1 constant TOTEM_ENCODING_VERSION
+
 trait: _totem
 
     prop existed
@@ -34,6 +36,7 @@ trait: _totem
     static on-discovery-xt              \ ( path len class - ) 
     static post-empty-instances-xt     \ ( class - )
     32 nstatic default-dir$             \ Where +TOTEM locates assets by default 
+    static version
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
@@ -62,6 +65,7 @@ _totem :apply ( class - )
     -path >pad find if >body dup _totem is? and else drop 0 then ;
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
+: version: ( <ver> - ) bl parse evaluate classifier -> version ! ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
 : default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
 : default-dir@ ( class - a len ) -> default-dir$ count ;
@@ -176,27 +180,14 @@ _totem :apply ( class - )
     \ Not recursive.
     dup default-dir@ rot load-dir ;
 
-|| 0 value (dest)
-|| : into-dest ( class - obj )
-||     drop   (dest) ;
-
 : into-me ( class - obj )
     drop   me ;
-
-: deser-file ( path len dest-a - )
-    (dest) >r   to (dest)   
-    file@ drop ( a ) dup >r ['] into-dest desbin+ drop  
-    r> free throw
-    r> to (dest) ;
-
-: ser-file ( obj path len - )
-    2>r build[ ( obj ) serbin, build] 2r> write ;
 
 : keep ( totem - )
     as>   
         \ changed @ -exit   
         srcpath$ count -file ensure-dir
-        me _keep   
+        me _keep
         my-name f" Saved %s" type cr
         ; \ changed off ;
 
@@ -247,25 +238,51 @@ _totem :apply ( class - )
 \         empty-instances
 \     loop drop ;
 
+\ =============================================================================
+\ Serialization utilities
+
 : check-version ( n ver - )
-    over <> if
-        cla @ >name count f" Unsupported %s format version %n" -1 -rot .abort
+    over $ff and <> if
+        cla @ >name count f" Unsupported %s totem format version %n" -1 -rot .abort
     else drop then ;
 
-: src> ( ... a - ) ( ... a - a' )
+: check-encoding ( n ver - )
+    over $ff and <> if
+        cla @ >name count f" Unsupported %s totem encoding version %n" -1 -rot .abort
+    else drop then ;
+
+|| : ?totem ( - )
+    me _totem is? not if 
+        s[ me .object s] f" Not a totem: %s" -1 -rot .abort
+    then ;
+
+: des> ( a - ) ( a - a' )
+    ?totem
     r> {: xt | a :}
     srcpath$ c@ -exit
     srcpath$ count file@ drop to a
-    a xt catch 
-    nip
-    a free drop
+    a @+ TOTEM_ENCODING_VERSION check-encoding 
+    @+ version @ check-version 
+    xt catch nip
+    a free throw
     throw ;
+
+: ser> ( - ) ( - )
+    ?totem
+    data[
+    TOTEM_ENCODING_VERSION ,
+    version @ ,
+    r> catch 
+    data] 
+    rot throw
+    srcpath$ count write ;
 
 \ =============================================================================
 \ Defaults
 
 _totem :: _intake ( - )
-    srcpath$ count me deser-file ;
+    des> ['] into-me desbin+ ;
 
 _totem :: _keep ( - )
-    me srcpath$ count ser-file ;
+    ser> me serbin, ;
+

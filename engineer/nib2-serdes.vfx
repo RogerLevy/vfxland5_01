@@ -79,9 +79,12 @@
         \ fetch properties
         @+ for
             $@+ \ fetch property name
-            \ 2dup type cr
-            >pad find 0= abort" desbin+ >> Encountered unknown property name."
-            >body dup -> cla @ _property <> abort" desbin+ >> Encountered invalid property."
+            >pad find 0= if
+                pad count f" desbin+ >> Encountered unknown property name: `%s`" -1 -rot .abort
+            then
+            >body dup -> cla @ _property <> if
+                pad count f" desbin+ >> Not a property: `%s`" -1 -rot .abort
+            then
             to property0
 
             \ deserialize the property

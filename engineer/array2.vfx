@@ -223,6 +223,7 @@ class;
     ]] ;
 
 \ ------------------------------------------------------------------------------
+\ Serialize arrays of objects (values or references)
 
 trait: _object
     :: serializable? ( - flag ) -1 ;

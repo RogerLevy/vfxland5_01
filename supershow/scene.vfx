@@ -1,5 +1,13 @@
 1 constant SCENE_FORMAT_VERSION
 
+class: scene  
+    is-a _totem
+    version: SCENE_FORMAT_VERSION
+    extension: scn
+    default-dir: dat/scn
+class;
+
+
 class: actor
     prop owner <ref actor       \ actors with owners are discarded
                                 \ it is up to the owner actor to recreate
@@ -8,22 +16,14 @@ class;
 : own ( actor - actor )
     me over -> owner ! ;
 
-class: scene  
-    is-a _totem
-    extension: scn
-    default-dir: dat/scn
-class;
-
 actor :: serializable? ( - flag )
     en @   owner @ 0= and ; 
 
 scene :: _keep ( - )
     \ save actors on stage to disk
-    build[ 
-        SCENE_FORMAT_VERSION ,
+    ser>
         me serbin,
-        actors ['] serializable? sermulti,
-    build] srcpath$ count write ;
+        actors ['] serializable? sermulti, ;
 
 || : actor-instance ( class - actor )
     dup actor is? not if
@@ -36,15 +36,14 @@ scene :: _keep ( - )
     ['] actor-instance desmulti+ ;
 
 || : deser-scene+ ( a - a' )
-    @+ SCENE_FORMAT_VERSION check-version
     ['] into-me desbin+ ;
 
 scene :: load ( - )
     \ load actors from disk to stage
-    src> deser-scene+ deser-actors+ ;
+    des> deser-scene+ deser-actors+ ;
 
 scene :: _intake ( - )
-    src> deser-scene+ ;
+    des> deser-scene+ ;
 
 : +scene ( <name> - scene ) 
     scene +totem ;

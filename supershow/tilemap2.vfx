@@ -8,6 +8,7 @@ class: tileset
     is-a _totem
     extension: ts
     default-dir: dat/gfx
+    version: TILESET_FORMAT_VERSION 
 
     is-a usable
 
@@ -79,8 +80,7 @@ tileset :: unload ( - )
     ]] ;
 
 || : deser-tileset ( - )
-    src>
-        @+ TILESET_FORMAT_VERSION check-version
+    des>
         ['] into-me desbin+
         metas-array @ @array+ ;
 
@@ -97,11 +97,9 @@ tileset :: _intake ( - )
     deser-tileset   reconnect-bmp   me load ;
 
 tileset :: _keep ( - )
-    build[
-        TILESET_FORMAT_VERSION ,
+    ser>
         me serbin,
-        metas-array @ array,
-    build] srcpath$ count write ;
+        metas-array @ array, ;
 
 : +tileset ( bmp# tw th <name> - )
     tileset +totem [[ tw 2! bmp ! me ]] dup load keep ;
