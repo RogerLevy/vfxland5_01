@@ -18,6 +18,8 @@ include %idir%\checks.vfx
 20 ?constant gap  
 320 gap / ?constant tmw
 240 gap / ?constant tmh
+320 ?constant gamew
+240 ?constant gameh
 
 \ =============================================================================
 \ Dependencies
@@ -83,6 +85,11 @@ prune: cleanup-supershow ;
 
 init-supershow
 
+\ Default engine configuration
+' init-supershow is boot
+:now show> step sprites ;
+
+\ Tools
 debug @ [if]
     include %idir%/tools.vfx                \ Development tools
     include %idir%/sketchpad/sketchpad.vfx  \ Stage editor

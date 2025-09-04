@@ -248,8 +248,6 @@ actor object dummy
     ']' parse evaluate  1 >in +!
     s" me init ]]" evaluate ; immediate
 
-\ : in? ( - f ) x 2@ 2.> 0 239 within >r 0 319 within r> and ;
-\ : ?out ( - f ) in? not dup if unload then ;
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;
 : from ( actor x y - ) rot as> x 2@ 2.> 2+ at  ; \ me actor# priority ;
 : halt  beha off  0 0 vx 2! ;
