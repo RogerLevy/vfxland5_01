@@ -1,0 +1,10 @@
+\ Game 
+: render  sprites animate ; 
+: think  step ; 
+: game  show> think render ; 
+game 
+ 
+\ Integrations 
+: boot-treats  init-supershow game ; 
+' boot-treats is boot 
+init-supershow 

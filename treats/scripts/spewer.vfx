@@ -1,0 +1,13 @@
+require scripts\treat.vfx
+
+class: SPEWER
+    ACTOR derive
+class;
+
+: somewhere  gamew gameh 2rnd ;
+: pos me 0 0 from ;
+: pos somewhere at ;
+
+SPEWER :: init ( - )
+    act> pos treat one [[ 4. -2. 2rnd -2. -2. 2+ vx 2! ]] ;
+
