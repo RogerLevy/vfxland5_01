@@ -2,7 +2,7 @@
 
 class: scene  
     is-a _totem
-    version: SCENE_FORMAT_VERSION
+    format: SCENE_FORMAT_VERSION
     extension: scn
     default-dir: dat/scn
 class;

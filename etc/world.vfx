@@ -10,7 +10,7 @@ filesystem:
 
 class: tilemap
     is-a _totem
-    version: TILEMAP_FORMAT_VERSION
+    format: TILEMAP_FORMAT_VERSION
     prop w <save <int
     prop h <save <int
     prop data <addr
@@ -43,7 +43,7 @@ tilemap :: _keep ( - )
 
 class: world
     is-a _totem
-    version: WORLD_FORMAT_VERSION 
+    format: WORLD_FORMAT_VERSION 
     extension: wld
     default-dir: dat/wld
 

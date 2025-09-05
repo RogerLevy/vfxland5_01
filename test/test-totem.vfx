@@ -7,19 +7,16 @@ class: abc
     prop c <save 
     default-dir: abc
     extension: abc
-    version: 1
+    format: 1
 class;
 
-\ abc +totem test 
-\ [[  1 a ! 2 b ! 3 c !
-\ me ]] manifest
-\ test.abc commit
+\ abc +totem test.abc [[ 1 a ! 2 b ! 3 c ! ]] 
+\ test.abc keep
 
-\ test.abc [[ 0 a ! 0 b ! 0 c ! ]]
-\ s" test.abc" abc load-totem [[ a ? b ? c ? ]]
+\ abc +totem test2.abc [[ 4 a ! 5 b ! 6 c ! ]] 
+\ test2.abc keep
+
 
 s" abc" abc load-default-dir
-test.abc [[ a ? b ? c ?  999 b ! ]]
+test.abc [[ a ? b ? c ? ]]
 test2.abc [[ a ? b ? c ? ]]
-
-test.abc keep

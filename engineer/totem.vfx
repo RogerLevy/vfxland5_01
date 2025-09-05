@@ -23,8 +23,6 @@ SYNC
 
 ))
 
-1 constant TOTEM_ENCODING_VERSION
-
 trait: _totem
 
     prop existed
@@ -34,9 +32,9 @@ trait: _totem
     4 nstatic extension$                \ cstring: main file extension
     /list nstatic instances             \ nib2 list, track instances
     static on-discovery-xt              \ ( path len class - ) 
-    static post-empty-instances-xt     \ ( class - )
+    static post-empty-instances-xt      \ ( class - )
     32 nstatic default-dir$             \ Where +TOTEM locates assets by default 
-    static version
+    static format                       \ Totem file format version (not used by all totems!)
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
@@ -65,7 +63,7 @@ _totem :apply ( class - )
     -path >pad find if >body dup _totem is? and else drop 0 then ;
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
-: version: ( <ver> - ) bl parse evaluate classifier -> version ! ;
+: format: ( <ver> - ) bl parse evaluate classifier -> format ! ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
 : default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
 : default-dir@ ( class - a len ) -> default-dir$ count ;
@@ -241,14 +239,15 @@ _totem :apply ( class - )
 \ =============================================================================
 \ Serialization utilities
 
-: check-version ( n ver - )
+: check-format ( n ver - )
     over $ff and <> if
-        cla @ >name count f" Unsupported %s totem format version %n" -1 -rot .abort
+        cla @ >name count f" %s : Unsupported format version %n" -1 -rot .abort
     else drop then ;
 
 : check-encoding ( n ver - )
-    over $ff and <> if
-        cla @ >name count f" Unsupported %s totem encoding version %n" -1 -rot .abort
+    over <> if
+        24 rshift
+        cla @ >name count f" %s : Unsupported global encoding version %n" -1 -rot .abort
     else drop then ;
 
 || : ?totem ( - )
@@ -256,24 +255,28 @@ _totem :apply ( class - )
         s[ me .object s] f" Not a totem: %s" -1 -rot .abort
     then ;
 
+: binfile@ ( fp len - a ) file@ drop @+ MAGIC_BIN check-encoding ;
+: binfree ( a - ) cell- free ;
+: bin[ ( - ) data[ MAGIC_BIN , ;
+: bin] ( - a len ) data] ;
+
 : des> ( a - ) ( a - a' )
     ?totem
     r> {: xt | a :}
     srcpath$ c@ -exit
-    srcpath$ count file@ drop to a
-    a @+ TOTEM_ENCODING_VERSION check-encoding 
-    @+ version @ check-version 
+    srcpath$ count binfile@ to a
+    a 
+    @+ format @ check-format 
     xt catch nip
-    a free throw
+    a binfree throw
     throw ;
 
 : ser> ( - ) ( - )
     ?totem
-    data[
-    TOTEM_ENCODING_VERSION ,
-    version @ ,
+    bin[
+    format @ ,
     r> catch 
-    data] 
+    bin] 
     rot throw
     srcpath$ count write ;
 

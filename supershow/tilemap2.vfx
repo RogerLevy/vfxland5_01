@@ -8,7 +8,7 @@ class: tileset
     is-a _totem
     extension: ts
     default-dir: dat/gfx
-    version: TILESET_FORMAT_VERSION 
+    format: TILESET_FORMAT_VERSION 
 
     is-a usable
 
