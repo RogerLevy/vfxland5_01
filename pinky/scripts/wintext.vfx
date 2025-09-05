@@ -1,8 +1,0 @@
-class: wintext
-    actor derive
-
-wintext :: init
-    win.png bmp !
-;
-
-class;

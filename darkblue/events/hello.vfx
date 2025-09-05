@@ -1,7 +1,0 @@
-\ Hey it's a test!
-
-:event
-    cr ." Hello!"
-    1.0 delay
-    cr ." Goodbye!"
-;

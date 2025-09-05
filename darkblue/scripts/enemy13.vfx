@@ -1,9 +1,0 @@
-class: enemy13
-    enemy derive
-
-enemy13 :: init ( - )
-    enemy13.png bmp !
-    act>
-        ;
-
-class;
