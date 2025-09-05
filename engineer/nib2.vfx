@@ -243,6 +243,10 @@ _object [[
     then
     drop ;
 
+: scaffold ( class addr - )
+    swap over >cla !   \ Store class pointer
+    [[ me !template ]] ;
+
 : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
     [[
