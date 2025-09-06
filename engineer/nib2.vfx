@@ -638,7 +638,7 @@ defer protocol-validations ( obj protocol - obj protocol )
 
 || : :method ( classname-a classname-len protocolname-a protocolname-len - xt )
     push-order only forth definitions
-    2swap f" : %s:%s" 2dup upper
+    2swap f" : %s:%s" >uppercase
     evaluate
     pop-order 
     state on

@@ -9,7 +9,7 @@
 : h|  $1000000 or ;
 : v|  $2000000 or ;
 : hv|  h| v| ;
-: named? ( xt $ - f ) >r >name count r> count 2dup upper compare 0= ; 
+: named? ( xt $ - f ) >r >name count r> count >uppercase compare 0= ; 
 : bmpw bmpwh drop ;
 : bmph bmpwh nip ;
 

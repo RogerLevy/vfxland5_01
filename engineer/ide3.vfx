@@ -183,7 +183,7 @@ borrow engineer/ func[]
     s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  " type cr
     12 for
         i func[] c@ if
-            i func[] count 2dup upper i 1 + f" F%n=%s  " type
+            i func[] count >uppercase i 1 + f" F%n=%s  " type
         then
     loop ;
 

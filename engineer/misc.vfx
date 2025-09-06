@@ -122,6 +122,7 @@ aka file-exists? fileexists?
     preword find nip if drop ' drop else value then ;
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
 : >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lc swap c! loop ;
+: >uppercase ( a c - a c ) 2dup upper ;
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
 : h. ." $" base @ swap hex u. base ! ;
