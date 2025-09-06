@@ -48,7 +48,7 @@ Modern trait-based OOP system with ~99% feature completion
 
 This is a custom system developed by the user specifically for their game development. It is not a part of VFX Forth.
 
-- **Classes**: Defined with `class:` ... `class;` or compact `c: name [traits...] [props...] ;`
+- **Classes**: Defined with `class:` ... `class;` or compact `c: name [@class] [+traits "traits"...] [props...] ;`
 - **Traits**: Defined with `trait:` ... `trait;`, provide reusable behavior and properties
 - **Objects**: User allocated, first cell = class pointer, automatic constructor execution - contructors are for compiling only
 - **Protocols**: Late-bound method dispatch declared and implemented with `::`

@@ -275,7 +275,7 @@ actor object dummy
 \ Timer actors
 \ =============================================================================
 
-c: timer %actor xt1 dur ;
+c: timer @actor xt1 dur ;
 
 : clear-timers ( -- )
     actives> me timer is? -exit me unload ;

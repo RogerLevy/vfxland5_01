@@ -48,7 +48,7 @@
     -> cla @ _class = ;
 
 : ?class ( - f ) 
-    preword 1 + c@ '%' <> if 0 exit then
+    preword 1 + c@ '@' <> if 0 exit then
     pre-xt dup 0= if consume -1 abort" Token not found." then
     >body dup is-class? not if
         consume -1 abort" Token preceded by % must be a class."

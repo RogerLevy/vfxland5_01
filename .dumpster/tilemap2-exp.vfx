@@ -24,7 +24,7 @@ _asset :: export ( - ) ;     \ save to stored path (or derived path)
 \ =============================================================================
 \ Doesn't implement DESTROY because the bitmap system frees all bitmaps
 
-c: _tileset _asset baseid bmp tw th #tiles ;
+c: _tileset  _asset baseid bmp tw th #tiles ;
 
 256 cell stack tilesets
 tilesets _tileset -> registry !
