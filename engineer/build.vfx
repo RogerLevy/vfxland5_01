@@ -6,12 +6,11 @@ include %idir%/file-fix.vfx
 include %idir%/engineer.vfx
 
 cwd ..
-frigid init-ide >vfx
 
 256 1024 * 1024 * set-size  \ of dictionary
     
-cwd bin
-save-dev engineer   
-cwd ..
+save-dev bin\engineer   
 
 save-xref
+
+frigid init-ide >vfx

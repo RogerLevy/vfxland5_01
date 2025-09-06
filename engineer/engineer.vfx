@@ -574,9 +574,6 @@ borrow nib2/ init-nib
     empty 
     +xrefs
     256 1024 * xref-kb
-    turnkey? if
-        s" xref.xrf" fileexist? if load-xref then
-    then
 ;
 
 : frigid ( - )
@@ -668,30 +665,33 @@ borrow nib2/ init-nib
 || : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
-    prj prj prj prj fe" cmd /c \"mkdir ..\\..\\rel\\%s\ & del ..\\..\\rel\\%s\\*.* /s /q & xcopy dat ..\\..\\rel\\%s\\dat /i /q /s /y /e & copy ..\\bin\\*.dll ..\\..\\rel\\%s\"" 
-    2dup type cr shellcmd
-    500 ms
-    prj prj f" save-release ..\..\rel\%s\%s" 2dup type cr evaluate
-    prj prj f" save-debug ..\..\rel\%s\%s-debug" 2dup type cr evaluate ;
+    wd '\' ending f" vfxland5_01\engineer\turnkey.bat %s" shellcmd ;
 
 : watch ( - <code> )
     context @ watch-context !
     0 parse 2dup f" :noname %s ;" evaluate watch-xt !
     watch$ place ;
 
-: ldp ( - <path> )
-    bl preparse home-path$ count f" %s\%s\main.vfx" file-exists? not if
-        bl parse fe" \"%s\" doesn't exist or is not a project!" type cr
+: ldp ( - <name> )
+    {: | name[ 256 ] path[ 256 ] :}
+    bl parse name[ place
+    name[ c@ 0=
+    name[ count s" ." compare 0= or if 
+        wd '\' ending name[ place 
+        s" ." >abspath path[ place
+    else
+        name[ count 
+        home-path$ count f" %s\%s" >lowercase path[ place 
+    then
+    path[ count f" %s\main.vfx" file-exists? not if
+        name[ count f" '%s' doesn't exist or is not a project!" type cr
         exit 
     then
-    bl parse 2dup 2dup upper f" Loading %s..." type cr
-    home-path$ count f" %s\%s" >lowercase prj-path$ place
+    name[ count >uppercase f" Loading %s..." type cr
+    path[ count prj-path$ place
     prj-path$ count $cwd
-    200 ms
-    ['] cartridge >r \ Memory guard: prevents Windows shell corruption during
-                    \ SHELLCMD operations. Return stack anchor is a common
-                    \ pattern to stabilize memory layout when host OS calls
-                    \ interfere with interpreter state. Exact mechanism unknown.
+    500 ms
+    cartridge
 ;
 
 : +project ( - <name> )
@@ -719,16 +719,15 @@ borrow ide3/ visible-lines
     /console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ " cr
-    frigid init-ide
+    frigid 
+    \ s" xref.xrf" file-exists? if load-xref then
+    init-ide
     zcommand zcount strip-exe ide-interpret
-    dup 0= if drop go else .throw then ;
+    ?dup if .throw else go then ;
 
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
-
 borrow nib2/ gild-nib
 gild-nib
-
 marker gild
-
 >vfx

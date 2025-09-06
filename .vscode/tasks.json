@@ -1,4 +1,3 @@
-
 {
     "version": "2.0.0",
     "tasks": [
@@ -6,8 +5,6 @@
             "label": "build-engineer",
             "type": "shell",
             "command": "${workspaceFolder}/engineer/build.bat",
-            // "command": "cmd",
-            // "args": ["/c", "start", "cmd", "/c", "build.bat"],
             "options": {
                 "cwd": "${workspaceFolder}/engineer"
             },
@@ -23,10 +20,9 @@
             }
         },
         {
-            "label": "launch-engineer",
+            "label": "load-project",
             "type": "shell",
-            "command": "${workspaceFolder}/dev.bat",
-            // "args": [ "/c", "start", "cmd", "/c", "dev.bat" ],
+            "command": "${workspaceFolder}/engineer/load-project.bat",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -40,7 +36,24 @@
                 "panel": "dedicated",
                 "clear": false
             }
-        }
-
+        },
+        {
+            "label": "build-engineer-and-load-project",
+            "type": "shell",
+            "command": "${workspaceFolder}/engineer/build-and-load.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "close": true,
+                "focus": false,
+                "panel": "dedicated",
+                "clear": false
+            }
+        },
     ]
 }
