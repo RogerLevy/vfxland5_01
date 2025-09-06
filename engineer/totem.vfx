@@ -278,11 +278,14 @@ _totem :apply ( class - )
         s" Totem has no source path, skipping..." type cr
         exit
     then
-    srcpath$ count binfile@ ?dup -exit
+    srcpath$ count binfile@ ?dup 0= if
+        ."  Skipping..." cr
+        exit
+    then
     to a
     a 
     @+ format @ ['] check-format catch ?dup if
-        .throw 
+        .throw ."  Skipping..." cr
         a binfree throw exit
     then
     xt catch nip

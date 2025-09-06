@@ -723,7 +723,7 @@ borrow ide3/ visible-lines
     \ s" xref.xrf" file-exists? if load-xref then
     init-ide
     zcommand zcount strip-exe ide-interpret
-    ?dup if .throw else go then ;
+    ?dup if .throw >vfx else go then ;
 
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
