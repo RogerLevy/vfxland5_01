@@ -255,18 +255,36 @@ _totem :apply ( class - )
         s[ me .object s] f" Not a totem: %s" -1 -rot .abort
     then ;
 
-: binfile@ ( fp len - a ) file@ drop @+ MAGIC_BIN check-encoding ;
 : binfree ( a - ) cell- free ;
+
+: binfile@ ( fp len - a|0 ) 
+    ['] file@ catch ?dup if 
+        .throw 
+        2drop 0 exit
+    then
+    ( a len ) drop
+    @+ MAGIC_BIN ['] check-encoding catch ?dup if
+        .throw 
+        ( a n n ) drop binfree 0 exit 
+    then ;
+
 : bin[ ( - ) data[ MAGIC_BIN , ;
 : bin] ( - a len ) data] ;
 
 : des> ( a - ) ( a - a' )
     ?totem
     r> {: xt | a :}
-    srcpath$ c@ -exit
-    srcpath$ count binfile@ to a
+    srcpath$ c@ 0= if
+        s" Totem has no source path, skipping..." type cr
+        exit
+    then
+    srcpath$ count binfile@ ?dup -exit
+    to a
     a 
-    @+ format @ check-format 
+    @+ format @ ['] check-format catch ?dup if
+        .throw 
+        a binfree throw exit
+    then
     xt catch nip
     a binfree throw
     throw ;
