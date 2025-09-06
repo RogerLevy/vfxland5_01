@@ -2,7 +2,7 @@
 trait: thinker 
     :: init ( - ) ;
     :: deinit ( - ) ;
-    :: think ( - ) ;
+    \ :: think ( - ) ;
 trait;
 
 trait: unloadable

@@ -55,10 +55,6 @@ init-oversight
 include %idir%/debug/core-checks.vfx
 include %idir%/checks.vfx
 
-debug @ 0= [if]
-    validations off  \ Speeds up performance by around 9x
-[then]
-
 \ =============================================================================
 \ Additional Facilities
 \ =============================================================================
