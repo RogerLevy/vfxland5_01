@@ -294,20 +294,23 @@ borrow engineer/ func[]
 
 : ShowErrorLine	
   line# @ -1 <> if
-    ."  Source: "
+    ." Source: "
     [char] " emit  'SourceFile @ .SourceName  [char] " emit
     ."  on line "
     base @ >r  decimal  line# @ .  r> base !
+    cr
   then
 ;
 
 : ShowSourceOnError     
   >in @ -1 <> if
     ."  -> " source type cr
-    >in @ 3 + spaces [char] ^ emit
+    >in @ 3 + spaces [char] ^ emit cr
     ShowSourceOnErrorHook
   then
 ;
+
+: .source-line  ShowErrorLine ShowSourceOnError ;
 
 : (DoErrorMessage) ( err - )
     4 push-attribute
@@ -321,13 +324,14 @@ borrow engineer/ func[]
             base @ >r  decimal 0 .r ." (10)"  r> base !
         then
         cr 
-        ShowErrorLine
-        ShowSourceOnError
+        .source-line
     then
     pop-attribute
     ide @ if EditOnError then ;
-
 assign (DoErrorMessage) to-do DoErrorMessage
+
+: (DoAbortMessage) $. .source-line ;
+assign (DoAbortMessage) to-do DoAbortMessage
 
 : (interpret)	\ --
     page-check
