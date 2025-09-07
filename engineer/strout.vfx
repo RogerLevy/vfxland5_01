@@ -58,7 +58,7 @@
 || create strdev   0 , string-vectors ,
 
 : z[  buf+  op-handle @ strout-push  strdev op-handle ! ;
-: z]  0 emit  str  strout-pop op-handle !  buf- ;
+: z]  0 emit  str  strout-pop op-handle !  ; \ buf- ;
 : s[  z[ ;
 : s]  z] wcount 1 - ;
 

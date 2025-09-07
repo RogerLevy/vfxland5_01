@@ -10,8 +10,8 @@ trait: _object
     static version              \ always 0 for now, serialized but not checked
 trait;
 
-: serialize? ( property - flag )
-    -> serialize-flag @ ;
+: serialize? ( property class - flag )
+    >serialize-flag @ ;
 
 || 0 value val-addr
 
@@ -21,11 +21,11 @@ trait;
 || : bin-ser-float ( - ) val-addr @ , ;
 || : bin-ser-cstring ( - ) val-addr count $, ;
 
-|| : bin-deser-cell ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-int ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-fixed ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-float ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-cstring ( a -a'  ) $@+ val-addr place ;
+|| : bin-des-cell ( a - a' ) @+ val-addr ! ;
+|| : bin-des-int ( a - a' ) @+ val-addr ! ;
+|| : bin-des-fixed ( a - a' ) @+ val-addr ! ;
+|| : bin-des-float ( a - a' ) @+ val-addr ! ;
+|| : bin-des-cstring ( a -a'  ) $@+ val-addr place ;
 
 || create bin-ser-table
 ||     ' bin-ser-cell ,
@@ -34,12 +34,14 @@ trait;
 ||     ' bin-ser-float ,
 ||     ' bin-ser-cstring ,
 
-|| create bin-deser-table
-||     ' bin-deser-cell ,
-||     ' bin-deser-int ,
-||     ' bin-deser-fixed ,
-||     ' bin-deser-float ,
-||     ' bin-deser-cstring ,
+|| create bin-des-table
+||     ' bin-des-cell ,
+||     ' bin-des-int ,
+||     ' bin-des-fixed ,
+||     ' bin-des-float ,
+||     ' bin-des-cstring ,
+
+borrow nib2/ prop+
 
 : serbin, ( obj - )
     \ serialize object into dictionary in binary format
@@ -50,24 +52,22 @@ trait;
         here to &count 0 , 
         cla @ -> property-list list-count for
             @next to property0
-            property0 serialize? if
-                
+            property0 cla @ serialize? if
                 \ get the property address in the instance and in the template
-                me property0 -> offset @ prop+ to val-addr
-                cla @ template property0 -> offset @ prop+ to tmpl-addr
+                me property0 prop+ to val-addr
+                cla @ >template property0 prop+ to tmpl-addr
 
                 \ check if the value differs from the class's template
-                val-addr   property0 -> property-size @ 
-                tmpl-addr   property0 -> property-size @ 
+                val-addr   property0 cla @ >property-size @ 
+                tmpl-addr   property0 cla @ >property-size @ 
                 compare 0<> if
                     \ it differs: serialize the property
                     1 &count +!
                     property0 >name count $,
                     here to &psize 0 , 
-                    property0 -> property-type @ cells bin-ser-table + @ execute
+                    property0 cla @ >property-type @ cells bin-ser-table + @ execute
                     here &psize - cell- &psize !
                 then
-
             then
         loop drop 
     ]] ;
@@ -86,13 +86,17 @@ trait;
     >pad find 0= if
         drop
         pad count f" desbin+ >> Encountered unknown class name: `%s`" type cr
+        cell+ \ skip version
         skip-properties 0 exit
     then
     >body dup valid-class? not if
         drop
         pad count f" desbin+ >> Not a class: `%s`" type cr
+        cell+ \ skip version
         skip-properties 0 exit
-    then ;
+    then 
+    ( a' class ) cell u+ \ skip version
+;    
 
 || : @property+ ( a - a' property|0 )
     $@+ \ fetch property name
@@ -107,13 +111,13 @@ trait;
         skip-data 0 exit
     then ;
 
-|| : deser-property ( a property - a' )
-    {: a property0 :}
+|| : des-property ( a property class - a' )
+    {: a property0 class :}
     a @+ swap ( n a )
-    property0 -> serialize-flag @ if
-        me property0 -> offset @ prop+ to val-addr   \ get dest address
+    property0 class >serialize-flag @ if
+        me property0 prop+ to val-addr   \ get dest address
         ( n a ) dup 
-        property0 -> property-type @ cells bin-deser-table + @ execute 
+        property0 class >property-type @ cells bin-des-table + @ execute 
         drop
     then 
     ( n a ) + ;
@@ -124,13 +128,10 @@ trait;
     {: data xt | property0 :}
     data 
     @class+ ?dup if 
-        ( a class ) >r
-        @+ drop  \ fetch and drop version
-        r>
         ( a class ) xt execute [[
             \ fetch properties into returned object
             @+ for
-                @property+ ?dup if deser-property then
+                @property+ ?dup if cla @ des-property then
             loop
         ]]
     then
@@ -144,7 +145,7 @@ trait;
 \     property0 -> serialize-flag @ if
 \         val-addr >r
 \         property0 -> property-size @ allocate throw to val-addr
-\         ( a ) property0 -> property-type @ cells bin-deser-table + @ execute drop
+\         ( a ) property0 -> property-type @ cells bin-des-table + @ execute drop
 \         property0 val-addr cb execute
 \         val-addr free throw
 \         r> to val-addr

@@ -13,7 +13,7 @@ variable next-bmp# 1 next-bmp# !
 
 || #bitmaps cell array bitmap-totems
 
-class: bitmap
+redef class: bitmap
     is-a _totem
     prop id 
     prop albmp
@@ -56,9 +56,6 @@ class;
 
 : init-bitmaps ( - )
     bitmap load-default-dir ;
-
-: reload-bitmaps ( - )
-    bitmap reload-instances ;
 
 : destroy-bitmaps ( - )
     ." Destroying bitmaps" cr

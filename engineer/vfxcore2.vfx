@@ -3,35 +3,45 @@ optimising off \ DO NOT REMOVE
 -idata \ DO NOT REMOVE
 
 \ =============================================================================
-\ Language extensions p.1
+\ VFXLand5 codebase-wide language extensions
 \ =============================================================================
 
 include %idir%/misc.vfx
-include %idir%/scope.vfx
-
-\ =============================================================================
-\ Allegro
-\ =============================================================================
-
-LIBRARY: allegro_monolith-5.2.dll
-include %idir%/allegro-5.2.5.vfx
-include %idir%/al-utils.vfx
-include %idir%/keys.vfx
-
-\ =============================================================================
-\ Language extensions p.2
-\ =============================================================================
-
+include %idir%/scope.vfx \ TODO: test this
 include %idir%/fixed.vfx
 include %idir%/format.vfx
-include %idir%/fstools.vfx
+
 include %idir%/nib2.vfx
 include %idir%/nib2-tools.vfx
 include %idir%/nib2-compact.vfx
 include %idir%/nib2-serdes.vfx
+
+include %idir%/debug/oversight.vfx
+include %idir%/debug/core-checks.vfx
+include %idir%/checks.vfx
+
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx
+include %idir%/fstools.vfx
 include %idir%/../lib/wstring.vfx
-include %idir%/strout.vfx
 include %idir%/gamemath.vfx
 
+include %idir%/strout.vfx
+
+\ =============================================================================
+\ Allegro bindings and utilities
+\ =============================================================================
+
+Target_386_Windows [if]
+    LIBRARY: allegro_monolith-5.2.dll
+    -1 constant allegro?
+[else]
+    ." ALERT: Allegro 5 and dependents not available; Non-Windows bindings not yet implemented!" cr
+[then]
+
+[defined] allegro? [if]
+    include %idir%/allegro-5.2.5.vfx
+    include %idir%/al-utils.vfx
+    include %idir%/keys.vfx
+    include %idir%/each-file.vfx
+[then]

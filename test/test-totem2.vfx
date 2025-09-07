@@ -22,7 +22,7 @@ class: world   s" "   s" dat/wld" <totem
     prop _room# <save <int 
 
     :: _intake
-        srcpath$ count me deser-file
+        srcpath$ count me des-file
         ts-name$ count tileset manifest ts ! ;
 
 class;
@@ -60,4 +60,4 @@ houses.wld keep
 ))
 
 sync
-houses.wld inspect
+houses.wld o.

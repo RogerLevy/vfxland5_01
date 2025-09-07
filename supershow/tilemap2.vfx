@@ -19,6 +19,13 @@ class: tileset
     prop #tiles <save <int 
     prop metas-array <ref _array
 
+    prop bw \ parent bitmap dims, used to determine if reallocating sub-bitmaps is needed
+    prop bh 
+
+    : bitmap-size-changed? ( - flag )
+        bmp @ bmpw bw @ <>
+        bmp @ bmph bh @ > or 
+        bmp @ bmpwh bw 2! ;
 class;
 
 || : /metas ( - )
@@ -31,6 +38,7 @@ tileset :construct ( - )
     \ slice up the source bitmap into tile sub-bitmaps.
     \ add them to the global bitmap registry.
     as>
+        bmp @ -exit
         next-bmp# @ baseid !
         bmp @ bmph th @ - 1 + for
             bmp @ bmpw tw @ - 1 + for
@@ -48,12 +56,21 @@ tileset :construct ( - )
 \ tileset :: use ( - )
 \     baseid @ pile ! ;
 
+: update-tileset ( tileset - )
+    as>
+        bmp @ -exit
+        next-bmp# @ >r   baseid @ next-bmp# ! 
+        me slice-tileset
+        r> next-bmp# ! ;
+
 tileset :: load ( - )
     \ slice up the tile set's source bitmap.
     \ if the tileset is being re-loaded, refresh the allocated bitmap range.
-    me new? not if next-bmp# @ >r   baseid @ next-bmp# ! then
-    me slice-tileset
-    me new? not if r> next-bmp# ! then ;
+    me new?   bitmap-size-changed? or if 
+        me slice-tileset
+    else
+        me update-tileset
+    then ;
 
 : tile ( tileset n - n )
     swap -> baseid @ + ;
@@ -79,22 +96,31 @@ tileset :: unload ( - )
         then 
     ]] ;
 
-|| : deser-tileset ( - )
+|| : des-tileset ( - )
     des>
         ['] into-me desbin+
         metas-array @ @array+ ;
+
+class: bitmap
+    prop ts <ref tileset
+class;
+
+bitmap :: reload ( - )
+    _totem:reload
+    ts @ ?dup if reload then ;
 
 || : reconnect-bmp ( - ) 
     my-name -ext f" %s.png" 
     >pad find 0= if
         drop 
-        pad count f" RECONNECT-BMP >> Tileset source bitmap %s not found" type
+        pad count f" RECONNECT-BMP >> Tileset source bitmap %s not found" type cr
         exit
     then
-    execute bmp ! ;   \ Bitmap words return their own bitmap ID's
+    execute bmp !    \ Bitmap words return their own bitmap ID's
+    me bmp @ bmptotem -> ts ! ;
 
 tileset :: _intake ( - )
-    deser-tileset   reconnect-bmp   me load ;
+    des-tileset   reconnect-bmp   me load ;
 
 tileset :: _keep ( - )
     ser>
@@ -109,9 +135,6 @@ tileset :: _keep ( - )
 
 : init-tilesets
     tileset load-default-dir ;
-
-: reload-tilesets
-    tileset reload-instances ;
 
 \ =============================================================================
 \ Tilemap - Low level

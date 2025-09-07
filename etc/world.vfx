@@ -19,17 +19,9 @@ class;
 : tm-size  w @ h @ * cells ;
 : allot-tilemap  here data ! data-size allot&erase ;
 
-: deser-me+ ( - ) ['] into-me desbin+ ;
-: move+  ( src dest n - src' ) 
-    {: src dest n :}
-    src dest n move
-    src n + ;
-: ser-me, ( - ) me serbin, ;
-: move, ( a len - ) dup >r here swap move r> allot ;
-
 tilemap :: load ( - )
     des>
-        deser-me+
+        des-me+
         data @ tm-size move+ ;
 
 tilemap :: _intake ( - )

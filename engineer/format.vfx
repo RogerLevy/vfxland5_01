@@ -20,6 +20,7 @@
 \ dn - double-cell signed number
 \ du - double-cell unsigned number
 \ s - string (c-addr u)
+\ $ - counted string (addr)
 \ [ - evaluate up to ]
 \ 
 \ Examples:
@@ -76,7 +77,7 @@
 
 \ Prints n*x into buffer c-addr2 using the format string at c-addr1 u.
 \ caddr2 u3 is the resulting string.
-: format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
+: (format) ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
     dup >r -rot over + begin 2dup < while over c@ '%' = if parse-cmdspec else
     -rot 2dup c@ swap c! -rot 1+ -rot then swap 1+ swap repeat
     2drop r> tuck - ;
@@ -97,22 +98,22 @@
     dup format-buffer-index !
         /format-buffer * format-buffers + ;
 
-|| : safer-format ( n*x c-addr1 u1 c-addr2 -- caddr2 u3 )
-    fbuf+ format ;
+: sformat ( n*x c-addr1 u1 -- caddr2 u3 )
+    fbuf+ (format) ;
 
 : f"
     state @ if
-        postpone (s") ", align postpone safer-format
+        postpone (s") ", align postpone sformat
     else
-        '"' parse >syspad safer-format
+        '"' parse >syspad sformat
     then ; immediate
 
 : fe"
     readEscaped count 
     state @ if
-        postpone (s") $, align postpone safer-format
+        postpone (s") $, align postpone sformat
     else
-        safer-format
+        sformat
     then ; immediate
 
 \ rs

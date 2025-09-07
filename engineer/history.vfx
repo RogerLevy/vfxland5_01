@@ -4,6 +4,8 @@
 \ Mostly by Claude Sonnet 4
 \ ------------------------------------------------------------------------------
 
+fast[
+
 \ History storage
 variable history-buffer    \ allocated memory for history string
 variable history-size      \ current allocated size
@@ -23,20 +25,18 @@ variable last-line-start
 
 : resize-history ( new-size - )
     {: new-size :} 
-    \ Resize history buffer if needed
+    \ Resize history buffer
     new-size history-size @ > if
-        history-buffer @ new-size resize
-        abort" Failed to resize history buffer"
+        history-buffer @ new-size resize drop
         history-buffer !
         new-size history-size !
     then ;
 
 : resize-line-offsets ( new-max-lines - )
     {: new-max-lines :} 
-    \ Resize line offsets array if needed
+    \ Resize line offsets array
     new-max-lines max-lines @ > if
-        line-offsets @ new-max-lines cells resize
-        abort" Failed to resize line offsets"
+        line-offsets @ new-max-lines cells resize drop
         line-offsets !
         new-max-lines max-lines !
     then ;
@@ -92,7 +92,7 @@ variable last-line-start
     dup line-count @ 1 - >= if
         drop history-buffer @ cell+ current-history-length +
     else
-        1 + line-start 1 -  \ start of next line minus CR
+        1 + line-start
     then ;
 
 : line-text ( line# - addr len )
@@ -102,29 +102,24 @@ variable last-line-start
 : add-line-offset ( offset - )
     \ Add single line offset to cache
     line-count @ dup max-lines @ >= if
-        \ Grow line-offsets array if needed
         max-lines @ 262144 + resize-line-offsets
     then
     cells line-offsets @ + ! ;
 
-: add-history ( addr len - )
-    \ Add string to history, handling embedded CRs
-    {: addr len | char[ 1 ] :}
-    len -exit
-    addr len bounds do
-        i c@ dup char[ c!
-        1 ensure-space
-        char[ 1 history-buffer @ wappend
-        10 = if
-            last-line-start @ add-line-offset
-            current-history-length last-line-start !
-            1 line-count +!
-            visible-lines @ if
-                line-count @ visible-lines @ - 0 max scroll-pos !
-            then
-        then
-    loop  ; 
+: add-history-linebreak ( - )
+    last-line-start @ add-line-offset
+    current-history-length last-line-start !
+    1 line-count +!
+    visible-lines @ if
+        line-count @ visible-lines @ - 0 max scroll-pos !
+    then ;
 
+: add-history-byte ( char - )
+    {: | char[ 1 ] :}
+    char[ c!
+    1 ensure-space
+    char[ 1 history-buffer @ wappend ;
+ 
 : scroll-up ( - )
     scroll-pos @ 0> if -1 scroll-pos +! then ;
 
@@ -143,33 +138,29 @@ variable last-line-start
 : scroll-to-top ( - )
     0 scroll-pos ! ;
 
-: .line ( n - )
+: history-draw-line ( n - )
     dup 0 line-count @ within? not if drop exit then
-    line-text type cr ;
+    line-text 3 / for 
+        c@+ swap c@+ vga@ swap c@+ vga@ swap >r textmode-write
+        r> 
+    loop drop ;
 
-: render-history ( - )
-    \ Render visible lines of history
+: draw-history (  - )
     {: | line-num :}
-    visible-lines @ 0 ?do
+    monw 2 / 8 /   visible-lines @   textmode-dim
+    textmode-clear
+    visible-lines @ for
         scroll-pos @ i + to line-num
         line-num line-count @ < if
-            line-num .line
+            0 i textmode-locate
+            line-num history-draw-line
         else
             leave
         then
-    loop ;
+    loop 
+    monw 2 / 8 /   visible-lines @   at@f   textmode-draw ;
 
-: history-stats ( - )
-    cr ." History Stats:"
-    cr ."   Lines: " line-count @ .
-    cr ."   Buffer size: " history-size @ .
-    cr ."   Used: " current-history-length .
-    cr ."   Scroll pos: " scroll-pos @ .
-    cr ."   Visible: " visible-lines @ . ;
-    
 : init-history ( - )
-    \ Initialize history with dynamic allocation
-    
     \ Start with reasonable defaults - both will grow as needed
     262144 max-lines !  \ 256K lines initially (1MB / 4 bytes per cell)
     
@@ -188,4 +179,78 @@ variable last-line-start
     0 line-count !
     0 scroll-pos !
     0 last-line-start !
-    0 add-line-offset ;    
+    0 add-line-offset ;
+
+aligned-page hist-stack
+variable hsp   hist-stack hsp ! 
+: hist-push ( ? - ) hsp @ !  4 hsp c+! ;
+: hist-pop ( - ? ) -4 hsp c+!  hsp @ @ ;
+
+: (echo) ( c - )
+    \ Echo to VFX console
+    op-handle @ >r   consoledev op-handle !   emit   r> op-handle ! ;
+
+: hist-cr ( - )
+    drop   add-history-linebreak   10 (echo)   0 out ! ;
+
+: hist-emit ( c sid - )
+    drop   
+    
+    dup 10 = if
+        drop
+        0 hist-cr
+        exit
+    then
+
+    out @ 120 >= if
+        0 hist-cr
+    then
+    
+    dup add-history-byte   
+    attr c@ add-history-byte
+    attr 1 + c@ add-history-byte
+    (echo) ; \  1 out +! ;
+
+: hist-type ( a len - )
+    drop   bounds ?do  i c@ 0 hist-emit  loop ;
+
+: hist-ff ( - )
+    drop   free-history init-history ;
+    
+create vectors
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' hist-emit ,
+  ' drop ,
+  ' hist-type ,
+  ' hist-cr ,
+  ' drop ,
+  ' hist-ff ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+  ' drop ,
+
+create hist-dev   0 , vectors ,
+
+: hist[ ( - )
+    op-handle @ hist-push
+    hist-dev op-handle ! ;
+
+: hist] ( - )
+    hist-pop op-handle ! ;
+
+fast]

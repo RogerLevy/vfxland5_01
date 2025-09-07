@@ -29,18 +29,6 @@ variable public-xt  ' forth public-xt !
     only public-xt @ execute definitions wlname ?wordlist +order ;
 : || private 0 parse evaluate public ; immediate
 
-\ Search order stack
-: pagealign ( - )  here $ff and 256 swap - allot ;
-: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
-aligned-page search-order-stack
-variable sosp   search-order-stack sosp ! \ object stack pointer
-: sos-push ( ? - ) sosp @ !  4 sosp c+! ;
-: sos-pop ( - ? ) -4 sosp c+!  sosp @ @ ;
-: sos-pushes ( ... n - ) dup >r for sos-push loop r> sos-push ;
-: sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
-: push-order ( - ) get-order sos-pushes get-current sos-push ;
-: pop-order ( - ) sos-pop set-current sos-pops set-order ;
-
 \ Importing words from other files
 : borrow ( - <vocabulary> <word> )
     push-order private
@@ -50,17 +38,18 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
     pop-order ;
 
 \ Extend include words to preserve the search order
-: preserve-order ( a:file len:file xt - )
-    push-order
-    only forth definitions
-    execute
-    pop-order ;
-: include getPathSpec ['] included preserve-order ;
-: included ['] included preserve-order ;
-: require getPathSpec ['] required preserve-order ;
-: required ['] required preserve-order ;
+|| : /order only forth definitions ;
+
+aka old-included included
+
+: fload getPathSpec included ;
+redef : include  push-order /order getPathSpec included pop-order ;
+redef : included push-order /order included pop-order ;
+redef : require  push-order /order getPathSpec required pop-order ;
+redef : required push-order /order required pop-order ;
 : ?included  2dup fileExist? if included else 2drop then ;
 : ?required  2dup fileExist? if required else 2drop then ;
+
 
 
 only forth definitions

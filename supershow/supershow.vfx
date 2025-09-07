@@ -52,14 +52,6 @@ include %idir%\tread.vfx    \ Tilemap data reading
 include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 
 \ =============================================================================
-\ Automatically refresh bitmaps and tilesets
-\ =============================================================================
-
-: reload-graphics
-    reload-bitmaps
-    reload-tilesets ;
-
-\ =============================================================================
 \ Initialization
 \ =============================================================================
 
@@ -71,23 +63,58 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 prune: cleanup-supershow ;
 \ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
 
+: supershow-process-dirchange ( NOTIFY_INFO - )
+    cell+ @ case
+        FILE_ACTION_ADDED of
+            ." FILE_ACTION_ADDED" cr
+            _totem -> dependents list-count for
+                @next [[
+                    changed-file me -> default-dir$ count strin? if
+                        changed-file '.' ending me -> extension$ count s= if
+                            ." New file discovered!" cr
+                            changed-file me manifest o.
+                        then
+                    then
+                ]]
+            loop drop
+        endof
+        FILE_ACTION_MODIFIED of
+            ." FILE_ACTION_MODIFIED" cr
+            changed-file -path >pad find if
+                ." Reloading file!" cr
+                >body reload
+            else
+                drop
+            then
+        endof
+    endcase ;
+
 : init-supershow ( - )
     hold off
     init-bitmaps
     init-tilesets
-    load-samples
+    init-samples
     init-crt
     debug @ if
-        ['] reload-graphics is onSwitchIn
+        ['] supershow-process-dirchange is process-dirchange
     else
         display al_hide_mouse_cursor
-    then ;
+    then 
+    show> sprites step ;
 
 init-supershow
 
-\ Default engine configuration
-' init-supershow is boot
-:now show> step sprites ;
+: boot-supershow ( - )
+    init-supershow 
+    c" main" find if execute else drop then ;
+
+' boot-supershow is boot
+
+: load-project ( - )
+    create-autoclasses
+    ['] load-default-dir script-classes each@
+    scene load-default-dir
+    s" modes.vfx" ?included ;
 
 \ Tools
 debug @ [if]

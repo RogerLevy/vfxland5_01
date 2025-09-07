@@ -6,499 +6,30 @@
 \ Core System Components
 \ =============================================================================
 
-include %idir%\vfxcore2.vfx
-include %idir%\error2.vfx  \ TODO: Make platform-agnostic
-
-\ =============================================================================
-\ Engineer Variables
-\ =============================================================================
-
-variable 'show ( - ) \ app logic and rendering
-' noop 'show !
-defer desktop ( - ) \ default behavior of SHOW (restored on EMPTY)
-defer boot ( - ) \ app startup code like loading assets
-defer onSwitchIn ( - ) \ Window gets focus
-variable going
-cstring home-path$
-cstring prj-path$
-create funcs 256 12 * allot&erase
-0 value reload-shift?
-variable _repl  _repl on   \ enable commandline
-variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
-variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
-defer repl  ' _repl is repl
-defer ide  ' _ide is ide
-defer hold  ' _hold is hold
-defer pump ' noop is pump
-cstring watch$
-variable watch-xt
-variable watch-context
-|| variable need-pump
-variable esc-quits   esc-quits on 
-
-\ =============================================================================
-\ Oversight - Contract-orientation system
-\ =============================================================================
-
-public
-
-include %idir%/debug/oversight.vfx
-
-\ Enable Oversight and validated Forth core words if debugging mode enabled
-\ - Performance can be increased by 30-50% by disabling VALIDATIONS,
-\       (just, keeping it disabled requires preserving the value of VALUDATIONS)
-\ - In addition, because validators are compiled lazily, validator
-\       compilation errors can happen if words aren't found etc but the error
-\       is not intuitive, showing the wrong source location.
-
-init-oversight
-include %idir%/debug/core-checks.vfx
-include %idir%/checks.vfx
-
-\ =============================================================================
-\ Additional Facilities
-\ =============================================================================
-
+include %idir%\vfxcore2.vfx \ Codebase-wide language extensions
+include %idir%\error2.vfx   \ TODO: Make platform-agnostic
+include %idir%\variables.vfx
 \ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
-include %idir%/counter.vfx  \ required by mersenne
-include %idir%/mersenne.vfx
+include %idir%/counter.vfx  \ Required by mersenne for seeding
+include %idir%/mersenne.vfx \ RNG
+include %idir%/changes.vfx  \ Filesystem change tracking
+include %idir%/totem.vfx    \ Persistence system
 
 \ =============================================================================
-\ Window bring-to-front
+\ Game services
 \ =============================================================================
 
-extern void * GetForegroundWindow( );
-extern bool SetForegroundWindow( void * hwnd );
-GetForegroundWindow value vfx-hwnd
-\ vfx-hwnd 0 0 0 0 0 $41 SetWindowPos drop 
-
-: >display ( - )
-    flushOP-gen drop \ flush buffered output (VFX)
-    reset-keyboard 
-    display al_get_win_window_handle SetForegroundWindow drop ;
-
-: >vfx ( - )
-    vfx-hwnd SetForegroundWindow drop ;
-
-\ =============================================================================
-\ Persistence system
-\ =============================================================================
-
-include %idir%/totem.vfx
-
-\ =============================================================================
-\ Interactive Tools
-\ =============================================================================
-
-\ Try/Honing - Convenient code testing
-
-variable honing
-cstring ld-action$
-
-wordlist constant honing-wl
-
-: ?hone ( - <path> )
-    honing @ if honing-wl +order then
-    bl parse ['] included catch
-    honing @ if honing-wl -order then 
-    throw ;
-
-: >ld ( a len - )
-    dup 0= if 2drop exit then
-    2dup ld-action$ place
-    evaluate ;
-
-: >hone
-    honing on  >ld ;
-
-: ld-again ( - )
-    ld-action$ count >ld ;
-
-: ld ( - <namespec> )
-    \ Usage: 
-    \ - ld projectname
-    \ - ld filename (no extension)
-    \ - ld ../test/filename (no extension)
-
-    bl parse {: fn len :}
-
-    \ Load last file again?
-    len 0= if
-        ld-again exit
-    then
-
-    \ Project?
-    fn len home-path$ count f" %s/%s/main.vfx" file-exists? if
-        fn len f" ldp %s" evaluate
-        exit
-    then
-
-    \ Normal
-    fn len f" %s.vfx" >abspath to len to fn
-
-    fn len file-exists? not
-        abort" File not found."
-
-    prj-path$ count fn len instring not 
-    prj-path$ count nip 0= or if
-        fn len -file $cwd
-    then
-
-    fn len f" ?hone %s" >hone ;
-    
-: hone! ( a len - ) 
-    dup 0= abort" Tried to set load action to null string."
-    ld-action$ place
-    honing on ;
-    
-honing-wl +order definitions
-: require include ;
-: required included ;
-public
-
-\ =============================================================================
-\ Graphics
-\ =============================================================================
-
-create pen 0 , 0 , \ int
-
-: at ( x y - ) pen 2! ;
-: at@ ( - x y ) pen 2@ ;
-: at@f ( - f:x f:y ) at@ 2s>f ;
-: +at ( x y - ) pen 2+! ;
-
-: albmpw ( albmp - w ) dup if al_get_bitmap_width then ;
-: albmph ( albmp - h ) dup if al_get_bitmap_height then ;
-
-: draw-bitmap ( albmp n - )
-    over if at@f al_draw_bitmap else 2drop then ;
-
-: *subbmp ( albmp w h - albmp' )
-    at@ 2swap al_create_sub_bitmap ?dup 
-    0= abort" al_create_sub_bitmap error" ;
-
-: -albmp ( albmp - )
-    ?dup -exit al_destroy_bitmap ;
-
-include %idir%/matrix.vfx
-include %idir%/print.vfx
-include %idir%/../textmode/textmode.vfx
-
-\ =============================================================================
-\ Input
-\ =============================================================================
-
-: held? ( - f )  kbs0 swap al_key_down 0<> ;
-: kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
-: pressed? ( - f )  kdelta 1 = ;
-: letgo? ( - f )  kdelta -1 = ;
-0 value alt?
-0 value ctrl?
-0 value shift?
-    
-\ =============================================================================
-\ Framerate independence
-\ =============================================================================
-
-|| 60e fvalue tps \ float, ticks per second
-|| 0 0 2value ustime \ long, in microseconds
-0 value mstime \ int, in milliseconds
-0 value usdelta
-0 value pdelta \ fixed, in seconds
-0e fvalue sdelta \ in seconds
-
-: ticks  ( n - ms )
-    s>f 1000e tps f/ f* f>s ;
-
-|| : !delta  ( - )
-    ustime  ucounter 2dup to ustime  2swap 2-
-        d>s to usdelta
-    usdelta s>f 1000000e f/ to sdelta
-    ustime 1000 m/ to mstime
-    sdelta f>p to pdelta ;
-
-synonym z zoom
-
-\ =============================================================================
-\ Event handling
-\ =============================================================================
-
-|| create e /ALLEGRO_EVENT allot&erase
-: happened? ( n - f ) e ALLEGRO_EVENT.type @ = ;
-: the-char ( - n ) e KEYBOARD_EVENT.unichar @ ;
-: the-key ( - n ) e KEYBOARD_EVENT.keycode @ ;
-: the-wheel ( - n ) e MOUSE_EVENT.dz @ ;
-: the-mouse ( - n ) e MOUSE_EVENT.x 2@ ; 
-: the-walt ( - n ) e MOUSE_EVENT.dx 2@ ; 
-: the-mbutton ( - n ) e MOUSE_EVENT.button @ ;
-
-\ =============================================================================
-\ Function Keys
-\ =============================================================================
-
-|| : func[] 256 * funcs + ;
-   
-: func ( a c n - )
-    <f1> - func[] place ;
-
-|| : clear-funcs ( - )
-    funcs 256 12 * erase
-    s" ?reload" <f5> func
-    s" hold toggle" <f9> func ;
-
-: ?func ( n - )
-    <f1> - dup 0 12 within? if
-        func[] count dup if
-            state off
-            evaluate
-        else
-            2drop
-            ." Unassigned function key." cr
-        then
-    else drop then ;
-
-\ =============================================================================
-\ Persistent variable control
-\ =============================================================================
-
-magic-id MAGIC_TWEAK TWK
-: tweak ( n - <name> )
-    \ Define a variable with initial value n, but only if the name doesn't already exist
-    \    in CURRENT.
-    push-order
-    only current @ +order
-    MAGIC_TWEAK already? not if 
-        create , MAGIC_TWEAK ,
-    else
-        drop ' drop
-    then
-    pop-order ;
-
-: (?.tweak) ( thread# nfa - f )
-    nip
-    {: nfa :} 
-    nfa name> >body cell+ @ MAGIC_TWEAK = if
-        cr
-        ."     "
-        nfa count type
-        ."  = "
-        nfa name> >body @ dup .name p.
-    then
-    -1 ;
-
-: .tweaks ( - )
-    ['] (?.tweak) walk-order ;
-
-\ =============================================================================
-\ Display Mode Control
-\ =============================================================================
-
-|| : fullscreen ( - )
-    ." FULLSCREEN" cr -1 to fullscreen? ;
-
-|| : windowed ( - )
-    ." WINDOWED" cr 0 to fullscreen? ;
-
-|| : *display ( - )
-    \ fullscreen? if fullscreen else windowed then
-    create-display  going off ;
-
-|| : winmode ( - )
-    2 to zoom
-    appw apph fullscreen? resize-display
-    !delta !delta ;
-    
-|| : w/f ( - )
-    \ Display mode switching for release builds
-    fullscreen? if windowed else fullscreen then
-    winmode ;
-        
-\ =============================================================================
-\ Main Loop Support
-\ =============================================================================
-
-|| create kbs2 /ALLEGRO_KEYBOARD_STATE allot
-|| : save-kb  kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move ;
-|| : erase-kb  kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
-|| : restore-kb  kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
-|| : ?kb-lock repl @ if save-kb erase-kb then ; 
-|| : ?kb-unlock repl @ if restore-kb then ;
-|| : -keys  reset-keyboard ;
-
-|| : spin ( - f: n )
-    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
-
-|| : pre ( - )
-    0 #tib ! postpone \\ 
-    !delta !delta 
-    need-pump on ;
-    
-|| : ?throw ( n - ) 
-    dup -1 = if drop exit then
-    dup if going off >vfx then throw ;
-
-|| : cls ( - )
-    0e 0e 0e 1e al_clear_to_color ;
-
-|| : draw-game ( - ) 
-    at@ 2>r
-    cls
-    ?kb-lock 
-    'show @ catch ?throw
-    ?kb-unlock 
-    2r> at ;
-
-: show> ( - ) ( - )
-    r> dup 'show ! cls execute ; 
-
-|| : poll ( - )
-    poll-keyboard  
-    <alt> held? <altgr> held? or to alt? 
-    <lshift> held? <rshift> held? or to shift? 
-    <lctrl> held? <rctrl> held? or to ctrl? ;
-
-: refresh ( - )
-    ustime 
-    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
-    to ustime
-    display al_flip_display
-    !delta
-    poll ;
-
-|| : spin ( - f: n )
-    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
-
-\ =============================================================================
-\ TV
-\ =============================================================================
-
-: refit ( - )  \ find biggest integer scaling that fits display
-    monw monh 2s>f f/
-    appw apph 2s>f f/
-    f> if
-        monh apph /
-    else
-        monw appw /
-    then
-    to zoom ;
-
-: fs-w  appw z * ;
-: fs-h  apph z * ;
-: border-xy  monw 2 / monh 2 / fs-w 2 / fs-h 2 / 2- ;
-: tv-xy  border-xy `` 2 z * dup `` 2- ;
-: tv-xy2  border-xy `` 2 z * dup `` 2+ fs-w fs-h 2+ ;
-
-: clip-screen ( - )
-    border-xy fs-w fs-h al_set_clipping_rectangle ;
-
-: border ( - )
-    identity
-    0 0 winw winh al_set_clipping_rectangle
-    cls
-
-    tv-xy 2s>f `` tv-xy2 2s>f ``
-        0.25e 0.25e 0.25e 1e ```` al_draw_filled_rectangle
-
-    6e f>ds >r
-    border-xy 2s>f `` fs-w 1 + fs-h 1 + border-xy 2+ 2s>f ``
-        0e 0e 0e 1e ```` r> ` al_draw_rectangle
-    
-    border-xy 2s>f `` z z 2s>f `` 0e ` transform
-    clip-screen ;
-
-: ?border
-    identity 
-    fullscreen? if
-        refit border
-    else
-        0e 0e zoom s>f fdup 0e transform
-    then ; 
-
-|| : draw-tv ( - )
-    ?border draw-game ;
-
-\ =============================================================================
-\ Interface Module
-\ =============================================================================
-
-' engineer/ public-xt !
-    include %idir%/ide3.vfx
-' forth public-xt !
-
-\ =============================================================================
-\ Global Events
-\ =============================================================================
-
-|| : global-events ( - )
-    ALLEGRO_EVENT_DISPLAY_CLOSE happened? if
-        bye
-    then
-    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
-        reset-keyboard reset-mouse
-    then
-    ALLEGRO_EVENT_DISPLAY_RESIZE happened? if
-        display al_acknowledge_resize
-    then ;
-
-\ =============================================================================
-\ Global Event Handler
-\ =============================================================================
-
-|| : ?event ( - f )
-    alqueue e al_get_next_event 0<>
-    dup -exit
-    >r global-events ide-events r> ;
-    
-|| : (pump) ( - )
-    need-pump @ -exit
-    begin ?event not until ;
-
-:noname ( - )
-    ['] (pump) catch 
-    ?throw need-pump on ;
-    is pump
-
-: event? ( - f )
-    repl @ if 0 exit then
-    need-pump off ?event ;
-
-\ =============================================================================
-\ Main Loop
-\ =============================================================================
-
-|| : ?quit
-    <esc> pressed? esc-quits @ and if
-        going off 
-        fullscreen? if windowed winmode then
-        >vfx
-        quit
-    then ;
-
-|| : ?idle ( - ) debug @ if EmptyIdle then ;
-|| : ?reload-shift ( - ) shift? to reload-shift? ;
-|| : ?w/f ( - )
-    debug @ if ide-?w/f exit then
-    <enter> pressed?  alt? and if
-        w/f -keys
-    then ;    
-|| : ?bye  <f4> pressed?  alt? and if bye then ;
-|| : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
-|| : screen ( - ) debug @ if draw-ide else draw-tv then ;
-
-: frame ( - )
-    controls pump screen refresh ;
-
-: go ( - )
-    \ Main engine loop - enter IDE if debug mode, otherwise run normally
-    going @ ?exit
-    debug @ if >ide else >display then
-    pre going on begin ['] frame catch ?dup until going off throw ;
+fload %idir%/graphics.vfx   \ Graphics
+fload %idir%/input.vfx      \ Input
+fload %idir%/tweak.vfx      \ Persistent variable control
+fload %idir%/border.vfx     \ TV border / scaling
+fload %idir%/ide3.vfx       \ Interactive IDE
+fload %idir%/go.vfx         \ Main Loop
 
 \ =============================================================================
 \ Reset System Classifiers
 \ =============================================================================
 
-|| : move,  dup >r here swap move r> allot ;
 || : fresh,  dup , /classifier move, ;
 
 || create fresh-classifiers 
@@ -522,8 +53,11 @@ magic-id MAGIC_TWEAK TWK
 || : reset-classifier ( a - )
     @+ ( src dest ) /classifier move ;
 
-: reset-system-classifiers ( - )
-    ['] reset-classifier fresh-classifiers each ;
+|| create fresh-all-classifiers classifiers #max-classifiers cells move,
+
+|| : reset-system-classifiers ( - )
+    ['] reset-classifier fresh-classifiers each 
+    fresh-all-classifiers classifiers #max-classifiers cells move ;
 
 \ =============================================================================
 \ Entry Points  
@@ -551,7 +85,7 @@ borrow nib2/ init-nib
     ['] noop is onSwitchIn
     honing off ;
 
-: empty ( - )
+redef : empty ( - )
     debug @ -exit
     empty-engineer
     only forth definitions
@@ -559,22 +93,26 @@ borrow nib2/ init-nib
 
 : cartridge ( - )
     \ Load user program
-    empty
+    empty page hold off
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
-: turnkey? ( - b )
-    home-path$ count nip 0<> ;
-
+also substitutions definitions
+cstring vfxland5
+also forth definitions
 : init-dev ( - )
     \ Development-only initialization
     empty 
     +xrefs
     256 1024 * xref-kb
+    s" %bin%\.." expand vfxland5 place
+    wd mondir
 ;
+previous previous
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
+    hold off
     debug @ if init-dev then
     wd home-path$ place
     init-mersenne
@@ -584,29 +122,12 @@ borrow nib2/ init-nib
     0 0 to ustime 
     init-history ;
 
-: cold ( - )
+redef : cold ( - )
     \ Release cold start sequence - initialize all systems and begin execution
     frigid boot go ;
 
 : debug-cold ( - )
     vfxforth-entrypoint /console ;
-
-\ =============================================================================
-\ Reloading
-\ =============================================================================
-
-: rld ( - )
-    prj-path$ count $cwd
-    honing off
-    cartridge
-    repl on ;
-
-: ?reload ( - )
-    honing @ 0<> reload-shift? not and if
-        ld-again
-    else
-        rld
-    then ;
 
 \ =============================================================================
 \ Turnkey creation
@@ -661,54 +182,21 @@ borrow nib2/ init-nib
 || : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
-    wd '\' ending f" vfxland5_01\engineer\turnkey.bat %s" shellcmd ;
+    wd '\' ending f" %vfxland5%\engineer\turnkey.bat %s" shellcmd ;
 
-: watch ( - <code> )
-    context @ watch-context !
-    0 parse 2dup f" :noname %s ;" evaluate watch-xt !
-    watch$ place ;
+\ =============================================================================
+\ Development tool commands
+\ =============================================================================
 
-: ldp ( - <name> )
-    {: | name[ 256 ] path[ 256 ] :}
-    bl parse name[ place
-    name[ c@ 0=
-    name[ count s" ." compare 0= or if 
-        wd '\' ending name[ place 
-        s" ." >abspath path[ place
-    else
-        name[ count 
-        home-path$ count f" %s\%s" >lowercase path[ place 
-    then
-    path[ count f" %s\main.vfx" file-exists? not if
-        name[ count f" '%s' doesn't exist or is not a project!" type cr
-        exit 
-    then
-    name[ count >uppercase f" Loading %s..." type cr
-    path[ count prj-path$ place
-    prj-path$ count $cwd
-    500 ms
-    cartridge
-;
-
-: +project ( - <name> )
-    home-path$ count $cwd
-    bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
-    200 ms
-    ldp
-;
+fload %idir%/tools.vfx      
 
 \ =============================================================================
 \ Kickoff
 \ =============================================================================
 
-create zcommand 256 allot 
-
 : engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
     over zcount zcommand zplace
     vfxforth-entrypoint ;
-
-borrow ide3/ history-stats
-borrow ide3/ visible-lines
 
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args

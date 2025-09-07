@@ -40,7 +40,7 @@ variable pass-count
     line-count @ 1 = s" Should have 1 line" assert
     history-empty? not s" History should not be empty" assert
     
-    0 line-text s" Hello World" compare 0= s" Line text should match" assert ;
+    0 line-text s" Hello World" s= s" Line text should match" assert ;
 
 : test-multiple-lines
     cr ." Test 3: Multiple Lines"
@@ -51,9 +51,9 @@ variable pass-count
     s" Line 3" add-history
     
     line-count @ 3 = s" Should have 3 lines" assert
-    0 line-text s" Line 1" compare 0= s" First line correct" assert
-    1 line-text s" Line 2" compare 0= s" Second line correct" assert
-    2 line-text s" Line 3" compare 0= s" Third line correct" assert ;
+    0 line-text s" Line 1" s= s" First line correct" assert
+    1 line-text s" Line 2" s= s" Second line correct" assert
+    2 line-text s" Line 3" s= s" Third line correct" assert ;
 
 : test-embedded-crs
     cr ." Test 4: Embedded CR Characters"

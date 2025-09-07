@@ -23,13 +23,14 @@ variable outline \ rgb color
 variable paintmode \ normal, replace, fillin
 
 \ Auto-Zoom levels
-2 cells array: zooms
+create zooms 2 cells array[
     0 , 8. , 
     16 , 4. ,
     32 , 3. ,
     80 , 2. ,
     160 , 1. ,
-array;
+array] drop
+
 0 value z
 : (check) >r dup r@ @ >= if r@ cell+ @ to z then r> drop -1 ;
 : get-zoom ['] (check) zooms each drop z ;
@@ -37,7 +38,7 @@ defer auto-zoom
 
 \ Mouse
 create mousex 0 , 0 , here cell- constant mousey
-create mickeyx 0 , 0 , here cell- constant mickeyx
+create mickeyx 0 , 0 , here cell- constant mickeyy
 variable mbuttons
 : mouse  mousex 2@ ;
 : mickey mickeyx 2@ ;
@@ -80,7 +81,7 @@ variable mbuttons
         then ;
 : pick-bg
     ?dup ?exit
-    mouse gap dup 2/ bg0 spot @ dup -exit pile @ + ;
+    mouse gap dup 2/ playfield spot @ dup -exit pile @ + ;
 : pick ( -)
     pick-sprite pick-bg ?dup -exit bmp! ;
 
@@ -170,7 +171,7 @@ is auto-zoom  1 bmp!
 
 \ Modes
 variable mode
-: mode> r> mode ! ;
+continuation: mode> ( xt ) mode ! ;
 : m-live mode> ?lock ?think ?unlock bg sprites ?animate ; m-live
 : m-live2 mode> ?lock ?think ?unlock bg backsprites ?animate ; 
 : m-tiles ; \ scrollable tileset, fixed zoom

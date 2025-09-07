@@ -8,13 +8,13 @@
 : lookup ( $ wl - a )
     {: $ wl | buf[ 256 ] :}
     $ count buf[ place
-    get-order get-current
+    push-order
     only  wl +order definitions buf[ find if
-        >body >r
+        >body 
     else
-        $create here 0 , >r
+        $create here 0 , 
     then
-    set-current set-order r> ;   
+    pop-order ;
 
 : dictionary ( - <name> ) ( - wl )
     create wordlist drop ;
@@ -25,8 +25,8 @@
     ['] (walk) swap traverse-wordlist
     r> to xt ;
 
-: walk> ( dict - ) ( -1 $ a - f )
-    r> swap walk-dictionary ;
+continuation: walk> ( dict - ) ( -1 $ a - f )
+    ( xt ) swap walk-dictionary ;
 
 : dict. ( dict - )
     walk> cr swap count type ."  = " ? ;

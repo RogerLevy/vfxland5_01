@@ -9,33 +9,29 @@ wrap-word [[
 before as check-object
 wrap-word as
 
-: ?prop ( n - n )
-    validations @ -exit
-    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
 
-: prop+ ( object offset - a )
-    \ Optimizes down to two instructions with validations off 
-    fast[ s" over cla-offset + @ + @" evaluate fast]
-    validations @ if s" ?prop" evaluate then
-    s" +" evaluate ; immediate
-
-\ -----------------------------------------------------------------------------
-\ This is redefined here because FAST[ FAST] have been defined at this point
-: does-property 
-    immediate does> fast[ >property fast] ; 
-\ -----------------------------------------------------------------------------
-
-aka (->) ->
+redef : (->property) ( property - ) ( obj - a )
+    \ dynamically called by old ->
+    \ optimizes down to 2 instructions when compiled with validations off
+    validations @ if 
+        ( property ) ?literal s" ->property" evaluate
+    exit then
+    2 cells + @ ?literal \ -> offset @ ?literal 
+    fast[ s" over >cla @ + @ +" evaluate fast] 
+; immediate
 
 : validate-object
     dup valid-object? not 
         abort" VALIDATE-OBJECT >> Invalid object." ;
 
-: -> 
-    validations @ if
-        s" validate-object" evaluate
-    then
-    postpone (->) ; immediate
+redef : -> ( object <name> - a )
+    preword find not abort" -> >> Field name not found"
+    >body cell+ @ MAGIC_PROPERTY = if
+        validations @ if   s" validate-object" evaluate   then
+        ' >body s" (->property)" evaluate 
+    else
+        ' >body 2 cells + @ ?literal s" +" evaluate
+    then ; immediate 
 
 :noname  ( obj protocol - obj protocol )
     safety @ -exit

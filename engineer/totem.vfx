@@ -35,11 +35,14 @@ trait: _totem
     static post-empty-instances-xt      \ ( class - )
     32 nstatic default-dir$             \ Where +TOTEM locates assets by default 
     static format                       \ Totem file format version (not used by all totems!)
+    prop last-kept
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
-    :: _intake ( - ) ;                   \ Load from filesystem.
-    :: _keep ( - ) ;                     \ Save to disk.
+    :: _intake ( - ) ;                  \ Load from filesystem.
+    :: _keep ( - ) ;                    \ Save to disk.
+
+    :: reload ( - ) ;                   \ Hot-reload
     
 trait;
 
@@ -65,7 +68,7 @@ _totem :apply ( class - )
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : format: ( <ver> - ) bl parse evaluate classifier -> format ! ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
-: default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
+: default-dir: ( <path> - ) bl parse slashes classifier -> default-dir$ place ;
 : default-dir@ ( class - a len ) -> default-dir$ count ;
 
 \ =============================================================================
@@ -85,11 +88,11 @@ _totem :apply ( class - )
         class0 path len -path 
         \ ." Materializing " 2dup type cr
         $object
-        [[ 
-            path len >abspath me srcpath!
-        me ]]
         dup class0 -> instances add-to
-    then ;
+    then 
+    [[ 
+        path len >abspath me srcpath!
+    me ]] ;
 
 || : @default-dir
     my-name
@@ -119,12 +122,15 @@ _totem :apply ( class - )
 \ I/O
 \ =============================================================================
 
-: reload ( totem - )
-    dup unload intake ;
+redef _totem :: reload ( - )
+    counter last-kept @ - 2000 <= if 
+        ." System-saved totem, skipping reload..." cr exit 
+    then
+    me unload me intake ;
 
 : reload-instances ( class - )
     {: class0 :}
-    class0 body> >name count f" Reloading %s totems..." type cr
+    class0 body>name f" Reloading %s totems..." type cr
     class0 -> instances list-count for
         @next reload
     loop drop ;
@@ -147,7 +153,7 @@ _totem :apply ( class - )
         then 
     then
 
-    2dup -path type cr
+    ." Discovered " 2dup -path type cr
     class0 materialize intake ;
 
 : load-dir ( path-a path-len class - )
@@ -156,7 +162,7 @@ _totem :apply ( class - )
     \ If class's extension$ is empty, include directories in discovery
     
     11 push-attribute
-    dup body> >name count f" Loading %s totems..." type cr
+    dup body>name f" Loading %s totems..." type cr
     pop-attribute
     
     to class0   
@@ -186,6 +192,7 @@ _totem :apply ( class - )
         \ changed @ -exit   
         srcpath$ count -file ensure-dir
         me _keep
+        counter last-kept !
         my-name f" Saved %s" type cr
         ; \ changed off ;
 
@@ -195,7 +202,7 @@ _totem :apply ( class - )
 \ : save-totems ( - )
 \     _totem -> dependents list-count for
 \         @next 
-\         dup body> >name count f" Saving %s totems..." type cr
+\         dup body>name f" Saving %s totems..." type cr
 \         -> instances list-count for
 \             @next commit
 \         loop drop
@@ -216,7 +223,7 @@ _totem :apply ( class - )
 
 : unload-instances ( class - )
     {: class0 :}
-    class0 body> >name count f" Unloading %s totems..." type cr
+    class0 body>name f" Unloading %s totems..." type cr
     class0 -> instances list-count for
         @next unload
     loop drop ;
@@ -232,7 +239,7 @@ _totem :apply ( class - )
 \ : empty-totems ( - )
 \     _totem -> dependents list-count for
 \         @next 
-\         dup body> >name count f" Unloading %s totems..." type cr
+\         dup body>name f" Unloading %s totems..." type cr
 \         empty-instances
 \     loop drop ;
 
@@ -271,9 +278,9 @@ _totem :apply ( class - )
 : bin[ ( - ) data[ MAGIC_BIN , ;
 : bin] ( - a len ) data] ;
 
-: des> ( a - ) ( a - a' )
+continuation: des> ( a - ) ( a - a' )
     ?totem
-    r> {: xt | a :}
+    ( xt )  {: xt | a :}
     srcpath$ c@ 0= if
         s" Totem has no source path, skipping..." type cr
         exit
@@ -292,7 +299,8 @@ _totem :apply ( class - )
     a binfree throw
     throw ;
 
-: ser> ( - ) ( - )
+continuation: ser> ( - ) ( - )
+    ( xt ) >r 
     ?totem
     bin[
     format @ ,
@@ -301,12 +309,19 @@ _totem :apply ( class - )
     rot throw
     srcpath$ count write ;
 
+: des-me+ ( - ) ['] into-me desbin+ ;
+: move+  ( src dest n - src' ) 
+    {: src dest n :}
+    src dest n move
+    src n + ;
+: ser-me, ( - ) me serbin, ;
+    
 \ =============================================================================
 \ Defaults
 
-_totem :: _intake ( - )
+redef _totem :: _intake ( - )
     des> ['] into-me desbin+ ;
 
-_totem :: _keep ( - )
+redef _totem :: _keep ( - )
     ser> me serbin, ;
 

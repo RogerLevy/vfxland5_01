@@ -1,0 +1,50 @@
+library: cjson.dll
+
+extern: void * STDCALL _cJSON_Parse@4( char * json_string );
+extern: void * STDCALL _cJSON_ParseWithLength@8( char * json_string, int buffer_length );
+extern: void * STDCALL _cJSON_GetObjectItem@8( void * json_obj, char * key );
+extern: char * STDCALL _cJSON_GetStringValue@4( void * item );
+extern: void STDCALL _cJSON_Delete@4( void * json_obj );
+extern: void * STDCALL _cJSON_CreateObject@0();
+extern: void * STDCALL _cJSON_AddStringToObject@12( void * obj, char * key, char * value );
+extern: char * STDCALL _cJSON_PrintUnformatted@4( void * obj );
+extern: char * STDCALL _cJSON_Version@0();
+extern: void STDCALL _cJSON_free@4( void * ptr );
+extern: void * STDCALL _cJSON_GetArrayItem@8( void * array, int index );
+extern: int STDCALL _cJSON_GetArraySize@4( void * array );
+
+: .cjson-version ( - ) _cJSON_Version@0 zcount type cr ;
+: parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
+: delete-cjson ( cjson - ) _cJSON_Delete@4 ;
+: create-cjson ( - cjson ) _cJSON_CreateObject@0 ;
+: serialize-cjson ( cjson - heap-zstr ) _cJSON_PrintUnformatted@4 ;
+
+: get-string-content ( cjson - a len )
+    _cJSON_GetStringValue@4 zcount ;
+
+: get-field ( zkey cjson - cjson )
+    _cJSON_GetObjectItem@8 ;
+
+: get-string ( cjson zkey - a len ) 
+    get-field _cJSON_GetStringValue@4 zcount ;
+
+: set-string ( a len zvalue cjson - ) 
+    -rot >r >zpad r> _cJSON_AddStringToObject@12 ;
+
+: array-length ( cjson - n )
+    _cJSON_GetArraySize@4 ;
+
+: get-array-item ( cjson zkey n  - cjson )
+    >r get-field r> _cJSON_GetArrayItem@8 ;
+
+: cjson. ( cjson - ) 
+    serialize-cjson dup zcount type _cJSON_free@4 ;
+
+
+honing @ [if]
+    s" test.json" file@ parse-json value it
+
+    : user[] it z" users" rot get-array-item ;
+    0 user[] cjson.
+    1 user[] cjson.
+[then]

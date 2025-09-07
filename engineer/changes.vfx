@@ -1,0 +1,111 @@
+extern BOOL ReadDirectoryChangesW(
+    HANDLE                          hDirectory,
+    LPVOID                          lpBuffer,
+    DWORD                           nBufferLength,
+    BOOL                            bWatchSubtree,
+    DWORD                           dwNotifyFilter,
+    LPDWORD                         lpBytesReturned,
+    LPOVERLAPPED                    lpOverlapped,
+    DWORD lpCompletionRoutine
+);
+
+extern HANDLE CreateEventA(
+    LPSECURITY_ATTRIBUTES lpEventAttributes,
+    BOOL                  bManualReset,
+    BOOL                  bInitialState,
+    LPCSTR                lpName
+);
+
+extern BOOL GetOverlappedResult(
+    HANDLE       hFile,
+    LPOVERLAPPED lpOverlapped,
+    LPDWORD      lpNumberOfBytesTransferred,
+    BOOL         bWait
+);
+
+private
+
+: +field  create over , + does> @ + ;
+
+0
+8 +field Internal
+8 +field InternalHigh
+4 +field Offset
+4 +field OffsetHigh
+8 +field Pointer
+8 +field hEvent
+constant s/OVERLAPPED
+
+0 value buffer
+create overlapped s/OVERLAPPED allot
+variable bytes-returned
+variable notify-info
+cstring mondir$
+0 value dir-handle
+cstring changed-fp$
+
+public
+
+: mondir ( dp len - )
+    {: dp len | zstr[ 256 ] h :}
+    dp len mondir$ place
+    dp len zstr[ zplace
+    zstr[
+    FILE_LIST_DIRECTORY
+    FILE_SHARE_READ FILE_SHARE_WRITE FILE_SHARE_DELETE or or
+    0
+    OPEN_EXISTING
+    FILE_FLAG_BACKUP_SEMANTICS FILE_FLAG_OVERLAPPED or
+    0 
+    CreateFile to h
+    h to dir-handle 
+    h INVALID_HANDLE_VALUE = abort" Couldn't open directory"
+    
+    0 1 0 0 CreateEventA overlapped hEvent !
+    
+    65536 allocate throw to buffer
+    h buffer 65536 1 
+    FILE_NOTIFY_CHANGE_FILE_NAME FILE_NOTIFY_CHANGE_SIZE FILE_NOTIFY_CHANGE_LAST_WRITE or or
+    bytes-returned overlapped 0
+    ReadDirectoryChangesW 
+    0= abort" ReadDirectoryChangesW failed" ;
+
+: changed-file ( - fp len ) changed-fp$ count ;
+
+|| : utf16>place ( src len dest - )
+    {: src len dest :}
+    len dest c!
+    1 +to dest
+    len for
+        src i 2 * + w@ dest c!
+        1 +to dest
+    loop ;
+
+: .changed-file ." File changed: " changed-file type cr ;
+
+|| : @changed-fp ( NOTIFY_INFO - )
+    2 cells + @+ changed-fp$ utf16>place
+    wd
+    mondir$ count $cwd
+    changed-fp$ count >abspath changed-fp$ place 
+    $cwd 
+    .changed-file ;
+
+defer process-dirchange ( NOTIFY_INFO - )
+
+:noname drop ; is process-dirchange
+
+: ?dirchange ( - )
+    dir-handle overlapped bytes-returned 0 GetOverlappedResult if
+        buffer 
+        begin 
+            dup @changed-fp
+            dup process-dirchange
+            dup @ 
+        while
+            dup @ +
+        repeat
+        drop
+        dir-handle close-file drop
+        mondir$ count mondir 
+    then ;

@@ -16,26 +16,21 @@ include %idir%/vga13h.vfx
 : font@  vga-8x8 ;
 
 || create fg  1e sf, 1e sf, 1e sf, 1e sf, 
-|| : sf-!  cell- dup sf! ;
-|| : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
 || : fcolor  fg 4f! ;
 || : c  dup 24 >> s>f 255e f/ ;
 || : (color)  c 8 << c 8 << c 8 << c drop fcolor ;
-|| : sf@+  dup sf@ cell+ ;
-|| : 4f@  sf@+ sf@+ sf@+ sf@ ;
 
 \ Rendering
 : color ( n - )
     255 and cells vga13h + @ 8 << $ff or (color) ;
 
-|| create zstr 65536 allot
-
 variable line-spacing  8 line-spacing !
 
 : mltext ( a len w - )
+    {: | zstr[ 4096 ] lh w z :}
     over 0= if 3drop exit then 
-    >r zstr zplace  zstr r> s>f f>ds   
-    line-spacing @ s>f f>ds | lh w z | 
+    >r zstr[ zplace  zstr[ r> s>f f>ds   
+    line-spacing @ s>f f>ds to lh to w to z 
     font@  fg 4f@  at@f w lh 0 z al_draw_multiline_text ;
 
 : print ( a len - )
@@ -47,7 +42,8 @@ variable line-spacing  8 line-spacing !
     r> line-spacing ! ;
 
 : textw ( a n - n )
-    zstr zplace  zstr  font@  swap  al_get_text_width ;  
+    {: | zstr[ 4096 ] :}
+    zstr[ zplace  zstr[  font@  swap  al_get_text_width ;  
 
 : glyph ( n - )
     >r  font@ fg 4f@ at@f  r> al_draw_glyph ;

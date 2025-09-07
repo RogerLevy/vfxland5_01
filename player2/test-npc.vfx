@@ -1,0 +1,172 @@
+include %idir%/libcurl.fth
+
+extern: void * "C" curl_easy_init();
+extern: void "C" curl_easy_setopt( void * curl, int opt, int val );
+extern: bool "C" curl_easy_perform( void * curl );
+extern: void "C" curl_easy_cleanup( void * curl );
+
+0 value curl
+
+fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr   size nmemb * dup if 
+        type   cr  
+        flushOP-gen drop
+    else 2drop then 
+    size nmemb * ;
+
+: test-get
+    curl_easy_init to curl
+    curl 0= abort" curl_easy_init failed"
+    curl CURLOPT_URL z" http://httpbin.org/get" curl_easy_setopt
+    curl CURLOPT_SSL_VERIFYPEER 0 curl_easy_setopt
+    curl CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
+    curl CURLOPT_WRITEFUNCTION output-cb curl_easy_setopt
+
+    curl curl_easy_perform ?dup if
+        f" curl_easy_perform failed with err # %n" -1 -rot .abort
+    then
+
+    curl curl_easy_cleanup
+    0 to curl
+;
+
+: game-client-id s" 01993e9f-bc67-7182-b044-4df0c82aa295" ;
+
+: curl-request ( url len write-cb setopts-xt - ) ( ... curl - )
+    {: url len write-cb setopts-xt | curl zurl[ 1024 ] :}
+    url len type cr
+    url len zurl[ zplace
+
+    curl_easy_init to curl
+    curl 0= abort" curl_easy_init failed"
+    
+    curl CURLOPT_URL zurl[ curl_easy_setopt
+    curl CURLOPT_WRITEFUNCTION write-cb curl_easy_setopt
+    curl CURLOPT_SSL_VERIFYPEER 0 curl_easy_setopt
+    curl CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
+    curl CURLOPT_HTTP_VERSION 1 curl_easy_setopt    \ Force HTTP/1.1
+    \ curl CURLOPT_VERBOSE 1 curl_easy_setopt
+    curl CURLOPT_TIMEOUT 10 curl_easy_setopt
+    curl setopts-xt execute   
+    
+    \ Execute request
+    curl curl_easy_perform ?dup if
+        f" curl_easy_perform failed with err # %n" -1 -rot .abort
+    then
+    
+    curl curl_easy_cleanup ;
+
+cstring p2key$ 
+
+fromC 4 1 callproc: p2key-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr size nmemb * 
+    s" p2Key" search drop s" p2Key" nip 3 + /string 2 - p2key$ place
+    p2key$ count type cr
+    size nmemb * ;
+
+: p2key-setopts {: curl -- :}
+    curl CURLOPT_POST 1 curl_easy_setopt
+    curl CURLOPT_POSTFIELDS z" " curl_easy_setopt  \ Empty POST body
+    curl CURLOPT_POSTFIELDSIZE 0 curl_easy_setopt ;
+
+: get-p2key
+    game-client-id f" http://localhost:4315/v1/login/web/%s" 
+    p2key-cb ['] p2key-setopts curl-request ;
+
+: *slist
+    ?dup if curl_slist_free_all then
+    0 ;
+
+0 value headers
+
+: create-npc-setopts {: curl -- :}
+    curl CURLOPT_POST 1 curl_easy_setopt
+
+    headers *slist 
+    p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+    z" Content-Type: application/json" curl_slist_append 
+    z" User-Agent: MyApp/1.0" curl_slist_append 
+    dup to headers
+    curl CURLOPT_HTTPHEADER rot curl_easy_setopt
+
+    s[
+        .\" {\"name\": \"Captain Blackbeard\","
+        .\" \"short_name\": \"Captain\","
+        .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
+        .\" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure\","
+        .\" \"tts\": {"
+        .\" \"voice_ids\": [\"01955d76-ed5b-753f-9f74-c0674216f0f5\"],"
+        .\" \"speed\": 1.0,"
+        .\" \"audio_format\": \"mp3\"}}"
+    s]
+    2dup type cr
+    swap
+    curl CURLOPT_POSTFIELDS rot curl_easy_setopt 
+    curl CURLOPT_POSTFIELDSIZE rot curl_easy_setopt
+;
+
+cstring npc$
+
+fromC 4 1 callproc: npc-create-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr size nmemb * 1 -2 2+ npc$ place
+    npc$ count type cr
+    size nmemb * ;
+
+: npc-create ( - )
+    s" https://api.player2.game/v1/npcs/spawn" 
+    npc-create-cb ['] create-npc-setopts curl-request ;
+
+cstring msg$
+
+: chat-send-setopts {: curl -- :}
+    curl CURLOPT_POST 1 curl_easy_setopt
+    
+    headers *slist
+    p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+    z" Content-Type: application/json" curl_slist_append 
+    dup to headers
+    curl CURLOPT_HTTPHEADER rot curl_easy_setopt
+    
+    s[
+        .\" {\"sender_name\": \"Roger\","
+        .\" \"sender_message\": \"%s\","
+        .\" \"game_state_info\": \"Player is on a tropical island with palm trees and a beach\"}" \ ,"
+    s]
+    msg$ count 2swap sformat
+    2dup type cr
+    swap
+    curl CURLOPT_POSTFIELDS rot curl_easy_setopt 
+    curl CURLOPT_POSTFIELDSIZE rot curl_easy_setopt
+;
+
+: responses-setopts {: curl -- :}
+    curl CURLOPT_HTTPGET 1 curl_easy_setopt    \ This is a GET request
+
+    headers *slist
+    p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+    dup to headers
+    curl CURLOPT_HTTPHEADER rot curl_easy_setopt
+;
+
+: send ( msg len -- )
+    msg$ place
+    npc$ count f" https://api.player2.game/v1/npcs/%s/chat" 
+    output-cb ['] chat-send-setopts curl-request
+;
+
+: listen ( -- )
+    s" https://api.player2.game/v1/npcs/responses"
+    output-cb ['] responses-setopts curl-request
+;
+
+: say:  0 parse' send listen ;
+
+CURL_GLOBAL_DEFAULT curl_global_init
+test-get
+get-p2key
+npc-create
+
+say: Hello Captain! Where can I find treasure?

@@ -1,5 +1,4 @@
-
-trait: thinker 
+trait: _object
     :: init ( - ) ;
     :: deinit ( - ) ;
     \ :: think ( - ) ;

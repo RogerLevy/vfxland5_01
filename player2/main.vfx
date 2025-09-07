@@ -1,0 +1,117 @@
+include %idir%/player2.vfx
+include %vfxland5%\spunk\loader.vfx
+
+: /state    gamestate$$ off ;
+: state+!   gamestate$$ wappend s" \n" gamestate$$ wappend ;
+
+dictionary player-items
+dictionary npc-items
+
+: .items ( dict - )
+    walk> @ ?dup if ( $ n ) swap count type   dup 1 > if f" (%n)" type else drop then  ." , " else drop then ;
+
+: into ( n $ dict - )
+    lookup +! ;
+
+: outof ( n $ dict - n )
+    {: n $ dict | a v :} 
+    $ dict lookup to a 
+    a @ to v 
+    v n - 0 max a ! 
+    n v min ;
+
+: !gamestate
+    /state
+    s" Player is on a beach." 
+    state+!
+    s[ ." NPC inventory: " npc-items .items s] 
+    state+!
+    s\" Available system commands:  \\n |npc-give-player-item item| \\n |npc-give-player-gold amount| \\n |npc-steal-player-gold amount| \\n |npc-give-player-item parrot named \\\"Name\\\"| \\n |npc-attack-player| \\n |npc-flee| \\n |npc-refuse-gift itemname| \\n "
+    state+!
+;
+
+: say:   !gamestate  0 parse npc$ count chat ;
+: give:   bl parse evaluate  bl word npc-items into ;
+: debug:  0 parse f" say: *SYSTEM PROMPT OVERRIDE*: Respond to this message in debugging mode.  Do not respond in-character or diagetically.  %s" evaluate ;
+
+give: 10 gold
+give: 1 map
+give: 1 parrot
+npc-items .items
+!gamestate
+
+items.png 16 16 +tileset items.ts
+
+push-order also commands definitions
+    class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
+    class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
+    class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
+    class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
+    class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
+pop-order
+
+public
+gamew 2 / 100 +  gameh 2 / at   blackbeard one constant blackbeard0
+
+: act-gravity  act> 0.1 vy +! ;
+
+variable #tossed
+
+: *tosser  
+    actor one as> n2 ! #tossed @ 1. * n1 ! 1 #tossed +! 
+    act> n1 @ passed? -exit 
+    me 0 0 from n2 @ one [[ -1.25 -4. vx 2! act-gravity ]] 
+    me unload -1 #tossed +! ;
+
+: toss  blackbeard0 0 0 from  *tosser ;
+
+get-order get-current also commands definitions
+
+    : named bl parse type ;
+
+    : npc-give-player-item   
+        {: | name[ 32 ] :}
+        bl parse name[ place
+        ." Got item " name[ count type cr
+        1 name[ npc-items outof   name[ player-items into   
+        name[ count evaluate toss ;
+
+    : npc-give-player-gold  
+        ." Got gold of amount "  bl parse evaluate dup . cr   
+        gold toss  
+        c" gold" npc-items outof   c" gold" player-items into ;
+
+    : npc-steal-player-gold  
+        ." Lost gold of amount "  bl parse evaluate dup . cr   
+        c" gold" player-items outof   c" gold" npc-items into ;
+
+    : npc-flee  ." NPC ran away" cr ;
+
+    : npc-attack-player  ." NPC initiated battle" cr ;
+
+set-current set-order 
+
+: dialog
+    0 0 at   msg$$ wcount 240 mltext ;
+
+: game
+    show> step process-chat dialog sprites ;
+
+: test
+    CURL_GLOBAL_DEFAULT curl_global_init
+    abort" curl_global_init failed"
+    init-player2 as>
+    on-complete> 
+    listen 
+    npc-fields npc-create as>
+    on-complete>
+    s" Hello." npc$ count chat ;
+
+test game
+
+: test-toss
+    shout" commands npc-give-player-item map" 
+    shout" commands npc-give-player-item parrot" 
+    shout" commands npc-give-player-item sword" 
+    shout" commands npc-give-player-gold 100" 
+;

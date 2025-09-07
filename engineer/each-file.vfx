@@ -1,0 +1,31 @@
+: each-file ( path:a n xt - ) ( path n - )
+    -rot >zpad al_create_fs_entry locals| e xt |
+    e al_open_directory if
+        begin  e al_read_directory ?dup while
+            >r 
+            r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
+                r@ al_get_fs_entry_name zcount xt execute
+            then
+            r> al_destroy_fs_entry
+        repeat
+        e al_close_directory drop    
+    else
+        ." EACH-FILE >> Couldn't open directory." cr 
+    then 
+    e al_destroy_fs_entry ;
+
+: each-file-and-dir ( path:a n xt - ) ( path n - )
+    -rot >zpad al_create_fs_entry locals| e xt |
+    e al_open_directory if
+        begin  e al_read_directory ?dup while
+            >r 
+            \ r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
+                r@ al_get_fs_entry_name zcount xt execute
+            \ then
+            r> al_destroy_fs_entry
+        repeat
+        e al_close_directory drop    
+    else
+        ." EACH-FILE-AND-DIR >> Couldn't open directory." cr 
+    then 
+    e al_destroy_fs_entry ;

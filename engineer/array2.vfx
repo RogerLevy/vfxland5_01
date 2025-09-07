@@ -7,16 +7,16 @@ trait: _iterable
     :: vacate ( - ) 0 item-count ! ;
     :: index ( a - n ) stub ; 
     :: deref-index ( n - ? ) stub ;
-    :: [] ( n - a ) stub ; \ pronounced "box"
+    redef :: [] ( n - a ) stub ; \ pronounced "box"
     :: redim ( #items - ) stub ;
 trait;
 
 : #items ( iterable - n ) -> item-count @ ;
 
-variable (enough)
+|| variable (enough)
 : enough  (enough) on ;
 
-: (each) ( xt - ) ( ... a - ... )
+|| : (each) ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
         i me [] xt execute
@@ -29,8 +29,8 @@ _iterable :: each ( xt - ) ( ... a - ... )
     ['] (each) catch
     r> (enough) !
     throw ;
-    
-: (each@) ( xt - ) ( ... a - ... )
+
+|| : (each@) ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
         i me deref-index xt execute
@@ -91,14 +91,14 @@ _iterable :: tail@ ( - ? )
     item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
-\ iterable% :: map ( xt dest - )
+\ iterable :: map ( xt dest - )
 \     {: xt dest :}
 \     item-count @ for
 \         i me [] xt execute
 \         i dest [] !
 \     loop ;
 \ 
-\ iterable% :: filter ( xt dest - count )
+\ iterable :: filter ( xt dest - count )
 \     {: xt dest | j :}
 \     item-count @ for
 \         i me [] dup xt execute if
@@ -191,7 +191,7 @@ _stack :: redim ( #items - )
 
 \ ------------------------------------------------------------------------------
 
-: array[ ( item-size - )
+: array[ ( item-size - array )
     0 swap _array make [[
     here data !  me ]] ;  \ just to be sure
 
@@ -203,10 +203,10 @@ _stack :: redim ( #items - )
     \ Pad out an array being built, to given count
     over [[ data @ item-size @ rot * + here - allot&erase ]] ;
 
-: array ( max width - <name> )
+redef : array ( max width - <name> )
     _array object ;
 
-: stack ( max width - <name> )
+redef : stack ( max width - <name> )
     _stack object ;
 
 class: _object-array

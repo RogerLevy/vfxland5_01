@@ -1,4 +1,4 @@
-require %idir%\..\..\supershow\ui\ui.vfx
+require %vfxland5%\supershow\ui\ui.vfx
 
 element-class toolbox%
 
@@ -26,7 +26,7 @@ create anchor 0 , 0 ,
         0 of me dragee = -exit lb if mickey 2>. x 2+! then endof
         -1 of 0 to dragee endof
     endcase ;
-toolbox% :: init
+toolbox :: init
     act> drag 
     draw>
         64 16 2dup backing box

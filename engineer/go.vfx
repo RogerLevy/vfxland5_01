@@ -1,0 +1,94 @@
+\ =============================================================================
+\ Main Loop Support
+\ =============================================================================
+
+|| : spin ( - f: n )
+    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
+
+|| : pre ( - )
+    0 #tib ! postpone \\ 
+    !delta !delta 
+    need-pump on ;
+    
+continuation: show> ( - ) ( - )
+    ( xt ) 'show ! cls ; 
+
+: refresh ( - )
+    ustime 
+    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
+    to ustime
+    display al_flip_display
+    !delta
+    poll ;
+
+|| redef : spin ( - f: n )
+    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
+
+\ =============================================================================
+\ Global Events
+\ =============================================================================
+
+|| : global-events ( - )
+    ALLEGRO_EVENT_DISPLAY_CLOSE happened? if
+        bye
+    then
+    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
+        reset-keyboard reset-mouse
+    then
+    ALLEGRO_EVENT_DISPLAY_RESIZE happened? if
+        display al_acknowledge_resize
+    then ;
+
+\ =============================================================================
+\ Global Event Handler
+\ =============================================================================
+
+|| : ?event ( - flag )
+    alqueue the-event al_get_next_event 0<> dup -exit
+    >r global-events ide-events r> ;
+    
+|| : (pump) ( - )
+    need-pump @ -exit
+    begin ?event not until ;
+
+:noname ( - )
+    ['] (pump) catch hist[ .throw hist]
+    need-pump on ;
+is pump
+
+redef : event? ( - f )
+    repl @ if 0 exit then
+    need-pump off ?event ;
+
+\ =============================================================================
+\ Main Loop
+\ =============================================================================
+
+|| : ?quit
+    <esc> pressed? esc-quits @ and if
+        going off 
+        fullscreen? if windowed winmode then
+        >vfx
+        quit
+    then ;
+
+|| : ?idle ( - ) debug @ if EmptyIdle then ;
+|| : ?reload-shift ( - ) shift? to reload-shift? ;
+|| : ?w/f ( - )
+    debug @ if ide-?w/f exit then
+    <enter> pressed?  alt? and if
+        w/f -keys
+    then ;    
+|| : ?bye  <f4> pressed?  alt? and if bye then ;
+|| : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
+|| : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
+
+: frame ( - )
+    controls pump screen refresh ;
+
+: go ( - )
+    \ Main engine loop - enter IDE if debug mode, otherwise run normally
+    going @ ?exit
+    debug @ if >ide else >display then
+    pre going on begin ['] frame catch ?dup until going off throw ;
+

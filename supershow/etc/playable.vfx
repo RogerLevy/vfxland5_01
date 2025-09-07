@@ -1,0 +1,11 @@
+trait: playable
+    prop playhead <fixed <save  \ seconds
+    prop (playing)
+    prop spd <fixed <save
+    :: play ( - ) stub ;
+    :: stop ( - ) stub ;
+    :: pause ( - ) stub ;
+    :: resume ( - ) stub ;
+    :: playing! ( flag - ) stub ;
+    :: playing? ( - flag ) (playing) @ ;
+trait;

@@ -3,7 +3,7 @@
 \ Python script to perform expansion, but it's still useful for quick
 \ experiments and stuff that I don't need help from Claude with.
 
-: number? ( a len - f )
+|| redef : number? ( a len - f )
     isnumber? case
         1 of drop -1 exit endof
         2 of drop drop -1 exit endof
@@ -36,7 +36,7 @@
     bl parse 2dup
     >pad find if
         >body valid-classifier? if
-            >pad count fe" '%s' is a classifier name. Use %%class, +trait, or \"trait\" syntax."
+            >pad count fe" '%s' is a classifier name. Use @class, +trait, or \"trait\" syntax."
             -1 -rot .abort
         then
     else drop then
@@ -51,7 +51,7 @@
     preword 1 + c@ '@' <> if 0 exit then
     pre-xt dup 0= if consume -1 abort" Token not found." then
     >body dup is-class? not if
-        consume -1 abort" Token preceded by % must be a class."
+        consume -1 abort" Token preceded by @ must be a class."
     then
     derive -1 consume ;
 
@@ -91,7 +91,7 @@
     then
     ?comment ;
 
-: token ( - )
+|| redef : token ( - )
     ?invalid
     ?class ?exit
     ?trait ?exit
@@ -123,5 +123,5 @@ trait: _lifo trait;
 512 constant /actor
 
 c: thingy ;
-c: actor  /actor  %thingy  +_lifo  "thinker"
+c: actor  /actor  @thingy  +_lifo  "thinker"
     en buf 256 x y vx vy ;

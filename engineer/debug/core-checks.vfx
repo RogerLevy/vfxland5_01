@@ -295,6 +295,7 @@ crucial test: check-place-params ( addr1 len addr2 -- addr1 len addr2 n:result )
 
     addr1 check-valid-address to src-result drop      \ Source valid
     src-result 0 >= if s" Invalid source address" log-error then
+
     addr2 check-valid-address to dest-result drop     \ Destination valid
     dest-result 0 >= if s" Invalid destination address" log-error then
 
@@ -336,8 +337,8 @@ wrap-word c@
 before c! check-char-store-params
 wrap-word c!
 
-before c+! check-char-store-params
-wrap-word c+!
+\ before c+! check-char-store-params
+\ wrap-word c+!
 
 before 2@ check-fetch-address
 wrap-word 2@
@@ -365,8 +366,8 @@ wrap-word cells
 before count check-counted-string
 wrap-word count
 
-before type check-type-params
-wrap-word type
+\ before type check-type-params
+\ wrap-word type
 
 before move check-move-params
 wrap-word move
@@ -374,7 +375,7 @@ wrap-word move
 before fill check-fill-params
 wrap-word fill
 
-: erase  0 fill ;
+redef : erase  0 fill ;
 
 before place check-place-params
 wrap-word place
@@ -387,8 +388,8 @@ before */mod check-star-slash
 wrap-word */mod
 
 \ Conversion Words
-before d>s check-double-to-single
-wrap-word d>s
+\ before d>s check-double-to-single
+\ wrap-word d>s
 
 before f>s check-float-to-single
 wrap-word f>s

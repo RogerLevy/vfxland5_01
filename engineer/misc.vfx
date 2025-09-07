@@ -2,27 +2,57 @@
 \ Misc
 \ ------------------------------------------------------------------------------
 
+: e -1 abort" e is not defined" ;
+
 : ` ; immediate
 : `` ; immediate
 : ``` ; immediate
 : ```` ; immediate
 synonym aka synonym
 aka not 0=
-: >zpad  pad zplace pad ;
-: >pad  pad place pad ;
-: $+  ( $ a n - $ ) rot dup >r append r> ;
-: ?exit  s" if exit then" evaluate ; immediate
-: -exit  s" 0= if exit then" evaluate ; immediate 
+: >zpad  ( a n - z$ ) pad zplace pad ;
+: >pad   ( a n - $ ) pad place pad ;
+: $+     ( $ a n - $ ) rot dup >r append r> ;
+: ?exit  ( n - ) s" if exit then" evaluate ; immediate
+: -exit  ( n - ) s" 0= if exit then" evaluate ; immediate 
 aka | locals|
 aka cd cwd
-\ : 2+  rot + >r + r> ;
-: 2-  rot swap - >r - r> ;
-: for  s" 0 ?do" evaluate ; immediate
-: @+  dup cell+ swap @ ;
-: lc  ( n - n) dup 'A' 'Z' within? if $20 or then ;
-: ltype for dup c@ lc emit 1 + loop drop ;      
+: 2+  ( x y x y - x' y' ) rot + >r + r> ;
+: 2-  ( x y x y - x' y' ) rot swap - >r - r> ;
+: for ( n - ) s" 0 ?do" evaluate ; immediate
+: @+  ( a - a' n ) dup cell+ swap @ ;
+: c@+ ( a - a' n )  dup 1 + swap c@ ;
+: lc  ( n - n ) dup 'A' 'Z' within? if $20 or then ;
+: ltype  ( a n - ) for c@+ lc emit loop drop ;      
+: pagealign ( - )  here $ff and 256 swap - allot ;
+: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 
 include %idir%/../textmode/textmode-tools.vfx
+
+: IP>NFA        \ addr -- nfa
+\ *G Attempt to move backwards from an address within a definition to
+\ ** the relevant NFA.
+  13 -			\ NFA (count byte) is at least this far back
+  1024 for
+    dup InForth? 0= if drop  C" <???> "  unloop exit then
+    dup name? if unloop exit then
+    1-
+  loop 
+  drop  C" <???> " ;
+
+: >name         \ xt -- nfa|xt
+\ *G Move a pointer from an XT back to the NFA or name-pointer.
+\ ** If the original pointer was not an XT or if the definition in
+\ ** question has no name header in the dictionary the returned pointer
+\ ** will be useless. Care should be taken when manipulating or scanning
+\ ** the Forth dictionary in this way. If *\i{xt} is outside the
+\ ** dictionary, a dummy for "???" is returned.
+  dup inForth? if
+    unalign  ip>nfa
+  else
+    drop  dummyNFA
+  endif
+;
 
 : .name ( a - )
     \ Smart name print
@@ -45,6 +75,19 @@ include %idir%/../textmode/textmode-tools.vfx
         pop-attribute
     else . then ;
 
+\ : .test  0 0 do i .ip cr 1000 +loop ; 
+
+\ : .ip ( a - )
+\     dup body> inForth? if
+\         ip>nfa dup count 2drop
+\     else drop then ;
+
+\ : .ip  dup inForth? if ip>nfa count type space cr else drop then ;
+
+\ : .test  0 0 do i dup .ip drop loop ; 
+
+\ 0 ' .test catch .s throw
+
 : .data ( a - )
     dup body> inForth? if
         9 push-attribute
@@ -57,20 +100,21 @@ include %idir%/../textmode/textmode-tools.vfx
         pop-attribute
     else . then ;
 
-: f>ds  0 >r rp@ sf! r> ;
+: f>ds  ( f:n - dl dh ) 0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 
 : link ( list - )
+    \ backward-linked list (chain)
     here  over @ ,  swap ! ;
 
-: do-chain ( list - )
+: do-chain ( chain - )
     begin @ ?dup while dup cell+ @ execute repeat ;
 
 : .s
     depth 8 min | d |
     d 0< -4 ?throw
     3 push-attribute
-    d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
+    d if ."     DS( " depth . ." ):[ " else ."     DS:[ " then
     d if
         d 0 ?do d 1 - i - pick . loop 
     else
@@ -78,6 +122,7 @@ include %idir%/../textmode/textmode-tools.vfx
     then
     ." ] "
     pop-attribute cr ;
+
 : f.s 
     fdepth | d |
     d 0< -400 ?throw
@@ -90,16 +135,21 @@ include %idir%/../textmode/textmode-tools.vfx
     then
     ." ] "
     pop-attribute cr ;
-: rs reset-stacks ;
+
+: rs ( - ) reset-stacks ;
+
 : ending ( a len c - a' len' )
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
+
 : slashes ( a len - a len )  
     2dup  over + swap do  i c@ '/' = if
     '\' i c!  then  #1 +loop ; 
+
 : -path ( a len - a len' ) slashes  '\' ending  0 max ;
 : -ext  ( a len - a len' ) 2dup '.' scan nip - ;
+
 : <scan ( a len c - a len' )
     {: a len c :}
     a len 
@@ -107,38 +157,47 @@ include %idir%/../textmode/textmode-tools.vfx
         i c@ c = if 1 - exit then 
         1 - 
     -1 +loop ;
+
 : -file ( a len - a len' ) slashes '\' <scan ;
+
 aka file-exists? fileexists?
-: parse  parse-word ;
+aka parse' parse
+
+: parse ( - a len )
+    parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
 : preparse ( - a len )
     >in @ swap parse-word rot >in ! ;
+
 : ?constant ( n - <name> ) ( - n )
     preword find nip if drop ' drop else constant then ;
 : ?fconstant ( n - <name> ) ( - n )
     preword find nip if fdrop ' drop else fconstant then ;
 : ?value ( n - <name> ) ( - n )
     preword find nip if drop ' drop else value then ;
+
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
-: >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lc swap c! loop ;
+
+: >lowercase ( a c - a c ) 2dup bounds ?do i dup c@ lc swap c! loop ;
 : >uppercase ( a c - a c ) 2dup upper ;
+
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
-: h. ." $" base @ swap hex u. base ! ;
-: #.  base @ >r  decimal . r> base ! ;
-: h.8
+
+: h. ( n - ) ." $" base @ swap hex u. base ! ;
+: #. ( n - ) base @ >r  decimal . r> base ! ;
+
+: h.8 ( n - )
     base @ hex  swap
     0 <# # # # # # # # # #> type
     base !
-    space
-;
+    space ;
 
 variable saved-dp
 : d[ ( a - ) dp @ saved-dp ! dp ! ;
 : d] ( - ) saved-dp @ dp ! ;
 
-\ r0 @ constant .rsbase
 : (.rs) ( a -- )
     {: rp :}
     3 push-attribute
@@ -146,9 +205,6 @@ variable saved-dp
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 9 cells + min  ?do
         i @ .name                    \ Print return address
-        \ i rp <> if                  \ Not the last item?
-        \     ." > "                   \ Print separator
-        \ then
     cell negate +loop
     ." ] "
     pop-attribute cr ;
@@ -156,9 +212,9 @@ variable saved-dp
 : .rs ( -- )
     rp@ (.rs) ;
 
+: clamp ( n lo hi - n' ) >r max r> min ;
 
-: clamp >r max r> min ;
-: umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
+: umod ( n n -- n' ) 2dup mod dup 0< if + else nip then nip ;
 
 aka se" s\"        \ " \ syntax highlight guard
 
@@ -194,7 +250,7 @@ aka se" s\"        \ " \ syntax highlight guard
     bl parse drop @ swap !
     does> @ ;
 
-: .-  (.) type ;
+: .- ( n - ) (.) type ;
 
 : .comma ( n - )
     \ Format number with commas e.g. 100000000 -> 100,000,000
@@ -247,13 +303,6 @@ aka se" s\"        \ " \ syntax highlight guard
 : ?literal  state @ if postpone literal then ;
 : .:  postpone (s") 0 parse $, postpone type postpone cr ; immediate
 
-\ Make variable names show up properly in data stack traces
-\ debug @ [if]
-\ : variable  create 0 , ;
-\ : dvariable  create 0 , 0 , ;
-\ : 2variable  create 0 , 0 , ;
-\ [then]
-
 : toggle dup @ 0= swap ! ;
 : udup  over swap ;
 
@@ -275,8 +324,120 @@ cstring lastword
 : locate  !lastword locate ;
 : see  !lastword see ;
 : show  !lastword show ;
+: aka  !lastword aka ;
 
 aka save-exe save
 
-: ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
+: s= compare 0= ;
+: ext? ( fn len ext len - flag ) 2swap '.' ending s= ;
 : ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
+: body>name ( a - a' ) body> >name count ;
+: u+  rot + swap ;
+
+\ Search order stack
+aligned-page search-order-stack
+variable sosp   search-order-stack sosp ! \ object stack pointer
+: sos-push ( ? - ) sosp @ !  4 sosp c+! ;
+: sos-pop ( - ? ) -4 sosp c+!  sosp @ @ ;
+: sos-pushes ( ... n - ) dup >r for sos-push loop r> sos-push ;
+: sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
+: push-order ( - ) get-order sos-pushes get-current sos-push ;
+: pop-order ( - ) sos-pop set-current sos-pops set-order ;
+
+: >shout ( a len - ) 
+    2>r push-order 2r>
+    ['] evaluate catch ?dup if .throw 2drop then
+    pop-order ;
+
+: shout" ( - <string>" )
+    \ Late-bound execution; don't care if it succeeds.  
+    \ Search order is preserved.
+    \ Caller cannot pass params in directly.
+    state @ if
+        postpone (s") ", postpone >shout
+    else
+        '"' parse >syspad >shout
+    then ; immediate
+
+: cutoff ( a len char - a` len` ) >r 2dup r> scan nip - ;
+: move, ( a len - ) dup >r here swap move r> allot ;
+
+: continuation: ( <name> - ) ( ... xt - ... )
+    create immediate
+    here 0 ,
+    :noname swap !
+    postpone r>
+    does> 
+        lvcount @ abort" Can't use locals with continuations."
+        @ compile, ;
+
+: redef ( - )
+    postpone -warnings 0 parse evaluate postpone +warnings ;
+
+errdef err_redefined "Word redefined"
+
+\ Redefine redefhook: protection from unintentional redefinitions (use REDEF)
+: vfxland-redefhook
+  6 push-attribute 
+  ." Word was redefined! (Precede with REDEF to override.)" 
+  pop-attribute
+  err_redefined throw ;
+
+' vfxland-redefhook is redefhook  
+
+: evaluate-lines ( addr len -- )
+    {: addr len | line-start line-len pos :}
+    addr to line-start
+    0 to pos
+    begin
+        pos len < while
+        addr pos + c@ 10 = if           \ Found newline
+            addr pos + line-start - to line-len
+            line-len if
+                \ line-start line-len type cr
+                line-start line-len evaluate
+            then
+            addr pos + 1+ to line-start \ Start of next line
+        then
+        1 +to pos
+    repeat
+    \ Handle last line if no trailing newline
+    addr pos + line-start - to line-len
+    line-len if
+        line-start line-len type cr
+        line-start line-len evaluate
+    then ;
+
+\ =============================================================================
+\ Extend INTERPRET to track last word interpreted
+\ =============================================================================
+
+redef : (interpret)	\ --
+    page-check
+    begin  
+        ?stack 
+        parse-name 
+        2dup lastword place
+        dup
+    while
+        parser execute
+    repeat
+    2drop ;
+
+' (interpret) is interpret
+
+\ =============================================================================
+\ Float-color utilities
+\ =============================================================================
+
+redef code sf-!	\ addr -- addr' ; F: -- f
+\ *G Places the 32 bit float at addr on the float stack, and
+\ ** increments addr by 4.
+\ ** NDP387.FTH only.
+  add   ebx, # -4		\ update address
+  fld   float 0 [ebx]           \ load from the address
+  fnext,
+end-code
+
+: 4f@  sf@+ sf@+ sf@+ sf@ ;
+: 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;

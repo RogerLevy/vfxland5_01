@@ -1,6 +1,0 @@
-actor-class snake%
-snake.png 20 20 tileset snake.ts
-snake.ts animation snake.anm 0 5 range,
-
-snake% :: init
-    snake.anm 0.1 cycle ;

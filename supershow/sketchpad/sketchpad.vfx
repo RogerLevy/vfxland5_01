@@ -23,37 +23,57 @@
                     \ and load the scene.
 \ ==============================================================================
 
-include %idir%/../../lib/mouse.vfx
+private
 
-\ ------------------------------------------------------------------------------
+fload %vfxland5%/lib/mouse.vfx
+fload %vfxland5%/lib/help.vfx
+
+\ ==============================================================================
+
+public
+
+defer sketchpad-overlay
+['] noop is sketchpad-overlay
 
 private
 
 0 value this
 
+\ ==============================================================================
+
 \ Commands
 
-: save ( - )
+command : save ( - )
+    \ Save current scene.
     this 0= 
         abort" No current scene!  Required: `SAVEAS <scene>` or `EDIT <scene>`"
     this keep ;    
 
 : (friendly-scene)  bl parse f" +scene %s.scn" evaluate ;
 
-: saveas ( <name> - )
+command : saveas ( <name> - )
+    \ Save stage as scene with given name.
     (friendly-scene) to this   save ; 
 
-: edit ( <name> - )
+command : edit ( <name> - )
+    \ Edit scene of given name.
     (friendly-scene) to this   just this load ;
 
-: ctrl+s  save ;
+command : ctrl+s ( - )
+    \ Hotkey: Save current scene.
+    save ;
+
+: order-swap  get-order >r swap r> set-order ;
+
+command : as ( obj - )
+    \ Scope into the given object.
+    as  ['] sketchpad/ >body @ +order  order-swap ;
 
 \ =============================================================================
 
 0 value mx 
 0 value my
 0 value dragee
-\ create anchor 0 , 0 ,
 
 : editable? ( obj - flag ) 
     serializable? ;
@@ -69,7 +89,6 @@ private
         bmp @ -exit
         me editable? -exit
         mouse 2dup bmpbox overlap? if
-            \ bmp @ bitmap-file type cr
             drop me 
         then ;
 
@@ -106,23 +125,50 @@ variable flicker-ctr
     1 flicker-ctr +!  flicker-ctr @ 1 and ?exit sprite ;
 
 : sprites ( - )
-    batch> actives> me editable? if sprite else flicker  then ;
+    batch> actives> me editable? if sprite else flicker then ;
 
-borrow forth hold  \ import system variable
-aka _hold hold     \ and shadow it
+aka _hold hold     \ shadow system variable
 variable hold      \ new private variable will work with f8 and persist
 
-\ ------------------------------------------------------------------------------
+variable 'oldshow
+: ?toggle-mode
+    'show @ ip>nfa name> r@ ip>nfa name> = if
+        r> drop \ this is fine with locals because it's not a continuation
+        'oldshow @ ip>nfa name> execute
+    else
+        'show @ 'oldshow !
+    then ;
+
+\ =============================================================================
+
+private
+
+create bgc 0.5e sf, 0.5e sf, 0.5e sf, 1e sf,
+
+redef : cls ( - )
+    bgc 4f@ al_clear_to_color ;
+
+command : backdrop ( f-r f-g f-b f-a - )
+    \ Set tool backdrop color.
+    bgc 4f! ;
 
 public
 
 : sketchpad
+    ?toggle-mode
     hold on
     repl on
     sketchpad/ 
-    show> hold @ _hold ! step sprites input ;
+    gamew 2 / gameh 2 / at 
+    show> 
+        hold @ _hold ! 
+        cls
+        step sprites sketchpad-overlay
+        input ;
+
+\ =============================================================================
 
 honing @ [if]
 sketchpad
-push-order
+push-order \ TODO: is this needed anymore? (see ?HONE)
 [then]

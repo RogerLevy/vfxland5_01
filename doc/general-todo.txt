@@ -1,24 +1,30 @@
 
+2025/09/11
+[x] (Engineer) Make game pause on focus lost only if REPL is active
+    Conditional pause behavior based on whether the REPL/IDE is running.
+
+[ ] (Tileset System) Support tilesets with bitmaps of different basename
+    Allow tileset loading from bitmaps that don't match the tileset's base filename.
+
+[x] (Asset System) Detect new files and create totems from them
+    Implement automatic file detection and totem creation system.
+
 2025/09/03
-[ ] (Engineer) Protect against buffer overrun when deserializing cstrings
+[x] (Engineer) Protect against buffer overrun when deserializing cstrings
     Add bounds checking and safe string handling to prevent buffer overflow vulnerabilities.
 
 2025/09/02
-[ ] (NIBS) Fix properties sharing serialization configuration across traits and classes
+[ ] (NIBS) (CRITICAL) Fix properties sharing serialization configuration across traits and classes
     Each property needs to have an independent configuration per-classifier.
 
-[ ] (Engineer) Add protection against circular dependencies when honing is enabled
+[ ] (Engineer) (CRITICAL) Add protection against circular dependencies when honing is enabled
 
 2025/08/23
 [x] (Engineer) Implement new LD tool
     Consolidate TRY and LD functionality.
 
-2025/08/22
-[ ] (Supershow) Implement owner-extension for the scene class
-    Add method override pattern to serialize/deserialize actor owner references.
-
 2025/08/20
-[ ] (Engineer) Improve history buffer API 
+[x] (Engineer) Improve history buffer API 
     - It should provide an "emit" style interface, not a line-based interface.
     - Get rid of the string buffer in ide3.vfx; this will prevent memory corruption
 
@@ -27,32 +33,26 @@
     The two ways to access statics are implicit or through a class.
         - `[[ mystatic @ ]]`
         - `cla @ -> mystatic @`  or  `myclass -> mystatic @`
+    Edit: This is probably bad.  Instead, we should enhance -> to detect static
+    fields and compile the appropriate address resolution.
 
 2025/08/17
-[ ] (Engineer) Investigate floating point exception after calling LOAD-BITMAPS
-    Discovered while running test-tileset2.vfx
-
-[-] (NIBS) Investigate protocol redefinition propagation not working as expected
+[x] (NIBS) Investigate protocol redefinition propagation not working as expected
     Redefining _OBJECT:INFO doesn't seem to propagate to dependents such as _ARRAY.
     Update: Couldn't reproduce with a simple test.  Could be a subtle case.
 
-[ ] (IDE) Harden the IDE against errors and ensure graceful recovery
-    Protect against possible errors everywhere in the IDE codebase.
-    Ensure graceful recovery from errors or clean quit to VFX when necessary.
-
-[ ] (IDE) Simplify stack display to show one format at a time with cycling hotkey
+[x] (IDE) Simplify stack display to show one format at a time with cycling hotkey
     Change stack display to show one display type at a time instead of all four.
     Add global immutable hotkey to cycle between display types.
 
 2025/08/16
-[ ] (Asset System) Validate totem names in +TOTEM
-    Ensure totem names match expected format and extension for the totem class.
-
 [ ] (NIBS) Add runtime protocol reassignment word REASSIGN
-    Implement REASSIGN ( xt protocol class - ) to dynamically change protocol implementations at runtime.
+    Implement REASSIGN ( xt protocol-xt class - ) to dynamically change protocol implementations at runtime.
 
-[ ] (Asset System) Add multiple file extension support to totems
+[-] (Asset System) Add multiple file extension support to totems
     Implement filtering mechanism so totem classes can specify supported file extensions.
+    Edit: Might not be necessary?  Sub-classing with specific file extensions might be enough. 
+    Alternatively, make LOAD-DEFAULT-DIR work recursively on classes and their descendents.
 
 [ ] (Engineer) Look into adding anonymous functions
     Investigate implementing `[: ;]` syntax for inline anonymous functions.
@@ -73,7 +73,7 @@
     Implement automatic code formatting for VFX Forth source files.
     Should handle indentation, alignment, and standard Forth formatting conventions.
 
-[ ] (Engineer) Add file error reporting to misc.vfx
+[x] (Engineer) Add file error reporting to misc.vfx
     Replace silent THROW calls with descriptive error messages in file operations.
     Current file@ and related words silently fail causing mysterious bugs.
     Throw actual file error codes instead of directly throwing the result of each file 
@@ -95,6 +95,7 @@
     See doc/trait-inheritance-spec.md for full specification.
     [ ] Add trait derivation syntax and compiler support
     [ ] Runtime lineage validation for explicit parent calls (safety feature)
+    Edit: Is this actually needed for anything???
 
 2025/08/11
 [x] (NIBS) Update compact class syntax parser
@@ -167,8 +168,13 @@
 
 2025/06/24
 [x] Add `try`.
+
 [x] Darkblue: add tweening module and perfect logo animation.
+
 [x] Improve array defining syntax.
+
 [ ] Integrate logging.
+
 [x] Add debug intercept system.
+
 [x] Improve the OOP system.

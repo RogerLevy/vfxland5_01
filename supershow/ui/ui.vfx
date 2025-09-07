@@ -37,8 +37,8 @@ require %idir%\..\dltree.vfx
 : el: ( class - <name> a )
     el dup constant ;
     
-: draw> ( - ) ( - )
-    r> draw ! ;
+continuation: draw> ( - ) ( - )
+    ( xt ) draw ! ;
 
 \ Announce
 || 0 value xt

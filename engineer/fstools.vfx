@@ -6,27 +6,10 @@
 : wd ( - a len )
     buf 256 buf GetCurrentDirectory ;
 
-: evaluate-lines ( addr len -- )
-    {: addr len | line-start line-len pos :}
-    addr to line-start
-    0 to pos
-    begin
-        pos len < while
-        addr pos + c@ 10 = if           \ Found newline
-            addr pos + line-start - to line-len
-            line-len if
-                \ line-start line-len type cr
-                line-start line-len evaluate
-            then
-            addr pos + 1+ to line-start \ Start of next line
-        then
-        1 +to pos
-    repeat
-    \ Handle last line if no trailing newline
-    addr pos + line-start - to line-len
-    line-len if
-        line-start line-len type cr
-        line-start line-len evaluate
+: ?notfound ( fp len - )
+    {: fp len :} 
+    fp len file-exists? not if
+        fp len f" File not found: %s" -1 -rot .abort
     then ;
 
 : bytes-left  ( id - n )
@@ -36,7 +19,8 @@
 
 : file, ( fn len - )
     expand
-    r/o open-file abort" File not found"
+    2dup ?notfound
+    r/o open-file abort" File open error"
     | #1 |
     here 
     #1 bytes-left allot
@@ -44,44 +28,12 @@
     #1 close-file drop 0 , ;
 
 : fsize ( fn len - n )
-    2dup file-exists? not abort" File not found"
+    2dup ?notfound
     r/o open-file abort" File open error" 
     dup file-size throw drop swap close-file throw ;
 
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
-
-: each-file ( path:a n xt - ) ( a n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
-    e al_open_directory if
-        begin  e al_read_directory ?dup while
-            >r 
-            r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
-                r@ al_get_fs_entry_name zcount xt execute
-            then
-            r> al_destroy_fs_entry
-        repeat
-        e al_close_directory drop    
-    else
-        -1 abort" Couldn't open directory"
-    then 
-    e al_destroy_fs_entry ;
-
-: each-file-and-dir ( path:a n xt - ) ( a n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
-    e al_open_directory if
-        begin  e al_read_directory ?dup while
-            >r 
-            \ r@ al_get_fs_entry_mode ALLEGRO_FILEMODE_ISFILE AND if
-                r@ al_get_fs_entry_name zcount xt execute
-            \ then
-            r> al_destroy_fs_entry
-        repeat
-        e al_close_directory drop    
-    else
-        -1 abort" Couldn't open directory"
-    then 
-    e al_destroy_fs_entry ;
 
 : >datadir ( a n - a n )
     s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
@@ -110,12 +62,14 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
 : write ( src len path len - )
 \    2dup file-exists? if 2dup delete-file throw then
+    2dup f" File write: %s" type cr
     w/o create-file abort" File create error" >r
     r@ write-file abort" File write error"
     r> close-file drop ;
 
 : read ( dest len path len - )
-    2dup file-exists? not abort" File not found"
+    2dup f" File read: %s" type cr
+    2dup ?notfound
     r/o open-file abort" File open error" >r
     ( dest len ) r@ file-size drop drop min
     r@ read-file nip abort" File read error"

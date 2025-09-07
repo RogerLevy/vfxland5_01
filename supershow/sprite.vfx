@@ -21,10 +21,10 @@ class;
 : range, ( n n - )
     2dup < if 1 + swap do i frame, loop
     else swap do i frame, -1 +loop then ;
-|| : +animation ( - )
-    anm @ -exit
-    a.spd @ a.ofs @ + a.len @ >. mod a.ofs !
-    !bmp ?done ;
 : animate ( - )
-    hold @ ?exit actives> +animation ;
+    hold @ ?exit actives>
+        anm @ -exit
+        a.spd @ a.ofs @ + a.len @ >. mod a.ofs !
+        !bmp ?done ;
+
 

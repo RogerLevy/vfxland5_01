@@ -3,14 +3,14 @@
 \ ------------------------------------------------------------------------------
 
 1024 ?constant #actors
-#actors 8 * ?constant #temps
+1024 ?constant #temps
 512 ?constant /actor
 
 variable gamelife
 0 0 2value gametime
 
 class: actor
-    is-a thinker
+    \ is-a thinker
     is-a unloadable
     /actor field-space
     prop en
@@ -28,6 +28,7 @@ class: actor
     prop prio <int <save            \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
     prop id <int <save
+    24 nprop tag$ <cstring <save
 
     template [[ -1 id ! ]]
 
@@ -44,9 +45,9 @@ class;
 : free? ( actor - f ) -> en @ 0= ;
 : actor[] ( n - actor ) actors [] ;
 : actor# ( actor - n ) -> id @ ;
-: act> ( - ) ( - ) 0 time !  r> beha ! ; 
-: act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
-: physics> ( - ) ( - ) r> phys ! ;
+continuation: act> ( - ) ( - ) 0 time !  ( xt ) beha ! ; 
+continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
+continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 
 : exists? ( actor - f )
     dup 0= if drop 0 exit then
@@ -55,8 +56,8 @@ class;
 
 fast[
 
-: actives> ( - ) ( - )
-    r> {: xt :}
+continuation: actives> ( - ) ( - )
+    ( xt ) {: xt :}
     0 actor[] [[
         #actors for
             en @ if xt execute then
@@ -99,12 +100,12 @@ actor :: .summary ( actor - )
         \ Compare SP to previous SP.
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if  
-            s[ ." Positive stack imbalance in logic for actor " me .summary cr 
-            s] log-warning .s
+            s[ ." Positive stack imbalance in logic for actor " me .summary 
+            s] log-warning .rs .s
         then
         dup sp@ cell+ cell+ < if
-            s[ ." Negative stack imbalance in logic for actor " me .summary cr
-            s] log-warning .s
+            s[ ." Negative stack imbalance in logic for actor " me .summary
+            s] log-warning .rs .s
         then
     then
     sp! ;
@@ -119,7 +120,8 @@ actor :: .summary ( actor - )
     actives> ?benched physics ;
 
 : +gametime ( - )
-    gametime usdelta 0 d+ to gametime  1 gamelife +! ;
+    gametime usdelta 0 d+ to gametime  
+    1 gamelife +! ;
 
 : +time ( - )
     ?benched pdelta time +! ;
@@ -139,21 +141,23 @@ actor :: .summary ( actor - )
     then ;
 
 \ =============================================================================
-\ Find actor
+\ Find actors
 \ =============================================================================
 
 || 0 value xt
 
-|| : (find) ( 0 actor - 0|actor f )
-    to me
-    en @ 0= ?dup ?exit
-    xt execute if me swap else -1 then ;
+|| : (find) ( 0 actor - 0|actor )
+    dup -> en @ 0= if drop exit then    
+    [[ xt execute if enough drop me then ]] ;
 
-: who> ( - actor ) ( - f )
-    me >r
-    r> to xt
-    0 ['] (find) actors each
-    r> to me ; 
+continuation: who> ( - actor|0 ) ( - f )
+    ( xt ) to xt
+    0 ['] (find) actors each ;
+
+|| 0 value $
+
+: tagged ( $ - actor|0 )
+    to $ who> $ count tag$ count s= ;
 
 \ =============================================================================
 \ Actor drawing
@@ -197,9 +201,12 @@ actor :: unload ( - )
     \ .rs
     en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
 
+: clear-stage ( - )
+    0 next# !  actives>  me unload ;
+
 : just ( - )
     ." JUST >> Clearing all actors!" cr
-    0 next# !  gamew 2 / gameh 2 / at  actives>  me unload ;
+    clear-stage gamew 2 / gameh 2 / at  ;
 
 0 actor :construct ( - )
     at@ 2>. x 2! ;
@@ -245,12 +252,15 @@ actor object dummy
     \ Parse-ahead instantiation for serialized objects/actors
     \ Allows property settings between *[[ ]] that can be picked up by INIT
     s" (one) [[ " evaluate
-    ']' parse evaluate  1 >in +!
+    ']' parse' evaluate  1 >in +!
     s" me init ]]" evaluate ; immediate
 
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;
+
 : from ( actor x y - ) rot as> x 2@ 2.> 2+ at  ; \ me actor# priority ;
-: halt  beha off  0 0 vx 2! ;
+
+redef : halt  beha off  0 0 vx 2! ;
+
 : morph ( class - )
     >r x 2@ vx 2@
     default me /actor move
@@ -258,12 +268,16 @@ actor object dummy
     vx 2! x 2! init ;
 
 : vanish  y @ 16384. or y ! ;
+
 : appear  y @ 16384. invert and y ! ;
-: expanded ( a1 n - a2 )
+
+: expanded ( actor amt - actor' )
     swap dummy copy as>
         dup negate dup x1 2+! 2 * dup w1 2+!
         me ;
+
 : hitbox! ( x y w h - ) w1 2! x1 2! ;
+
 : freemove ( - )
     halt floating act>
         <left> held? if -2. x +! then
@@ -286,28 +300,34 @@ c: timer @actor xt1 dur ;
 || : (timer) ( time. xt -- )
     xt1 ! 0 max dur ! act-timer ;
 
-: timer> ( time. - ) ( - )
-    r> timer one [[ (timer) ]] ;
+continuation: timer> ( time. - ) ( - )
+    ( xt ) timer one [[ (timer) ]] ;
 
 \ =============================================================================
 \ Secondary actor storage
 \ =============================================================================
 
 || variable tnext#
-: temp ( n - a ) temps [] ;
+: temp[] ( n - a ) temps [] ;
 : *temp ( - a )
     #temps for
-        tnext# @ temp dup free? if
+        tnext# @ temp[] dup free? if
             unloop exit
         then
         drop
         tnext# @ 1 + #temps mod tnext# !
     loop  -1 abort" Out of temps" ;
 
-: temps> ( - ) ( - )
-    r> #temps for
-        i swap >r temp [[ r@ execute ]] r>
-    loop drop ;
+fast[
+continuation: temps> ( - ) ( - )
+    ( xt )  {: xt :}
+    0 temp[] [[
+        #temps for
+            en @ if xt execute then
+            /actor +to me
+        loop
+    ]] ; 
+fast] 
 
 : clear-temps ( - )
     temps> me unload ;
@@ -316,21 +336,22 @@ c: timer @actor xt1 dur ;
 \ Script Classes
 \ =============================================================================
 
-actor :derive ( source-class derived-class - )
-    2drop
-    private
-    template as  \ allows immediate assignment of template (TODO: revisit)
+: (actor-definition) ( class - )
+    dup body>name >pad count >lowercase CurrSourceName -path -ext >lowercase 
+    s= if
+        private
+    then
+    >template to me \ allows immediate assignment of template (TODO: revisit)
 ;
 
-: hide-autoclass ( a len - )
-    \ Hide existing autoclass if any to fix LOCATE,
-    \ which would otherwise take us to the call to reheat-scripts
-    \ in cases where we want to (re)define it within a script.
-    >pad find if
-        dup execute -> autoclass @ if
-            >name hidename
-        else drop then 
-    else drop then ;
+actor :derive ( source-class derived-class - )
+    nip (actor-definition) ;
+
+: ?hide-autoclass ( class - )
+    \ Hide autoclass to fix LOCATE
+    \ otherwise it would take us to the call to load-autoclasses
+    \ even if it's been defined in a script
+    dup -> autoclass @ if >name hidename else drop then ;
 
 actor :reopen ( class - )
     \ Hide generated autoclass when defining an actor class.
@@ -338,7 +359,8 @@ actor :reopen ( class - )
     \ TODO: There's a better way: modify the class's source file string.  
     \       (Hopefully there's a string pointer we can change.)
     \       This will prevent any dangling references to autoclasses. 
-    >name count hide-autoclass ;
+    dup ?hide-autoclass 
+    (actor-definition) ;
 
 
 20 cell stack script-classes
@@ -388,13 +410,13 @@ actor :: on-error ( xt err# - )
     bl parse f" %s.vfx" to len to fn
     fn len class0 >default-dir 2dup
     file-exists? abort" Script already exists"
-    class0 materialize as>    
+    class0 materialize [[
         my-name -ext n[ place
         srcpath$ count file-exists? not if
             srcpath$ count write[
                 n[ count 
                 f" class: %s" line,
-                script-class @ body> >name count
+                script-class @ body>name
                 f"     %s derive" line,
                 n[ count has-image? if
                     n[ count 
@@ -410,7 +432,8 @@ actor :: on-error ( xt err# - )
             srcpath$ count included
         then
         n[ count f" locate %s" evaluate 
-        me ;
+        me 
+    ]] ;
 
 : +actor ( - <name> )
     actor-script +script drop ;

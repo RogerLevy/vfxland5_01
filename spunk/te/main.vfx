@@ -3,13 +3,4 @@
 \ (Standalone ver. abandoned)
 \ ------------------------------------------------------------------------------
 
-include %idir%\..\game\utilities.vfx
-include %idir%\..\game\tileset.vfx
-
 include te.vfx
-
-\ test
-a.png 16 16 tileset a.ts
-a.ts 0 tile t0 !
-1 t !
-load ..\dat\gfx\a.dat

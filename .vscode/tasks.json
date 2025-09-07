@@ -24,7 +24,7 @@
             "type": "shell",
             "command": "${workspaceFolder}/engineer/load-project.bat",
             "options": {
-                "cwd": "${workspaceFolder}/.."
+                "cwd": "${workspaceFolder}"
             },
             "group": "build",
             "isBackground": true,
@@ -42,7 +42,7 @@
             "type": "shell",
             "command": "${workspaceFolder}/engineer/build-and-load.bat",
             "options": {
-                "cwd": "${workspaceFolder}/.."
+                "cwd": "${workspaceFolder}"
             },
             "group": "build",
             "isBackground": true,

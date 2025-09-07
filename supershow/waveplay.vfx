@@ -124,6 +124,9 @@ defer voice? ( smp - f )
     s" smp" >datadir ['] (load-sample) each-file
     previous current ! ;
 
+: init-samples ( - )
+    load-samples ;
+
 : reload-samples ( - )
     s" smp" >datadir dir-exists? -exit
     clear-handles
