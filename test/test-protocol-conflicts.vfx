@@ -1,0 +1,23 @@
+\ Test protocol conflict detection
+
+trait: _drawable
+trait;
+
+trait: _renderable  
+trait;
+
+_drawable :: draw ( - ) ." Drawing from drawable trait" cr ;
+_renderable :: draw ( - ) ." Drawing from renderable trait" cr ;
+
+class: _widget
+    cell field x
+    cell field y
+class;
+
+cr ." Test 1: Applying conflicting traits to class..."
+_widget works-with _drawable
+_widget works-with _renderable   \ This should abort with conflict error
+
+\ If we get here, the test failed
+cr ." ERROR: Conflict detection failed - should have aborted!"
+

@@ -1,0 +1,24 @@
+\ failed experiment to try to get asynchronous text output from compilation etc
+\  tasks have their own stacks so it would break interactive testing
+
+task interpret-task
+cstring command$
+
+: interpret-action ( - )
+    exit
+    textmode @ >r textmode on hist[
+    \ command$ count >interpret
+    \ >str if cr then
+    \ ?dup if ( s[ ) .throw ( s] add-history ) rs state off then
+    hist] r> textmode ! ;
+
+: async-interpret ( a len - )
+    command$ place
+    ['] interpret-action interpret-task initiate ;
+
+: obey ( - )
+    osp @ >r uiosp @ osp !
+    .tib cr 
+    tib #tib @ async-interpret
+    0 #tib ! 
+    osp @ uiosp ! r> osp ! ;

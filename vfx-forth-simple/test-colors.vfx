@@ -1,0 +1,18 @@
+\ Test color highlighting
+
+\ Outside colon definition:
+if then else
+
+\ Inside colon definition:
+: test
+    if
+        something
+    else
+        other
+    then
+;
+
+\ More flow control outside:
+begin again
+do loop
+case endcase

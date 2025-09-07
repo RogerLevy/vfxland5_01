@@ -1,0 +1,286 @@
+supershow.vfx:
+  Public Constants
+    constant gap ( - n ) \ Tile size in pixels (default 20)
+    constant tmw ( - n ) \ Tilemap width in tiles (default 16)
+    constant tmh ( - n ) \ Tilemap height in tiles (default 12)
+  Utility Functions
+    : 4s>p ( n1 n2 n3 n4 - x. y. ) \ Convert 4 stack integers to 2 fixed-point values
+    : 2? ( a - ) \ Print 2 values from memory address
+    : h. ( n - ) \ Print integer in hexadecimal format
+    : at@ ( - x y ) \ Get current pen position
+    : toggle ( a - ) \ Toggle boolean value at address
+    : cput ( bmp - ) \ Draw bitmap centered at current pen position
+    : hold ( n - ) \ Control Allegro bitmap batching; `0 hold` triggers rendering
+    : hold> ( - <code> ; ) ( - ) \ Execute code with bitmap batching
+    : h| ( n - n ) \ Set horizontal flip flag for bitmap drawing
+    : v| ( n - n ) \ Set vertical flip flag for bitmap drawing
+    : hv| ( n - n ) \ Set both horizontal and vertical flip flags
+    : named? ( xt c$ - f ) \ Check if execution token has specified name
+    : bmpw ( bmp - n ) \ Get bitmap width
+    : bmph ( bmp - n ) \ Get bitmap height
+  Trigonometry and Vector Math
+    : fscale ( f:x f:y f:scale - f:x f:y ) \ Scale float vector by scalar factor
+    : uvec ( degrees. - x. y. ) \ Generate unit vector from angle in degrees
+    : fuvec ( degrees - f:x f:y ) \ Generate float unit vector from angle
+    : vec ( degrees. len. - x. y. ) \ Generate vector from angle and length
+    : ang ( x. y. - degrees. ) \ Calculate angle from vector components
+    : hypot ( x. y. - len. ) \ Calculate hypotenuse (vector length)
+    : dist ( x1. y1. x2. y2. - len. ) \ Calculate distance between two points
+    : alerp ( start end t - result ) \ Angular interpolation handling wrap-around
+  File Operations
+    : include, ( a len - ) \ Include file by path and length
+  Audio Creation
+    : bgm ( - <name> <filename> ) ( - ) \ Create named word that streams background music file with looping
+    : audioclip ( - <name> <filename> ) ( - ) \ Create one-shot audio clip word that plays specified file
+  Screen Management
+    : blank ( - ) \ Blank the screen for 10 frames
+  Animation System
+    var anm ( - a ) \ Current animation data pointer
+    var a.ts ( - a ) \ Animation tileset 
+    var a.spd ( - a ) \ Animation speed (fixed)
+    var a.len ( - a ) \ Animation length (int)
+    var a.ofs ( - a ) \ Animation offset (int)
+    var a.done ( - a ) \ Animation completion flag
+    var a.flp ( - a ) \ Animation flip flags
+    : cycle ( anim speed. - ) \ Start animation cycle with specified speed
+    : animation ( n - <name> ) ( - anim ) \ Create named animation data structure using specified tileset
+    : frame, ( n - ) \ Add single frame to current animation definition
+    : range, ( start end - ) \ Add frame range to current animation definition
+    : +animation ( - ) \ Update current animation (advance frame, check completion)
+    : animate ( - ) \ Animate all active actors with animation data
+  Auto-Class System
+    : load-autoclasses ( - ) \ Create autoclasses out of each bitmap in dat\gf:x\
+    : load-scripts ( - ) \ Load all actor scripts and auto-classes
+  Interactive Development Tools
+    : init-by-class ( class - ) \ Initialize all actors of specified class
+    : update ( - <classname> ) \ Live update actor class during development
+    : .actors ( - ) \ Display list of active actors for debugging
+    : .temps ( - ) \ Display list of temporary actors for debugging
+    : freemove ( actor - ) \ Development tool: Allow actor free movement with arrow keys
+  Graphics Management
+    : reload-graphics ( - ) \ Reload all graphics assets from disk
+  System Initialization
+    : init-supershow ( - ) \ Initialize the Supershow game engine
+
+stage.vfx:
+  Public Constants
+    constant #actors ( - n ) \ Maximum actors (default 1024)
+    constant #temps ( - n ) \ Maximum temp actors (default 8192)
+    constant #elements ( - n ) \ Maximum UI elements (default 256)
+    constant /actor ( - n ) \ Actor size in bytes (default 512)
+  Public Arrays
+    array actors \ Main actor pool containing all regular actors
+    array temps \ Temporary actor pool for short-lived objects
+    array elements \ UI element pool for interface objects
+  Public Variables
+    variable gamelife ( - a ) \ Global frame counter for game timing
+    2variable gametime ( - a ) \ Total game time as double-precision value
+    variable next# ( - a ) \ Next actor allocation index
+  Actor Field Variables
+    var en ( - a ) \ Actor enabled flag field
+    var x ( - a ) \ Actor X position field (fixed-point)
+    var y ( - a ) \ Actor Y position field (fixed-point)
+    var vx ( - a ) \ Actor X velocity field (fixed-point)
+    var vy ( - a ) \ Actor Y velocity field (fixed-point)
+    var bmp ( - a ) \ Actor bitmap/sprite field
+    var x1 ( - a ) \ Actor hitbox X offset field (int)
+    var y1 ( - a ) \ Actor hitbox Y offset field (int)
+    var w1 ( - a ) \ Actor hitbox width field (int)
+    var h1 ( - a ) \ Actor hitbox height field (int)
+    var beha ( - a ) \ Actor behavior execution token field
+    var time ( - a ) \ Actor time counter field (milliseconds)
+    var n1 ( - a ) \ General purpose field
+    var n2 ( - a ) \ General purpose field
+    var phys ( - a ) \ Physics behavior execution token field
+    var prio ( - a ) \ Drawing priority field (0=behind BG, <>0=in front)
+    var disabled ( - a ) \ Disable behavior and physics execution flag
+  Actor Access and Management
+    : free? ( actor - f ) \ Check if actor slot is available for allocation
+    : as> ( actor - <code> ; ) ( - ) \ Execute code with specified actor as current context
+    : actor ( n - actor ) \ Get actor by index number
+    : actor# ( actor - n ) \ Get index number of actor
+    : act> ( - <code> ; ) ( - ) \ Set behavior execution token for current actor
+    : act&> ( - <code> ; ) ( - ) \ Set behavior and execute immediately
+    : physics> ( - <code> ; ) ( - ) \ Set physics behavior execution token for current actor
+    : all> ( - <code> ; ) ( - ) \ Execute code for all actors in main pool, as context
+    : actives> ( - <code> ; ) ( - ) \ Execute code for all active (enabled) actors, as context
+  Actor Serialization
+    m: peeked ( - ) \ Message for custom actor display during debugging
+    : peek ( actor - ) \ Display actor information for debugging
+  Actor State Management
+    : disabled? ( actor - f ) \ Check if actor behavior/physics is disabled
+    : disable ( actor - ) \ Disable actor behavior and physics execution
+    : behave ( - ) \ Execute behavior for all active actors
+    : step ( - ) \ Execute one complete simulation step (behavior + physics)
+    : +time ( - ) \ Update global game time and frame counters
+  Actor Search
+    : who> ( - <code> ; ) ( actor - f ) \ Find first actor matching condition
+  Actor Drawing
+    : sprite ( - ) \ Draw current actor's bitmap centered at actor's position
+    : backsprites ( - ) \ Draw all sprites with priority 0 (behind background)
+    : sprites ( - ) \ Draw all sprites with priority <>0 (in front of background)
+  Actor Creation and Destruction
+    actor default \ Default actor template with standard field values
+    : floating ( - ) \ Set default physics behavior (no special physics)
+    : priority ( n - ) \ Set drawing priority for next actor allocation
+    : unload ( - ) \ Free current actor slot
+    : just ( - ) \ Clear all actors (mark all as free)
+    : one ( class - actor ) \ Allocate one actor of specified class
+    : *actor ( - actor ) \ Create generic actor without class
+  Actor Collision Detection
+    : hitbox@ ( - x1 y1 x2 y2 ) \ Get current actor's hitbox coordinates
+    : hit? ( actor1 actor2 - f ) \ Check collision between two actors using their hitboxes
+  Actor Scripting Tools
+    : att ( col row - ) \ Position current actor at tile coordinates
+    : *[[ ( class - <code>]] ) ( - actor ) \ Create and initialize actor, setting it as current context
+    : in? ( - f ) \ Check if current actor is within screen bounds
+    : ?out ( - f ) \ Check if actor is out of bounds and unload if so
+    : passed? ( ms - f ) \ Check if specified time has elapsed for current actor
+    : from ( actor x y - ) \ Sets the pen relative to reference actor
+    : halt ( - ) \ Stop current actor movement, setting velocity to zero and clearing its behavior
+    : morph ( class - ) \ Change current actor's class while preserving position and velocity
+    : is? ( actor class - f ) \ Check if actor is instance of specified class
+    : out ( actor - ) \ Force unload specified actor
+    : vanish ( - ) \ Hide current actor by moving it very far off-screen
+    : appear ( - ) \ Show previously hidden actor
+    : copy ( src dest - dest ) \ Copy actor data from source to destination
+    : expanded ( actor n - temp ) \ Create temporary actor copy with expanded hitbox
+    : hitbox! ( x y w h - ) \ Set current actor's hitbox parameters
+  Timer System
+    class timer% \ Timer actor class for delayed execution
+    : clear-timers ( - ) \ Clear all timer actors from the system
+    : timer> ( delay. - <code> ; ) ( - ) \ Create timer that executes code after specified delay
+  Secondary Storage (Temp Actors)
+    : temp ( n - actor ) \ Get temporary actor by index
+    : *temp ( - actor ) \ Allocate new temporary actor
+    : temps> ( - <code> ; ) ( - ) \ Execute code for all temporary actors
+    : clear-temps ( - ) \ Clear all temporary actors
+  Script Classes
+    : script-class ( - <name> class ) ( - class ) \ Declare script-based actor class
+    : actor-class ( - <name> ) ( - class ) \ Declare actor script class
+    static autoclass ( - a ) \ Static field indicating auto-generated class status
+
+tilemap.vfx:
+  Tileset Management
+    : baseid@ ( tileset - ) \ Get base bitmap ID for tileset's first tile
+    : tile ( tileset n - ) \ Get bitmap ID for specific tile in tileset
+    : tileset ( startid endid baseid - <name> ) ( - tileset ) \ Create named tileset from contiguous bitmap range
+    : init-tilesets ( - ) \ Initialize all defined tilesets
+    : reload-tilesets ( - ) \ Reload all tileset graphics from disk
+    : is-tile? ( n - f ) \ Check if bitmap ID belongs to any tileset
+  Tilemap Operations
+    variable pile ( - a ) \ Current active tileset for tilemap operations
+    : lay ( mapdata - ) \ Render tilemap from tile data array using current tileset
+    : spot ( col row mapdata - a ) \ Get address of specific tile in tilemap data
+    : xy>cr ( x. y. - col row ) \ Convert world coordinates to tile column/row
+  Tile Metadata System
+    : meta ( n - flags ) \ Get metadata flags for tile (collision, special properties)
+    : collectible? ( - f ) \ Check if current tile is collectible (metadata flag $20)
+    : destructible? ( - f ) \ Check if current tile is destructible (metadata flag $80)
+    : solid? ( - f ) \ Check if current tile blocks movement (metadata flag $0F)
+    : instakill? ( - f ) \ Check if current tile causes instant death (metadata flag $40)
+    : trap? ( - f ) \ Check if current tile is a trap (metadata flag $10)
+    : load-metas ( a len tileset - ) \ Load tile metadata from file for specified tileset
+
+tools.vfx:
+  Development Tools
+    : project ( - <name> ) \ Create / switch to project
+    : script ( - <name> ) \ Create / edit actor script file
+
+shader.vfx:
+  GPU Shader Support
+    : load-shader ( vert$ frag$ - shader ) \ Load and compile vertex and fragment shaders
+    : shade ( shader | 0 - ) \ Activate shader program for subsequent rendering; pass 0 to disable
+    : sampler! ( bmp n name$ - ) \ Bind texture to shader sampler uniform
+    : float! ( value name$ - ) \ Set shader float uniform variable
+    : vec4! ( x y z w name$ - ) \ Set shader vec4 uniform variable
+
+crt.vfx:
+  CRT Display Effect
+    : init-crt ( - ) \ Initialize CRT shader system and load required shaders
+    : crt> ( - <code> ; ) ( - ) \ Execute rendering code with CRT post-processing effect applied
+
+waveplay.vfx:
+  Sample Playback
+    : play ( smp - ) \ Play audio sample once without blocking
+    : playing? ( smp - f ) \ Check if sample is currently playing
+    : voice? ( smp - f ) \ User-definable check if sample can play
+  Sample Management
+    : load-samples ( - ) \ Load all audio samples from smp/ directory
+    : reload-samples ( - ) \ Reload all audio samples from disk
+  Audio Streaming
+    : stream ( a len - ) \ Stream audio file once (for long audio like music)
+    : streamL ( a len - ) \ Stream audio file with looping
+    : stream-gain! ( volume. - ) \ Set streaming audio volume
+  Audio Control
+    : hush ( - ) \ Stop all currently playing sounds and streams
+    : gain ( volume. - ) \ Set master audio volume
+
+tmcol.vfx:
+  Public Values
+    0 value lwall? ( - f ) \ Left wall collision state flag
+    0 value rwall? ( - f ) \ Right wall collision state flag
+    0 value floor? ( - f ) \ Floor collision state flag
+    0 value ceiling? ( - f ) \ Ceiling collision state flag
+  Tilemap Collision Detection
+    : tmcol> ( x. y. w h mapdata actor - <code> ; ) ( f - f ) \ Test rectangle collision with tilemap
+    : cut-corners ( n - ) \ Enable smooth corner sliding for collision detection
+
+tread.vfx:
+  Tile Reading Utilities
+    : tread> ( x. y. w h mapdata - <code> ; ) ( col row n - ) \ Execute code for each tile under rectangle
+
+udlr.vfx:
+  Public Constants
+    constant right ( - n ) \ Right direction constant (default 0)
+    constant up ( - n ) \ Up direction constant (default 1)
+    constant left ( - n ) \ Left direction constant (default 2)
+    constant down ( - n ) \ Down direction constant (default 3)
+  Public Variables
+    variable fac ( - a ) \ Current facing direction (right/up/left/down)
+  Directional Input Handling
+    : dirkeys? ( - f ) \ Check if any directional key is currently pressed
+    : dirkeysup? ( - f ) \ Check if any directional key was just released
+    : pudlr4 ( - ) \ Set facing direction from pressed direction keys (press detection)
+    : sudlr4 ( - ) \ Set facing direction from held direction keys (continuous detection)
+    : dir>v ( dir - x. y. ) \ Convert direction constant to fixed-point velocity vector
+
+dltree.vfx:
+  Doubly-Linked Tree
+    : dlremove ( node - ) \ Remove node from its current position in tree
+    : dlpush ( node parent - ) \ Add node at end of parent's children list
+    : dlinsert-after ( node target - ) \ Insert node immediately after destination node
+    : dlunshift ( node parent - ) \ Add node at start of parent's children list
+    : dleach ( xt node - ) \ Execute callback for each child of node
+    : dlclear ( node - ) \ Remove all children from node
+    : #children ( node - n ) \ Count children of node
+    : nth-child ( n node - child ) \ Get nth child of node
+    : descendant? ( child ancestor - f ) \ Check if node is descendant of another node
+
+ui/ui.vfx:
+  UI Element Fields
+    var sx ( - a ) \ Element X scale factor field (fixed)
+    var sy ( - a ) \ Element Y scale factor field (fixed)
+    var en ( - a ) \ Element enabled flag field 
+    var vis ( - a ) \ Element visibility flag field
+    var draw ( - a ) \ Element draw behavior execution token field
+    var parent ( - a ) \ Tree structure parent field
+    var lowest ( - a ) \ Tree structure lowest child field
+    var highest ( - a ) \ Tree structure highest child field
+    var next ( - a ) \ Sibling navigation next field
+    var prev ( - a ) \ Sibling navigation previous field
+  Public Constants
+    constant root ( - element ) \ Root element of UI hierarchy
+  User Interface System
+    : element ( n - element ) \ Get UI element by index
+    : el ( class - element ) \ Create UI element of specified class
+    : el: ( class - <name> element ) ( - element ) \ Create named UI element of specified class
+    : draw> ( - <code> ; ) ( - ) \ Set draw behavior for current UI element
+    : announce ( xt element - ) \ Send message to element and all its children
+    : announce> ( element - <code> ; ) ( - ) \ Send code as message to element and all children
+    : ui ( - ) \ Process entire UI system (update and draw all elements)
+    : p>local ( x. y. - x. y. ) \ Convert world coordinates to local element coordinates
+    : >local ( x y - x y ) \ Convert integer world coordinates to local element coordinates
+    : ui-update ( - <classname> ) \ Live update UI element class during development
+    : isolate ( element - ) \ Remove element from its siblings (disconnect from parent's child list)
+    : element-class ( - <name> ) ( - class ) \ Create element script class

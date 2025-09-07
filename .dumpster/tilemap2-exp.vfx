@@ -1,0 +1,86 @@
+variable pile   \ Base bitmap ID for tilemap drawing (represents tile #0)
+
+\ =============================================================================
+\ Asset trait
+\ =============================================================================
+
+trait: _asset
+    static registry          \ iterable for managing assets of the asset class
+    256 nprop path 
+trait;
+_asset :: init ( - ) ;       \ non-destructive initialization
+_asset :: destroy ( - ) ;    \ free resources
+_asset :: refresh ( - )      \ free resources and re-initialize
+    me destroy me init ;
+_asset :: use ( - ) ;        \ select for use in other words, such as rendering
+_asset :: export-dest ( - a len )
+    \ return path for export, if any.
+    \ if derived, cache in path.
+    path count ;
+_asset :: export ( - ) ;     \ save to stored path (or derived path)
+
+\ =============================================================================
+\ Tileset class
+\ =============================================================================
+\ Doesn't implement DESTROY because the bitmap system frees all bitmaps
+
+c: _tileset  _asset baseid bmp tw th #tiles ;
+
+256 cell stack tilesets
+tilesets _tileset -> registry !
+
+|| : bmpw  dup if al_get_bitmap_width then ;
+|| : bmph  dup if al_get_bitmap_height then ;
+
+_tileset :: use ( - )
+    baseid @ pile ! ;
+
+|| : create-tile ( bitmap x y w h - )
+    al_create_sub_bitmap register-bitmap drop ;
+
+_tileset :: init ( - )
+    {: | b _tw _th :}
+    bmp @ bitmap@ to b
+    b -exit
+    tw 2@ to _th to _tw
+    next-bmp# @ >r
+    baseid @ next-bmp# !
+    b bmph _th - 1 + for
+        b bmpw _tw - 1 + for
+            b i j _tw _th create-tile
+        _tw +loop
+    _th +loop
+    next-bmp# @ baseid @ - #tiles !
+    r> next-bmp# ! ;
+
+3 _tileset :construct ( bmp# tw th - )
+    tw 2! bmp !
+    next-bmp# @ baseid !
+    me init
+    #tiles @ next-bmp# +!
+    me tilesets push ;
+
+: tile ( tileset n - n )
+    swap -> baseid @ + ;
+
+: tileset ( bmp# tw th - <name> ) ( - tileset )
+    2>r
+    dup bitmap@ 0= abort" TILESET >> Null bitmap - can't create tileset."
+    2r>
+    _tileset object ; 
+
+: init-tilesets ( - )
+    ['] init tilesets each@ ;
+
+_tileset :: refresh ( - )
+    baseid @ #tiles @ bounds do
+         i bitmap@ al_destroy_bitmap
+    loop
+    me init ;
+
+: refresh-tilesets ( - )
+    ['] refresh tilesets each@ ;
+
+: is-tile? ( n - f )
+    bitmap@ dup -exit al_is_sub_bitmap ;
+

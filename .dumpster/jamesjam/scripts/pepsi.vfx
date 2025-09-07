@@ -1,0 +1,5 @@
+actor-class pepsi%
+
+pepsi% :: init
+    pepi.png bmp !
+    act> levitate ;

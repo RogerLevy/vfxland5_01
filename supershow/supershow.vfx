@@ -1,0 +1,97 @@
+\ ------------------------------------------------------------------------------
+\ Supershow
+\
+\ minimal engine with actors, VGA colors, CRT effect,
+\ sample playback, and tilemaps.
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Validations
+\ =============================================================================
+
+include %idir%\checks.vfx
+
+\ =============================================================================
+\ Constants and Variables
+\ =============================================================================
+
+20 ?constant gap  
+320 gap / ?constant tmw
+240 gap / ?constant tmh
+320 ?constant gamew
+240 ?constant gameh
+
+\ =============================================================================
+\ Dependencies
+\ =============================================================================
+
+include %idir%\bitmap.vfx    \ Bitmaps
+include %idir%\shader.vfx    \ Shaders 
+include %idir%\crt.vfx       \ CRT shader
+include %idir%\waveplay.vfx  \ Audio engine
+include %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
+
+\ =============================================================================
+\ Stage
+\ =============================================================================
+
+include %idir%\traits.vfx    \ Object traits
+include %idir%\stage.vfx     \ Actor/sprite system
+include %idir%\scene.vfx     \ Scene management
+include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
+
+\ =============================================================================
+\ Tilemap
+\ =============================================================================
+
+\ include %idir%\tilemap.vfx  \ Tilemap rendering Tileset class
+include %idir%\tilemap2.vfx
+include %idir%\udlr.vfx     \ Movement utilities
+include %idir%\tmcol.vfx    \ Tilemap collision detection
+include %idir%\tread.vfx    \ Tilemap data reading
+include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
+
+\ =============================================================================
+\ Automatically refresh bitmaps and tilesets
+\ =============================================================================
+
+: reload-graphics
+    reload-bitmaps
+    reload-tilesets ;
+
+\ =============================================================================
+\ Initialization
+\ =============================================================================
+
+: cleanup-supershow ( - )
+    destroy-bitmaps
+    hush destroy-samples 
+    cleanup-crt ;
+
+prune: cleanup-supershow ;
+\ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
+
+: init-supershow ( - )
+    hold off
+    init-bitmaps
+    init-tilesets
+    load-samples
+    init-crt
+    debug @ if
+        ['] reload-graphics is onSwitchIn
+    else
+        display al_hide_mouse_cursor
+    then ;
+
+init-supershow
+
+\ Default engine configuration
+' init-supershow is boot
+:now show> step sprites ;
+
+\ Tools
+debug @ [if]
+    include %idir%/tools.vfx                \ Development tools
+    include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
+    s" sketchpad" <f12> func
+[then]

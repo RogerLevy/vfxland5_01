@@ -1,0 +1,19 @@
+create mousex 0 , 0 , here cell- constant mousey
+create mickeyx 0 , 0 , here cell- constant mickeyy
+
+0 value <lb
+0 value <rb
+
+: mouse  mousex 2@ ;
+: mickey  mickeyx 2@ ;
+: lb  ms0 ALLEGRO_MOUSE_STATE.buttons @ 1 and ;
+: rb  ms0 ALLEGRO_MOUSE_STATE.buttons @ 2 and 1 >> ;
+
+: get-mouse ( - )
+    \ fetch the mouse coordinates, transforming by inverse of current matrix
+    lb to <lb
+    rb to <rb
+    poll-mouse
+    mousex 2@ 
+    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2>. +m inverse 2p*m -m 2.> mousex 2!
+    mousex 2@ 2swap 2- mickeyx 2! ;

@@ -1,0 +1,13 @@
+prop talkable
+rat3.png 40 40 tileset rat3.ts
+rat3.ts animation rat3.anm 0 7 range,
+
+class rat3%
+rat3% :: depict
+    portrait as>  rat3.anm 0.1 cycle ;
+rat3% :: interact ( other - )
+    drop
+    s[ ." This is my rat wife" cr 
+       ." " s] say ;
+rat3% :: init
+    rats-small.ts 2 tile bmp ! talkable on ;

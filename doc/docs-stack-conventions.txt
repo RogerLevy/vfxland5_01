@@ -1,0 +1,141 @@
+ Core Types
+
+  Basic Types
+
+  - n -> int - signed integer (general purpose numbers) 
+  - u -> uint - unsigned integer 
+  - f -> flag - boolean flag (0 or -1) 
+  - c -> char - character/byte value
+  - a -> addr - address/pointer
+  - xt - execution token
+  - d -> dint - double-cell integer
+
+  Extended Types
+
+  - n. -> fixed - fixed-point number (16.16 format)  
+  - z$ -> zstring - zero-terminated string
+  - $ -> cstring - counted string (byte count + data)
+
+  Specialized Types
+
+  - bmp - bitmap handle/index
+  - smp - audio sample handle
+  - shader - shader program handle
+  - font - font handle
+  - key - keyboard key constant
+  - ms - time in milliseconds
+  - deg - angle in degrees (usually fixed-point) (USER NOTE: it *should* always be fixed-point; let me know where it's not) 
+
+  Object-Oriented Types
+
+  - class - class pointer/handle
+  - obj - object instance
+  - actor - actor object (from Supershow)
+  - array - array handle
+  - stack - stack handle
+  - dict - dictionary handle
+
+  Graphics Types
+
+  - x, y - coordinate values (integer: `x y` fixed: `x. y.`)
+  - w, h - width/height dimensions (integer: `w h` fixed: `w. h.`)
+  - col, row - tilemap column/row indices
+  - color - color value (palette index) (USER NOTE: color is not currently a type, so say `int:color`)
+
+  Game-Specific Types
+
+  - tileset - tileset handle 
+  - element - UI element
+  - timer - timer object
+  - anim - animation data
+
+  Parameter Naming Conventions
+
+  Position/Movement
+
+  - x, y - coordinates
+  - vx, vy -> velx vely - velocity components
+  - sx, sy -> scalex scaley - scale factors
+  - pos - position (when single parameter)
+  - dest - destination position/address
+  - src - source position/address
+
+  Size/Dimensions
+
+  - w, h - width, height
+  - len - length (of strings, arrays, etc.)
+  - size - general size parameter
+  - count - number of items
+  - max - maximum value/capacity
+  - min - minimum value
+
+  Indices/Ranges
+
+  - index - array/list index
+  - offset - byte offset
+  - id - identifier number
+  - n1, n2 - numbered parameters when multiple similar
+  - start, end - range parameters
+  - factor - scaling factor (often fixed-point)
+
+  Behavioral
+
+  - behavior - execution token for actor behavior (USER NOTE: not a type, just say `xt:behavior`)
+  - callback - execution token for callbacks (USER NOTE: not a type, just say `xt:callback`)
+  - xt - execution token (general)
+  - target - destination object/word
+  - source - source object/word
+
+  File/Path
+
+  - path - file path string
+  - filename - filename string
+  - data - raw data address
+  - buffer - temporary storage address
+
+  Time/Animation
+
+  - time - time value (usually milliseconds)
+  - delta - time difference
+  - frame - frame number/data
+  - tick - timer tick
+  - duration - time span
+
+  Graphics/Display
+
+  - pen - pen position
+  - clip - clipping rectangle
+  - transform - transformation matrix
+  - palette - color palette
+
+  Special Cases
+
+  Continuation Patterns
+
+  For words using continuation patterns (ending with >):
+  - Primary stack effect: ( -- <code> ; )
+  - Secondary effect: ( stack:inputs -- stack:outputs )
+
+  Example: : act> ( -- <code> ; ) ( -- )
+
+  USER ADDITION: Create/Does Patterns
+  
+  For "defining" words (words that create words, such as `array`):
+  - Primary stack effect: ( -- <name> )
+  - Secondary effect: ( -- addr ) <--- can differ!!! should be found in the codebase. when it's missing, assume that it's this.
+  
+  Multi-value Parameters
+
+  - Use descriptive suffixes: x1, y1, x2, y2 for rectangle coordinates
+  - Use numbered variants: addr1, addr2 for multiple addresses
+  - Use role-based names: src, dest for source/destination
+
+  Parse-Ahead Words
+
+  - Use <name> in return for words (and sometimes entire phrases, such as with `say-before`) that parse input stream
+  - Examples: ( -- <name> ), ( n -- <filename> )
+
+  Optional/Variable Parameters
+
+  - Use ... prefix for variable stack items in iteration words
+  - Example: ( ... xt:callback a:array -- ... )

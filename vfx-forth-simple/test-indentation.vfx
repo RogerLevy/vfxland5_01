@@ -1,0 +1,94 @@
+\ Test file for indentation rules
+
+\ Colon definitions
+: test-word
+    5 +
+    dup *
+;
+
+\ Colon words on same line shouldn't indent
+: inline-word 5 + dup * ;
+
+\ Class definitions  
+class: myclass
+    var x
+    var y
+    :: init
+        0 x !
+        0 y !
+    ;
+class;
+
+\ Control flow
+: test-if
+    dup 0>
+    if
+        ." positive"
+    else
+        ." negative or zero"
+    then
+;
+
+\ Loops
+: test-loop
+    10 0
+    do
+        i .
+    loop
+;
+
+\ Begin structures
+: test-begin
+    begin
+        key
+        dup 'q' =
+    until
+    drop
+;
+
+\ Object scoping
+: test-object
+    obj
+    [[
+        x @
+        y @
+    ]]
+;
+
+\ Local variables
+: test-locals
+    {:  a b c  :}
+    a b +
+    c *
+;
+
+\ Bracket words
+path[ mypath
+    segments[
+        1.0 waypoint
+    segments]
+path]
+
+\ Conditional compilation
+[if] DEBUG
+    : debug-print
+        ." Debug: " .
+    ;
+[else]
+    : debug-print
+        drop
+    ;
+[endif]
+
+\ Case statement
+: test-case
+    case
+        1 of
+            ." one"
+        endof
+        2 of  
+            ." two"
+        endof
+        ." other"
+    endcase
+;

@@ -1,0 +1,31 @@
+Error Handling Approaches in Engineer
+======================================
+
+1. Contract-Oriented System (oversight.vfx)
+   - Sophisticated validation with self-healing
+   - Precondition/postcondition checking
+   - Multiple result codes (fail/warn/pass)
+
+2. Traditional Forth Exceptions (error2.vfx)
+   - catch/throw with debugging
+   - Stack and return stack display on exceptions
+
+3. Simple Assertions
+   - abort" style immediate termination
+   - Direct failure without recovery
+
+4. Object-Oriented Errors (oop.vfx)
+   - Message dispatch error handling
+   - oexec wrapper with error handlers
+
+5. Logging System (logging.vfx)
+   - Timestamped error tracking
+   - Different log levels (info/warn/error/debug)
+
+6. Array Bounds Checking (array.vfx)
+   - Built-in validation for array operations
+   - Automatic bounds verification
+
+7. Resource Management
+   - Initialization error checking
+   - Resource allocation validation

@@ -1,0 +1,25 @@
+\ Test file for debugging highlighting issues
+
+class: test-class
+class;
+
+forth-asset :: refresh ( - )
+    here data ! ;
+
+variable: my-var
+constant: my-const
+my-word;
+
+\ Test the new word :: word pattern
+test-class :: method-name ( - )
+    ." hello" ;
+
+\ Test :construct and :derive patterns
+2 test-class :construct ( a b - )
+    swap ! ;
+
+test-class :derive ( - )
+    me init ;
+
+\ Test :word patterns (should be red)
+:method :construct :derive :init :refresh

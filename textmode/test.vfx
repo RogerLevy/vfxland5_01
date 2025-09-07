@@ -1,0 +1,15 @@
+
+: ?ega  rnd cells vga13h + @ 8 lshift $ff or ;
+
+: randomize
+    80 24 * for
+        256 rnd char-buf i + c!
+        16 ?ega fg-buf i cells + !
+        8 ?ega bg-buf i cells + !
+    loop ;
+randomize
+
+: test-textmode
+    show> draw-textmode ;
+
+test-textmode

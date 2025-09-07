@@ -1,0 +1,19 @@
+2024.12.13
+Engineer started as a test/example/lab for game-making tools.
+(e.g. words, systems, maybe even editor apps???)
+Right now I'm thinking about treating main.f as a "layer"
+on top of Engineer, which was meant to be as simple as possible,
+nothing more than a platform to develop games interactively,
+including any needed tools and "engines"...
+
+i.e. vfxland5 v1 (tied to Engineer version, probably.)
+
+One thing is clear, I want to take only baby steps and learn
+from finished/released projects.  And keep the code to a minimum,
+where possible!!! Engineer has been slightly complicated as a result
+of the complexity of fulfilling my requirements against how Windows
+and Allegro 5 work.  Otherwise some things would be clunky/unusable.
+
+Engineer 1 has become fixed to developing 320x240 games in a scaled
+window.  This is great.  Need more fixed functionality in
+every area possible.

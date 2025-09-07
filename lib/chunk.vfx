@@ -1,0 +1,26 @@
+\ WIP, untested
+
+|| 0 value #1
+|| : read  #1 read-file throw drop ;
+|| : write  #1 write-file throw ;
+
+: write-chunk ( a len id - )
+    >r rp@ 4 write rp@ 4 write r> write ;
+
+: read-int ( - n ) 
+    0 >r rp@ 4 read r> ;
+
+: read-chunk ( - a n id ) 
+    read-int >r 
+    read-int dup allocate throw swap 2dup read 
+    r> ;
+
+: remaining ( - n )
+    #1 file-size throw 1 0 d- #1 file-position throw d- ;
+
+: chunkfile[ ( fn len - )
+    r/w open-file throw to #1 ;
+
+: chunkfile] ( - )
+    #1 close-file throw ;
+

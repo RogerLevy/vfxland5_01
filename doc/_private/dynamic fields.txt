@@ -1,0 +1,32 @@
+Capabilities unlocked:
+	field name reuse
+	duck-typing
+	introspection
+	type validation:  5. pixels x o!    \ "pixels" gets pushed to a type stack
+	
+
+Higher priority
+  - No compile-time validation - field name typos become runtime bugs
+  - Silent failures if field lookup returns invalid offset
+	just add a not-defined-for-class validation for these
+
+
+Medium priority
+  - Field name collision across unrelated domains (size for memory vs UI vs math)
+  - Meaning drift - same field name with different semantics in different classes
+  - Field name conflicts across inheritance hierarchies
+	Javascript has this issue too
+	can workaround with naming conventions (just an idea)
+		example: file-name vs event-name
+	potential solutions: 
+		interfaces
+		shadowing (new private field)
+
+
+Lower priority / skip
+  - Versioning problems when field meanings change between classes
+	only relevant for big projects with migration issues
+
+  - IDE limitations - autocomplete/refactoring tools can't track dynamic field usage
+
+	
