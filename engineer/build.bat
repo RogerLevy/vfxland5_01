@@ -1,3 +1,8 @@
-set "PATH=%~dp0..\bin;%~dp0..\bin\dll\;%PATH%"
+set "PATH=%~dp0..\bin;%PATH%"
+set oldpath=%cd%
+cd /d "%~dp0"
 VfxForth_x86_win include build.vfx %*
-EXIT /B
+set errorlevel_backup=%errorlevel%
+cd /d "%oldpath%"
+exit /b %errorlevel_backup%
+ 

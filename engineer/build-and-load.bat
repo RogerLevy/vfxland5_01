@@ -1,3 +1,2 @@
-cd /d "%~dp0"
-call ./build.bat bye
-call ./load-project.bat
+call %~dp0/build.bat bye
+call %~dp0/load-project.bat
