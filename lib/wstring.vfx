@@ -1,0 +1,21 @@
+\ ------------------------------------------------------------------------------
+\ Cell-counted strings
+\ ------------------------------------------------------------------------------
+
+: wcount ( wstr - addr len )
+    dup cell+ swap @ ;
+
+: wplace ( addr len wstr - )
+    2dup ! cell+ swap move ;
+
+: wappend ( addr len wstr - )
+    >r
+    r@ cell+ r@ @ +  ( addr len dest )
+    over >r swap move r>
+    r@ @ + r> ! ;
+
+: wslurp ( fn-a fn-len - w$ )
+    here -rot  2dup fsize , file, ;
+
+: *wstring ( a len - wstr )
+    here -rot  dup cell+ allot here wplace ;

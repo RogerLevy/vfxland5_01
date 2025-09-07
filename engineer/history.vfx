@@ -1,0 +1,191 @@
+\ ------------------------------------------------------------------------------
+\ Command History
+\ Uses cell-counted strings with dynamic memory management
+\ Mostly by Claude Sonnet 4
+\ ------------------------------------------------------------------------------
+
+\ History storage
+variable history-buffer    \ allocated memory for history string
+variable history-size      \ current allocated size
+variable line-offsets      \ allocated array of line start positions  
+variable max-lines         \ maximum number of lines
+variable line-count        \ current number of lines
+variable scroll-pos        \ current top visible line (0-based)
+variable visible-lines     \ how many lines fit in display area
+variable last-line-start
+
+: free-history ( - )
+    \ Free allocated memory
+    history-buffer @ ?dup if free drop then
+    line-offsets @ ?dup if free drop then
+    0 history-buffer !
+    0 line-offsets ! ;
+
+: resize-history ( new-size - )
+    {: new-size :} 
+    \ Resize history buffer if needed
+    new-size history-size @ > if
+        history-buffer @ new-size resize
+        abort" Failed to resize history buffer"
+        history-buffer !
+        new-size history-size !
+    then ;
+
+: resize-line-offsets ( new-max-lines - )
+    {: new-max-lines :} 
+    \ Resize line offsets array if needed
+    new-max-lines max-lines @ > if
+        line-offsets @ new-max-lines cells resize
+        abort" Failed to resize line offsets"
+        line-offsets !
+        new-max-lines max-lines !
+    then ;
+
+: current-history-length ( - len )
+    \ Get current length of history string
+    history-buffer @ @ ;
+
+: ensure-space ( needed-bytes - )
+    \ Ensure history buffer has enough space
+    {: needed | total :}
+    current-history-length needed + cell + to total
+    total history-size @ > if
+        total 2 * resize-history
+    then ;
+
+: rebuild-line-cache ( - )
+    \ Rebuild line offset cache after history changes
+    {: | start-addr end-addr line-num :}
+    0 line-count !
+    0 line-offsets @ !
+    
+    history-buffer @ cell+ to start-addr
+    start-addr current-history-length + to end-addr
+    
+    end-addr start-addr ?do
+        i c@ 13 = if
+            line-count @ 1 + dup line-count ! to line-num
+            \ Ensure line-offsets array is big enough
+            line-num max-lines @ >= if
+                max-lines @ 262144 + resize-line-offsets  \ grow by 256K lines (1MB)
+            then
+            line-num cells line-offsets @ +
+            i 1 + start-addr - swap !
+        then
+    loop
+    
+    current-history-length 0> line-count @ 0= and if
+        1 line-count !
+    then ;
+
+: line-start ( line# - addr )
+    \ Get start address of given line number
+    dup 0= if 
+        drop history-buffer @ cell+  \ first line
+    else
+        ( 1 - ) cells line-offsets @ + @
+        history-buffer @ cell+ +
+    then ;
+
+: line-end ( line# - addr )
+    \ Get end address of given line number  
+    dup line-count @ 1 - >= if
+        drop history-buffer @ cell+ current-history-length +
+    else
+        1 + line-start 1 -  \ start of next line minus CR
+    then ;
+
+: line-text ( line# - addr len )
+    \ Get text of given line (without CR)
+    dup line-start swap line-end over - ;
+
+: add-line-offset ( offset - )
+    \ Add single line offset to cache
+    line-count @ dup max-lines @ >= if
+        \ Grow line-offsets array if needed
+        max-lines @ 262144 + resize-line-offsets
+    then
+    cells line-offsets @ + ! ;
+
+: add-history ( addr len - )
+    \ Add string to history, handling embedded CRs
+    {: addr len | char[ 1 ] :}
+    len -exit
+    addr len bounds do
+        i c@ dup char[ c!
+        1 ensure-space
+        char[ 1 history-buffer @ wappend
+        10 = if
+            last-line-start @ add-line-offset
+            current-history-length last-line-start !
+            1 line-count +!
+            visible-lines @ if
+                line-count @ visible-lines @ - 0 max scroll-pos !
+            then
+        then
+    loop  ; 
+
+: scroll-up ( - )
+    scroll-pos @ 0> if -1 scroll-pos +! then ;
+
+: scroll-down ( - )
+    scroll-pos @ visible-lines @ + line-count @ < if 1 scroll-pos +! then ;
+
+: page-up ( - )
+    scroll-pos @ visible-lines @ - 0 max scroll-pos ! ;
+
+: page-down ( - )
+    scroll-pos @ visible-lines @ + line-count @ visible-lines @ - min scroll-pos ! ;
+
+: scroll-to-bottom ( - )
+    line-count @ visible-lines @ - 0 max scroll-pos ! ;
+
+: scroll-to-top ( - )
+    0 scroll-pos ! ;
+
+: .line ( n - )
+    dup 0 line-count @ within? not if drop exit then
+    line-text type cr ;
+
+: render-history ( - )
+    \ Render visible lines of history
+    {: | line-num :}
+    visible-lines @ 0 ?do
+        scroll-pos @ i + to line-num
+        line-num line-count @ < if
+            line-num .line
+        else
+            leave
+        then
+    loop ;
+
+: history-stats ( - )
+    cr ." History Stats:"
+    cr ."   Lines: " line-count @ .
+    cr ."   Buffer size: " history-size @ .
+    cr ."   Used: " current-history-length .
+    cr ."   Scroll pos: " scroll-pos @ .
+    cr ."   Visible: " visible-lines @ . ;
+    
+: init-history ( - )
+    \ Initialize history with dynamic allocation
+    
+    \ Start with reasonable defaults - both will grow as needed
+    262144 max-lines !  \ 256K lines initially (1MB / 4 bytes per cell)
+    
+    \ Allocate 1MB history buffer
+    1048576 dup >r allocate abort" Failed to allocate history buffer"
+    history-buffer !
+    r> history-size !
+    
+    \ Clear history string (cell-counted)
+    0 history-buffer @ !
+    
+    \ Allocate line offset cache for 256K lines (1MB)
+    max-lines @ cells allocate abort" Failed to allocate line offsets"
+    line-offsets !
+    
+    0 line-count !
+    0 scroll-pos !
+    0 last-line-start !
+    0 add-line-offset ;    

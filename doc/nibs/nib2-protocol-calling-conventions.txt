@@ -1,0 +1,89 @@
+Nib 2.0 Protocol Calling Conventions
+====================================
+
+## Key Design Principle
+
+Protocols automatically receive the target object as an implicit first parameter that is NOT shown in their stack diagrams. This design choice was made to:
+
+1. **Avoid scope leak** - Eliminates need for `[[ protocol-call ]]` everywhere
+2. **Reduce method nesting** - Prevents deeply nested scope blocks
+3. **Clean calling syntax** - Protocols act as true object methods
+
+## Protocol Definition vs Usage
+
+**Definition** (stack diagram excludes object):
+```forth
+protocol: init-url ( server-url-addr server-url-len - ) 
+    server-url place ;
+    
+protocol: fetch-data ( - data-addr data-len | 0 )
+    \ implementation...
+```
+
+**Actual runtime signature** (object is implicit):
+- `init-url` actually takes `( server-url-addr server-url-len object - )`
+- `fetch-data` actually takes `( object - data-addr data-len | 0 )`
+
+**Usage** (object comes first, then stack diagram parameters):
+```forth
+s" https://api.example.com" board init-url     \ Correct
+board fetch-data dup 0= if ...                \ Correct
+
+\ WRONG - don't do this:
+board [[ s" https://api.example.com" init-url ]]  \ Scope leak!
+[[ fetch-data ]] dup 0= if ...                    \ Unnecessary nesting!
+```
+
+## Comparison with Other Languages
+
+This is similar to `self`/`this` in other OOP languages - the object context is there but doesn't clutter the method signature. The stack diagram shows only the "business parameters" while object context is handled transparently.
+
+## Protocol Types and Usage Patterns
+
+### Standard Protocols
+- **Syntax**: `protocol: name ( params - result )`
+- **Takes**: Implicit object (not shown in stack diagram)  
+- **Usage**: `object protocol-name params`
+- **Purpose**: Clean external object method interface
+
+### Inner Protocols  
+- **Syntax**: `inner-protocol: name ( params - result )`
+- **Takes**: NO implicit object (works within object scope)
+- **Usage**: `object [[ params inner-protocol-name ]]`
+- **Purpose**: Factored internal logic, readable scoped operations
+
+### Functions
+- **Syntax**: `: name ( params object - result )`
+- **Takes**: Explicit object as regular parameter
+- **Usage**: `params object function-name` or `object as> params function-logic`
+- **Purpose**: When object is one of many parameters
+
+## Usage Examples
+
+```forth
+trait: networking%
+    property server-url
+    
+    \ External interface - clean method calls
+    protocol: fetch-data ( - data-addr data-len | 0 )
+        validate-connection if do-fetch else 0 then ;
+    
+    \ Internal factoring - scoped operations  
+    inner-protocol: validate-connection ( - bool )
+        server-url count 0<> ;
+        
+    inner-protocol: do-fetch ( - data-addr data-len )
+        server-url count http-get ;
+trait;
+
+\ Usage:
+board fetch-data                      \ Standard protocol
+board [[ validate-connection ]]       \ Inner protocol  
+data board process-function           \ Function
+```
+
+## When to Use Which
+
+- **`protocol:`** - External object interface, clean method calls
+- **`inner-protocol:`** - Internal factoring, multiple operations in same scope
+- **Functions** - Object is just another parameter, complex multi-object operations

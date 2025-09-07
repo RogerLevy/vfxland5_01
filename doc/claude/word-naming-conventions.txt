@@ -1,0 +1,56 @@
+Core Principles
+
+Brevity over verbosity: log not write-log-line
+Context-dependent generics: close not close-log-file when scope is clear
+Direct action verbs: Choose immediate, active names
+
+Prefix Conventions
+
+h - Handles (hlog for log file handle)
+$ - Take a string (address/length pair)
+# - Counts (#errors for error counter)
++ - Increment, increase, add, push
+- - Decrement, negate, clear, undo, pop
+* - Instantiate, generate
+! - Set, calculate, generate (the following word is destination)
+@ - Retrieve from (the following word is source)
+s/ - Size of
+/ - Initialize/setup
+? - Conditional execution, can return a boolean or not
+> - "To" (send, convert, transform, calculate address), offset value
+: - Define a nameless function
+' - XT pointer (for variables, not values, which should look like THING-XT)
+. - print (specific item)
+
+Suffix Conventions
+
+# - Current index, identifier
+$ - Counted strings (logfile$ for filename buffer, returns address only)
+% - Class
+~ - File vocabulary/scope
+- - Subtract data type on stack
++ - Add data type on stack
+! - Store (the preceding word qualifies what is on the stack)
+@ - Fetch (the preceding word qualifies what will be left on the stack)
+, - Compile (into dictionary)
+? - Returns a boolean
+/ - Deinitialize/teardown
+> - Continuation
+: - Define a named function, begin (paired with WORD;)
+; - End (paired with WORD:)
+. - print (data type on stack)
+
+Naming Patterns
+
+Domain grouping: Related functions share prefixes (init-logging, shutdown-logging)
+Remove redundant qualifiers: Avoid log-file- prefix when context is obvious
+Scope-appropriate specificity: Generic names OK in focused vocabularies
+
+Examples
+forth\ Verbose → Concise
+write-log-line → log
+close-log-file → close  
+log-file-handle → hlog
+errors-this-session → #errors
+Style Goal
+Readable brevity - names short enough to scan quickly while remaining meaningful within their immediate context. Prioritizes interactive development flow over verbose self-documentation.

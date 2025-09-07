@@ -1,0 +1,1019 @@
+\ ------------------------------------------------------------------------------
+\ Engineer OOP extension - NIBS (NIBS Interactive Behavior System) a.k.a Nib 2.0
+\ ------------------------------------------------------------------------------
+
+\ validations off
+
+1024 constant #max-classifiers
+4096 constant /classifier
+#max-classifiers 8 / constant /bit-table
+
+0 value me              \ current object
+0 value classifier      \ current classifier
+0 value /static         \ next static field offset
+0 value current-property \ property being configured by metadata words
+
+variable next-classifier#
+
+magic-id MAGIC_FIELD FIEL
+magic-id MAGIC_PROPERTY PROP
+magic-id MAGIC_CLASSIFIER CLAS
+
+\ ==============================================================================
+\ Low-level stuff
+\ ==============================================================================
+
+: my-name ( - a len )
+    me body> >name count ;
+
+: field ( ofs size <name> - n ) ( a - a )
+    create 0 , MAGIC_FIELD , over , +
+    does> 2 cells + @ me + ;
+
+0
+    cell field cla
+dup constant /object-base
+    cell field magic
+constant /magical-base
+
+' cla >body 2 cells + @ constant cla-offset
+
+: prop+ ( object offset - a )
+    \ Optimizes down to two instructions with validations off 
+    s" over cla-offset + @ + @ +" evaluate ; immediate
+
+: >cla  s" cla-offset +" evaluate ;  immediate
+
+: -> ( object <name> - a )
+    preword find not abort" -> >> field name not found!"
+    >body cell+ @ MAGIC_PROPERTY = if
+        ' >body 2 cells + @ ?literal s" prop+" evaluate
+    else
+        ' >body 2 cells + @ ?literal s" +" evaluate
+    then ; immediate 
+
+: already? ( ? <name> - b <name> )
+    {: n :}
+    preword find if >body @ n = else drop 0 then ;
+
+|| : ?literal  state @ if postpone literal then ;
+
+cstring name$
+: >$ ( a len - $ )
+    name$ place name$ ;
+
+: set-bit ( bit# addr - )
+    {: bit# addr | byte-ofs bit-ofs :}
+    bit# 8 / to byte-ofs
+    bit# 8 mod to bit-ofs
+    addr byte-ofs +
+    dup c@ 1 bit-ofs lshift or swap c! ;
+
+: test-bit ( bit# adr - b )
+    >r 8 /mod ( bit-ofs byte-ofs )
+    r> + c@ 1 rot lshift and 0<> ;
+
+: @next ( node - next-node item )
+    dup @ swap cell+ @ ;
+
+\ Forward-Linked List
+
+3 cells constant /list
+
+: list-count ( list - list c )
+    dup cell+ cell+ @ ;
+
+: list-count! ( c list - )
+    cell+ cell+ ! ;
+
+: add-to ( item list - )
+    \ list (head): [ next-node , item , count , ]
+    \ node: [ next-node , item , ]
+    {: item head | count :}
+    head list-count nip to count
+    count 0= if
+        item head cell+ !
+    else
+        head count 1 - for @ loop
+        here swap ! 0 , item ,
+    then
+    count 1 + head list-count! ;
+
+: copy-list ( src dest - )
+    {: src dest :}
+    dest /list erase  \ re-initialize head
+    src list-count for
+        @next dest add-to
+    loop drop ;
+
+\ : .list ( list - ) 
+\     cr list-count for @next 2 indent .name cr loop drop ;  
+
+: .list ( list - )
+    {: | cnt :}
+    0 to cnt 
+    list-count for 
+        cnt 0 = if cr 2 indent then
+        @next .name space
+        cnt 1 + 10 mod to cnt  
+    loop drop cr ;
+
+\ ==============================================================================
+\ Object stack
+\ ==============================================================================
+
+aligned-page os
+variable osp   os osp ! \ object stack pointer
+
+\ ==============================================================================
+\ Object scoping
+\ ==============================================================================
+
+: [[ ( object - ) me osp @ !  4 osp c+!  to me ;
+: ]] ( - ) -4 osp c+!  osp @ @ to me ;
+: you ( - object ) osp @ cell- @ ;
+: that ( - object ) osp @ @ ;
+: as> ( actor - ) ( - ) [[ r> execute ]] ;
+
+: as ( object - )
+    \ Bind the given object and switch to its vocabulary if it has one
+    to me
+    cla @ body> >name count f" %s/"
+    >pad find if execute else drop then ;
+
+\ ==============================================================================
+\ CATCH/THROW support
+\ ==============================================================================
+
+\ aligned-page oes
+\ variable oesp  oes oesp !
+
+\ : >oes   oesp @ ! 4 oesp c+! ; 
+\ : oes>   -4 oesp c+! oesp @ @ ;
+\ : catch  me >oes osp @ >oes catch oes> osp ! oes> to me ;
+\ : throw  ?dup -exit oes> osp ! oes> to me throw ;
+
+\ :noname  256 2 / cell / for  os i 2 * cells oes + !  loop ;  execute
+
+\ ==============================================================================
+\ Classes
+\ ==============================================================================
+
+/magical-base
+    cell field instance-size            \ Size of this class
+    cell field next-ofs                 \ Next field offset for this class
+    cell field field-space-size
+    cell field classifier#
+    /bit-table field id-table           \ Classification table
+    /bit-table field can-table          \ Capability table
+    /list field property-list
+    /list field protocol-list
+    cell field class-template
+    cell field constructor-xt
+    cell field constructor-#params
+    cell field on-apply-xt
+    cell field on-derive-xt
+    cell field on-reopen-xt
+    /list field dependents              \ classifier dependents (classes that applied the trait or classes that derived the class)
+    cell field #openings
+dup constant /classifier-base
+to /static
+
+: allocate-classifier-bit ( - )
+    next-classifier# @ classifier -> id-table set-bit
+    next-classifier# @ classifier -> can-table set-bit
+    next-classifier# @ classifier -> classifier# !
+    1 next-classifier# +! ;
+
+|| : (classifier) ( class - class )
+    here swap , /classifier cell- allot&erase
+    dup to classifier
+    [[
+        /classifier instance-size !
+        allocate-classifier-bit
+    me ]]  ;
+    
+: (init-class) ( - )
+    MAGIC_CLASSIFIER magic ! ;
+    
+create _class _class (classifier) [[ (init-class) ]]
+
+|| : create-class ( <name> - class )
+    create _class (classifier) dup [[ (init-class) ]] ;
+
+: sizeof ( class|object - n )
+    dup >cla @ _class = if -> instance-size @
+    else >cla @ -> instance-size @ then ;
+
+\ ==============================================================================
+\ _TRAIT and _OBJECT
+\ ==============================================================================
+
+: (init-trait) ( - )
+    MAGIC_CLASSIFIER magic ! ;
+
+create _object 0 (classifier) [[
+    (init-trait)
+]]
+
+: (add-object-system-trait-bit) ( - )
+    _object -> classifier# @ id-table set-bit ;
+
+create-class _trait [[
+    (add-object-system-trait-bit)
+]]
+
+_object [[
+    _trait cla !
+    (add-object-system-trait-bit)
+]]
+
+\ ==============================================================================
+\ Object instantiation
+\ ==============================================================================
+
+: (sizeof) ( object - n )
+    >cla @ -> instance-size @ ;
+
+: !template ( object - )
+    dup >cla @ -> class-template @ ?dup if
+        cell+ over dup cell+ swap (sizeof) cell- move
+    else
+        dup cell+ over (sizeof) cell- erase
+    then
+    drop ;
+
+: scaffold ( class addr - )
+    swap over >cla !   \ Store class pointer
+    [[ me !template ]] ;
+
+: construct ( ... class addr - )
+    swap over >cla !   \ Store class pointer
+    [[
+        me !template
+        cla @ -> constructor-xt @ ?dup if execute then
+    ]] ;
+    
+: make ( ... class - object )
+    \ TODO: validate class
+    here >r
+    dup -> instance-size @ allot
+    ( class ) r@ construct r> ;
+
+: $object ( ... class name len - object ) ( - object ) 
+    >$ $create make ;
+
+: object ( ... class <name> - ) ( - object )
+    bl parse $object drop ;
+
+\ ==============================================================================
+\ Members
+\ ==============================================================================
+
+create _property  _class make [[
+    (add-object-system-trait-bit)
+    /magical-base
+        cell field offset
+        cell field next-property
+        cell field property-size
+        cell field property-type
+        cell field property-reftype
+        cell field serialize-flag
+    dup instance-size ! next-ofs !
+]]
+
+create _static  _class make [[
+    _property -> instance-size @
+    dup instance-size ! next-ofs !
+]]
+
+create _protocol  _class make [[
+    _static -> instance-size @
+    dup instance-size ! next-ofs !
+]]
+
+|| : has-field-space? ( class - b )
+    -> field-space-size @ 0<> ;
+    
+: field-space ( n - )
+    classifier >cla @ _trait = 
+        abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
+    classifier [[
+        field-space-size !
+        field-space-size @ instance-size !
+    ]] ;       
+
+: begin-classifier ( class - )
+    \ push-order only forth definitions
+    create make to classifier
+    1 classifier -> #openings +!
+    allocate-classifier-bit
+    ; \ pop-order ;
+
+: end-classifier ( - )
+    0 to classifier ;
+    
+: reopened? ( class - b )
+    -> #openings @ 1 > ;
+
+: allocate-static-offset ( n - )
+    dup /static + /classifier > 
+        abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
+    /static offset !
+    +to /static ;
+    
+: ?prop ( n - n )
+    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
+
+: >property ( property - ) 
+    \ Compile the code to resolve property address. 
+    ( protocol ) >r 
+    s" me dup >cla @" evaluate 
+    r> -> offset @ ?literal 
+    s" + @ ?prop +" evaluate ;  
+ 
+: does-property 
+    immediate does> >property ; 
+ 
+: create-property ( size <name> - property ) 
+    push-order only forth definitions 
+    create _property make [[ 
+        property-size ! 
+        cell allocate-static-offset 
+        MAGIC_PROPERTY magic ! 
+    me ]]     
+    s" does-property" evaluate   \ late-bound for easy Oversight integration
+    pop-order ;  
+    
+: defining-a-trait? ( - b )
+    classifier >cla @ _trait = ;
+
+: add-property ( property - )
+    classifier -> property-list add-to ;
+
+: is-property-mapped? ( property - b )
+    -> offset @ classifier + @ 0<> ;
+
+: map-property ( property - )
+    \ map property for current class
+    [[
+        classifier has-field-space? if
+            classifier -> next-ofs @ property-size @ +
+            classifier -> field-space-size @ > 
+                abort" MAP-PROPERTY >> Cannot map property - out of field space!"
+        then
+    
+        classifier -> next-ofs @ offset @ classifier + !
+        property-size @ classifier -> next-ofs +!
+    ]]
+    classifier has-field-space? not if            
+        classifier [[ next-ofs @ instance-size ! ]]
+    then ;
+
+: supports-protocol? ( protocol classifier - bool )
+    swap -> offset @ + @ 0<> ;
+
+: >origin ( protocol-xt-addr - origin-addr ) cell+ ;
+
+: apply-protocol ( trait protocol class - )
+    {: trait0 protocol0 class0 | ofs :}
+    protocol0 -> offset @ to ofs
+    trait0 ofs + @ class0 ofs + !
+    trait0 class0 ofs + >origin ! ;
+
+: has-unmapped-properties? ( trait - bool )
+    {: trait0 :}
+    trait0 -> property-list list-count for
+        @next ( property ) is-property-mapped? not if
+            -1 leave
+        then
+    loop drop
+    0 ;
+
+: ?size-changed ( size property - property )
+    {: size property0 :}
+    property0 -> property-size @ size <> if
+        -1
+        size
+        property0 -> property-size @
+        property0 body> >name count
+        f" NPROPERTY >> %s changed from %n to %n bytes - reload/restart required."
+        .abort
+    then
+    property0 ;
+
+: ?add-property ( property - )
+    dup is-property-mapped? if
+        drop \ -1 abort" PROPERTY >> Property already mapped!"
+    else
+        dup add-property
+        map-property
+    then ;
+
+: nproperty ( size <name> - ) ( - a )
+    {: | property0 :}
+
+    classifier 0= 
+        abort" NPROPERTY >> Can't define a property outside of a classifier definition."
+
+    _property already? if
+        ' >body ?size-changed
+    else
+        \ Property doesn't exist - check rules
+        classifier >cla @ _trait = if
+            \ Trait rules
+            classifier reopened? if
+                classifier -> dependents list-count 0<>
+                abort" NPROPERTY >> Cannot add new properties to reopened traits with dependents."
+            then
+            \ New trait or reopened trait with no dependents - okay
+        else
+            \ Class rules
+            classifier reopened? if
+                \ Reopened class without a field-space - abort
+                \ (Probably won't ever happen because CLASS: redefines
+                \ classes without field-spaces instead of re-opening them)
+                classifier has-field-space? not
+                abort" NPROPERTY >> Cannot add properties to an existing class without a field-space."
+                \ Reopened class with a field-space - okay
+            then
+            \ New class - okay
+        then
+        create-property
+    then
+    
+    ( property ) 
+
+    \ Set current property
+    dup to current-property
+
+    \ Map the property
+    dup ?add-property
+    
+    \ Propagate the property to dependents
+    ( property ) to property0
+    classifier -> dependents list-count for
+        @next classifier >r to classifier
+            property0 ?add-property
+        r> to classifier
+    loop drop
+    ;
+    
+: property ( <name> - ) ( - a )
+    cell nproperty ;
+
+: nstatic ( size <name> - ) ( - a )
+    classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
+    _static already? if drop ' drop exit then
+    push-order only forth definitions
+    create _static make [[
+        ( size ) allocate-static-offset
+        MAGIC_FIELD magic !
+    ]]
+    pop-order
+    does> -> offset @ cla @ + ;
+
+: static ( <name> - ) ( - a )
+    cell nstatic ;
+
+\ ==============================================================================
+\ Classifier definition
+\ ==============================================================================
+
+: apply-trait ( trait class b:id? - )
+    {: trait0 class0 id? | could? protocol0 origin :}
+    class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
+    
+    \ Check if trait has NEW properties that class can't handle
+    class0 reopened? if
+        class0 has-field-space? not if
+            classifier >r class0 to classifier
+            trait0 has-unmapped-properties? 
+            r> to classifier
+            abort" APPLY-TRAIT >> Cannot add trait with new properties to reopened class without field-space."
+        then
+    then
+    
+    \ Set classifier bit
+    id? if
+        trait0 -> classifier# @ class0 -> id-table set-bit
+    then
+    
+    \ Cache the current capability status
+    trait0 -> classifier# @ class0 -> can-table test-bit to could?
+    
+    \ Set capability bit
+    trait0 -> classifier# @ class0 -> can-table set-bit
+    
+    \ Merge protocols
+    trait0 -> protocol-list list-count for
+        @next to protocol0
+        
+        \ Avoid clobbering already supported protocols if "upgrading"
+        \ a class from WORKS-WITH to IS-A.
+        could? if protocol0 class0 supports-protocol? not else -1 then
+        if 
+            \ Check for protocol conflicts (trait trying to override another trait's implementation)
+            protocol0 -> offset @ class0 + >origin @ to origin
+            origin 0<> if
+                origin >cla @ _class <> if  \ Origin is a trait, not a class
+                    origin trait0 <> if     \ Different trait owns it
+                        -1
+                        trait0 body> >name count
+                        origin body> >name count  
+                        protocol0 body> >name count
+                        f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
+                    then
+                then
+            then
+            trait0 protocol0 class0 apply-protocol 
+        then
+    loop drop
+    
+    \ Merge properties
+    trait0 -> property-list list-count for
+        @next
+        dup is-property-mapped? if drop else dup add-property map-property then
+    loop drop
+    
+    \ Add class to dependents
+    class0 trait0 -> dependents add-to 
+    
+    \ Execute on-apply if set
+    trait0 -> on-apply-xt @ ?dup if
+        trait0 class0 rot execute  \ ( trait class - )
+    then ;
+   
+: class: ( <name> - )
+    _class already? if
+        \ Execute on-reopen if set
+        preword find drop >body to classifier
+        classifier -> on-reopen-xt @ ?dup if
+            classifier swap execute  \ ( class - )
+        then
+    then
+
+    _class already? if
+        ' >body to classifier
+        exit
+    then
+    _class begin-classifier
+    classifier [[
+        (init-class) 
+        /object-base instance-size !
+        /object-base next-ofs !
+        _object classifier -1 apply-trait 
+    ]] ;
+
+: template ( [class] - a )
+    {: | class0 :}
+    classifier dup 0= if drop then to class0 
+    class0 >cla @ _trait = abort" template >> Traits cannot have templates, only classes."
+    class0 -> class-template @ ?dup 0= if
+        class0 make class0 -> class-template !
+        class0 -> class-template @
+    then ;
+
+: class; ( - )
+    template drop
+    end-classifier ;
+
+: is-a ( [class] <trait> - )
+    \ Apply trait to class
+    \ [class] only required if outside class definition
+    ' dup >body -> cla @ _trait <> if
+        >name count f" Identifier %s is not a trait." -1 -rot .abort
+    then
+    >body   classifier ?dup 0= if swap then -1 apply-trait ;
+
+: works-with ( [class] <trait> - )
+    \ Apply trait to class without adding to id-table
+    \ Adds protocols and maps properties from the trait for transparent interoperability
+    \ IS? will return 0
+    \ [class] only required if outside class definition
+    ' dup >body -> cla @ _trait <> if
+        >name count f" Identifier %s is not a trait." -1 -rot .abort
+    then
+    >body   classifier ?dup 0= if swap then 0 apply-trait ;
+    
+: trait: ( <name> - )
+    _trait already? if
+        ' >body to classifier
+        exit
+    then
+    _trait begin-classifier
+    classifier [[
+        (init-trait)
+    ]] ;
+
+: trait;
+    end-classifier ;
+
+: add-protocol ( protocol trait - )
+    -> protocol-list add-to ;
+
+\ : OEXEC
+\ Execute bound XT with error-handling.
+debug @ [if]
+    defer oexec ( ... xt - ... )
+[else]
+    aka oexec execute
+[then]
+
+defer protocol-validations ( obj protocol - obj protocol )
+
+: does-protocol ( - ) ( ... obj - ... )
+    does> protocol-validations swap [[
+        dup -> offset @ cla @ + @ ?dup if
+            nip ( xt )
+        else
+            ( protocol ) >r
+            -1
+            cla @ >name count
+            r> body> >name count
+            f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
+        then
+        ( xt ) oexec
+    ]] ;
+
+|| : :method ( classname-a classname-len protocolname-a protocolname-len - xt )
+    push-order only forth definitions
+    2swap f" : %s:%s" >uppercase
+    evaluate
+    pop-order 
+    state on
+    here ; 
+
+: ?compile-validate-dispatch ; immediate
+
+: implement-protocol ( protocol classifier - )
+    {: protocol0 c | name[ 256 ] :} 
+    protocol0 [[
+        my-name name[ place
+        c body> >name count 
+        name[ count
+        :method ( xt ) c offset @ + !
+        s" ?compile-validate-dispatch" evaluate
+        c c offset @ + >origin !  \ Store class as origin when class implements protocol
+    ]] ;
+    
+: define-protocol ( trait <name> - ) ( ... object - ... )
+    {: trait0 | class0 protocol0 buf[ 256 ] :}
+    bl preparse buf[ place
+    _protocol already? if
+        ' >body
+    else
+        create _protocol make 
+        does-protocol
+        [[
+            2 cells allocate-static-offset
+        me ]]
+    then
+    to protocol0
+    
+    protocol0 [[
+        me trait0 supports-protocol? not if
+            me trait0 add-protocol
+        then
+    ]]
+    
+    \ Compile the default behavior in the trait
+    protocol0 trait0 implement-protocol
+    
+    \ Propagate the protocol to dependents
+    trait0 -> dependents list-count for
+        @next to class0
+        \ Only propagate if class doesn't have implementation from different source
+        protocol0 class0 supports-protocol? if
+            protocol0 -> offset @ class0 + >origin @ trait0 = if
+                \ Implementation from this trait - safe to overwrite
+                trait0 protocol0 class0 apply-protocol
+            then
+            \ else: Implementation from different trait or class - don't overwrite
+        else
+            \ Class doesn't support protocol yet - apply it
+            trait0 protocol0 class0 apply-protocol
+        then
+    loop drop
+    ;
+
+: :: ( [classifier] <protocol> - )
+    {: | protocol0 c :}
+    classifier ?dup if to c else to c then
+    c >cla @ _trait = if 
+        c define-protocol 
+        exit
+    then
+    c >cla @ _class <> 
+        abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+    bl word find not 
+        abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
+    >body to protocol0
+    protocol0 >cla @ _protocol <> 
+        abort" :: >> Word is not a protocol!"
+    protocol0 c supports-protocol? not 
+        abort" :: >> Tried to implement a protocol not supported by the class."
+    protocol0 c implement-protocol ;
+
+: stub ( - )
+    -1 r> >name count f" %s >> Not implemented" .abort ;
+
+: :construct ( #params class - )
+    classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
+    dup >cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
+    [[
+        constructor-#params !    
+        my-name s" construct" :method constructor-xt !
+    ]] ;
+
+: derive ( class - )
+    {: source-class :}
+    
+    source-class >cla @ _class <> abort" DERIVE >> Can only derive from classes."
+    classifier 0= abort" DERIVE >> Can only be called inside a class definition."
+    
+    \ Copy size fields
+    source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
+    classifier [[
+        field-space-size @ max field-space-size !
+        next-ofs !
+        instance-size @ max instance-size ! ]]
+    
+    \ Copy statics
+    source-class /classifier-base +
+    classifier /classifier-base +   
+    /classifier /classifier-base - move
+    
+    \ Copy member lists
+    source-class -> protocol-list  classifier -> protocol-list copy-list
+    source-class -> property-list  classifier -> property-list copy-list
+    
+    \ Copy parent's bit table tables (trait relationships)
+    source-class -> id-table classifier -> id-table /bit-table move
+    source-class -> can-table classifier -> can-table /bit-table move
+    \ Restore the classifier bits
+    classifier -> classifier# @ classifier -> id-table set-bit
+    classifier -> classifier# @ classifier -> can-table set-bit
+    
+    \ Set parent bit for inheritance queries
+    \ I believe this is not needed as it is set in the bit tables by begin-classifier
+    \ source-class -> classifier# @ classifier -> can-table set-bit
+    
+    \ Copy template if one exists, updating its class
+    source-class -> class-template @ ?dup if
+        ( source-template ) template source-class -> instance-size @ move
+        classifier template >cla !
+    then
+    
+    \ Copy constructor
+    source-class -> constructor-xt @ classifier -> constructor-xt !
+    source-class -> constructor-#params @ classifier -> constructor-#params !
+
+    \ Add class to dependents
+classifier source-class -> dependents add-to 
+
+    \ Execute on-derive if set
+    source-class -> on-derive-xt @ ?dup if
+        source-class classifier rot execute  \ ( source-class derived-class - )
+    then
+;
+
+: :apply ( trait  - ) ( trait dest-class - )
+    dup >cla @ _trait <> 
+        abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
+    [[ my-name s" apply" :method on-apply-xt ! ]] ;
+
+: :derive ( class - ) ( source-class derived-class - )
+    dup >cla @ _class <> 
+        abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+    [[ my-name s" derive" :method on-derive-xt ! ]] ;
+
+: :reopen ( class - ) ( class - )
+    dup >cla @ _class <> 
+        abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
+    [[ my-name s" reopen" :method on-reopen-xt ! ]] ;
+
+\ ==============================================================================
+\ Misc
+\ ==============================================================================
+
+aka nprop nproperty
+aka prop property
+aka instance make  \ Backward compatibility
+
+\ Validation
+: valid-class? ( ? - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup >cla @ _class = r> and >r
+    then
+    drop r> ;
+
+: valid-trait? ( ? - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup >cla @ _trait = r> and >r
+    then
+    drop r> ;
+
+: valid-classifier? ( ? - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup -> magic @ MAGIC_CLASSIFIER = r> and >r
+    then
+    drop r> ;
+
+: valid-object? ( ? - n:res )
+    dup firstname here within  >r  \ in dictionary
+    r@ 0< if
+        dup >cla @ ( class ) valid-class? r> and >r
+    then
+    drop r> ;
+
+: copy ( a1 a2 - a2 )
+    dup dup >r sizeof move r> ;
+
+: is? ( object|class classifier - bool )
+    \ TODO: Optimize and put the runtime checks in optional validations.
+    dup valid-classifier? not abort" IS? >> Invalid classifier."
+    over valid-object? not if 2drop 0 exit then
+    -> classifier# @ swap
+    dup >cla @ _class <> if >cla @ then -> id-table test-bit ;
+
+: can? ( object|class classifier|protocol-xt - bool )
+    {: obj-or-class second-param | class-to-check :}
+    \ TODO: Optimize and put the runtime checks in optional validations.
+    obj-or-class valid-object? obj-or-class valid-class? or not 
+    abort" CAN? >> Invalid object or class."
+    
+    \ Get the actual class to check
+    obj-or-class >cla @ _class = if
+        obj-or-class to class-to-check
+    else
+        obj-or-class >cla @ to class-to-check
+    then
+    
+    \ Check if second parameter is a valid XT first
+    second-param firstname here within not 
+    abort" CAN? >> Invalid second parameter (not a valid XT or classifier)."
+    
+    \ Check if second parameter is a protocol XT
+    second-param >body >cla @ _protocol = if
+        \ Protocol XT case: check if class supports this protocol
+        second-param >body class-to-check supports-protocol?
+    else
+        \ Classifier case: check capability table
+        second-param valid-classifier? not abort" CAN? >> Invalid classifier."
+        second-param -> classifier# @ class-to-check -> can-table test-bit
+    then ;
+
+: ?oexec ( xt - ) ( - )
+    \ Execute bound XT with error-handling if it is non-zero.
+    \ The XT must take or return any parameters.
+    ?dup -exit oexec ;
+
+\ Property type constants
+0 constant TYPE_CELL
+1 constant TYPE_INT
+2 constant TYPE_FIXED
+3 constant TYPE_FLOAT
+4 constant TYPE_CSTRING  \ note: meant for embedded cstring fields
+\ 5 constant TYPE_ARRAY
+
+100 constant TYPE_ADDR
+101 constant TYPE_XT
+102 constant TYPE_OBJREF
+
+
+\ Metadata words - operate on current-property
+: ?no-property
+    current-property 0= abort" No property being defined" ;
+
+: ?not-supported
+    current-property -> property-type @ TYPE_ADDR >=
+\    current-property -> property-type @ TYPE_ARRAY = or
+        abort" Saving this property type is not supported!" ;
+
+: ?not-saved-supported
+    current-property -> serialize-flag @ 
+        abort" Saving this property type is not supported!" ;
+
+: <save ( - )
+    ?no-property ?not-supported
+    -1 current-property -> serialize-flag ! ;
+
+: <int ( - )
+    ?no-property
+    TYPE_INT current-property -> property-type ! ;
+
+: <fixed ( - )
+    ?no-property
+    TYPE_FIXED current-property -> property-type ! ;
+
+: <float ( - )
+    ?no-property
+    TYPE_FLOAT current-property -> property-type ! ;
+
+: <cstring ( - )
+    ?no-property
+    TYPE_CSTRING current-property -> property-type ! ;
+
+\ : <array ( - )
+\     ?no-property ?not-saved-supported
+\     TYPE_ARRAY current-property -> property-type ! ;
+
+: <xt ( - )
+    ?no-property ?not-saved-supported
+    TYPE_XT current-property -> property-type ! ;
+    
+: <addr ( - )
+    ?no-property ?not-saved-supported
+    TYPE_ADDR current-property -> property-type ! ;
+
+: <ref ( - class|trait )
+    ?no-property ?not-saved-supported
+    TYPE_OBJREF current-property -> property-type ! 
+    ' >body dup valid-classifier? not
+        abort" Not a valid classifier!" 
+        current-property -> property-reftype ! ;
+
+: .object ( object - )
+    dup valid-object? not if .data exit then
+    [[ cla @ .name me .data me . ]] ;
+
+: inspect-property ( property val-addr - )
+    {: property val-addr :} 
+    property .name ." : " 
+    property -> property-type @ case
+        TYPE_CELL       of val-addr ? endof  
+        TYPE_INT        of val-addr ? endof 
+        TYPE_FIXED      of val-addr p? endof   
+        TYPE_FLOAT      of val-addr sf@ f. endof   
+        TYPE_CSTRING    of val-addr count type endof
+        TYPE_ADDR       of val-addr @ .data endof
+        TYPE_XT         of val-addr @ .ip endof
+        TYPE_OBJREF     of val-addr @ .object endof
+    endcase cr ;
+
+: .props ( object - )
+    [[
+        cla @ -> property-list list-count for
+            @next                       \ get property
+            me over -> offset @ prop+   \ get field address
+            ."     " inspect-property
+        loop drop 
+    ]] ;
+
+: inspect ( object - )
+    dup .object cr .props ;
+
+\ ==============================================================================
+\ _OBJECT Base Protocols
+\ ==============================================================================
+
+0 to classifier
+
+_object :: .summary ( - )
+    \ Default : show class, name, and address
+    me .object ;
+
+_object :: on-error ( xt err# - )
+    throw ;
+
+: debug-oexec ( ... xt - ... )
+    dup >r
+    catch ?dup if
+        r> swap me -> cla @ -> on-error @ execute
+        exit
+    then
+    r> drop ;
+    
+debug @ [if]
+    ' debug-oexec is oexec
+[then]
+
+\ ==============================================================================
+\ Apply _OBJECT to other system classifiers
+\ ==============================================================================
+
+_class is-a _object
+_trait is-a _object
+_protocol is-a _object
+_property is-a _object
+_static is-a _object
+
+\ ==============================================================================
+\ Init/Reset
+\ ==============================================================================
+
+|| variable fresh-next-classifier#
+|| variable fresh-/static
+
+|| : init-nib ( - )
+||     fresh-next-classifier# @ next-classifier# ! 
+||     fresh-/static @ to /static
+||     0 to classifier ;
+
+|| : gild-nib ( - )
+    next-classifier# @ fresh-next-classifier# !
+    /static fresh-/static ! ;

@@ -1,0 +1,41 @@
+\ ------------------------------------------------------------------------------
+\ Common game-specific definitions / config
+\ Intended for common words but try to limit it to
+\ stuff that's likely to be named the same across projects.
+\ ------------------------------------------------------------------------------
+
+only forth definitions
+
+0 constant start# \ starting room #
+<space> constant <jump>
+<down> constant <squat>
+<enter> constant <start>
+<q> constant <use>
+dummy value p1
+dummy value you
+create start-xy 160 , 120 , 
+variable #deaths
+default [[
+    -10 -10 x1 2!  20 20 w1 2!
+]]
+
+\ Global assets
+bgm *bgm1* theme.ogg
+bg.png 20 20 tileset bg.ts
+rats-small.png 20 20 tileset rats-small.ts
+bg.ts baseid@ pile !
+s" gfx\bg.dat" bg.ts load-metas 
+
+\ Actor extensions
+prop hp
+prop fac
+m: _walk  drop ;  : walk me _walk ;
+m: _idle ;        : idle me _idle ;
+m: _jump ;        : jump me _jump ;
+: revive  100 hp ! idle ;
+
+\ Inventory
+dictionary inventory
+: get ( n $ - )  inventory lookup +! ;
+: have ( $ - n )  inventory lookup @ ;
+: discard ( n $ - )  inventory lookup dup >r @ swap - 0 max r> ! ;

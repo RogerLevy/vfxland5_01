@@ -1,0 +1,37 @@
+\ ------------------------------------------------------------------------------
+\ Shader support
+\ ------------------------------------------------------------------------------
+
+|| : ?err  0= abort" Shader uniform not found." ;
+|| : sf-!  cell- dup sf! ;
+|| : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
+|| create v4 4 cells allot
+
+: load-shader ( z$:Vecfn z$:Fragfn - shader )
+    ALLEGRO_SHADER_AUTO al_create_shader | s fs vs |
+    s ALLEGRO_VERTEX_SHADER vs al_attach_shader_source 0= if
+        s al_get_shader_log zcount type
+        -1 abort" Vertex shader attach error!"
+    then
+    s ALLEGRO_PIXEL_SHADER fs al_attach_shader_source 0= if
+        s al_get_shader_log zcount type
+        -1 abort" Fragment shader attach error!"
+    then
+    s dup al_build_shader 0= if
+        s al_get_shader_log zcount type
+        -1 abort" Build shader error!"
+    then
+;
+
+: shade ( shader|0 - )
+    al_use_shader 0= abort" al_use_shader() error!" ;
+
+: sampler! ( bmp unit z$ - )
+    -rot al_set_shader_sampler ?err ;
+
+: float! ( f:n z$ - )
+    al_set_shader_float ?err ;
+
+: vec4! ( f:n f:n f:n f:n z$ - )
+    v4 4f!  4 v4 1 al_set_shader_float_vector ?err ;
+ 

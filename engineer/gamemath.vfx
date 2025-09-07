@@ -1,0 +1,47 @@
+\ ------------------------------------------------------------------------------
+\ Game Math
+\ ------------------------------------------------------------------------------
+
+\ 2D Vectors
+synonym d@ 2@
+synonym d! 2!
+: x@ @ ;
+: y@ cell+ @ ;
+: 2@ dup @ swap 4 + @ ;
+: 2! dup >r 4 + ! r> ! ;
+: 2+! dup >r 4 + +! r> +! ;
+: 2, swap , , ;
+: 2+  rot + >r + r> ;
+: 2-  rot swap - >r - r> ;
+: 2*  rot * >r * r> ;
+: 2/  rot swap / >r / r> ;
+: 2mod rot swap mod >r mod r> ;
+: 2negate swap negate swap negate ;
+: 2s>f swap s>f s>f ;
+: 2.> .> swap .> swap ;  
+: 2>. >. swap >. swap ;
+: 2p>f swap p>f p>f ;
+: 2f>p f>p f>p swap ;
+: 2p. swap p. p. ; 
+: 2p? 2@ 2p. ;
+: 2i 1i swap 1i swap ;
+: 2p* ( x. y. x. y. - x. y. ) rot p* >r p* r> ;
+: 2p/ ( x. y. x. y. - x. y. ) rot swap p/ >r p/ r> ;
+
+\ =============================================================================
+\ Range tools
+\ =============================================================================
+
+: overlap? 2swap 2rot rot >= -rot <= and >r rot >= -rot <= and r> and ;
+: inside? 2>r 2>r 2dup 2r> 2r> overlap? ;
+: lerp ( n. src dest - )  over - rot p* + ;
+: 2max rot max >r max r> ;
+: 2min rot min >r min r> ;
+: 2clamp 2swap 2>r 2min 2r> 2max ;
+
+\ =============================================================================
+\ Misc
+\ =============================================================================
+
+synonym << lshift
+synonym >> rshift

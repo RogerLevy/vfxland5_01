@@ -1,0 +1,85 @@
+
+
+create etft \ equal temperament (piano 12-tone, in reverse order from key 88-1)
+4186.01e f, 3951.07e f, 3729.31e f, 3520e f, 3322.44e f, 3135.96e f, 2959.96e f, 2793.83e f, 2637.02e f, 2489.02e f, 
+2349.32e f, 2217.46e f, 2093e f, 1975.53e f, 1864.66e f, 1760e f, 1661.22e f, 1567.98e f, 1479.98e f, 1396.91e f, 
+1318.51e f, 1244.51e f, 1174.66e f, 1108.73e f, 1046.5e f, 987.767e f, 932.328e f, 880e f, 830.609e f, 783.991e f, 
+739.989e f, 698.456e f, 659.255e f, 622.254e f, 587.33e f, 554.365e f, 523.251e f, 493.883e f, 466.164e f, 440e f, 
+415.305e f, 391.995e f, 369.994e f, 349.228e f, 329.628e f, 311.127e f, 293.665e f, 277.183e f, 261.626e f, 246.942e f, 
+233.082e f, 220e f, 207.652e f, 195.998e f, 184.997e f, 174.614e f, 164.814e f, 155.563e f, 146.832e f, 138.591e f, 
+130.813e f, 123.471e f, 116.541e f, 110e f, 103.826e f, 97.9989e f, 92.4986e f, 87.3071e f, 82.4069e f, 77.7817e f, 
+73.4162e f, 69.2957e f, 65.4064e f, 61.7354e f, 58.2705e f, 55e f, 51.9131e f, 48.9994e f, 46.2493e f, 43.6535e f, 
+41.2034e f, 38.8909e f, 36.7081e f, 34.6478e f, 32.7032e f, 30.8677e f, 29.1352e f, 27.5e f, 
+
+: etfreq ( n -- f:n )
+    88 swap - 2 cells * etft + f@ ;
+
+create chnfreq
+   300e f, 1000e f, 2000e f, 3000e f, 1400e f, 800e f, 900e f, 1000e f, 
+   2000e f, 3000e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f,
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+
+create chnamp
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+
+create chnwave
+   1e f, 2e f, 3e f, 4e f, 5e f, 6e f, 7e f, 8e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+
+create chnsend1
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+
+create chnsend2
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+
+create chnsend3
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 0e f, 
+   
+create chnsend4
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 1e f, 
+   1e f, 1e f, 1e f, 1e f, 0.5e f, 0.5e f, 1e f, 1e f, 

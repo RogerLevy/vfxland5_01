@@ -1,0 +1,62 @@
+# VFX Forth Conventions for Claude
+
+This document captures Forth-specific patterns and gotchas to help Claude avoid common mistakes in future sessions.
+
+## Loop Constructs
+- Loop counters (`i`, `j`, `k`) are automatic in `for`/`do` loops - don't declare as locals
+- Example: `arr #items for i arr [] @ ... loop` (i is provided automatically)
+
+## Compile-Time vs Runtime Words
+- `constant` is compile-only - can't use inside definitions
+- Must define constants at top level, not inside word definitions
+- Other compile-only words: `create`, `variable`, `value` (when defining)
+
+## Dictionary and Search Operations
+- `lookup` expects counted strings (len+data), not addr/len pairs
+- Use `place` to convert addr/len to counted string for lookup
+- `walk>` is incompatible with locals - use `private` values instead
+
+## Object-Oriented Programming
+- Use `||` prefix for private/temporary definitions (not `--` or `__`)
+- `'s property` syntax for object property access  
+- `[[` object context takes address parameter: `obj [[ ... ]]`
+- Property access pattern: `obj 's field-name @`
+
+## Stack Comments
+- Use `type:name` format for primitives: `n:level`, `f:flag`, `xt:condition`
+- Objects use just class name: `contract`, `condition`, `temp-state`
+- Multiple objects of same type can have names: `src:contract dst:contract`
+
+## String Handling
+- `place` copies addr/len to counted string buffer
+- `count` converts counted string to addr/len
+- MPE locals syntax for buffers: `{: params | buffer[ size ] :}`
+- Reference buffers with bracket: `buffer[ place`, `buffer[ count`
+
+## Error Handling
+- `abort"` doesn't provide stack traces in VFX Forth
+- Consider custom error reporting with context before aborting
+- Manual stack traces: `last @`, `latest`, `.s` for debugging info
+
+## VFXLand5 Specific Patterns
+- Array operations: `*stack` creates anonymous arrays, `push`/`pop` for stack ops
+- Class definitions: `class: name% ... property field ... class;`
+- Object creation: `class% object` returns object address
+- Private scoping: `private ... public` for file-local definitions
+- Dictionary pattern: `dictionary name` creates key/value structures
+
+## Common Mistakes to Avoid
+- Don't declare loop counters as locals (they're automatic)
+- Don't use compile-only words inside definitions
+- Don't mix locals with `walk>` operations
+- Don't assume `addr len` when API expects counted strings
+- Don't use `--` for private words (use `||` instead)
+
+## Debugging Tips
+- Add entry logs: `s" ENTER: function-name" log-debug` for tracing
+- Use `.s` to see stack state when debugging
+- Check `depth` before/after operations to verify stack balance
+- Use `abort` with custom messages rather than `abort"` for better context
+
+---
+This list should be updated whenever new Forth-specific patterns or gotchas are discovered.

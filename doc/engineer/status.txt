@@ -1,0 +1,46 @@
+ENGINEER IDE STATUS
+===================
+Text format file for tracking Engineer IDE development status.
+
+TODO SECTION
+============
+
+[ ] Add mechanisms for conditional loading of contract definition files
+    - Develop conventions for detecting whether Oversight is loaded
+    - Allow projects to optionally include contract files only when Oversight is available
+    - Prevent errors when contract words are used but Oversight not loaded
+
+[ ] Review Oversight integration
+    - Currently only loads when debug mode is enabled
+    - Consider making Oversight loading more explicit/configurable
+
+[ ] Add asset hot-reloading improvements
+    - Current reload-bitmaps exists but needs testing
+    - Consider automatic reloading on file changes
+
+[ ] Improve REPL integration for debugging
+    - Enhanced debugging capabilities
+    - Better error handling and recovery
+
+[ ] Documentation improvements
+    - Add comprehensive API documentation
+    - Document conventions and patterns used
+
+DATED ENTRIES
+=============
+
+2025-07-01
+----------
+Engineer IDE is stable and functional. Recent improvements include:
+- Reformatted all section headings for better visual organization
+- Consolidated core dependencies (misc.vfx, scope.vfx, error.vfx, format.vfx, array.vfx, oop.vfx) 
+- Moved system integration functions (bye, path) to appropriate location
+- Oversight integration is working but only loads in debug mode
+- All major subsystems (graphics, input, event handling, REPL) are operational
+
+Current structure provides a solid foundation for 2D game development with:
+- Allegro 5 integration for graphics/audio/input
+- Automatic bitmap loading system  
+- Object-oriented programming support
+- Contract-oriented debugging via Oversight (when enabled)
+- Live REPL for interactive development

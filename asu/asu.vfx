@@ -1,0 +1,220 @@
+\ ------------------------------------------------------------------------------
+\ Audio Synthesis Unit - VFX Forth Port
+\ ------------------------------------------------------------------------------
+
+\ =============================================================================
+\ Core System Components
+\ =============================================================================
+
+include asutables.vfx
+
+aka f! df!
+aka f@ df@
+aka f+! df+!
+
+\ =============================================================================
+\ ASU Variables
+\ =============================================================================
+
+0 value csound
+0 value chn
+
+variable csound-status
+variable csound-time
+
+fvariable delaydecay 0.5e delaydecay f!
+fvariable delaytime 1000e delaytime f!
+fvariable lfreq 1e lfreq f!
+fvariable lres 0e lres f!
+fvariable globlp 1e globlp f!
+fvariable globhp 0e globhp f!
+
+\ =============================================================================
+\ Csound Orchestra & Score
+\ =============================================================================
+
+create orc s" asu.orc" file, 0 c,
+create sco s" asu.sco" file, 0 c,
+
+\ =============================================================================
+\ Message Callback System
+\ =============================================================================
+
+fromC 3 1 callback: msgcb
+
+: (msgcb-action) ( csound attr zstr -- res )
+    bye
+    nip nip cr zcount type 0 ;
+
+' (msgcb-action) to-callback msgcb
+
+\ =============================================================================
+\ Audio System Initialization
+\ =============================================================================
+
+: do-init-audio
+   0 csoundCreate to csound
+   csound 1 csoundCreateMessageBuffer
+   csound 1 csoundSetDebug
+   csound msgcb csoundSetMessageStringCallback
+   csound z" -B256" csoundSetOption throw
+   csound z" -odac2" csoundSetOption throw
+   csound orc csoundCompileOrc throw
+   csound sco csoundReadScore throw
+   csound csoundStart throw ;
+
+: init-audio
+   ['] do-init-audio catch abort" There was a problem in init-audio" ;
+
+\ =============================================================================
+\ Channel Access Utilities
+\ =============================================================================
+
+: apu!   chn 2 cells * + f! ;
+: apu[]   2 cells * + ;
+
+\ =============================================================================
+\ Ramping System - Smooth Parameter Changes
+\ =============================================================================
+
+0
+   cell field addr
+   2 cells field destval  \ float64
+   2 cells field stepval  \ float64
+constant /rampctl
+
+10 /rampctl array ampramps
+10 /rampctl array freqramps
+
+: stop-ramp ( struct -- )
+   dup -> destval f@ dup -> addr @ f! 0e dup -> stepval f! ;
+
+: do-ramp ( struct -- )
+   dup -> stepval f@ 0e f= if drop exit then
+   dup -> stepval f@ dup -> addr @ f+!
+   dup -> stepval f@ f0< if
+        dup -> addr @ f@ dup -> destval f@ f< if stop-ramp then
+   else
+        dup -> addr @ f@ dup -> destval f@ f> if stop-ramp then
+   then  drop ;
+
+: init-amp-ramp ( i -- )
+   locals| i |
+   0e ampramps i [] -> stepval f!
+   chnamp i apu[] ampramps i [] -> addr ! ;
+
+: init-freq-ramp ( i -- )
+   locals| i |
+   0e freqramps i [] -> stepval f!
+   chnfreq i apu[] freqramps i [] -> addr ! ;
+
+: init-ramps
+   10 0 do i init-amp-ramp loop
+   10 0 do i init-freq-ramp loop ;
+
+: do-ramps
+   10 0 do ampramps i [] do-ramp loop
+   10 0 do freqramps i [] do-ramp loop ;
+
+\ =============================================================================
+\ Audio Processing Core
+\ =============================================================================
+
+defer musictick  ' noop is musictick
+
+: apuupd
+   csound z" amp" chnamp csoundSetAudioChannel
+   csound z" wave" chnwave csoundSetAudioChannel
+   csound z" pitch" chnfreq csoundSetAudioChannel
+   csound z" send1" chnsend1 csoundSetAudioChannel
+   csound z" send2" chnsend2 csoundSetAudioChannel
+   csound z" send3" chnsend3 csoundSetAudioChannel
+   csound z" send4" chnsend4 csoundSetAudioChannel
+   csound z" delaydecay" delaydecay 2@ csoundSetControlChannel
+   csound z" delaytime" delaytime 2@ csoundSetControlChannel
+   csound z" ladderfreq" lfreq 2@ csoundSetControlChannel
+   csound z" ladderres" lres 2@ csoundSetControlChannel
+   csound z" globallp" globlp 2@ csoundSetControlChannel
+   csound z" globalhp" globhp 2@ csoundSetControlChannel ;
+
+: soundframe
+   csound csoundPerformKsmps csound-status ! ;
+
+: apuframe
+   musictick do-ramps apuupd soundframe ;
+
+\ =============================================================================
+\ Threading System
+\ =============================================================================
+
+1 1 CallBack: mycb
+
+: (mycb-action) ( userdata -- result )
+   drop
+   begin 
+     apuframe 
+     csound-status @ 
+   until
+   1 ;
+
+' (mycb-action) to-callback mycb
+
+: apugo   mycb 0 csoundCreateThread ;
+
+\ =============================================================================
+\ Timing & Utility Functions
+\ =============================================================================
+
+: /sec   300e f/ ;
+
+: ?neg   chn apu[] f@ f< if fnegate then ;
+
+\ =============================================================================
+\ Channel Selection API
+\ =============================================================================
+
+: ch   63 and to chn ;
+: wtosc   7 and to chn ;
+: dnois   1 and 8 + to chn ;
+: send1   59 to chn ;
+: send2   60 to chn ;
+: send3   61 to chn ;
+: send4   62 to chn ;
+: master  63 to chn ;
+
+\ =============================================================================
+\ Sound Parameter Control
+\ =============================================================================
+
+: amp  chnamp apu! ;
+: pitch   ( note -- ) etfreq chnfreq apu! ;
+: wave   15 and 1 + s>f chnwave apu!  ;
+
+: glide  ( destnote  f:rate/sec -- )
+    /sec fover etfreq chnfreq ?neg
+    chn freqramps [] -> stepval f!
+    etfreq freqramps chn [] -> destval f! ;
+
+: atten  ( f:destamp  f:rate/sec -- )
+    /sec fover chnamp ?neg
+    chn ampramps [] -> stepval f!
+    ampramps chn [] -> destval f! ;
+
+: muteall  16 0 do 0e i to chn amp loop ;
+
+: change   ( n. length. addr -- ) fdrop f! ;
+
+\ =============================================================================
+\ ASU Lifecycle Management
+\ =============================================================================
+
+: init-asu
+   init-audio
+   init-ramps
+   muteall
+   apugo ;
+
+: close-asu
+   csound csoundStop
+   csound csoundDestroy ;
+

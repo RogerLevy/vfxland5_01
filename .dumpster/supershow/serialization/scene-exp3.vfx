@@ -1,0 +1,23 @@
+\ i thought about going all the way with a packed binary format for maximum efficiency and 
+\ security, and making it incredibly convenient to serialize or deserialize on-the-fly.    
+\ something i think Forth is suited to.  
+\ 
+\ for example defining a scene...
+
+50 50 at ship one [[ 0 id ! 100 hp ! ]] 
+100 100 at turret one [[ 1 id ! 1 attach 50 hp ! ]]
+
+save-scene scene1
+    \ action:
+    s" scene1.scn" delete-file
+    s" scene1.scn" object to scene
+    scene save
+
+
+
+scene1 load  \ bring out the ship and turret again later
+
+\ make some changes ...          
+
+scene1 save  \ update 
+ 

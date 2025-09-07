@@ -1,0 +1,8 @@
+trait: thinker trait;
+trait: _lifo trait;
+512 constant /actor
+
+c: thingy ;
+c: actor  /actor @thingy +_lifo "thinker" en buf 256 x y vx vy ;
+
+actor .class

@@ -1,0 +1,149 @@
+\ tilemap3.vfx
+
+1 constant TILESET_FORMAT_VERSION
+
+variable pile
+
+class: tileset
+    is-a _totem
+    extension: ts
+    default-dir: dat/gfx
+    format: TILESET_FORMAT_VERSION 
+
+    is-a usable
+
+    prop baseid
+    prop bmp
+    prop tw <save <int 
+    prop th <save <int 
+    prop #tiles <save <int 
+    prop metas-array <ref _array
+
+class;
+
+|| : /metas ( - )
+    0 cell _array make metas-array ! ;
+
+tileset :construct ( - )
+    /metas ;
+
+: slice-tileset ( tileset - )
+    \ slice up the source bitmap into tile sub-bitmaps.
+    \ add them to the global bitmap registry.
+    as>
+        next-bmp# @ baseid !
+        bmp @ bmph th @ - 1 + for
+            bmp @ bmpw tw @ - 1 + for
+                i j at   bmp @ >albmp tw 2@ *subbmp add-bitmap drop
+            tw @ +loop
+        th @ +loop
+        next-bmp# @ baseid @ - #tiles ! 
+        #tiles @ metas-array @ redim ;
+
+\ : reslice-tileset ( tw th tileset - )
+\     \ slice up source bitmap, creating a new range of sub-bitmaps
+\     \ use this at dev-time to change the tile size or if the bitmap's size increased.
+\     dup unload   [[   tw 2!   me slice-tileset   me keep   ]] ;
+
+\ tileset :: use ( - )
+\     baseid @ pile ! ;
+
+tileset :: load ( - )
+    \ slice up the tile set's source bitmap.
+    \ if the tileset is being re-loaded, refresh the allocated bitmap range.
+    me new? not if next-bmp# @ >r   baseid @ next-bmp# ! then
+    me slice-tileset
+    me new? not if r> next-bmp# ! then ;
+
+: tile ( tileset n - n )
+    swap -> baseid @ + ;
+
+tileset :: unload ( - )
+    #tiles @ for
+         me i tile >albmp -albmp
+    loop ;
+
+: array, ( array - )
+    \ assumes cell array
+    dup #items ,   ['] , swap each@ ;
+
+: @array+ ( a array - a' )
+    \ assumes cell array
+    {: | n :}
+    [[
+        @+ to n 
+        n if
+            n me redim
+            dup data @ n cells move
+            n cells +
+        then 
+    ]] ;
+
+|| : deser-tileset ( - )
+    des>
+        ['] into-me desbin+
+        metas-array @ @array+ ;
+
+|| : reconnect-bmp ( - ) 
+    my-name -ext f" %s.png" 
+    >pad find 0= if
+        drop 
+        pad count f" RECONNECT-BMP >> Tileset source bitmap %s not found" type
+        exit
+    then
+    execute bmp ! ;   \ Bitmap words return their own bitmap ID's
+
+tileset :: _intake ( - )
+    deser-tileset   reconnect-bmp   me load ;
+
+tileset :: _keep ( - )
+    ser>
+        me serbin,
+        metas-array @ array, ;
+
+: +tileset ( bmp# tw th <name> - )
+    tileset +totem [[ tw 2! bmp ! me ]] dup load keep ;
+
+: is-tile? ( n - f )
+    >albmp dup -exit al_is_sub_bitmap ;
+
+: init-tilesets
+    tileset load-default-dir ;
+
+: reload-tilesets
+    tileset reload-instances ;
+
+\ =============================================================================
+\ Tilemap - Low level
+\ =============================================================================
+
+|| : nr ( - ) 0 pen y@ gap + at ;
+|| : tile+ ( bmpid - ) pile @ + put gap 0 +at ;
+
+: lay ( a - )
+    batch> tmh for tmw for @+ tile+ loop nr loop drop ;
+
+: spot ( col row a - a )
+    -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
+
+: xy>cr ( x. y. - col row )
+    gap dup 2/ 2.> ;
+
+\ =============================================================================
+\ Tile metadata
+\ =============================================================================
+
+create metas #bitmaps cells allot&erase
+: meta ( n - n ) pile @ + cells metas + @ ;
+: collectible?  meta $20 and 0<> ;
+: destructible?  meta $80 and 0<> ;
+: solid?  meta $0F and $0F = ;
+: instakill?  meta $40 and 0<> ;
+: trap?  meta $10 and 0<> ;
+
+: load-metas ( a:fn len:fn tileset - )
+    >r
+        here >r >datadir file,
+        r> here over -
+    r> -> baseid @ cells metas + swap move ;
+ 

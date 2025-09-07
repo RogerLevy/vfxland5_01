@@ -1,0 +1,11 @@
+prop talkable
+
+class rat1%
+rat1% :: depict
+    rat1.png portrait -> bmp ! ;
+rat1% :: interact ( other - ) 
+    drop
+    s[ ." I'm building a bomb to destroy myself" cr 
+       ." You must stop me" s] say ;
+rat1% :: init
+    rats-small.ts 0 tile bmp ! talkable on ;

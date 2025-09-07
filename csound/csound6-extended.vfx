@@ -1,0 +1,113 @@
+\ ------------------------------------------------------------------------------
+\ Csound 6 Extended Bindings for VFX Forth - Additional Functions
+\ ------------------------------------------------------------------------------
+
+\ Compilation and Performance
+extern "C" int csoundCompile( void * csound, int argc, void * argv );
+extern "C" int csoundPerform( void * csound );
+extern "C" void csoundCleanup( void * csound );
+extern "C" void csoundReset( void * csound );
+extern "C" double csoundEvalCode( void * csound, void * code );
+
+\ Channel Communication (Extended)
+extern "C" int csoundGetChannelPtr( void * csound, void * pointervar, void * name, int type );
+extern "C" void csoundGetAudioChannel( void * csound, void * name, void * samples );
+extern "C" double csoundGetControlChannel( void * csound, void * name );
+extern "C" void * csoundGetStringChannel( void * csound, void * name );
+extern "C" int csoundListChannels( void * csound, void * lst );
+
+\ Table Operations
+extern "C" void csoundTableCopyIn( void * csound, int table, void * floats );
+extern "C" void csoundTableCopyOut( void * csound, int table, void * floats );
+extern "C" int csoundTableLength( void * csound, int table );
+extern "C" double csoundTableGet( void * csound, int table, int index );
+extern "C" void csoundTableSet( void * csound, int table, int index, double value );
+
+\ Score Control
+extern "C" void csoundSetScorePending( void * csound, int flag );
+extern "C" double csoundGetScoreTime( void * csound );
+extern "C" int csoundIsScorePending( void * csound );
+extern "C" void csoundSetScoreOffsetSeconds( void * csound, double time );
+extern "C" void csoundRewindScore( void * csound );
+
+\ Audio I/O and Samples
+extern "C" int csoundGetSampleRate( void * csound );
+extern "C" int csoundGetNchnls( void * csound );
+extern "C" int csoundGetNchnlsInput( void * csound );
+extern "C" int csoundGet0dBFS( void * csound );
+extern "C" void * csoundGetSpin( void * csound );
+extern "C" void * csoundGetSpout( void * csound );
+
+\ MIDI Support
+extern "C" int csoundOpenMidiInputDevice( void * csound, void * device );
+extern "C" int csoundOpenMidiOutputDevice( void * csound, void * device );
+extern "C" void csoundSetMidiInput( void * csound, void * filename );
+extern "C" void csoundSetMidiFileInput( void * csound, void * filename );
+extern "C" void csoundSetMidiOutput( void * csound, void * filename );
+extern "C" void csoundSetMidiFileOutput( void * csound, void * filename );
+
+\ File I/O
+extern "C" void csoundSetOutput( void * csound, void * name, void * type, void * format );
+extern "C" void csoundGetOutputName( void * csound );
+extern "C" void csoundSetInput( void * csound, void * name );
+extern "C" void csoundGetInputName( void * csound );
+
+\ Real-time Audio Setup
+extern "C" void csoundSetRTAudioModule( void * csound, void * module );
+extern "C" int csoundGetModule( void * csound, int number, void * name, void * type );
+extern "C" int csoundGetInputBufferSize( void * csound );
+extern "C" int csoundGetOutputBufferSize( void * csound );
+
+\ Message and Debug
+extern "C" void csoundMessage( void * csound, void * format );
+extern "C" void csoundMessageS( void * csound, int attr, void * format );
+extern "C" void csoundSetMessageCallback( void * csound, void * csoundMessageCallback );
+
+\ Environment and Configuration
+extern "C" int csoundGetDebug( void * csound );
+extern "C" void csoundSetDebug( void * csound, int debug );
+extern "C" double csoundSystemSr( void * csound, double val );
+extern "C" int csoundGetAPIVersion( );
+extern "C" int csoundGetVersion( );
+
+\ Threading and Concurrency
+extern "C" void * csoundCreateMutex( int isRecursive );
+extern "C" void csoundLockMutex( void * mutex );
+extern "C" int csoundTryLockMutex( void * mutex );
+extern "C" void csoundUnlockMutex( void * mutex );
+extern "C" void csoundDestroyMutex( void * mutex );
+extern "C" void * csoundCreateBarrier( int max );
+extern "C" int csoundDestroyBarrier( void * barrier );
+extern "C" int csoundWaitBarrier( void * barrier );
+
+\ Memory Management
+extern "C" void * csoundMalloc( void * csound, int size );
+extern "C" void * csoundCalloc( void * csound, int num, int size );
+extern "C" void * csoundRealloc( void * csound, void * ptr, int size );
+extern "C" void csoundFree( void * csound, void * ptr );
+
+\ Plugin and Opcode Management
+extern "C" int csoundNewOpcodeList( void * csound, void * opcodeList );
+extern "C" void csoundDisposeOpcodeList( void * csound, void * opcodeList );
+extern "C" int csoundAppendOpcode( void * csound, void * opname, int dsblksiz, int flags, 
+                                   void * outypes, void * intypes, void * iopfunc, 
+                                   void * kopfunc, void * aopfunc );
+
+\ Utilities
+extern "C" int csoundRunUtility( void * csound, void * name, int argc, void * argv );
+extern "C" void * csoundListUtilities( void * csound );
+extern "C" void csoundDeleteUtilityList( void * csound, void * lst );
+
+\ Advanced Score Handling
+extern "C" void csoundInputMessage( void * csound, void * message );
+extern "C" void csoundInputMessageAsync( void * csound, void * message );
+extern "C" void csoundScoreEventAsync( void * csound, int type, void * pfields, int count );
+extern "C" void csoundScoreEventAbsolute( void * csound, int type, void * pfields, int count, double time );
+
+\ Library and Module Info
+extern "C" void * csoundGetEnv( void * csound, void * name );
+extern "C" int csoundSetGlobalEnv( void * name, void * value );
+extern "C" void * csoundCreateGlobalVariable( void * csound, void * name, int size );
+extern "C" void * csoundQueryGlobalVariable( void * csound, void * name );
+extern "C" void * csoundQueryGlobalVariableNoCheck( void * csound, void * name );
+extern "C" int csoundDestroyGlobalVariable( void * csound, void * name );

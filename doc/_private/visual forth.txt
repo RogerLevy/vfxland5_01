@@ -1,0 +1,123 @@
+- code formatting
+- UIs
+- forms
+- data
+- micro-widgets as code
+- elements backed by files
+- powerful scrolling and navigation
+
+
+window
+	"bigger on the inside"
+
+
+
+cabinet
+	toolbox
+		pluckers
+			element generator
+			graphic selector / dragger
+		tools
+			table generator
+			
+
+testing harness
+
+
+definition
+	name
+	stack diagram
+	body
+	
+
+
+codebase
+
+
+rectangle
+	probably best to start here. 
+		create (with "rectangle tool")
+		move
+		resize
+		delete
+		duplicate
+
+table
+binary
+label
+string
+number
+textbox
+slider
+button
+
+pixel editor
+tilemap editor
+
+
+
+two modes
+	user
+		some things are movable/resizable/duplicated/deleted (this is how they are "used")
+		some things are "usables"
+			inputs and other value widgets
+			buttons
+			pixel editor
+			selectors / pluckers
+		right-click behavior is also class-defined
+	designer
+		usables can now be moved/resized
+		right-clicking opens an editing context menu
+		a few things are locked and can't be changed within the UI
+			(they are defined solely in code)
+
+
+i wonder if i could make money from this project ...
+
+
+
+storage
+	built-in classes
+		for example "word" ("token"?), or "number"
+	saving
+		analyze the tree
+			tokenize non-built-in classes
+			store them at the beginning of the file
+				(this is actually mostly to let us load any needed scripts before doing anything, but it also keeps file size down)
+			if we run out of tokens (255) write additional class names in full
+			token 0 means end of list
+		write the tree recursively
+			token / byte-counted class name
+			body
+				class-defined
+					numbers are stored in binary
+					strings & arrays are stored as chunks (cell count + data)
+
+code editor
+	user mode
+		click to edit words
+		drag words around
+		shift-click to select
+		shift-drag to select multiple?
+		right-click for options
+	designer mode
+		click to select
+		resize elements
+
+
+you can "decorate" your code by locking it and attaching stuff to the container
+	if you put for example a bitmap in your code it will be inserted as an executable object, returning its ID
+		at runtime.
+
+
+
+
+"number" variants
+	keyboard entry
+	dropdown selection
+	slider
+	pot
+
+
+multi-edit
+	select multiple and ...

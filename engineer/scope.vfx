@@ -1,0 +1,66 @@
+\ ------------------------------------------------------------------------------
+\ Scope
+\  Per-file public/private words support
+\  Also provides search order stack and stack imbalance checking after include
+\ ------------------------------------------------------------------------------
+
+\ Public/private
+create wl$ 32 allot
+variable public-xt  ' forth public-xt !
+
+: wlname
+    CurrSourceName -path -ext wl$ place
+    wl$ s" /" $+ count ;
+
+: CurrWordlist wl$ count search-context if >body @ else 0 then ;
+: scope ( - )
+    only forth definitions
+    s" vocabulary " >pad wl$ count $+ count evaluate
+    does> only forth definitions also @ context ! ;
+: ?wordlist ( a n - wl )
+    wl$ place
+    CurrWordlist ?dup if exit then
+    scope CurrWordlist ;
+: $private ( a n - )
+    only forth ?wordlist +order definitions ;
+: private ( - )
+    wlname $private ;
+: public ( - )
+    only public-xt @ execute definitions wlname ?wordlist +order ;
+: || private 0 parse evaluate public ; immediate
+
+\ Search order stack
+: pagealign ( - )  here $ff and 256 swap - allot ;
+: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
+aligned-page search-order-stack
+variable sosp   search-order-stack sosp ! \ object stack pointer
+: sos-push ( ? - ) sosp @ !  4 sosp c+! ;
+: sos-pop ( - ? ) -4 sosp c+!  sosp @ @ ;
+: sos-pushes ( ... n - ) dup >r for sos-push loop r> sos-push ;
+: sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
+: push-order ( - ) get-order sos-pushes get-current sos-push ;
+: pop-order ( - ) sos-pop set-current sos-pops set-order ;
+
+\ Importing words from other files
+: borrow ( - <vocabulary> <word> )
+    push-order private
+    ' >body @ +order
+    bl parse 2dup 
+    s" synonym " >pad -rot $+ s"  " $+ -rot $+ count evaluate
+    pop-order ;
+
+\ Extend include words to preserve the search order
+: preserve-order ( a:file len:file xt - )
+    push-order
+    only forth definitions
+    execute
+    pop-order ;
+: include getPathSpec ['] included preserve-order ;
+: included ['] included preserve-order ;
+: require getPathSpec ['] required preserve-order ;
+: required ['] required preserve-order ;
+: ?included  2dup fileExist? if included else 2drop then ;
+: ?required  2dup fileExist? if required else 2drop then ;
+
+
+only forth definitions

@@ -1,0 +1,312 @@
+((
+
+[ ] IMPORT
+[ ] IMPORT-DIR
+
+SYNC
+    go through all totem classes, loading totems from default directories
+    according to their extension.  can be overriden by setting DISCOVER-XT
+    of any totem class.
+
+:: _intake 
+    load totem at discovery
+    first load anything essential into the dictionary
+    then optionally call LOAD to load more external resources, or defer for later
+    INTAKE default: deserialize self
+
+:: _keep
+    save relevant data to disk - any/all of the following:
+        1. serialize self
+        2. serialize some other objects
+        3. save other data (such as bitmaps)
+    COMMIT default: serialize self
+
+))
+
+trait: _totem
+
+    prop existed
+    \ prop changed
+    256 nprop srcpath$ <cstring         \ cstring: main file path
+
+    4 nstatic extension$                \ cstring: main file extension
+    /list nstatic instances             \ nib2 list, track instances
+    static on-discovery-xt              \ ( path len class - ) 
+    static post-empty-instances-xt      \ ( class - )
+    32 nstatic default-dir$             \ Where +TOTEM locates assets by default 
+    static format                       \ Totem file format version (not used by all totems!)
+
+    :: load ( - ) ;                     \ Load/create external resources.  optional.
+    :: unload ( - ) ;                   \ Free external resources.  optional.
+    :: _intake ( - ) ;                   \ Load from filesystem.
+    :: _keep ( - ) ;                     \ Save to disk.
+    
+trait;
+
+_totem :apply ( class - )
+    {: class0 :}
+    class0 reopened? not if
+        \ new totem classes get their own blank list
+        0 class0 -> instances list-count! 
+    then ;
+
+: intake ( totem - ) 
+    dup >r _intake   r> -> existed on ;
+
+\ =============================================================================
+\ Utilities
+\ =============================================================================
+
+: new? -> existed @ not ;
+: srcpath! ( path len totem - ) [[ >lowercase srcpath$ place ]] ;
+: find-totem ( a len - totem|0 )
+    -path >pad find if >body dup _totem is? and else drop 0 then ;
+: correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
+: ?toolong  udup > abort" Extension must be 3 chars or less." ;
+: format: ( <ver> - ) bl parse evaluate classifier -> format ! ;
+: extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
+: default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
+: default-dir@ ( class - a len ) -> default-dir$ count ;
+
+\ =============================================================================
+\ Materialization
+\ =============================================================================
+
+: materialize ( path len class - totem ) ( - totem )
+	\ ensure totem is in dictionary.
+    \ takes filename or full path.
+	\ if we create the totem word, set its srcpath$ to absolute path
+    \ if word already existed, set EXISTED flag
+    {: path len class0 :}
+    path len find-totem ?dup 
+    if 
+        dup -> existed on 
+    else 
+        class0 path len -path 
+        \ ." Materializing " 2dup type cr
+        $object
+        [[ 
+            path len >abspath me srcpath!
+        me ]]
+        dup class0 -> instances add-to
+    then ;
+
+|| : @default-dir
+    my-name
+    cla @ default-dir@ >abspath f" %s/%s" me srcpath! ;
+
+: +totem ( class <name> - totem ) ( - totem )
+    \ usage: +totem <name> ...
+    bl parse   rot materialize [[ @default-dir   ( changed on )   me ]] ;
+
+: manifest ( path len class - totem )
+    \ materialize (create/find) and if created, intake (load).
+    \ accepts either names or paths.
+    \ if a name is given, the class's default path becomes the totem's dir path.
+    \ use this to load dependencies.
+    \ example: world totem that loads tilemaps and tilesets
+    {: path len class0 :}
+    path len file-exists? not if
+        path len
+        class0 default-dir@ f" %s/%s" to len to path
+    then
+
+    path len class0 materialize dup new? if 
+        dup intake 
+    then ;
+
+\ =============================================================================
+\ I/O
+\ =============================================================================
+
+: reload ( totem - )
+    dup unload intake ;
+
+: reload-instances ( class - )
+    {: class0 :}
+    class0 body> >name count f" Reloading %s totems..." type cr
+    class0 -> instances list-count for
+        @next reload
+    loop drop ;
+
+|| 0 value class0
+|| : (discover) ( fn len - )
+    >lowercase
+
+    \ execute on-discovery override if any
+    class0 -> on-discovery-xt @ ?dup if
+        \ >r 2dup type cr r>
+        class0 swap ( fn len class xt ) execute
+        exit
+    then
+
+    \ check extension
+    class0 -> extension$ @ if
+        2dup class0 correct-ext? not if
+            2drop exit 
+        then 
+    then
+
+    2dup -path type cr
+    class0 materialize intake ;
+
+: load-dir ( path-a path-len class - )
+    \ (Re-)load all totems in given directory
+    \ Not recursive.
+    \ If class's extension$ is empty, include directories in discovery
+    
+    11 push-attribute
+    dup body> >name count f" Loading %s totems..." type cr
+    pop-attribute
+    
+    to class0   
+
+    2dup dir-exists? not if 
+        >abspath f" Directory not found: %s" type cr
+        exit
+    then
+    
+    ['] (discover) 
+    
+    class0 -> extension$ c@ if
+        each-file
+    else
+        each-file-and-dir 
+    then ;
+
+: load-default-dir ( class - )
+    \ Not recursive.
+    dup default-dir@ rot load-dir ;
+
+: into-me ( class - obj )
+    drop   me ;
+
+: keep ( totem - )
+    as>   
+        \ changed @ -exit   
+        srcpath$ count -file ensure-dir
+        me _keep
+        my-name f" Saved %s" type cr
+        ; \ changed off ;
+
+\ : ?commit ( totem - )
+\     as> changed @ -exit me keep ;
+
+\ : save-totems ( - )
+\     _totem -> dependents list-count for
+\         @next 
+\         dup body> >name count f" Saving %s totems..." type cr
+\         -> instances list-count for
+\             @next commit
+\         loop drop
+\     loop drop ;
+
+\ : sync-totems ( - )
+\     \ (re)load everything; adds undefined totems and updates existing ones
+\     \ (NOTE: currently from default directories only)
+\     \ TODO: update/create intelligently (in default dirs) and support 
+\     \ syncing all instances, even those not in default directories.
+
+\     _totem -> dependents list-count for
+\         @next load-default-dir
+\     loop drop ;
+
+\ : change ( totem - totem )
+\     dup -> changed on ;
+
+: unload-instances ( class - )
+    {: class0 :}
+    class0 body> >name count f" Unloading %s totems..." type cr
+    class0 -> instances list-count for
+        @next unload
+    loop drop ;
+
+\ : empty-instances ( class - )
+\     {: class0 :}
+\     class0 unload-instances
+\     0 swap list-count! 
+\     class0 -> post-empty-instances-xt @ ?dup if
+\         class0 swap execute 
+\     then ;
+
+\ : empty-totems ( - )
+\     _totem -> dependents list-count for
+\         @next 
+\         dup body> >name count f" Unloading %s totems..." type cr
+\         empty-instances
+\     loop drop ;
+
+\ =============================================================================
+\ Serialization utilities
+
+: check-format ( n ver - )
+    over $ff and <> if
+        cla @ >name count f" %s : Unsupported format version %n" -1 -rot .abort
+    else drop then ;
+
+: check-encoding ( n ver - )
+    over <> if
+        24 rshift
+        cla @ >name count f" %s : Unsupported global encoding version %n" -1 -rot .abort
+    else drop then ;
+
+|| : ?totem ( - )
+    me _totem is? not if 
+        s[ me .object s] f" Not a totem: %s" -1 -rot .abort
+    then ;
+
+: binfree ( a - ) cell- free ;
+
+: binfile@ ( fp len - a|0 ) 
+    ['] file@ catch ?dup if 
+        .throw 
+        2drop 0 exit
+    then
+    ( a len ) drop
+    @+ MAGIC_BIN ['] check-encoding catch ?dup if
+        .throw 
+        ( a n n ) drop binfree 0 exit 
+    then ;
+
+: bin[ ( - ) data[ MAGIC_BIN , ;
+: bin] ( - a len ) data] ;
+
+: des> ( a - ) ( a - a' )
+    ?totem
+    r> {: xt | a :}
+    srcpath$ c@ 0= if
+        s" Totem has no source path, skipping..." type cr
+        exit
+    then
+    srcpath$ count binfile@ ?dup 0= if
+        ."  Skipping..." cr
+        exit
+    then
+    to a
+    a 
+    @+ format @ ['] check-format catch ?dup if
+        .throw ."  Skipping..." cr
+        a binfree throw exit
+    then
+    xt catch nip
+    a binfree throw
+    throw ;
+
+: ser> ( - ) ( - )
+    ?totem
+    bin[
+    format @ ,
+    r> catch 
+    bin] 
+    rot throw
+    srcpath$ count write ;
+
+\ =============================================================================
+\ Defaults
+
+_totem :: _intake ( - )
+    des> ['] into-me desbin+ ;
+
+_totem :: _keep ( - )
+    ser> me serbin, ;
+

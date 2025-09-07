@@ -1,0 +1,4 @@
+cd csound
+include csound6.vfx
+cd ../asu
+include asu.vfx

@@ -1,0 +1,30 @@
+\ Test protocol propagation with class overrides
+
+trait: _printable
+    _printable :: print ( - ) ." Default print from trait v1" cr ;
+trait;
+
+class: _document
+    cell field title
+class;
+
+_document works-with _printable
+_document :: print ( - ) ." Custom print from class" cr ;
+
+\ Debug: check what's stored as origin
+cr ." Debug: Origin after class implementation:"
+' print >body -> offset @ _document + >origin @ .name
+
+_document make constant test-doc
+cr ." Before trait redefinition:"
+test-doc print   \ Should show "Custom print from class"
+
+\ Redefine the trait - this should NOT overwrite the class implementation
+trait: _printable
+    _printable :: print ( - ) ." Default print from trait v2" cr ;
+trait;
+
+cr ." After trait redefinition:"
+test-doc print   \ Should still show "Custom print from class" - NOT the new trait version
+
+cr ." Test passed if class implementation was preserved across trait redefinition"

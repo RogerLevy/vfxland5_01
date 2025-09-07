@@ -1,0 +1,63 @@
+library: textmode_renderer.dll  
+extern "C" bool draw_textmode_buffers( void * font, void * chars,
+    void * fg_colors, void * bg_colors, int cols, int rows, float x, float y, float line_spacing );  \ "
+
+8192 ?constant /char-buf
+create char-buf  /char-buf allot&erase
+create fg-buf  /char-buf cells allot&erase
+create bg-buf  /char-buf cells allot&erase
+
+: draw-textmode ( #cols #rows f: x f: y - )
+    2>r builtin-font char-buf fg-buf bg-buf 2r> 4e draw_textmode_buffers
+        abort" draw_textmode_buffers err" ;
+
+\ Rendering a multiline string
+\ ----------------------------
+
+|| 0 value >row  \ row offset
+|| 0 value >cbuf \ char-buf offset
+|| 0 value c     \ char
+|| 0 value fgc   
+|| 0 value bgc
+|| 0 value skip
+
+|| : write ( n - )
+    char-buf >cbuf + c!  
+    fgc fg-buf >cbuf cells + !
+    bgc bg-buf >cbuf cells + !
+    1 +to >cbuf ;
+
+|| : >rgb ( n - n )
+    cells vga13h + @ 8 lshift $ff or ;
+
+|| : @attr
+    attr @ dup $ff and >rgb to fgc
+    8 rshift $ff and >rgb to bgc ;
+
+: print-colorful ( a len - )
+    {: | #rows :}
+    
+    char-buf /char-buf erase
+    fg-buf /char-buf cells erase
+    bg-buf /char-buf cells erase
+    0 dup to >row to >cbuf
+    15 >rgb to fgc
+    0 >rgb to bgc
+    1 to #rows
+
+    bounds ?do
+        i c@ to c
+        1 to skip 
+        c case
+            10 of  monw 8 / 2 / +to >row  >row to >cbuf  1 +to #rows endof
+            ATTR_PUSH of  save-attribute  endof
+            ATTR_POP of  restore-attribute  @attr endof
+            ATTR_FG of  2 to skip  i 1 + c@ dup >rgb to fgc
+                        attr @ $ff00 and or attr !  endof
+            ATTR_BG of  2 to skip  i 1 + c@ dup >rgb to bgc  8 lshift
+                        attr @ $ff and or attr !  endof
+            write
+        end-case
+    skip +loop 
+
+    monw 8 / 2 / ` #rows ` at@f draw-textmode ;

@@ -1,0 +1,55 @@
+\ =============================================================================
+\ Utilities
+\ =============================================================================
+
+: 4>.  2>. 2>r 2>. 2r> ;
+: 2?  2@ swap . . ;
+: cput ( n - ) dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
+: batch>  1 al_hold_bitmap_drawing r> catch 0 al_hold_bitmap_drawing throw ;
+: h|  $1000000 or ;
+: v|  $2000000 or ;
+: hv|  h| v| ;
+: named? ( xt $ - f ) >r >name count r> count >uppercase compare 0= ; 
+: bmpw bmpwh drop ;
+: bmph bmpwh nip ;
+
+\ =============================================================================
+\ Trigonometry
+\ =============================================================================
+
+: fscale ( f: x y s - f: x y ) fswap fover f* frot frot f* fswap ;
+: uvec ( deg. - x. y. ) p>f deg>rad fdup fcos f>p fsin f>p ;  
+: fuvec ( f: deg - f: x f: y ) deg>rad fdup fcos fswap fsin ;  
+: vec ( deg. len. - x. y. ) p>f p>f fuvec frot fscale f>p f>p swap ;
+: ang ( x. y. - deg. ) p>f p>f fatan2 rad>deg 360e f+ 360e fmod f>p ;
+: hypot ( x. y. - n. ) p>f fdup f* p>f fdup f* f+ fsqrt f>p ;
+: dist ( x. y. x. y. - n. ) 2- hypot ;   
+
+\ =============================================================================
+\ Other math helpers
+\ =============================================================================
+
+|| 0e fvalue t
+: alerp ( F: angle1 angle2 t -- result )
+  to t
+  FOVER F-                                \ diff = angle2 - angle1  
+  FDUP 180.0e F> IF 360.0e F- THEN        \ wrap to [-180,180]
+  FDUP -180.0e F< IF 360.0e F+ THEN 
+  t F* F+                                 \ angle1 + t*diff
+  FDUP 0.0e F< IF 360.0e F+ THEN          \ wrap to [0,360)
+  FDUP 360.0e F>= IF 360.0e F- THEN ;
+
+\ =============================================================================
+\ Streaming audio
+\ =============================================================================
+
+: bgm ( - <name> <filename> ) ( - )
+    create bl parse $, does> count streamL ;
+: audioclip ( - <name> <filename> ) ( - )
+    create bl parse $, does> count stream ;
+
+\ =============================================================================
+\ Blank the screen
+\ =============================================================================
+
+: blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;

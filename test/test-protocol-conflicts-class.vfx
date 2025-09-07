@@ -1,0 +1,17 @@
+cr cr ." Test 2: Class overriding trait protocol (should succeed)..."
+
+trait: _printable
+    _printable :: print ( - ) ." Default print from trait" cr ;
+trait;
+
+class: _document
+    cell field title
+class;
+
+_document works-with _printable
+_document :: print ( - ) ." Custom print from class" cr ;
+
+_document make constant test-doc
+test-doc print   \ Should show "Custom print from class"
+
+cr ." Test 2 passed - class successfully overrode trait protocol"

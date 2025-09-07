@@ -1,0 +1,17 @@
+empty 
+include ../supershow/supershow.vfx
+include ../supershow/tilemap2.vfx
+
+init-bitmaps
+
+\ s" dat/gfx/bg.ts" tileset manifest drop
+init-tilesets
+bg.ts inspect
+
+\ bg.png 20 20 +tileset bg.ts
+
+\\
+
+bg.ts -> srcpath$ count file@ dump
+
+bg.ts inspect

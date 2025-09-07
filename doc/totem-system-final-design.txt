@@ -1,0 +1,228 @@
+Totem System Final Design
+=========================
+
+Overview
+--------
+The totem system provides a Smalltalk-like transparent persistence model where totems
+(tilesets, scenes, animations, etc.) exist as live objects during development and 
+can be committed to disk when ready. At startup, totems are reconstructed from their
+persisted state.
+
+Core Concepts
+------------
+- Totems are live objects in a working set during development
+- Changes accumulate in memory until explicitly committed
+- Startup reconstructs the working set from persisted files
+- Each totem type has its own directory (e.g., dat/tiles/, dat/scn/)
+- Totem words provide direct access to totem objects
+
+Totem Protocol (Methods)
+-----------------------
+Each totem class implements these methods:
+
+    :: cleanup ( - )        
+        Free external resources (safe to call on empty totems)
+        
+    :: setup ( - )          
+        Create/recreate external resources using stored parameters
+        
+    :: gen-path ( <name> - path )
+        Generate file path from parsed name (class-specific directory)
+        
+    :: save-params ( - )    
+        Serialize to file (automated via serialization system)
+        
+    :: load-params ( - )    
+        Deserialize from file (automated via serialization system)
+        
+    :: post-load ( - )      
+        Optional hook for custom logic after deserialization
+
+Core Operations
+--------------
+1. Development time: Create or update totems via >totem words
+2. Startup time: Load totems from disk via load-totem
+3. Commit time: Persist dirty totems via commit-totems
+
+Parameter Handling Problem
+-------------------------
+Different totem types require different parameters:
+- Tileset: bitmap-id, tile-width, tile-height
+- Scene: (no parameters)
+- Animation: frame-count, duration
+
+This creates a challenge for the apply-params method which needs to handle
+variable numbers of parameters while maintaining consistent method signatures.
+
+
+Option 1: Allow Variable Parameters
+===================================
+
+Design:
+    :: apply-params ( ...params - )
+        Each class consumes the appropriate number of parameters
+
+Implementation:
+    tileset :: apply-params ( bmpid w h - )
+        h ! w ! bmp ! ;
+    
+    scene :: apply-params ( - )
+        ;  \ No params
+    
+    : >totem ( ...params class <name> -- )
+        [core logic]
+        apply-params
+        [cleanup/setup/mark-dirty]
+
+Usage:
+    mybmp.png 16 16 tileset >totem mybmp.ts
+    scene >totem room1.scn
+
+Pros:
+- Simple and direct
+- Follows existing VFX Forth patterns (EXECUTE, N>R, etc.)
+- No extra complexity
+
+Cons:
+- Violates fixed-parameter principle for methods
+- No runtime validation of parameter count
+- Stack diagram is ambiguous: ( ... - )
+
+
+Option 2: Add Parameter Count
+=============================
+
+Design:
+    :: apply-params ( ...params n - )
+        Each class validates and consumes n parameters
+
+Implementation:
+    tileset :: apply-params ( bmpid w h 3 - )
+        drop  \ Drop count after validation
+        h ! w ! bmp ! ;
+    
+    scene :: apply-params ( 0 - )
+        drop ;  \ No params
+    
+    : >totem ( ...params n class <name> - )
+        [core logic]
+        apply-params
+        [cleanup/setup/mark-dirty]
+
+Usage:
+    mybmp.png 16 16  3 tileset >totem mybmp.ts
+    0 scene >totem room1.scn
+    64 0.5  2 animation >totem walk.anim
+
+Pros:
+- Explicit parameter count enables validation
+- Self-documenting interface
+- Stack diagram is clear: ( ...n-items n - )
+
+Cons:
+- Extra parameter to specify
+- Still technically variable parameters
+- Slight usage complexity
+
+
+Option 3: Split into ?totem and manifest
+========================================
+
+Design:
+    Separate totem acquisition from property setting and finalization
+
+Implementation:
+    : ?totem ( class <name> -- existed? obj )
+        parse-name 2dup find-totem-word if
+            2drop execute @ true swap    \ Get existing
+        else
+            over instantiate              \ Create new
+            dup create-totem-word
+            dup gen-path over >path !
+            false swap
+        then ;
+    
+    : manifest ( existed? obj -- )
+        swap if dup cleanup then         \ Cleanup if existed
+        setup mark-dirty ;                \ Setup and mark dirty
+    
+    : >tileset ( bmpid w h <name> -- )
+        tileset ?totem
+        [[ h ! w ! bmp ! me ]]    \ Direct field access
+        manifest ;
+    
+    : >scene ( <name> -- )
+        scene ?totem
+        drop                             \ No fields to set
+        manifest ;
+
+Usage:
+    mybmp.png 16 16 >tileset mybmp.ts
+    >scene room1.scn
+
+Pros:
+- No variable parameters in methods
+- Clean separation of concerns
+- Direct field access is idiomatic Forth
+- Each totem type word is self-contained
+- Pattern reads naturally: "get totem, set fields, manifest"
+
+Cons:
+- Requires two words (?totem/manifest) instead of one
+- Slightly more complex implementation
+- Pattern must be followed consistently
+
+
+Recommendation
+-------------
+Option 3 (?totem/manifest split) provides the cleanest design:
+- Maintains method signature consistency
+- Separates concerns clearly
+- Provides maximum flexibility
+- Follows Forth idioms (direct field access)
+- Makes the pattern explicit and readable
+
+The slight increase in implementation complexity is offset by the clarity
+and maintainability of the resulting code.
+
+
+Example Complete Implementation (Option 3)
+==========================================
+
+class: tileset
+    is-a totem
+    var bmp  var w  var h  var tiles
+    
+    :: cleanup ( - )
+        tiles @ ?dup if destroy then ;
+        
+    :: setup ( - )
+        bmp @ w @ h @ slice-tiles ;
+        
+    :: gen-path ( <name> - path )
+    bl parse f" dat/tiles/%s" ;
+        
+    \ save-params/load-params handled by serialization
+class;
+
+: >tileset ( bmpid w h <name> -- )
+    tileset ?totem
+    [[ h ! w ! bmp ! me ]]
+    manifest ;
+
+: load-totem ( path class -- )
+    \ Startup/load time
+    materialize >r           \ Create totem
+    r@ load-params          \ Read params from file
+    r> setup ;              \ Create resources (no cleanup needed)
+
+: load-tileset ( path -- )
+    tileset load-totem ;
+
+: commit-totem ( totem -- )
+    \ Commit time
+    dup save-params
+    clear-dirty ;
+
+: commit-totems
+    ['] commit-etotem all-dirty-totems each ;

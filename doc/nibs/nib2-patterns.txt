@@ -1,0 +1,28 @@
+"and if some properties do need a default value for the default protocol logic to work correctly, trait
+components could supply initialization functions for classes to call if and when it makes sense to"
+
+And I responded with this pattern:
+
+trait: physics%
+    property mass
+    property friction
+
+    protocol: init-physics
+        1.0 mass !
+        0.9 friction ! ;
+trait;
+
+class: actor%
+    is-a physics%
+    property x
+    property y
+class;
+
+\ In class initialization or defaults setup:
+defaults [[
+    init-physics  \ Call trait's initialization
+    0 x ! 0 y !  \ Set class-specific defaults
+]]
+
+This pattern allows traits to provide initialization protocols that classes can optionally call during their
+setup phase, respecting the separation between trait interfaces and class implementations.

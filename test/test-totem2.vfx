@@ -1,0 +1,63 @@
+empty
+
+: <totem ( ext len defpath len - )
+    _totem classifier -1 apply-trait 
+    template [[ default-dir$ place extension$ place ]] ;
+
+
+class: tileset   s" ts" s" dat/gfx" <totem
+
+    prop tw <save
+    prop th <save
+
+class;
+
+: +tileset ( tw th <name> - )
+    tileset +totem [[ tw 2!   me ]] commit ;
+
+class: world   s" "   s" dat/wld" <totem
+
+    prop ts <ref tileset
+    32 nprop ts-name$ <save <cstring
+    prop _room# <save <int 
+
+    :: _intake
+        srcpath$ count me deser-file
+        ts-name$ count tileset manifest ts ! ;
+
+class;
+
+: load-wld-file ( path len class - )
+    {: path len class0 :} 
+    path len s" ." instring not if
+        path len slashes '\' ending
+        2dup 
+        class0 -> default-dir$ count
+        f" %s/%s/%s.wld" 
+        class0 materialize reload
+    then ;
+
+' load-wld-file world -> on-discovery-xt !
+
+: +world ( <name> - )
+    bl parse 
+    2dup -ext
+    world -> default-dir$ count 
+    f" %s/%s/%s" world materialize commit ;
+
+((
+16 16 +tileset pipes.ts
+16 16 +tileset terrain.ts
+
++world houses.wld
++world pipes1.wld
+
+houses.wld [[ 
+    s" terrain.ts" ts-name$ place 
+    123 _room# !
+]]
+houses.wld keep
+))
+
+sync
+houses.wld inspect

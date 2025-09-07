@@ -1,0 +1,7 @@
+class: TEST
+    ACTOR derive
+class;
+
+TEST :: init ( - )
+    act> ;
+

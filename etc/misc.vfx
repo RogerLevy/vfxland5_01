@@ -1,0 +1,15 @@
+
+: keep-in ( x y w h - )
+    4>. | bh bw by bx |
+    x 2@ bx by 2+ 0 0 320. 240. bw bh 2- 2clamp bx by 2- x 2! ;
+
+
+variable tsp \ index
+: ttop  tsp @ temp ;
+: >temp  ( a - )
+    ttop /actor move
+    tsp @ 1 + #temps 1 - and tsp ! ;
+: <temp  ( a - )
+    tsp @ 1 - #temps 1 - and tsp !
+    ttop swap /actor move
+    ttop unload ;
