@@ -3,7 +3,6 @@
 \ ------------------------------------------------------------------------------
 
 private
-include synonyms.vfx
 
 \ Paint Mode Constants
 0 constant mode-normal
@@ -111,11 +110,11 @@ variable mbuttons
 \ : *tileset ;
 
 \ Widgets
-include toolbox.vfx
-include canvas.vfx
-include info.vfx
-include toolbar.vfx
-include palette.vfx
+include %idir%\toolbox.vfx
+include %idir%\canvas.vfx
+include %idir%\info.vfx
+include %idir%\toolbar.vfx
+include %idir%\palette.vfx
 
 \ Figure
 root [[
