@@ -964,7 +964,7 @@ aka instance make  \ Backward compatibility
         loop drop 
     ]] ;
 
-: inspect ( object - )
+: o. ( object - )
     dup .object cr .props ;
 
 \ ==============================================================================

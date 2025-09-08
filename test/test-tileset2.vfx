@@ -6,7 +6,7 @@ init-bitmaps
 
 \ s" dat/gfx/bg.ts" tileset manifest drop
 init-tilesets
-bg.ts inspect
+bg.ts o.
 
 \ bg.png 20 20 +tileset bg.ts
 
@@ -14,4 +14,4 @@ bg.ts inspect
 
 bg.ts -> srcpath$ count file@ dump
 
-bg.ts inspect
+bg.ts o.

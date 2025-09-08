@@ -1,7 +1,5 @@
 \ parent lowest highest next prev
 
-: u+  rot + swap ;
-
 : dlremove  ( node -- )
     dup -> parent @ dup 0= if  2drop  exit  then
     locals| p n |
