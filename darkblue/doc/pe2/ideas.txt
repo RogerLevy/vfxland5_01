@@ -1,0 +1,62 @@
+
+## Commands
+
+- [ ] select a range by clicking and dragging near curve and/or with the keyboard for precision
+- [ ] thin ( - ) - remove all duplicates (removes pauses)
+- [ ] speed ( start. end. - ) - recalculate selection's velocity (drawing an imaginary curved line through the existing selected points as reference) given in pixels per frame
+- [ ] time ( n - ) - make selection last given frames (similar to `speed`)
+- [ ] linear ( - ) - generate linear path between first and last point, replacing the selected points but maintaining the count
+- [ ] blur ( - ) - progressively smooth selection
+- [ ] return ( n - ) - generate a linear path lasting given frames, to the beginning of the path
+- [ ] back ( - ) - move selection back by selection's length, cropping to beginning
+- [ ] fwd ( - ) - move selection forward by selection's length, cropping to end
+- [ ] rate ( n - ) - duplicate every point in selection n times, creating low-framerate effect
+
+
+## General Functionality
+
+- switch between paths in memory
+- cut/copy/paste range
+- insert markers (a separate list)
+- save/load
+- live update in game
+- record modes: replace all, replace selection, append, insert after selection
+
+## Data Lifecycle
+
+path asset (Forth)
+    looping: true
+    points[
+        0.0 0.0
+        1.0 1.0
+        ...
+    points]
+    markers[
+        marker-name1 0
+        marker-name2 30
+    markers]
+
+class: path%
+    var looping
+    var point-array
+    var marker-dict
+class;
+
+paths location = paths\
+
+load-paths ( - )
+    creates path% objects named like <name>.path
+    
+save-path ( path addr:name len:name - )
+    save path to (no filepath or ext)
+    creates a copy if name doesn't match original
+    
+create-path ( addr:name len:name - )
+    creates a path object file and named object in the dictionary (<name>.path)
+    
+load-path ( addr:name len:name - path )
+    loads a path object from filespec (no filepath or ext) and returns it
+    replaces path object if it exists in the dictionary
+    - sets looping var
+    - creates point array
+    - creates marker dictionary

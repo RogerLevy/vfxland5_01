@@ -1,0 +1,343 @@
+\ words by Claude AI
+
+fast[ \ disable validations for speed
+
+: collision-force ( src-obj dest-obj -- x-force. y-force. )
+    {: obj2 obj1 | f: dx f: dy f: distance f: overlap f: force-magnitude
+                  f: obj1-radius f: obj2-radius f: total-radius f: obj2-speed :}
+
+    \ Get object radii
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
+    obj1-radius obj2-radius f+ to total-radius
+
+    \ Calculate distance between objects
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ Check if collision occurred
+    distance total-radius f>= distance 0e f= or if
+        0. 0. exit
+    then
+
+    \ Calculate overlap and obj2's speed
+    total-radius distance f- to overlap
+    obj2 -> vx 2@ obj2 -> vy 2@ 2- 2p>f
+    fdup f* fswap fdup f* f+ fsqrt to obj2-speed
+
+    \ Calculate force based on overlap and obj2's speed
+    \ overlap obj2-speed f* obj2-radius f* 100e f* to force-magnitude
+
+    \ Normalize direction and apply force (from obj2 to obj1)
+    dx distance f/ f>p \ force-magnitude f*
+    dy distance f/ f>p \ force-magnitude f*
+    
+;
+
+: collision-force2 ( src-obj dest-obj -- x-force. y-force. )
+    \ Accounts for velocity of both
+    {: obj2 obj1 | f: dx f: dy f: distance f: overlap f: force-magnitude
+                  f: obj1-radius f: obj2-radius f: total-radius
+                  f: obj2-vx f: obj2-vy f: obj2-speed :}
+
+    \ Get object radii
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
+    obj1-radius obj2-radius f+ to total-radius
+
+    \ Calculate distance between objects
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ Check if collision occurred
+    distance total-radius f>= distance 0e f= or if
+        0. 0. exit
+    then
+
+    \ Get obj2's velocity components
+    obj2 -> vx 2@ 2p>f to obj2-vy to obj2-vx
+    obj2-vx obj2-vx f* obj2-vy obj2-vy f* f+ fsqrt to obj2-speed
+
+    \ Calculate overlap and base force
+    \ total-radius distance f- to overlap
+    \ overlap obj2-speed f* obj2-radius f* 100e f* to force-magnitude
+
+    \ Use obj2's velocity direction as the knockback direction
+    obj2-speed 0e f= if
+        \ If obj2 has no velocity, use position difference
+        dy distance f/ \ force-magnitude f*
+        dx distance f/ \ force-magnitude f*
+    else
+        \ Use obj2's velocity direction
+        obj2-vx obj2-speed f/ \ force-magnitude f*
+        obj2-vy obj2-speed f/ \ force-magnitude f*
+    then
+    2f>p
+;
+
+: collision-force3 ( src-obj dest-obj -- x-force. y-force. )
+    \ Uses proper physics
+    {: obj2 obj1 | f: dx f: dy f: distance
+                  f: obj1-radius f: obj2-radius f: total-radius
+                  f: obj1-vx f: obj1-vy f: obj2-vx f: obj2-vy
+                  f: rel-vx f: rel-vy f: normal-x f: normal-y
+                  f: relative-speed-normal f: impulse-magnitude
+                  f: obj1-mass f: obj2-mass f: reduced-mass
+                  f: acceleration :}
+
+    \ Get object properties
+    obj1 -> r @ p>f to obj1-radius
+    obj2 -> r @ p>f to obj2-radius
+    
+    \ cr ." obj1-radius: " obj1-radius f.
+    \ cr ." obj2-radius: " obj2-radius f.
+    
+    obj1-radius obj2-radius f+ to total-radius
+
+    \ Calculate collision normal (from obj2 to obj1)
+    obj1 -> x 2@ obj2 -> x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ cr ." distance: " distance f. ." total-radius: " total-radius f.
+
+    \ Check if collision occurred
+    distance total-radius f>= distance 0e f= or if
+        \ cr ." No collision detected"
+        0. 0. exit
+    then
+
+    dx distance f/ to normal-x
+    dy distance f/ to normal-y
+
+    \ Get velocities
+    obj1 -> vx 2@ 2p>f to obj1-vy to obj1-vx
+    obj2 -> vx 2@ 2p>f to obj2-vy to obj2-vx
+
+    \ cr ." obj1 vel: " obj1-vx f. obj1-vy f.
+    \ cr ." obj2 vel: " obj2-vx f. obj2-vy f.
+
+    \ Calculate relative velocity (obj1 - obj2)
+    obj1-vx obj2-vx f- to rel-vx
+    obj1-vy obj2-vy f- to rel-vy
+
+    \ cr ." rel vel: " rel-vx f. rel-vy f.
+
+    \ Calculate relative velocity along collision normal
+    rel-vx normal-x f* rel-vy normal-y f* f+ to relative-speed-normal
+
+    \ cr ." rel-speed-normal: " relative-speed-normal f.
+
+    \ Use absolute value for collision response - we want to separate overlapping objects
+    relative-speed-normal fabs to relative-speed-normal
+
+    \ Get objects' masses
+    obj1 -> m @ p>f to obj1-mass
+    obj2 -> m @ p>f to obj2-mass
+
+    \ cr ." obj1-mass: " obj1-mass f.
+    \ cr ." obj2-mass: " obj2-mass f.
+
+    \ Calculate reduced mass and impulse
+    obj1-mass obj2-mass f* obj1-mass obj2-mass f+ f/ to reduced-mass
+    reduced-mass relative-speed-normal f* 1.8e f* to impulse-magnitude
+
+    \ cr ." impulse: " impulse-magnitude f.
+
+    \ Apply impulse along normal, scaled by obj1's mass
+    impulse-magnitude obj1-mass f/ to acceleration 
+    normal-x acceleration f*
+    normal-y acceleration f*
+    
+    \ cr ." final force: " fover f. fdup f.
+    
+    2f>p
+;
+
+: near? ( obj obj dist. - f )
+    {: o1 o2 d :} 
+    o1 exists? o2 exists? and not if 0 exit then
+    o1 pos@ o2 pos@ dist d <= ;
+
+: rhit? ( obj obj - f )
+    2dup = if 2drop 0 exit then
+    over exists? over exists? and not if 2drop 0 exit then
+    {: o1 o2 | rd :}
+    o1 -> r @
+    o2 -> r @
+    + to rd
+    o1 pos@ o2 pos@ dist rd <= ;
+
+0 value screen-bounced?
+
+: screen-bounce-force ( obj damping. -- x-force. y-force. )
+    {: obj d | f: obj-x f: obj-y f: obj-vx f: obj-vy f: obj-radius
+              f: fx f: fy f: damping :}
+        
+    \ Get object properties
+    obj -> x 2@ 2p>f to obj-y to obj-x
+    obj -> vx 2@ 2p>f to obj-vy to obj-vx
+    obj -> r @ p>f to obj-radius
+    
+    \ Initialize variables
+    false to screen-bounced?
+    d p>f to damping    
+    0e to fx
+    0e to fy
+    
+    \ Check left edge (x < radius)
+    obj-x obj-radius f< if
+        obj-vx 0e f< if  \ moving left
+            obj-vx -2e f* damping f* to fx  \ reverse + damping
+            true to screen-bounced?
+        then
+    then
+    
+    \ Check right edge (x > gamew - radius)
+    obj-x f-gamew obj-radius f- f> if
+        obj-vx 0e f> if  \ moving right
+            obj-vx -2e f* damping f* to fx  \ reverse + damping
+            true to screen-bounced?
+        then
+    then
+    
+    \ Check top edge (y < radius)
+    obj-y obj-radius f< if
+        obj-vy 0e f< if  \ moving up
+            obj-vy -2e f* damping f* to fy  \ reverse + damping
+            true to screen-bounced?
+        then
+    then
+    
+    \ Check bottom edge (y > gameh - radius)
+    obj-y f-gameh obj-radius f- f> if
+        obj-vy 0e f> if  \ moving down
+            obj-vy -2e f* damping f* to fy  \ reverse + damping
+            true to screen-bounced?
+        then
+    then
+    
+    fx f>p fy f>p
+;
+
+: walk-line ( x y xt - ) ( x y step# - f )
+    {: endx endy xt | dx dy absdx absdy sx sy err x y lastx lasty steps :}
+    endx to dx  endy to dy
+    dx abs to absdx  dy abs to absdy
+    dx 0< if -1 else 1 then to sx
+    dy 0< if -1 else 1 then to sy
+    absdx absdy - to err
+    0 to x  0 to y
+    -9999 to lastx  -9999 to lasty  \ impossible starting position
+    0 to steps
+
+    begin
+        x lastx <> y lasty <> or if  \ new position?
+            x to lastx  y to lasty
+            x y steps xt execute 0= if exit then
+            steps 1+ to steps
+        then
+        x endx = y endy = and if exit then  \ reached target
+        err 2* absdy > if
+            err absdy - to err
+            x sx + to x
+        then
+        err 2* absdx < if
+            err absdx + to err
+            y sy + to y
+        then
+    again ;
+
+: seg-hit? ( enemy-obj laser-x. laser-y. laser-angle. laser-length. laser-width. - f )
+    {: enemy0 lx ly angle length width | 
+       f: ex f: ey f: er f: lx1 f: ly1 f: lx2 f: ly2
+       f: dx f: dy f: t f: closest-x f: closest-y f: distance f: half-width :}
+    
+    \ Check if enemy exists
+    enemy0 exists? not if 0 exit then
+    
+    \ Get enemy properties
+    enemy0 -> x 2@ 2p>f to ey to ex
+    enemy0 -> r @ p>f to er
+    
+    \ Convert laser params to float for calculations  
+    lx p>f to lx1  ly p>f to ly1
+    width p>f 2e f/ to half-width
+    
+    \ Calculate laser endpoints using angle and length
+    angle length vec 2p>f to dy to dx
+    lx1 dx f+ to lx2
+    ly1 dy f+ to ly2
+    
+    \ Vector from start to end of laser
+    lx2 lx1 f- to dx
+    ly2 ly1 f- to dy
+    
+    \ Find closest point on line segment to enemy
+    \ t = dot product of (enemy - start) and (end - start) / length squared
+    ex lx1 f- dx f*  ey ly1 f- dy f*  f+
+    dx dx f* dy dy f* f+  f/  to t
+    
+    \ Clamp t to [0,1] for line segment
+    t 0e f< if 0e to t then
+    t 1e f> if 1e to t then
+    
+    \ Calculate closest point
+    lx1 dx t f* f+ to closest-x
+    ly1 dy t f* f+ to closest-y
+    
+    \ Distance from enemy to closest point on laser
+    ex closest-x f- fdup f*
+    ey closest-y f- fdup f*
+    f+ fsqrt to distance
+    
+    \ Check collision
+    distance half-width er f+ f< ;
+
+: laser-hit?  ( actor beam - f )
+    dup -> en @ 0= if 2drop 0 exit then
+    [[ x 2@ a @ l @ w @ ]] seg-hit? ;
+
+: bubble-constraint-force ( center-obj trapped-obj f: bubble-radius f: damping -- x-force. y-force. )
+    {: center trapped f: bubble-radius f: damping |
+       f: dx f: dy f: distance f: excess f: force-magnitude
+       f: trapped-vx f: trapped-vy f: vel-toward-center
+       f: normal-x f: normal-y :}
+
+    \ Calculate distance from center to trapped object
+    trapped -> x 2@ center -> x 2@ 2- 2p>f to dy to dx
+    dx dx f* dy dy f* f+ fsqrt to distance
+
+    \ If inside bubble, no constraint needed
+    distance
+    bubble-radius
+    trapped -> r @ p>f f-
+    f<= if
+        0. 0. exit
+    then
+
+    \ Calculate how far outside the bubble
+    distance bubble-radius trapped -> r @ p>f f- f- to excess
+
+    \ Get trapped object's velocity
+    trapped -> vx 2@ 2p>f to trapped-vy to trapped-vx
+
+    \ Calculate velocity component toward center
+    distance 0e f= if
+        0e to vel-toward-center
+        1e to normal-x
+        0e to normal-y
+    else
+        dx distance f/ to normal-x
+        dy distance f/ to normal-y
+        trapped-vx normal-x f* trapped-vy normal-y f* f+ fnegate to vel-toward-center
+    then
+
+    \ Force proportional to how far outside + velocity damping
+    excess 0.1e f* vel-toward-center damping f* f+ to force-magnitude
+
+    \ Apply force toward center
+    normal-x force-magnitude f* fnegate
+    normal-y force-magnitude f* fnegate
+    2f>p ;
+
+fast]

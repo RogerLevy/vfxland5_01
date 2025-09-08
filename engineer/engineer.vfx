@@ -565,18 +565,24 @@ borrow nib2/ init-nib
 : turnkey? ( - b )
     home-path$ count nip 0<> ;
 
+also substitutions definitions
+cstring vfxland5
+also forth definitions
 : init-dev ( - )
     \ Development-only initialization
     empty 
     +xrefs
     256 1024 * xref-kb
+    s" %bin%\.." expand vfxland5 place
 ;
+previous
+
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
     debug @ if init-dev then
-    wd home-path$ place
+    wd count home-path$ place
     init-mersenne
     init-allegro
     *display

@@ -1,0 +1,25 @@
+fast[
+
+say-before game GAME
+say-before title TITLE
+
+: valid-actor?
+    dup valid-object? 0<
+    swap actor# 0 #actors within? and ;
+
+crucial test: log-damage ( n actor - n actor res )
+    {: n actor0 | res :}
+    n 0 < if n actor0 0 exit then
+    n 0= if n actor0 -1 exit then  \ 0 is fine, just don't log
+    s[
+        actor0 info
+        n f" received %n damage " type
+        me valid-actor? if
+            ." from " me info
+        then
+    s] log-info
+    n actor0 -1 ;
+
+before damage log-damage
+
+fast]

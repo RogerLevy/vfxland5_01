@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## VFXLand 5 
+## VFXLand 5 (codename "Starling")
 
 - Custom game engine and 2D games written in VFX Forth.
 
@@ -36,11 +36,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Tileset editor (`te/`)
 
 4. **Game Projects** - Individual games that build on the stack:
-   - `darkblue/` - Shoot-em-up with advanced path system
-   - `kevin/` - Adventure platformer
-   - `jamesjam/` - Dialog-driven adventure
-   - `pinky/` - Action platformer
-   - `kvn/` - Precision platformer
+   - Games are developed separately from the engine repository
+   - `darkblue/` - Shoot-em-up with advanced path system (temporarily included as testing grounds for engine refinements)
+   - When engine is stable or game is complete, game changes will be removed from repo history and moved to separate repository
 
 ### Object-Oriented System (NIBS, a.k.a. Nib 2.0)
 
@@ -206,6 +204,7 @@ borrow filename-without-extension/ borrowed-word   \ import another file's priva
 - Each project's `main.vfx` includes required modules in dependency order
 - `private` keyword creates file-local namespaces for encapsulation
 - Use relative paths for includes within same project
+- Use `%vfxland5%` macro for VFXLand5 stack components (e.g., `include %vfxland5%/spunk/loader.vfx`)
 
 ## Status Files
 
@@ -214,6 +213,8 @@ When creating status.txt files, follow the format established in doc/engineer/st
 ## Version Control
 
 - Git repository initialized with main branch
+- Development workflow: work on development or feature branches, then collapse to independent commits in main for stable milestones/snapshots/sprints
+- Game projects (e.g., `darkblue/`) may be temporarily included for engine testing, but will be removed from repo history when engine is stable or game is complete
 - All VFX Forth source files (`.vfx`) are tracked
 - Binary assets in `dat/` directories are tracked
 - Build artifacts and temporary files excluded via `.gitignore`

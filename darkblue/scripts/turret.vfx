@@ -1,0 +1,269 @@
+\ Charging system:
+\ - 4-level charge system (0-100 charge points) with escalating costs and power
+\ - Charge delay prevents accidental charging - must hold key N frames before charging begins
+\ - Resource protection - charging caps automatically to preserve 10+ energy, prevents player suicide
+\ - Immediate pea shots - initial key press fires weak shot, holding continues to charge
+\ - Cancel-on-redirect - pressing new direction key cancels current charge and fires pea shot
+\ - Level progression feedback - displays bars next to owner (the ship)
+\ - Dual firing modes - pea shooter (1 energy) vs charged shots (based on level)
+
+require scripts\shot.vfx
+require tween.vfx
+require scripts\ship.vfx
+
+class: turret
+    actor derive
+    prop shooting
+    prop shaking     \ 0 ~ 1.0
+    prop aim <fixed <save
+    prop charging
+class;
+
+turret.png 32 32 tileset turret.ts
+
+: ang>bmp ( ts n. - n )
+    360. umod dup >r
+    5. p/ .> 36 mod tile r> 180. >= if hv| then ;
+
+: flicker ( n - n )
+    gamelife @ 1 and if drop 0 then ;
+
+variable charging
+\ variable charge  \ moved to common.vfx
+variable charge-level
+variable level-ctr
+variable charge-key
+
+20 tweak charge-delay
+
+create dir-buttons 2 cells array[
+    \ key , angle ,
+    <l> , 0. ,
+    <.> , 45. ,
+    <,> , 90. ,
+    <k> , 90. ,
+    <m> , 135. ,
+    <n> , 135. ,
+    <j> , 180. ,
+    <u> , 225. ,
+    <i> , 270. ,
+    <o> , 315. ,
+array] drop
+
+: dir-key@ ( n - n ) dir-buttons [] @ ;
+: dir-ang@ ( n - ang. ) dir-buttons [] cell+ @ ;
+
+: shoot ( power speed. class - )
+    aim @ 
+    owner @ 0 0 from swap ( aim. class ) one as>
+        swap ( aim. speed. ) vec vx 2!
+        atk !
+        you -> owner @ firer !
+        act>
+            ?cull ;
+
+: pea ( atk - ) *shoot* 8. shot shoot ;
+: fire-medium ( atk - ) *shoot* 8. missile1 shoot ;
+: fire-large ( atk - ) *shoot* 8. missile2 shoot ;
+
+: laser-physics
+    owner @ [[ x 2@ vx 2@ 2+ ]] x 2!
+    owner @ -> a @ a ! ;
+
+: fire-thin ( atk - )
+    *shoot*
+    me 0 0 from
+    a @ 20. 5. *beam own as>
+        atk !
+        w @ dest-w ! 20. w !
+        exponential ease-out w dest-w @ 0.25 tween
+        ['] laser-physics phys !
+        act>
+            80. l +!
+            0.25 passed? -exit
+            exponential2 ease-out w 0.0 0.1 tween
+        act>
+            0.1 passed? -exit
+            me unload ;
+
+: fire-wide ( atk - )
+    *shoot*
+    me 0 0 from
+    aim @ 2000. 100. *beam own as>
+        atk !
+        ['] laser-physics phys !
+        w @ dest-w ! 1.0 w !
+        atk @ dest-atk ! 0 atk !
+        exponential3 ease-in w dest-w @ 0.25 tween
+        act>
+            0.25 passed? -exit
+            dest-atk @ atk !
+            exponential2 ease-out w 0.5 0.5 tween
+        act>
+            0 atk !            
+        act>
+            0.5 passed? -exit
+            me unload ;
+
+( ease dir adr n2. len. - )        
+create charge-levels 4 cells array[
+    \ charge , cost , atk , xt ,
+    10  , 0 , 0 ,   ' drop , 
+    20  , 10 , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
+    35  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
+    60 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
+    150 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
+array] drop
+
+: >charge  charge-levels [] @ ;
+: >cost  charge-levels [] cell+ @ ;
+: >atk  charge-levels [] cell+ cell+ @ ;
+: >fire-xt  charge-levels [] cell+ cell+ cell+ @ ;
+
+charge-levels #items cell array bars
+
+: *bars ( - )
+    charge-levels #items 1 do
+        bar one own i bars [] !
+    loop ;
+
+: !bars ( - )
+    owner @ 13 -13 owner @ -> vx 2@ 2.> 2+ from
+    bars #items 1 do
+        i charge-level @ <= if
+            i bars [] @ [[ at@ 2>. x 2! ]]
+        else
+            i bars [] @ [[ -9999. -9999. x 2! ]]
+        then
+        0 bar.png bmph 1 + negate +at 
+    loop ;
+
+: @level ( - charge-level )
+    0
+    charge-levels #items for
+        charge @ 
+        i >charge >= if
+            drop i
+        then
+    loop ;
+
+: .charge ( - )
+    charge @ . ;
+    
+: .level ( - )
+    cr charge-level @ . ;
+
+: end-charge ( - )
+    \ cr ." End charge"
+    0 charge ! 0 level-ctr ! charging off -1 charge-level ! ;
+
+: fire ( level - )
+    {: lvl :}
+    lvl if  \ level 0 is after the charge delay
+        lvl >cost negate energy +!
+        lvl >atk lvl >fire-xt execute
+    then
+    end-charge ;
+
+: ?+level ( - )
+    @level charge-level @ > if
+        1 charge-level +!
+        charge-level @ 0> if
+            0.5 loud *snd-04* 
+            30 level-ctr !
+        then
+    then ;
+
+: can-afford? ( n - f )
+    >cost energy @ swap - 10 >= ;
+
+: +charge ( - )
+    charge @ 1 + 150 min charge !
+    @level can-afford? not if
+        charge @ 1 - 0 max charge !
+    then ;
+
+: cancel-charge ( - )
+    charging @ -exit
+    end-charge ;
+
+: ?charge ( - )
+    automatic @ ?exit
+    dir-buttons #items for
+        i dir-key@ pressed? if
+            charging @ not if
+                charging on
+                -1 charge-level !
+            then
+            i dir-key@ charge-key !
+        then
+    loop
+    charging @ if
+        owner @ recovering? if 
+            cancel-charge exit
+        then
+        charge-key @ letgo? if
+            charge-level @ fire
+        else
+            level-ctr @ 0= if
+                +charge ?+level
+            else
+                -1 level-ctr +!
+            then
+        then
+    then
+    charge @ 0 max 60 p/ shaking ! ;
+
+: ?aim-auto ( - )
+    dir-buttons #items for
+        i dir-key@ held? if
+            i dir-ang@ aim ! shooting on
+        then
+    loop ;
+
+: ?aim-normal ( - )
+    dir-buttons #items for
+        i dir-key@ pressed? if 
+            i dir-ang@ aim ! 
+            shooting on
+        then
+    loop ;
+
+: ?aim ( - )
+    automatic @ if ?aim-auto else ?aim-normal then ;
+
+: ?pea ( - )
+    energy @ 1 = ?exit  \ TODO: add "jammed gun" animation/sound
+    shooting @ if
+        automatic @ if
+            time @ .12 >= if 0 time ! then
+            time @ 0= if 1 pea then
+        else
+            1 pea
+            shooting off
+        then
+    then ;
+    
+: ?shake ( - )
+    shaking @ dup 3. 3. 2p* 2rnd 2. 2. 2- x 2+! ;
+
+: !ang ( - )
+    a @ p>f aim @ p>f 0.2e alerp f>p a ! ;
+
+: !pos ( - )
+    a @ 32. vec  owner @ [[ x 2@ vx 2@ 2+ ]] 2+ x 2!
+    a @ 360. umod 180. >= if 1. 1. x 2+! then
+    ?shake
+    x 2@ 2i x 2! ;
+
+: !bmp ( - )
+    turret.ts a @ ang>bmp flicker bmp ! ;
+
+turret :: init
+    turret.ts 0 tile bmp !
+    *bars
+    -1 charge-level !
+    act>
+        ?aim ?charge ?pea
+        !ang !pos !bmp !bars ;
+

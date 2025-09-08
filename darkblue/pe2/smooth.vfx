@@ -1,0 +1,515 @@
+\ ------------------------------------------------------------------------------
+\ Path Smoothing System for Mouse-Captured Coordinates
+\  Corner-preserving smoothing for coordinate arrays
+\ ------------------------------------------------------------------------------
+
+\ Global smoothing parameters
+variable smoothing-strength    \ 0.0-1.0 fixed-point
+variable corner-threshold      \ 0.5-0.8 fixed-point (cosine of angle)
+variable protection-radius     \ 2-5 integer (points around corners)
+
+\ Default parameter values
+0.9 smoothing-strength !       \ strong smoothing for testing
+0.3 corner-threshold !         \ ~70 degree corners (less sensitive)
+3 protection-radius !          \ protect 3 points around corners
+
+\ Working arrays for corner detection  
+2000 ?constant #max-coords
+create corner-flags #max-coords cells allot&erase
+
+\ ------------------------------------------------------------------------------
+\ Vector math helpers
+\ ------------------------------------------------------------------------------
+
+: vector-length ( x. y. - length. )
+    p>f swap p>f swap {: f: x f: y :}
+    x x f* y y f* f+ fsqrt f>p ;
+
+: dot-product ( x1. y1. x2. y2. - dot. )
+    {: x1 y1 x2 y2 | f: fx1 f: fy1 f: fx2 f: fy2 :}
+    x1 p>f to fx1  y1 p>f to fy1
+    x2 p>f to fx2  y2 p>f to fy2
+    fx1 fx2 f* fy1 fy2 f* f+ f>p ;
+
+: normalize-vector ( x. y. - nx. ny. )
+    {: x y | len :}
+    x y vector-length to len
+    len 0= if 0 0 else x len p/ y len p/ then ;
+
+\ ------------------------------------------------------------------------------
+\ Corner detection
+\ ------------------------------------------------------------------------------
+
+: angle-between ( x1. y1. x2. y2. - cos-angle. )
+    {: x1 y1 x2 y2 | f: flen1 f: flen2 f: fdot :}
+    x1 y1 vector-length p>f to flen1
+    x2 y2 vector-length p>f to flen2
+    flen1 0.0e f= flen2 0.0e f= or if 1.0 exit then  \ parallel vectors
+    x1 y1 x2 y2 dot-product p>f to fdot
+    fdot flen1 flen2 f* f/ f>p ;
+
+: detect-corner ( i# coords - flag )
+    {: idx coords | x1 y1 x2 y2 x3 y3 v1x v1y v2x v2y :}
+    idx 0 <= if false exit then
+    idx 1 - coords #items >= if false exit then
+    
+    \ Get three consecutive points
+    idx 1 - coords [] 2@ to y1 to x1
+    idx coords [] 2@ to y2 to x2  
+    idx 1 + coords [] 2@ to y3 to x3
+    
+    \ Calculate vectors
+    x2 x1 - to v1x  y2 y1 - to v1y
+    x3 x2 - to v2x  y3 y2 - to v2y
+    
+    \ Check angle
+    v1x v1y v2x v2y angle-between corner-threshold @ < ;
+
+: mark-corners ( coords #coords - )
+    {: coords n :}
+    corner-flags n cells erase
+    n 1 - 1 do
+        i coords detect-corner if
+            true corner-flags i cells + !
+        then
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Smoothing
+\ ------------------------------------------------------------------------------
+
+: near-corner? ( i# - flag )
+    {: idx | radius check-idx :}
+    protection-radius @ to radius
+    radius 2 * 1+ 0 do
+        idx i radius - + to check-idx
+        check-idx 0 >= check-idx #max-coords < and if
+            check-idx corner-flags swap cells + @ if
+                true unloop exit
+            then
+        then
+    loop
+    false ;
+
+: smooth-point-with-weight ( i# coords weight. - x. y. )
+    {: idx coords weight | x y sum-x sum-y cnt :}
+    idx coords [] 2@ to y to x
+    
+    \ Calculate weighted average with neighbors
+    x to sum-x  y to sum-y  1 to cnt
+    
+    \ Add left neighbor if exists
+    idx 0 > if
+        idx 1 - coords [] 2@ sum-y + to sum-y sum-x + to sum-x
+        1 +to cnt
+    then
+    
+    \ Add right neighbor if exists
+    idx 1 + coords #items < if
+        idx 1 + coords [] 2@ sum-y + to sum-y sum-x + to sum-x
+        1 +to cnt
+    then
+    
+    \ Blend original with averaged
+    sum-x cnt >. p/ to sum-x
+    sum-y cnt >. p/ to sum-y
+    
+    x 1.0 weight - p* sum-x weight p* +
+    y 1.0 weight - p* sum-y weight p* + ;
+
+: smooth-point ( i# coords - x. y. )
+    {: idx coords | weight :}
+    
+    \ Determine smoothing weight based on corner proximity
+    idx near-corner? if
+        0.1  \ light smoothing near corners
+    else
+        smoothing-strength @  \ normal smoothing
+    then to weight
+    
+    idx coords weight smooth-point-with-weight ;
+
+\ ------------------------------------------------------------------------------
+\ Distance-weighted smoothing
+\ ------------------------------------------------------------------------------
+
+variable smooth-radius     \ spatial radius for neighbor selection
+50. smooth-radius !        \ default 50 pixel radius
+
+: distance-smooth-point ( idx coords - x. y. )
+    {: idx coords | center-x center-y sum-x sum-y total-weight 
+       i-x i-y distance weight :}
+    idx coords [] 2@ to center-y to center-x
+    center-x to sum-x  center-y to sum-y  1.0 to total-weight
+    
+    \ Check all points within radius
+    coords #items for
+        i idx <> if  \ skip self
+            i coords [] 2@ to i-y to i-x
+            \ Calculate distance from center point
+            i-x center-x - i-y center-y - vector-length to distance
+            
+            distance smooth-radius @ <= if
+                \ Calculate inverse distance weight (closer = more weight)
+                distance 0= if
+                    1.0 to weight  \ avoid divide by zero for identical points
+                else
+                    1.0 distance p/ to weight
+                then
+                
+                \ Add weighted contribution
+                i-x weight p* sum-x + to sum-x
+                i-y weight p* sum-y + to sum-y
+                weight total-weight + to total-weight
+            then
+        then
+    loop
+    
+    \ Return weighted average
+    sum-x total-weight p/ sum-y total-weight p/ ;
+
+: distance-smooth-point-with-weight ( idx coords weight. - x. y. )
+    {: idx coords base-weight | orig-x orig-y smooth-x smooth-y :}
+    idx coords [] 2@ to orig-y to orig-x
+    idx coords distance-smooth-point to smooth-y to smooth-x
+    
+    \ Blend original with distance smoothed
+    orig-x 1.0 base-weight - p* smooth-x base-weight p* +
+    orig-y 1.0 base-weight - p* smooth-y base-weight p* + ;
+
+: distance-smooth-coords ( array:src-coords array:dest-coords -- )
+    {: src-coords dest | n :}
+    
+    src-coords #items to n
+    
+    \ Detect corners first
+    src-coords n mark-corners
+    
+    \ Smooth each point using distance algorithm
+    n for
+        i near-corner? if
+            0.1  \ light smoothing near corners
+        else
+            smoothing-strength @  \ normal smoothing
+        then
+        i src-coords rot distance-smooth-point-with-weight i dest [] 2!
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Index-based smoothing (original algorithm)
+\ ------------------------------------------------------------------------------
+
+: distance-redistribute ( array:coords - )
+    {: coords | n f: total-dist f: avg-dist current-dist 
+       prev-x prev-y curr-x curr-y next-x next-y factor :}
+    
+    coords #items to n
+    n 3 < if exit then  \ need at least 3 points
+    
+    \ Calculate total distance using floating-point
+    0.0e to total-dist
+    n 1 - 1 do
+        i 1 - coords [] 2@ to prev-y to prev-x
+        i coords [] 2@ to curr-y to curr-x
+        curr-x prev-x - curr-y prev-y - vector-length p>f total-dist f+ to total-dist
+    loop
+    
+    \ Calculate average distance between points
+    total-dist n 1 - s>f f/ to avg-dist
+    
+    \ Redistribute points to achieve more even spacing
+    n 2 - 1 do
+        \ Calculate current distance to next point
+        i coords [] 2@ to curr-y to curr-x
+        i 1 + coords [] 2@ to next-y to next-x
+        next-x curr-x - next-y curr-y - vector-length to current-dist
+        
+        \ Adjust point position if spacing is uneven (using floating-point)
+        current-dist p>f avg-dist f- fabs avg-dist 0.3e f* f> if
+            \ Move point slightly toward average spacing
+            avg-dist current-dist p>f dup 0.0e f= if fdrop 1.0e then f/ 0.3e f* f>p to factor
+            factor 0.1 max 1.9 min to factor  \ clamp adjustment
+            
+            curr-x next-x curr-x - factor p* + to curr-x
+            curr-y next-y curr-y - factor p* + to curr-y
+            curr-x curr-y i coords [] 2!
+        then
+    loop ;
+
+: index-smooth-coords ( array:src-coords array:dest-coords -- )
+    {: src-coords dest | n idx x y :}
+    
+    src-coords #items to n
+    
+    \ Copy to destination first
+    n for
+        i src-coords [] 2@ i dest [] 2!
+    loop
+    
+    \ Detect corners first
+    dest n mark-corners
+    
+    \ Smooth each point
+    n for
+        i dest smooth-point i dest [] 2!
+    loop
+    
+    \ Apply distance redistribution for more even spacing
+    dest distance-redistribute ;
+
+
+\ ------------------------------------------------------------------------------
+\ Single-point and region smoothing
+\ ------------------------------------------------------------------------------
+
+: smooth-point-at ( array:coords i# -- )
+    {: coords idx :}
+    idx coords smooth-point idx coords [] 2! ;
+
+: smooth-region ( array:coords center# radius -- )
+    {: coords center radius | idx distance weight :}
+    
+    \ Smooth all points within radius of center
+    coords #items for
+        i center - abs to distance
+        distance radius <= if
+            \ Calculate linear falloff weight
+            1.0 distance >. radius >. p/ - 0.0 1.0 clamp to weight
+            
+            \ Apply smoothing with distance-based weight
+            i coords weight smooth-point-with-weight i coords [] 2!
+        then
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Utility words
+\ ------------------------------------------------------------------------------
+
+: .smoothing ( - )
+    cr ." Smoothing parameters:"
+    cr ." - strength: " smoothing-strength @ p.
+    cr ." - corner threshold: " corner-threshold @ p.
+    cr ." - protection radius: " protection-radius @ . ;
+
+: smoothing ( strength. threshold. radius - )
+    protection-radius ! corner-threshold ! smoothing-strength ! ;
+
+: smooth-radius! ( radius. - )
+    smooth-radius ! ;
+
+: .distance-params ( - )
+    cr ." Distance smoothing parameters:"
+    cr ." - smooth radius: " smooth-radius @ p. ." pixels"
+    .smoothing ;
+
+\ ------------------------------------------------------------------------------
+\ Catmull-Rom Spline Smoothing
+\ ------------------------------------------------------------------------------
+
+\ Working arrays for spline calculations
+#max-coords 1 cells array spline-params  \ parameter values (cumulative distances)
+
+: calc-spline-params ( coords n - )
+    {: coords n | distance :}
+    \ Set first parameter to 0
+    0.0 0 spline-params [] !
+    
+    \ Calculate cumulative chord lengths
+    n 1 - 1 do
+        i 1 - coords [] 2@ i coords [] 2@
+        2swap - swap - vector-length to distance
+        distance i 1 - spline-params [] @ + i spline-params [] !
+    loop ;
+
+: eval-cubic ( t. a0. a1. a2. a3. - result. )
+    {: t a0 a1 a2 a3 | t2 t3 :}
+    t t p* to t2
+    t2 t p* to t3
+    a0 a1 t p* + a2 t2 p* + a3 t3 p* + ;
+
+: catmull-rom-coeff ( p0x. p0y. p1x. p1y. p2x. p2y. p3x. p3y. t0. t1. t2. t3. - a0x. a1x. a2x. a3x. a0y. a1y. a2y. a3y. )
+    {: p0x p0y p1x p1y p2x p2y p3x p3y t0 t1 t2 t3 |
+       m1x m1y m2x m2y dt1 dt2 dt3 dt12 dt23 a0x a1x a2x a3x a0y a1y a2y a3y :}
+    
+    \ Calculate time differences for centripetal parameterization
+    t1 t0 - to dt1
+    t2 t1 - to dt2  
+    t3 t2 - to dt3
+    dt1 dt2 + to dt12
+    dt2 dt3 + to dt23
+    
+    \ Calculate tangent vectors using centripetal Catmull-Rom formula
+    \ m1 = (P1-P0)/dt1 - (P2-P0)/dt12 + (P2-P1)/dt2
+    p1x p0x - dt1 dup 0= if drop 1.0 then p/ 
+    p2x p0x - dt12 dup 0= if drop 1.0 then p/ -
+    p2x p1x - dt2 dup 0= if drop 1.0 then p/ + to m1x
+    
+    p1y p0y - dt1 dup 0= if drop 1.0 then p/ 
+    p2y p0y - dt12 dup 0= if drop 1.0 then p/ -
+    p2y p1y - dt2 dup 0= if drop 1.0 then p/ + to m1y
+    
+    \ m2 = (P2-P1)/dt2 - (P3-P1)/dt23 + (P3-P2)/dt3
+    p2x p1x - dt2 dup 0= if drop 1.0 then p/ 
+    p3x p1x - dt23 dup 0= if drop 1.0 then p/ -
+    p3x p2x - dt3 dup 0= if drop 1.0 then p/ + to m2x
+    
+    p2y p1y - dt2 dup 0= if drop 1.0 then p/ 
+    p3y p1y - dt23 dup 0= if drop 1.0 then p/ -
+    p3y p2y - dt3 dup 0= if drop 1.0 then p/ + to m2y
+    
+    \ Convert to cubic polynomial coefficients: P(t) = a0 + a1*t + a2*t² + a3*t³
+    \ Using floating-point to prevent overflow in coefficient calculation
+    p1x to a0x  \ a0 = P1
+    m1x p>f dt2 p>f f* f>p to a1x  \ a1 = m1 * dt
+    
+    \ a2 = 3(P2-P1) - 2*m1*dt - m2*dt  
+    3.0 p>f p2x p1x - p>f f* 2.0 p>f m1x p>f f* dt2 p>f f* f- m2x p>f dt2 p>f f* f- f>p to a2x
+    \ a3 = 2(P1-P2) + m1*dt + m2*dt
+    2.0 p>f p1x p2x - p>f f* m1x p>f dt2 p>f f* f+ m2x p>f dt2 p>f f* f+ f>p to a3x
+    
+    p1y to a0y
+    m1y p>f dt2 p>f f* f>p to a1y
+    3.0 p>f p2y p1y - p>f f* 2.0 p>f m1y p>f f* dt2 p>f f* f- m2y p>f dt2 p>f f* f- f>p to a2y
+    2.0 p>f p1y p2y - p>f f* m1y p>f dt2 p>f f* f+ m2y p>f dt2 p>f f* f+ f>p to a3y
+    
+    a0x a1x a2x a3x a0y a1y a2y a3y ;
+
+: spline-eval-at ( coords idx target-param - x. y. )
+    {: coords idx target-param | 
+       p0x p0y p1x p1y p2x p2y p3x p3y t0 t1 t2 t3
+       a0x a1x a2x a3x a0y a1y a2y a3y local-t :}
+    
+    \ Get 4 control points for this segment (handle boundaries)
+    idx 0 <= if
+        \ First segment - extend P0
+        0 coords [] 2@ to p1y to p1x  \ P1 = first point
+        1 coords [] 2@ to p2y to p2x  \ P2 = second point  
+        2 coords [] 2@ to p3y to p3x  \ P3 = third point
+        \ Extend P0 = P1 - (P2 - P1) = 2*P1 - P2
+        2.0 p1x p* p2x - to p0x
+        2.0 p1y p* p2y - to p0y
+        0 spline-params [] @ to t0
+        1 spline-params [] @ to t1
+        2 spline-params [] @ to t2
+        t0 t1 t0 - - to t3  \ extend t3 = t0 - (t1-t0) = 2*t0 - t1
+    else
+        idx coords #items 2 - >= if
+            \ Last segment - extend P3
+            idx 1 - coords [] 2@ to p0y to p0x
+            idx coords [] 2@ to p1y to p1x
+            idx 1 + coords [] 2@ to p2y to p2x
+            \ Extend P3 = P2 + (P2 - P1) = 2*P2 - P1
+            2.0 p2x p* p1x - to p3x
+            2.0 p2y p* p1y - to p3y
+            idx 1 - spline-params [] @ to t0
+            idx spline-params [] @ to t1
+            idx 1 + spline-params [] @ to t2
+            t2 t2 t1 - + to t3  \ extend t3 = t2 + (t2-t1)
+        else
+            \ Normal interior segment
+            idx 1 - coords [] 2@ to p0y to p0x
+            idx coords [] 2@ to p1y to p1x
+            idx 1 + coords [] 2@ to p2y to p2x
+            idx 2 + coords [] 2@ to p3y to p3x
+            idx 1 - spline-params [] @ to t0
+            idx spline-params [] @ to t1
+            idx 1 + spline-params [] @ to t2
+            idx 2 + spline-params [] @ to t3
+        then
+    then
+    
+    \ Calculate cubic coefficients for this segment
+    p0x p0y p1x p1y p2x p2y p3x p3y t0 t1 t2 t3 catmull-rom-coeff
+    to a3y to a2y to a1y to a0y to a3x to a2x to a1x to a0x
+    
+    \ Convert target parameter to local parameter [0,1] within segment
+    target-param t1 - t2 t1 - dup 0= if drop 1.0 then p/ to local-t
+    
+    \ Evaluate cubic polynomial at local parameter
+    local-t a0x a1x a2x a3x eval-cubic
+    local-t a0y a1y a2y a3y eval-cubic ;
+
+: spline-smooth-point ( idx coords - x. y. )
+    {: idx coords | orig-x orig-y sum-x sum-y weight sample-count
+       param param-step i-param :}
+    idx coords [] 2@ to orig-y to orig-x
+    
+    \ Get parameter value for this point
+    idx spline-params [] @ to param
+    
+    \ Sample spline at multiple nearby points for smoothing effect  
+    orig-x p>f to sum-x  orig-y p>f to sum-y  1 to sample-count
+    
+    \ Determine sampling step based on local parameter spacing
+    idx 0 > idx 1 + coords #items < and if
+        idx 1 + spline-params [] @ idx 1 - spline-params [] @ - 0.1 p* to param-step
+        
+        \ Sample forward and backward along spline
+        param param-step - to i-param
+        coords idx i-param spline-eval-at 
+        p>f sum-x f+ to sum-x  p>f sum-y f+ to sum-y
+        1 +to sample-count
+        
+        param param-step + to i-param  
+        coords idx i-param spline-eval-at
+        p>f sum-x f+ to sum-x  p>f sum-y f+ to sum-y
+        1 +to sample-count
+    then
+    
+    \ Calculate average of samples
+    sum-x sample-count s>f f/ f>p to sum-x
+    sum-y sample-count s>f f/ f>p to sum-y
+    
+    \ Determine blending weight based on corner proximity
+    idx near-corner? if
+        0.2  \ light smoothing near corners
+    else
+        smoothing-strength @  \ normal smoothing
+    then to weight
+    
+    \ Debug output for first few points
+    idx 3 < if
+        cr ." Point " idx . ." : orig=(" orig-x p. ." ," orig-y p. ." ) smooth=(" 
+        sum-x p. ." ," sum-y p. ." ) weight=" weight p. ." samples=" sample-count .
+    then
+    
+    \ Blend original with averaged spline samples (using floating-point to avoid overflow)
+    orig-x p>f 1.0 weight - p>f f* sum-x p>f weight p>f f* f+ f>p
+    orig-y p>f 1.0 weight - p>f f* sum-y p>f weight p>f f* f+ f>p ;
+
+: spline-smooth-coords ( array:src-coords array:dest-coords -- )
+    {: src-coords dest | n :}
+    
+    src-coords #items to n
+    n 3 < if
+        \ Too few points for spline - just copy
+        n for
+            i src-coords [] 2@ i dest [] 2!
+        loop
+        exit
+    then
+    
+    \ Calculate spline parameters (cumulative distances)
+    src-coords n calc-spline-params
+    
+    \ Detect corners first
+    src-coords n mark-corners
+    
+    \ Smooth each point while preserving point density
+    n for
+        i src-coords spline-smooth-point i dest [] 2!
+    loop ;
+
+: .spline-params ( - )
+    cr ." Catmull-Rom spline parameters:"
+    .smoothing ;
+
+\ ------------------------------------------------------------------------------
+\ Algorithm selection
+\ ------------------------------------------------------------------------------
+
+: smooth-coords ( array:src-coords array:dest-coords -- )
+    spline-smooth-coords ;
+
+: smooth-coords-old ( array:src-coords array:dest-coords -- )
+    index-smooth-coords ;

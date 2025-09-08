@@ -1,0 +1,266 @@
+\ ------------------------------------------------------------------------------
+\ Path Smoothing System for Mouse-Captured Coordinates
+\  Corner-preserving smoothing for coordinate arrays
+\ ------------------------------------------------------------------------------
+
+\ Global smoothing parameters
+variable smoothing-strength    \ 0.0-1.0 fixed-point
+variable corner-threshold      \ 0.5-0.8 fixed-point (cosine of angle)
+variable protection-radius     \ 2-5 integer (points around corners)
+
+\ Default parameter values
+0.6 smoothing-strength !       \ moderate smoothing
+0.7 corner-threshold !         \ ~45 degree corners
+3 protection-radius !          \ protect 3 points around corners
+
+\ Working arrays for corner detection  
+2000 ?constant #max-coords
+create corner-flags #max-coords cells allot&erase
+
+\ ------------------------------------------------------------------------------
+\ Vector math helpers
+\ ------------------------------------------------------------------------------
+
+: vector-length ( x. y. - length. )
+    p>f swap p>f swap {: f: x f: y :}
+    x x f* y y f* f+ fsqrt f>p ;
+
+: dot-product ( x1. y1. x2. y2. - dot. )
+    {: x1 y1 x2 y2 | f: fx1 f: fy1 f: fx2 f: fy2 :}
+    x1 p>f to fx1  y1 p>f to fy1
+    x2 p>f to fx2  y2 p>f to fy2
+    fx1 fx2 f* fy1 fy2 f* f+ f>p ;
+
+: normalize-vector ( x. y. - nx. ny. )
+    {: x y | len :}
+    x y vector-length to len
+    len 0= if 0 0 else x len p/ y len p/ then ;
+
+\ ------------------------------------------------------------------------------
+\ Corner detection
+\ ------------------------------------------------------------------------------
+
+: angle-between ( x1. y1. x2. y2. - cos-angle. )
+    {: x1 y1 x2 y2 | len1 len2 :}
+    x1 y1 vector-length to len1
+    x2 y2 vector-length to len2
+    len1 0= len2 0= or if 1.0 exit then  \ parallel vectors
+    x1 y1 x2 y2 dot-product len1 len2 p* p/ ;
+
+: detect-corner ( i# coords - flag )
+    {: idx coords | x1 y1 x2 y2 x3 y3 v1x v1y v2x v2y :}
+    idx 0 <= if false exit then
+    idx 1 - coords #items >= if false exit then
+    
+    \ Get three consecutive points
+    idx 1 - coords [] 2@ to y1 to x1
+    idx coords [] 2@ to y2 to x2  
+    idx 1 + coords [] 2@ to y3 to x3
+    
+    \ Calculate vectors
+    x2 x1 - to v1x  y2 y1 - to v1y
+    x3 x2 - to v2x  y3 y2 - to v2y
+    
+    \ Check angle
+    v1x v1y v2x v2y angle-between corner-threshold @ < ;
+
+: mark-corners ( coords #coords - )
+    {: coords n :}
+    corner-flags n cells erase
+    n 1 - 1 do
+        i coords detect-corner if
+            true corner-flags i cells + !
+        then
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Smoothing
+\ ------------------------------------------------------------------------------
+
+: near-corner? ( i# - flag )
+    {: idx | radius check-idx :}
+    protection-radius @ to radius
+    radius 2 * 1+ 0 do
+        idx i radius - + to check-idx
+        check-idx 0 >= check-idx #max-coords < and if
+            check-idx corner-flags swap cells + @ if
+                true unloop exit
+            then
+        then
+    loop
+    false ;
+
+: smooth-point-with-weight ( i# coords weight. - x. y. )
+    {: idx coords weight | x y sum-x sum-y cnt :}
+    idx coords [] 2@ to y to x
+    
+    \ Calculate weighted average with neighbors
+    x to sum-x  y to sum-y  1 to cnt
+    
+    \ Add left neighbor if exists
+    idx 0 > if
+        idx 1 - coords [] 2@ sum-y + to sum-y sum-x + to sum-x
+        1 +to cnt
+    then
+    
+    \ Add right neighbor if exists
+    idx 1 + coords #items < if
+        idx 1 + coords [] 2@ sum-y + to sum-y sum-x + to sum-x
+        1 +to cnt
+    then
+    
+    \ Blend original with averaged
+    sum-x cnt >. p/ to sum-x
+    sum-y cnt >. p/ to sum-y
+    
+    x 1.0 weight - p* sum-x weight p* +
+    y 1.0 weight - p* sum-y weight p* + ;
+
+: smooth-point ( i# coords - x. y. )
+    {: idx coords | weight :}
+    
+    \ Determine smoothing weight based on corner proximity
+    idx near-corner? if
+        0.1  \ light smoothing near corners
+    else
+        smoothing-strength @  \ normal smoothing
+    then to weight
+    
+    idx coords weight smooth-point-with-weight ;
+
+\ ------------------------------------------------------------------------------
+\ Distance-weighted smoothing
+\ ------------------------------------------------------------------------------
+
+variable smooth-radius     \ spatial radius for neighbor selection
+50. smooth-radius !        \ default 50 pixel radius
+
+: distance-smooth-point ( idx coords - x. y. )
+    {: idx coords | center-x center-y sum-x sum-y total-weight 
+       i-x i-y distance weight :}
+    idx coords [] 2@ to center-y to center-x
+    center-x to sum-x  center-y to sum-y  1.0 to total-weight
+    
+    \ Check all points within radius
+    coords #items for
+        i idx <> if  \ skip self
+            i coords [] 2@ to i-y to i-x
+            \ Calculate distance from center point
+            i-x center-x - i-y center-y - vector-length to distance
+            
+            distance smooth-radius @ <= if
+                \ Calculate inverse distance weight (closer = more weight)
+                distance 0= if
+                    1.0 to weight  \ avoid divide by zero for identical points
+                else
+                    1.0 distance p/ to weight
+                then
+                
+                \ Add weighted contribution
+                i-x weight p* sum-x + to sum-x
+                i-y weight p* sum-y + to sum-y
+                weight total-weight + to total-weight
+            then
+        then
+    loop
+    
+    \ Return weighted average
+    sum-x total-weight p/ sum-y total-weight p/ ;
+
+: distance-smooth-point-with-weight ( idx coords weight. - x. y. )
+    {: idx coords base-weight | orig-x orig-y smooth-x smooth-y :}
+    idx coords [] 2@ to orig-y to orig-x
+    idx coords distance-smooth-point to smooth-y to smooth-x
+    
+    \ Blend original with distance smoothed
+    orig-x 1.0 base-weight - p* smooth-x base-weight p* +
+    orig-y 1.0 base-weight - p* smooth-y base-weight p* + ;
+
+: distance-smooth-coords ( array:src-coords array:dest-coords -- )
+    {: src-coords dest | n :}
+    
+    src-coords #items to n
+    
+    \ Detect corners first
+    src-coords n mark-corners
+    
+    \ Smooth each point using distance algorithm
+    n for
+        i near-corner? if
+            0.1  \ light smoothing near corners
+        else
+            smoothing-strength @  \ normal smoothing
+        then
+        i src-coords rot distance-smooth-point-with-weight i dest [] 2!
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Index-based smoothing (original algorithm)
+\ ------------------------------------------------------------------------------
+
+: index-smooth-coords ( array:src-coords array:dest-coords -- )
+    {: src-coords dest | n idx x y :}
+    
+    src-coords #items to n
+    
+    \ Detect corners first
+    src-coords n mark-corners
+    
+    \ Smooth each point
+    n for
+        i src-coords smooth-point i dest [] 2!
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Algorithm selection
+\ ------------------------------------------------------------------------------
+
+: smooth-coords ( array:src-coords array:dest-coords -- )
+    distance-smooth-coords ;
+
+: smooth-coords-old ( array:src-coords array:dest-coords -- )
+    index-smooth-coords ;
+
+\ ------------------------------------------------------------------------------
+\ Single-point and region smoothing
+\ ------------------------------------------------------------------------------
+
+: smooth-point-at ( array:coords i# -- )
+    {: coords idx :}
+    idx coords smooth-point idx coords [] 2! ;
+
+: smooth-region ( array:coords center# radius -- )
+    {: coords center radius | idx distance weight :}
+    
+    \ Smooth all points within radius of center
+    coords #items for
+        i center - abs to distance
+        distance radius <= if
+            \ Calculate linear falloff weight
+            1.0 distance >. radius >. p/ - 0.0 1.0 clamp to weight
+            
+            \ Apply smoothing with distance-based weight
+            i coords weight smooth-point-with-weight i coords [] 2!
+        then
+    loop ;
+
+\ ------------------------------------------------------------------------------
+\ Utility words
+\ ------------------------------------------------------------------------------
+
+: .smoothing ( - )
+    cr ." Smoothing parameters:"
+    cr ." - strength: " smoothing-strength @ p.
+    cr ." - corner threshold: " corner-threshold @ p.
+    cr ." - protection radius: " protection-radius @ . ;
+
+: smoothing ( strength. threshold. radius - )
+    protection-radius ! corner-threshold ! smoothing-strength ! ;
+
+: smooth-radius! ( radius. - )
+    smooth-radius ! ;
+
+: .distance-params ( - )
+    cr ." Distance smoothing parameters:"
+    cr ." - smooth radius: " smooth-radius @ p. ." pixels"
+    .smoothing ;

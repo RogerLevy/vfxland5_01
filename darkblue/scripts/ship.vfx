@@ -1,0 +1,169 @@
+require scripts\orb.vfx
+require scripts\tri.vfx
+require scripts\turret.vfx
+
+class: ship
+    actor derive
+    prop r
+    prop m
+    prop flash-ctr
+    prop turret0
+    prop paralysis              \ paralyzes player when >0
+class;
+
+5 tweak sbp            \ screen bounce paralysis length
+.3 tweak spd           \ normal movement speed
+0.93 tweak ine         \ inertia
+\ .03 tweak dec           \ deceleration
+
+ship :: recovering? ( - flag )
+    flash-ctr @ 0 >= ;
+
+: ?flash ( n - n )
+    flash-ctr @ 0< ?exit
+    flash-ctr @ 5 mod 2 < if
+        drop 15
+    then
+    flash-ctr @ -1 > if -1 flash-ctr +! then ;
+
+: !bmp
+    ship.ts 0 ?flash tile bmp ! ;
+
+: expel ( n - )
+    for
+        360. rnd dup
+        me swap 20 vec from  \ note FROM takes ints
+        tri one [[
+            1. vec vx 2!
+        ]]
+    loop ;
+
+: decelerate ( n. - )
+    {: d :}
+    vx @ abs d - vx @ 0< if negate 0 min else 0 max then vx ! 
+    vy @ abs d - vy @ 0< if negate 0 min else 0 max then vy ! ;
+
+: slowdown-playfield ( - )
+    actives>
+        me you = ?exit
+        floating act>
+            \ .016 decelerate
+            vx 2@ 0.94 dup 2p* vx 2! ;
+
+: *lightning ( - )
+    lightning one as> act> act> act> me unload ;
+
+: slowdown-starfield ( - )
+    actor one as> act>
+        \ starfield-speed 0.06 - 0 max to starfield-speed ;
+        starfield-speed 0.94 p* to starfield-speed ;
+
+: shatter ( - )
+    200 for
+        me 360. rnd 14 rnd vec from
+        dot one [[ 360. rnd 2. rnd vec vx 2! ]] 
+    loop
+    me unload ;
+
+ship :: kill ( - )
+    hush
+    0 energy !
+    62 flash-ctr !
+    slowdown-playfield
+    slowdown-starfield
+    act>
+        !bmp
+        1.0 passed? -exit
+        *lightning
+    act> act> act> 
+        shatter
+        3.0 timer>
+            eval" retry" ;
+
+ship :: damage ( n - )
+    ?dup -exit
+    *snd-03*
+    dup negate energy +!
+    energy @ 0 <= if
+        drop die exit
+    then
+    dup expel 
+    2 + flash-ctr @ + 62 min flash-ctr ! ;
+
+: hit-orb 
+    me recovering? ?exit
+    ( you = player )
+    5 you damage
+    you [[
+        you me collision-force3 ( 0.5 0.5 2p* ) vx 2+!  \ knockback
+    ]]
+    me unload ;
+
+: hit-tri
+    0.6 loud *snd-07*
+    1 energy +! me unload ;
+
+: hit-enemy
+    me recovering? ?exit
+    30 you damage
+    you [[
+        you me collision-force3 3 3 2* vx 2+!  \ knockback
+    ]] ;
+
+: &screen
+    me 0.9 screen-bounce-force vx 2+!
+    screen-bounced? if
+        *snd-08*
+        sbp @ paralysis !
+    then ;
+
+: &objects
+    en @ -exit
+    actives>
+        r @ -exit
+        you me rhit? -exit
+        me enemy is? if hit-enemy exit then
+        me orb is? if hit-orb exit then
+        me recovering? ?exit
+        worth @ if hit-tri exit then ;
+
+: collisions
+    &screen &objects ;
+
+: countdown ( a - )
+    dup @ 1 - 0 max swap ! ;
+    
+: speed spd @   me recovering? if 2.5 p/ then ;
+: -speed speed negate ;
+
+: controls
+    paralysis countdown
+    paralysis @ ?exit
+    <a> held? if  -speed vx +!  then
+    <d> held? if  speed vx +!  then
+    <w> held? if  -speed vy +! then
+    <s> held? if  speed vy +! then ;
+
+: decel
+    \ ; dec @ decelerate ;
+    vx 2@ ine @ dup 2p* vx 2! ;
+
+: physics
+    decel collisions vx 2@ x 2+! ;
+
+: /turret
+    turret0 @ ?exit
+    turret one own turret0 ! ;
+
+ship :: init
+    me to player0
+    /turret
+    ship.ts 0 tile bmp !
+    13. r !
+    10. m !
+    ['] physics phys !
+    act>
+        !bmp controls ;
+
+ship :: deinit
+    turret0 @ ?unload ;

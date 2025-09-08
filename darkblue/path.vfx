@@ -1,0 +1,517 @@
+\ ------------------------------------------------------------------------------
+\ Path Playback System
+\  Handles simultaneous path execution for actors
+\  by Claude Sonnet 4
+\ ------------------------------------------------------------------------------
+
+|| 60 constant fps \ temporary
+
+#actors 3 * ?constant #pb-slots
+
+\ =============================================================================
+\ Path structure definition
+\ =============================================================================
+
+1 constant SEG_WAYPOINT
+2 constant SEG_EVENT
+
+\ =============================================================================
+\ Segment class
+\ =============================================================================
+
+class: segment
+    prop segtype <int           \ segment type (waypoint/event)
+    prop x <fixed               \ target position
+    prop y <fixed               \ 
+    prop c1x <fixed             \ curve control point
+    prop c1y <fixed             \ 
+    prop c2x <fixed             \ curve control point 2
+    prop c2y <fixed             \ 
+    prop duration <int          \ milliseconds
+    prop easetype <int          \ easing function ID
+    prop in-amt <fixed          \ easing in amount
+    prop out-amt <fixed         \ easing out amount
+    prop data <int              \ general purpose data
+    prop string <addr           \ event string (event only)
+class;
+
+\ =============================================================================
+\ Path class
+\ =============================================================================
+
+class: path
+    \ TODO: These should just be embedded
+    prop segments <ref _array   \ addr -> array[segment]
+    prop alpdata <ref _array    \ addr -> array[x., y.]
+    prop easedata <ref _array   \ addr -> array[segment]
+class;
+
+\ =============================================================================
+\ Playback class
+\ =============================================================================
+
+class: playback
+    is-a thinker
+    prop path0 <ref path        \ pointer to path definition
+    prop seg <int               \ current segment index
+    prop journey <fixed         \ path progress 0-1.0  
+    prop startx <fixed          \ starting position
+    prop starty <fixed          \ 
+    prop starttime <int         \ milliseconds when started
+    prop speed <fixed           \ speed multiplier
+    prop scalex <fixed          \ runtime scaling
+    prop scaley <fixed          \ 
+    prop rotation <fixed        \ runtime rotation angle
+    prop active                 \ slot is active
+    prop #loops <int            \ completed loops
+    prop ppdir <int             \ pingpong direction 1/-1
+    prop alp <addr              \ arc-length parameterized coordinates
+                                \ (optional)
+\   property lastevent            \ n \ last event index fired
+class;
+
+\ =============================================================================
+\ Playback array
+\ =============================================================================
+
+#pb-slots playback object-array playbacks
+
+\ =============================================================================
+\ Playback slot management
+\ =============================================================================
+
+playback :: init ( - )
+    1.0 speed !
+    1.0 scalex ! 1.0 scaley !
+    1 ppdir !
+    active on
+    gametime drop starttime ! ;
+
+\ =============================================================================
+\ Status checks
+\ =============================================================================
+
+|| : >segments ( path -- array )
+    -> segments @ ;
+
+|| : segment[] ( seg# path -- segment )
+    >segments [] ;
+
+|| : #segments ( path - n )
+    >segments #items ;
+
+|| : (timespan) ( array[segment] -- ms )
+    {: a :}
+    0 a #items for
+        i a [] -> duration @ +
+    loop ;
+    
+|| : timespan ( path -- ms )
+    >segments (timespan) ;
+
+|| : (leg) ( progress. array[segment] -- seg# local-progress. )
+    {: a | target accum segdur :}
+    ( progress -- ) a (timespan) swap p* to target
+    0 to accum
+    a #items for
+        i a [] -> duration @ to segdur
+        accum segdur + target > if
+            i ` target accum - >. segdur >. p/ ` unloop exit
+        then
+        segdur +to accum
+    loop
+    a #items 1 - ` 1.0 ` ;
+
+|| : leg ( progress. path -- seg# local-progress. )
+    >segments (leg) ;
+
+: endxy ( seg# path -- x. y. )
+    {: seg# p :}
+    seg# p segment[] -> segtype @ SEG_EVENT = if
+        seg# 0 <= if 0 0 else seg# 1 - p segment[] -> x 2@ then
+    else
+        seg# p segment[] -> x 2@
+    then ;
+
+|| 0e fvalue t1 
+|| 0e fvalue t2
+|| 0e fvalue t3 
+|| : bezier-x ( f: t sx dx cp1x cp2x -- f: x )
+    {: f: t f: sx f: dx f: cp1x f: cp2x :}
+    1e t f- to t1
+    t1 t1 f* to t2  \ (1-t)²
+    t1 t2 f* to t3  \ (1-t)³
+    t3 sx f*                        \ (1-t)³sx
+    3e t2 f* t f* cp1x f* f+        \ + 3(1-t)²t*cp1x
+    3e t1 f* t f* t f* cp2x f* f+   \ + 3(1-t)t²*cp2x
+    t t f* t f* dx f* f+ ;          \ + t³dx
+
+|| : bezier-y ( f: t sy dy cp1y cp2y -- f: y )
+    {: f: t f: sy f: dy f: cp1y f: cp2y :}
+    \ Already calculated by bezier-x:
+    \ 1e t f- to t1
+    \ t1 t1 f* to t2  \ (1-t)²
+    \ t1 t2 f* to t3  \ (1-t)³
+    t3 sy f*                        \ (1-t)³sy
+    3e t2 f* t f* cp1y f* f+        \ + 3(1-t)²t*cp1y
+    3e t1 f* t f* t f* cp2y f* f+   \ + 3(1-t)t²*cp2y
+    t t f* t f* dy f* f+ ;          \ + t³dy
+
+   
+|| : ?ease ( ease-type f:t f:in-str f:out-str -- f:t' )
+    {: ease-type f: t f: in-str f: out-str :}
+    ease-type case
+        \ no easing
+        0 of t endof
+        \ ease-in: 
+        1 of t ` in-str 2e f* 1e f+ ` f** endof
+        \ ease-out: 
+        2 of 1e t f- ` out-str 2e f* 1e f+ ` f** 1e fswap f- endof
+        \ ease-in-out:
+        3 of
+            t 0.5e f<= if
+                t 2e f* `
+                    in-str 2e f* 1e f+ `
+                    f** 
+                    0.5e f*
+            else
+                t 0.5e f- 2e f* 1e fswap f- ` 
+                    out-str 2e f* 1e f+ `
+                    f**
+                    1e fswap f- 0.5e f* 0.5e f+ 
+            then
+        endof
+        t \ default: no change
+    endcase ;
+
+|| : ease ( n. segment - f: n )
+    [[ p>f in-amt @ p>f out-amt @ p>f easetype @ ?ease ]] ;
+    
+|| : pinpoint-eased ( playback ) ( seg# local-progress. path - x. y. )
+    {: seg# n pth | f: fp seg sx sy dx dy t :}
+    
+    seg# pth segment[] to seg
+    seg# 0 = if 0 0 else seg# 1 - pth endxy scalex 2@ 2p* then
+        to sy to sx
+        
+    n seg ease to fp
+    
+    seg# pth endxy scalex 2@ 2p* to dy to dx
+    
+    fp ` sx dx 2p>f ``
+        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+    fp ` sy dy 2p>f ``
+        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+;
+
+|| : pinpoint ( playback ) ( seg# local-progress. path - x. y. )
+    {: seg# n pth | f: fp seg sx sy dx dy t :}
+    
+    seg# pth segment[] to seg
+    seg# 0 = if 0 0 else seg# 1 - pth endxy scalex 2@ 2p* then
+        to sy to sx
+        
+    n p>f to fp
+    
+    seg# pth endxy scalex 2@ 2p* to dy to dx
+    
+    fp ` sx dx 2p>f ``
+        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+    fp ` sy dy 2p>f ``
+        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+;
+
+\ =============================================================================
+\ Path update
+\ =============================================================================
+
+|| : ?boundary ( playback ) ( n. - n. )
+    dup 1.0 >= if
+        1.0 -  1 #loops +!
+        \ TODO: handle loop/pingpong modes
+    else
+        dup 0< if
+            1. +  -1 ppdir !
+        then
+    then ;
+
+|| : +journey ( n. - )
+    journey @ + ?boundary journey ! ;
+
+|| : step ( playback ) ( - ) \ Update progress by one frame
+    path0 @ -exit
+    speed @ 1000. fps / p*  path0 @ timespan >. p/  ppdir @ * +journey ;
+
+|| : vel ( playback ) ( -- vx. vy. )
+    path0 @ ?dup 0= if 0 0 exit then
+    {: p | n1 n2 :}
+    journey @ to n1
+    speed @ 1000. fps / p*  p timespan >. p/  ppdir @ *
+        n1 + 0 1. clamp to n2
+    n2 p leg p pinpoint-eased 
+    n1 p leg p pinpoint-eased 2- ;
+
+\ =============================================================================
+\ Arc-length parameterization for even motion
+\ =============================================================================
+
+|| playback object playback-obj
+|| 2variable first-point
+
+fast[ \ validations are way too slow for this
+: alp, ( - )
+    me {: path0 | total-duration #target-samples #lookup-samples length-table coord-table
+       f: total-length f: target-step f: current-target
+       f: x f: y f: prev-x f: prev-y f: next-x f: next-y 
+       f: prev-length f: next-length f: ratio bracket-index 
+       seg# local-progress :}
+    
+    playback-obj [[
+        playback cla !
+        1.0 scalex ! 1.0 scaley !
+        
+        path0 timespan to total-duration
+        total-duration 60 1000 */ to #target-samples
+        total-duration 2 * to #lookup-samples
+        
+        \ Allocate temporary lookup tables
+        #lookup-samples cells allocate throw to length-table
+        #lookup-samples 2 * cells allocate throw to coord-table
+
+        \ Phase 1: Build arc length lookup table
+        0e to total-length
+        0e length-table sf!
+        \ Store first point separately
+        0.0 path0 leg to local-progress to seg#
+        seg# local-progress path0 pinpoint p>f to y p>f to x
+        x coord-table sf!
+        y coord-table cell+ sf!
+        
+        #lookup-samples 1 do
+            i s>f #lookup-samples s>f f/ f>p path0 leg to local-progress to seg#
+            seg# local-progress path0 pinpoint p>f to y p>f to x
+            x coord-table i 2 * cells + sf!
+            y coord-table i 2 * cells + cell+ sf!
+            
+            \ Calculate cumulative arc length
+            coord-table i 1 - 2 * cells + sf@ to prev-x
+            coord-table i 1 - 2 * cells + cell+ sf@ to prev-y
+            x prev-x f- fdup f*
+            y prev-y f- fdup f* f+ fsqrt
+            total-length f+ to total-length
+            total-length length-table i cells + sf!
+        loop
+
+        \ Phase 2: Generate equidistant points
+        total-length #target-samples s>f f/ to target-step
+        
+        1 to bracket-index
+        #target-samples 1 + 1 do
+            i s>f target-step f* to current-target
+            
+            \ Find bracket
+            #lookup-samples 1 do
+                length-table i cells + sf@ current-target f>= if
+                    i to bracket-index leave
+                then
+            loop
+            
+            bracket-index #lookup-samples 1 - min to bracket-index
+            
+            \ Interpolate
+            length-table bracket-index 1 - cells + sf@ to prev-length
+            length-table bracket-index cells + sf@ to next-length
+            
+            current-target prev-length f-
+            next-length prev-length f- f/ to ratio
+            
+            coord-table bracket-index 1 - 2 * cells + sf@ to prev-x
+            coord-table bracket-index 1 - 2 * cells + cell+ sf@ to prev-y
+            coord-table bracket-index 2 * cells + sf@ to next-x
+            coord-table bracket-index 2 * cells + cell+ sf@ to next-y
+            
+            \ Compile coordinates
+            next-x prev-x f- ratio f* prev-x f+ f>p 
+            next-y prev-y f- ratio f* prev-y f+ f>p
+                i 1 = if 2dup first-point 2! then
+                2,
+        loop
+        \ first-point 2@ 2,
+
+        \ Clean up
+        coord-table free throw
+        length-table free throw
+    ]] ;
+fast]
+    
+|| : point@  0 alp @ #items 1 - clamp alp @ [] 2@ ; 
+
+variable drift-error-x
+variable drift-error-y
+
+: alp-position ( playback ) ( progress. - x. y. )
+    {: progress | frame-index floor-frame ceil-frame fract
+       floor-x floor-y ceil-x ceil-y
+       raw-x raw-y corrected-x corrected-y :}
+
+    progress alp @ #items * to frame-index
+    frame-index .> to floor-frame
+    frame-index floor-frame >. - to fract
+    floor-frame 1 + alp @ #items mod to ceil-frame
+
+    \ DEBUG:
+    \ cr 
+    \ ." progress=" progress p. 
+    \ ." frame-index=" frame-index p. 
+    \ ." floor=" floor-frame . 
+    \ ." ceil=" ceil-frame . 
+
+    floor-frame point@ scalex 2@ 2p* to floor-y to floor-x
+    ceil-frame point@ scalex 2@ 2p* to ceil-y to ceil-x
+
+    \ Raw interpolation
+    ceil-x floor-x - fract p* floor-x + to raw-x
+    ceil-y floor-y - fract p* floor-y + to raw-y
+
+    \ Dithering: accumulate and apply error correction
+    raw-x drift-error-x @ + to corrected-x
+    raw-y drift-error-y @ + to corrected-y
+
+    \ Update drift compensation (track error vs expected loop closure)
+    progress 1.0 >= if
+        \ At loop completion, measure drift from expected start position
+        0 point@ scalex 2@ 2p* \ expected start position
+        corrected-y - drift-error-y +!
+        corrected-x - drift-error-x +!
+    then
+
+    corrected-x corrected-y ;
+    
+: alp-displacement ( playback ) ( progress1. progress2. - dx. dy. )
+    swap alp-position 2>r alp-position 2r> 2- ;
+
+: getstart ( seg# array - n )
+    {: seg# a :}
+    0
+    seg# a #items 1 - min
+        for i a [] -> duration @ + loop ;
+
+: ?alp-ease ( n. - n. )
+    {: n | seg# seg segstart segdur totaldur esegs :}
+    path0 @ -> easedata @ to esegs
+    esegs 0= if n exit then
+    esegs (timespan) to totaldur
+    n esegs (leg) to n to seg#
+    seg# esegs [] to seg
+    seg -> duration @ totaldur p/ to segdur 
+    seg# esegs getstart totaldur p/ to segstart 
+    n seg ease f>p segdur p* segstart + ;
+
+|| : velstep ( playback ) ( - vx. vy. )
+    alp @ if
+        1. alp @ #items / speed @ p* >r
+        journey @ ?alp-ease
+            journey @ r@ + dup 1.0 >= if 1.0 - then ?alp-ease 
+            alp-displacement 
+            r> +journey
+    else
+        vel step
+    then ;
+
+\ =============================================================================
+\ Actor integration
+\ =============================================================================
+
+: pb ( n -- a ) 
+    me actor# 3 * + playbacks [] ;
+
+: meander ( -- vx. vy. )
+    0 0  3 for i pb [[ active @ if velstep 2+ then ]] loop ;
+    
+: path-follow ( path playback - )
+    {: p pb :}
+    x 2@
+    pb [[
+        init p path0 !
+        path0 @ -> alpdata @ alp !
+        ( x y ) startx 2! 
+    ]] ;
+    
+: path-speed ( playback - )
+    -> speed ! ;
+
+: path-scale ( playback - )
+    -> scalex 2! ;
+
+: #laps ( -- n )
+    0 pb -> #loops @ ;
+
+: pb1 ( - playback ) 0 pb ;
+: pb2 ( - playback ) 1 pb ;
+: pb3 ( - playback ) 2 pb ;
+
+\ =============================================================================
+\ Path definition helpers
+\ =============================================================================
+
+|| : (linear) {: startx starty endx endy | dx dy -- c1x c1y c2x c2y :}
+    endx startx - to dx
+    endy starty - to dy
+    dx 3 / 
+    dy 3 / 
+    dx 2 3 */ 
+    dy 2 3 */ ;
+
+: curve ( segment ) ( c1x c1y c2x c2y - )
+    c2x 2! c1x 2! ;
+
+2variable last-coord
+: waypoint ( duration. - segment ) 
+    segment instance [[ 
+        1000 p* duration !   \ temporary: convert fixed seconds to integer milliseconds 
+        SEG_WAYPOINT segtype !
+        at@ 2>. x 2!
+        1. in-amt ! 1. out-amt !
+        last-coord 2@ 2>.
+            x 2@ (linear) curve
+        at@ last-coord 2!
+    me ]] ;
+        
+: ease ( segment ) ( n - )
+    easetype ! ;
+    
+: strength ( segment ) ( in. out. - )
+    out-amt ! in-amt ! ;
+
+: *alpdata ( - )
+    2 cells array[ alp, array] alpdata ! ;
+
+: path[ create path instance [[ 0 0 last-coord 2! ;
+: path] ]] ; 
+
+: segments[ segment sizeof array[ ;
+: segments] array] segments ! ;
+
+: easing[ *alpdata segment sizeof array[ ;
+: easing] array] easedata ! ;
+
+\ =============================================================================
+\ todo?
+\ =============================================================================
+
+\ 0 value easing-path
+\ 0 value easing-seg#
+\ 0 value easing-ease
+\ 0 value easing-str-in
+\ 0 value easing-str-out
+\ : easing-settings ( ease str-in. str-out. - )
+\     to easing-str-out to easing-str-in to easing-ease ;
+\ : (fill-in) ( from - )   
+\     ;   
+\ : for-segments {: from count -- :}
+\     (fill-in)
+\     0 from count do
+\         easing-path segment -> duration @ +
+\     loop waypoint ;
+\ : (complete) ;
+

@@ -1,0 +1,28 @@
+fast[
+
+public
+500 value #stars
+1.6e fvalue star-bias
+1.0 value starfield-speed
+
+private
+: seeds, for rnd32 , loop ;
+create seeds 2000 seeds,
+: startx 0x1FF AND 511 and ;
+: y 9 RSHIFT 360 mod ;
+: speed
+    \ Math by Claude
+    17 RSHIFT $7FFF AND S>F $7FFF S>F F/ star-bias f**
+    0.75e f* 0.05e f+ F>P negate ; 
+variable ctr
+: x dup startx swap speed ctr @ p* .> + 511 and ;
+: star dup x swap y at star.png put ;
+
+public
+
+: starfield ( - )
+    batch>
+        seeds #stars for @+ star loop drop
+        starfield-speed ctr +! ;
+
+fast]

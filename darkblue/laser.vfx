@@ -1,0 +1,36 @@
+class: laser
+    actor derive
+    is-a projectile
+    prop dest-w <fixed
+    prop dest-atk <int
+class;
+
+: draw-laser ( - )
+    w @ p>f f>ds >r
+    x 2@ 2p>f
+    a @ l @ vec x 2@ 2+ 2p>f
+    1e 1e 1e 1e 
+    r> al_draw_line ;
+
+: step-laser ( - )
+    hold @ ?exit behave physics +time ;
+
+public
+
+laser object beam
+
+20 beam -> atk ! 
+
+: *beam ( laser-angle. laser-length. laser-width. - beam )
+    laser beam construct
+    beam as>
+        w ! l ! a !
+        at@ 2>. x 2!
+        halt
+        en on me ;
+
+: beams ( - )
+    beam as>
+        en @ -exit
+        step-laser
+        draw-laser ;

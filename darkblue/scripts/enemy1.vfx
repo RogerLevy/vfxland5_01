@@ -1,0 +1,6 @@
+class: enemy1
+    enemy derive
+class;
+
+\ enemy1 :: _post-init
+\     act> 1. x +! ;

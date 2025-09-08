@@ -1,0 +1,2605 @@
+progress=0. frame-index=0. floor=0 ceil=1 
+progress=0.0083312988 frame-index=0.99975586 floor=0 ceil=1 
+102.59976 100.24025 
+progress=0.0083312988 frame-index=0.99975586 floor=0 ceil=1 
+progress=0.016662598 frame-index=1.9995117 floor=1 ceil=2 
+105.18109 100.63182 
+progress=0.016662598 frame-index=1.9995117 floor=1 ceil=2 
+progress=0.024993896 frame-index=2.9992676 floor=2 ceil=3 
+107.73653 101.16716 
+progress=0.024993896 frame-index=2.9992676 floor=2 ceil=3 
+progress=0.033325195 frame-index=3.9990234 floor=3 ceil=4 
+110.25955 101.83885 
+progress=0.033325195 frame-index=3.9990234 floor=3 ceil=4 
+progress=0.041656494 frame-index=4.9987793 floor=4 ceil=5 
+112.74467 102.63965 
+progress=0.041656494 frame-index=4.9987793 floor=4 ceil=5 
+progress=0.049987793 frame-index=5.9985352 floor=5 ceil=6 
+115.18704 103.56264 
+progress=0.049987793 frame-index=5.9985352 floor=5 ceil=6 
+progress=0.058319092 frame-index=6.998291 floor=6 ceil=7 
+117.58237 104.6017 
+progress=0.058319092 frame-index=6.998291 floor=6 ceil=7 
+progress=0.066650391 frame-index=7.9980469 floor=7 ceil=8 
+119.92688 105.75082 
+progress=0.066650391 frame-index=7.9980469 floor=7 ceil=8 
+progress=0.074981689 frame-index=8.9978027 floor=8 ceil=9 
+122.21692 107.00508 
+progress=0.074981689 frame-index=8.9978027 floor=8 ceil=9 
+progress=0.083312988 frame-index=9.9975586 floor=9 ceil=10 
+124.44905 108.35966 
+progress=0.083312988 frame-index=9.9975586 floor=9 ceil=10 
+progress=0.091644287 frame-index=10.997314 floor=10 ceil=11 
+126.61975 109.81068 
+progress=0.091644287 frame-index=10.997314 floor=10 ceil=11 
+progress=0.099975586 frame-index=11.99707 floor=11 ceil=12 
+128.72545 111.35452 
+progress=0.099975586 frame-index=11.99707 floor=11 ceil=12 
+progress=0.10830688 frame-index=12.996826 floor=12 ceil=13 
+130.76222 112.98824 
+progress=0.10830688 frame-index=12.996826 floor=12 ceil=13 
+progress=0.11663818 frame-index=13.996582 floor=13 ceil=14 
+132.72577 114.70923 
+progress=0.11663818 frame-index=13.996582 floor=13 ceil=14 
+progress=0.12496948 frame-index=14.996338 floor=14 ceil=15 
+134.61136 116.51527 
+progress=0.12496948 frame-index=14.996338 floor=14 ceil=15 
+progress=0.13330078 frame-index=15.996094 floor=15 ceil=16 
+136.41354 118.40457 
+progress=0.13330078 frame-index=15.996094 floor=15 ceil=16 
+progress=0.14163208 frame-index=16.99585 floor=16 ceil=17 
+138.12599 120.37552 
+progress=0.14163208 frame-index=16.99585 floor=16 ceil=17 
+progress=0.14996338 frame-index=17.995605 floor=17 ceil=18 
+139.74152 122.42667 
+progress=0.14996338 frame-index=17.995605 floor=17 ceil=18 
+progress=0.15829468 frame-index=18.995361 floor=18 ceil=19 
+141.25162 124.55656 
+progress=0.15829468 frame-index=18.995361 floor=18 ceil=19 
+progress=0.16662598 frame-index=19.995117 floor=19 ceil=20 
+142.64648 126.76361 
+progress=0.16662598 frame-index=19.995117 floor=19 ceil=20 
+progress=0.17495728 frame-index=20.994873 floor=20 ceil=21 
+143.91458 129.04579 
+progress=0.17495728 frame-index=20.994873 floor=20 ceil=21 
+progress=0.18328857 frame-index=21.994629 floor=21 ceil=22 
+145.04253 131.40034 
+progress=0.18328857 frame-index=21.994629 floor=21 ceil=22 
+progress=0.19161987 frame-index=22.994385 floor=22 ceil=23 
+146.01508 133.82314 
+progress=0.19161987 frame-index=22.994385 floor=22 ceil=23 
+progress=0.19995117 frame-index=23.994141 floor=23 ceil=24 
+146.81471 136.30826 
+progress=0.19995117 frame-index=23.994141 floor=23 ceil=24 
+progress=0.20828247 frame-index=24.993896 floor=24 ceil=25 
+147.42227 138.84708 
+progress=0.20828247 frame-index=24.993896 floor=24 ceil=25 
+progress=0.21661377 frame-index=25.993652 floor=25 ceil=26 
+147.81703 141.4274 
+progress=0.21661377 frame-index=25.993652 floor=25 ceil=26 
+progress=0.22494507 frame-index=26.993408 floor=26 ceil=27 
+147.97865 144.03261 
+progress=0.22494507 frame-index=26.993408 floor=26 ceil=27 
+progress=0.23327637 frame-index=27.993164 floor=27 ceil=28 
+147.88841 146.64111 
+progress=0.23327637 frame-index=27.993164 floor=27 ceil=28 
+progress=0.24160767 frame-index=28.99292 floor=28 ceil=29 
+147.53206 149.22661 
+progress=0.24160767 frame-index=28.99292 floor=28 ceil=29 
+progress=0.24993896 frame-index=29.992676 floor=29 ceil=30 
+147.34666 151.82271 
+progress=0.24993896 frame-index=29.992676 floor=29 ceil=30 
+progress=0.25827026 frame-index=30.992432 floor=30 ceil=31 
+147.14763 154.42589 
+progress=0.25827026 frame-index=30.992432 floor=30 ceil=31 
+progress=0.26660156 frame-index=31.992188 floor=31 ceil=32 
+146.79634 157.01297 
+progress=0.26660156 frame-index=31.992188 floor=31 ceil=32 
+progress=0.27493286 frame-index=32.991943 floor=32 ceil=33 
+146.29924 159.57607 
+progress=0.27493286 frame-index=32.991943 floor=32 ceil=33 
+progress=0.28326416 frame-index=33.991699 floor=33 ceil=34 
+145.6637 162.10843 
+progress=0.28326416 frame-index=33.991699 floor=33 ceil=34 
+progress=0.29159546 frame-index=34.991455 floor=34 ceil=35 
+144.89719 164.60429 
+progress=0.29159546 frame-index=34.991455 floor=34 ceil=35 
+progress=0.29992676 frame-index=35.991211 floor=35 ceil=36 
+144.00664 167.05865 
+progress=0.29992676 frame-index=35.991211 floor=35 ceil=36 
+progress=0.30825806 frame-index=36.990967 floor=36 ceil=37 
+142.99844 169.4671 
+progress=0.30825806 frame-index=36.990967 floor=36 ceil=37 
+progress=0.31658936 frame-index=37.990723 floor=37 ceil=38 
+141.87863 171.82573 
+progress=0.31658936 frame-index=37.990723 floor=37 ceil=38 
+progress=0.32492065 frame-index=38.990479 floor=38 ceil=39 
+140.65236 174.13083 
+progress=0.32492065 frame-index=38.990479 floor=38 ceil=39 
+progress=0.33325195 frame-index=39.990234 floor=39 ceil=40 
+139.32454 176.37898 
+progress=0.33325195 frame-index=39.990234 floor=39 ceil=40 
+progress=0.34158325 frame-index=40.98999 floor=40 ceil=41 
+137.89925 178.56662 
+progress=0.34158325 frame-index=40.98999 floor=40 ceil=41 
+progress=0.34991455 frame-index=41.989746 floor=41 ceil=42 
+136.38026 180.69029 
+progress=0.34991455 frame-index=41.989746 floor=41 ceil=42 
+progress=0.35824585 frame-index=42.989502 floor=42 ceil=43 
+134.7706 182.74609 
+progress=0.35824585 frame-index=42.989502 floor=42 ceil=43 
+progress=0.36657715 frame-index=43.989258 floor=43 ceil=44 
+133.07303 184.7299 
+progress=0.36657715 frame-index=43.989258 floor=43 ceil=44 
+progress=0.37490845 frame-index=44.989014 floor=44 ceil=45 
+131.28981 186.63713 
+progress=0.37490845 frame-index=44.989014 floor=44 ceil=45 
+progress=0.38323975 frame-index=45.98877 floor=45 ceil=46 
+129.42291 188.46243 
+progress=0.38323975 frame-index=45.98877 floor=45 ceil=46 
+progress=0.39157104 frame-index=46.988525 floor=46 ceil=47 
+127.47391 190.19983 
+progress=0.39157104 frame-index=46.988525 floor=46 ceil=47 
+progress=0.39990234 frame-index=47.988281 floor=47 ceil=48 
+125.44432 191.84233 
+progress=0.39990234 frame-index=47.988281 floor=47 ceil=48 
+progress=0.40823364 frame-index=48.988037 floor=48 ceil=49 
+123.33563 193.38187 
+progress=0.40823364 frame-index=48.988037 floor=48 ceil=49 
+progress=0.41656494 frame-index=49.987793 floor=49 ceil=50 
+121.14928 194.80891 
+progress=0.41656494 frame-index=49.987793 floor=49 ceil=50 
+progress=0.42489624 frame-index=50.987549 floor=50 ceil=51 
+118.88719 196.1125 
+progress=0.42489624 frame-index=50.987549 floor=50 ceil=51 
+progress=0.43322754 frame-index=51.987305 floor=51 ceil=52 
+116.55191 197.27979 
+progress=0.43322754 frame-index=51.987305 floor=51 ceil=52 
+progress=0.44155884 frame-index=52.987061 floor=52 ceil=53 
+114.14713 198.29599 
+progress=0.44155884 frame-index=52.987061 floor=52 ceil=53 
+progress=0.44989014 frame-index=53.986816 floor=53 ceil=54 
+111.67819 199.14426 
+progress=0.44989014 frame-index=53.986816 floor=53 ceil=54 
+progress=0.45822144 frame-index=54.986572 floor=54 ceil=55 
+109.15291 199.80566 
+progress=0.45822144 frame-index=54.986572 floor=54 ceil=55 
+progress=0.46655273 frame-index=55.986328 floor=55 ceil=56 
+106.58243 200.26003 
+progress=0.46655273 frame-index=55.986328 floor=55 ceil=56 
+progress=0.47488403 frame-index=56.986084 floor=56 ceil=57 
+103.98212 200.48668 
+progress=0.47488403 frame-index=56.986084 floor=56 ceil=57 
+progress=0.48321533 frame-index=57.98584 floor=57 ceil=58 
+101.37218 200.4662 
+progress=0.48321533 frame-index=57.98584 floor=57 ceil=58 
+progress=0.49154663 frame-index=58.985596 floor=58 ceil=59 
+98.777725 200.18288 
+progress=0.49154663 frame-index=58.985596 floor=58 ceil=59 
+progress=0.49987793 frame-index=59.985352 floor=59 ceil=60 
+96.19162 199.90393 
+progress=0.49987793 frame-index=59.985352 floor=59 ceil=60 
+progress=0.50820923 frame-index=60.985107 floor=60 ceil=61 
+93.585861 199.74461 
+progress=0.50820923 frame-index=60.985107 floor=60 ceil=61 
+progress=0.51654053 frame-index=61.984863 floor=61 ceil=62 
+90.993576 199.43416 
+progress=0.51654053 frame-index=61.984863 floor=61 ceil=62 
+progress=0.52487183 frame-index=62.984619 floor=62 ceil=63 
+88.42334 198.97574 
+progress=0.52487183 frame-index=62.984619 floor=62 ceil=63 
+progress=0.53320312 frame-index=63.984375 floor=63 ceil=64 
+85.88208 198.37697 
+progress=0.53320312 frame-index=63.984375 floor=63 ceil=64 
+progress=0.54153442 frame-index=64.984131 floor=64 ceil=65 
+83.375824 197.64528 
+progress=0.54153442 frame-index=64.984131 floor=64 ceil=65 
+progress=0.54986572 frame-index=65.983887 floor=65 ceil=66 
+80.90979 196.78766 
+progress=0.54986572 frame-index=65.983887 floor=65 ceil=66 
+progress=0.55819702 frame-index=66.983643 floor=66 ceil=67 
+78.48851 195.81073 
+progress=0.55819702 frame-index=66.983643 floor=66 ceil=67 
+progress=0.56652832 frame-index=67.983398 floor=67 ceil=68 
+76.116043 194.72058 
+progress=0.56652832 frame-index=67.983398 floor=67 ceil=68 
+progress=0.57485962 frame-index=68.983154 floor=68 ceil=69 
+73.796112 193.52264 
+progress=0.57485962 frame-index=68.983154 floor=68 ceil=69 
+progress=0.58319092 frame-index=69.98291 floor=69 ceil=70 
+71.532227 192.22194 
+progress=0.58319092 frame-index=69.98291 floor=69 ceil=70 
+progress=0.59152222 frame-index=70.982666 floor=70 ceil=71 
+69.32785 190.82265 
+progress=0.59152222 frame-index=70.982666 floor=70 ceil=71 
+progress=0.59985352 frame-index=71.982422 floor=71 ceil=72 
+67.186493 189.32872 
+progress=0.59985352 frame-index=71.982422 floor=71 ceil=72 
+progress=0.60818481 frame-index=72.982178 floor=72 ceil=73 
+65.111969 187.74332 
+progress=0.60818481 frame-index=72.982178 floor=72 ceil=73 
+progress=0.61651611 frame-index=73.981934 floor=73 ceil=74 
+63.108231 186.06934 
+progress=0.61651611 frame-index=73.981934 floor=73 ceil=74 
+progress=0.62484741 frame-index=74.981689 floor=74 ceil=75 
+61.17981 184.30913 
+progress=0.62484741 frame-index=74.981689 floor=74 ceil=75 
+progress=0.63317871 frame-index=75.981445 floor=75 ceil=76 
+59.331772 182.46469 
+progress=0.63317871 frame-index=75.981445 floor=75 ceil=76 
+progress=0.64151001 frame-index=76.981201 floor=76 ceil=77 
+57.569962 180.53778 
+progress=0.64151001 frame-index=76.981201 floor=76 ceil=77 
+progress=0.64984131 frame-index=77.980957 floor=77 ceil=78 
+55.901047 178.52988 
+progress=0.64984131 frame-index=77.980957 floor=77 ceil=78 
+progress=0.65817261 frame-index=78.980713 floor=78 ceil=79 
+54.33284 176.44243 
+progress=0.65817261 frame-index=78.980713 floor=78 ceil=79 
+progress=0.66650391 frame-index=79.980469 floor=79 ceil=80 
+52.874298 174.27695 
+progress=0.66650391 frame-index=79.980469 floor=79 ceil=80 
+progress=0.67483521 frame-index=80.980225 floor=80 ceil=81 
+51.536133 172.03517 
+progress=0.67483521 frame-index=80.980225 floor=80 ceil=81 
+progress=0.6831665 frame-index=81.97998 floor=81 ceil=82 
+50.330627 169.71939 
+progress=0.6831665 frame-index=81.97998 floor=81 ceil=82 
+progress=0.6914978 frame-index=82.979736 floor=82 ceil=83 
+49.272049 167.33298 
+progress=0.6914978 frame-index=82.979736 floor=82 ceil=83 
+progress=0.6998291 frame-index=83.979492 floor=83 ceil=84 
+48.376633 164.88078 
+progress=0.6998291 frame-index=83.979492 floor=83 ceil=84 
+progress=0.7081604 frame-index=84.979248 floor=84 ceil=85 
+47.66275 162.36984 
+progress=0.7081604 frame-index=84.979248 floor=84 ceil=85 
+progress=0.7164917 frame-index=85.979004 floor=85 ceil=86 
+47.150314 159.81033 
+progress=0.7164917 frame-index=85.979004 floor=85 ceil=86 
+progress=0.724823 frame-index=86.97876 floor=86 ceil=87 
+46.860092 157.21635 
+progress=0.724823 frame-index=86.97876 floor=86 ceil=87 
+progress=0.7331543 frame-index=87.978516 floor=87 ceil=88 
+46.811996 154.60681 
+progress=0.7331543 frame-index=87.978516 floor=87 ceil=88 
+progress=0.7414856 frame-index=88.978271 floor=88 ceil=89 
+47.02298 152.00554 
+progress=0.7414856 frame-index=88.978271 floor=88 ceil=89 
+progress=0.74981689 frame-index=89.978027 floor=89 ceil=90 
+47.385529 149.4265 
+progress=0.74981689 frame-index=89.978027 floor=89 ceil=90 
+progress=0.75814819 frame-index=90.977783 floor=90 ceil=91 
+47.506485 146.81888 
+progress=0.75814819 frame-index=90.977783 floor=90 ceil=91 
+progress=0.76647949 frame-index=91.977539 floor=91 ceil=92 
+47.775604 144.22206 
+progress=0.76647949 frame-index=91.977539 floor=91 ceil=92 
+progress=0.77481079 frame-index=92.977295 floor=92 ceil=93 
+48.194717 141.64513 
+progress=0.77481079 frame-index=92.977295 floor=92 ceil=93 
+progress=0.78314209 frame-index=93.977051 floor=93 ceil=94 
+48.756195 139.0954 
+progress=0.78314209 frame-index=93.977051 floor=93 ceil=94 
+progress=0.79147339 frame-index=94.976807 floor=94 ceil=95 
+49.45256 136.57915 
+progress=0.79147339 frame-index=94.976807 floor=94 ceil=95 
+progress=0.79980469 frame-index=95.976562 floor=95 ceil=96 
+50.276779 134.10178 
+progress=0.79980469 frame-index=95.976562 floor=95 ceil=96 
+progress=0.80813599 frame-index=96.976318 floor=96 ceil=97 
+51.221985 131.66798 
+progress=0.80813599 frame-index=96.976318 floor=96 ceil=97 
+progress=0.81646729 frame-index=97.976074 floor=97 ceil=98 
+52.282043 129.28192 
+progress=0.81646729 frame-index=97.976074 floor=97 ceil=98 
+progress=0.82479858 frame-index=98.97583 floor=98 ceil=99 
+53.451279 126.94745 
+progress=0.82479858 frame-index=98.97583 floor=98 ceil=99 
+progress=0.83312988 frame-index=99.975586 floor=99 ceil=100 
+54.724609 124.66805 
+progress=0.83312988 frame-index=99.975586 floor=99 ceil=100 
+progress=0.84146118 frame-index=100.97534 floor=100 ceil=101 
+56.09758 122.44725 
+progress=0.84146118 frame-index=100.97534 floor=100 ceil=101 
+progress=0.84979248 frame-index=101.9751 floor=101 ceil=102 
+57.566223 120.28847 
+progress=0.84979248 frame-index=101.9751 floor=101 ceil=102 
+progress=0.85812378 frame-index=102.97485 floor=102 ceil=103 
+59.127167 118.19548 
+progress=0.85812378 frame-index=102.97485 floor=102 ceil=103 
+progress=0.86645508 frame-index=103.97461 floor=103 ceil=104 
+60.777374 116.17216 
+progress=0.86645508 frame-index=103.97461 floor=103 ceil=104 
+progress=0.87478638 frame-index=104.97437 floor=104 ceil=105 
+62.514465 114.22292 
+progress=0.87478638 frame-index=104.97437 floor=104 ceil=105 
+progress=0.88311768 frame-index=105.97412 floor=105 ceil=106 
+64.336288 112.35262 
+progress=0.88311768 frame-index=105.97412 floor=105 ceil=106 
+progress=0.89144897 frame-index=106.97388 floor=106 ceil=107 
+66.241028 110.56688 
+progress=0.89144897 frame-index=106.97388 floor=106 ceil=107 
+progress=0.89978027 frame-index=107.97363 floor=107 ceil=108 
+68.227127 108.87209 
+progress=0.89978027 frame-index=107.97363 floor=107 ceil=108 
+progress=0.90811157 frame-index=108.97339 floor=108 ceil=109 
+70.293152 107.27579 
+progress=0.90811157 frame-index=108.97339 floor=108 ceil=109 
+progress=0.91644287 frame-index=109.97314 floor=109 ceil=110 
+72.437668 105.78664 
+progress=0.91644287 frame-index=109.97314 floor=109 ceil=110 
+progress=0.92477417 frame-index=110.9729 floor=110 ceil=111 
+74.659012 104.41481 
+progress=0.92477417 frame-index=110.9729 floor=110 ceil=111 
+progress=0.93310547 frame-index=111.97266 floor=111 ceil=112 
+76.955002 103.17212 
+progress=0.93310547 frame-index=111.97266 floor=111 ceil=112 
+progress=0.94143677 frame-index=112.97241 floor=112 ceil=113 
+79.322662 102.07222 
+progress=0.94143677 frame-index=112.97241 floor=112 ceil=113 
+progress=0.94976807 frame-index=113.97217 floor=113 ceil=114 
+81.757645 101.131 
+progress=0.94976807 frame-index=113.97217 floor=113 ceil=114 
+progress=0.95809937 frame-index=114.97192 floor=114 ceil=115 
+84.25351 100.36612 
+progress=0.95809937 frame-index=114.97192 floor=114 ceil=115 
+progress=0.96643066 frame-index=115.97168 floor=115 ceil=116 
+86.801041 99.79718 
+progress=0.96643066 frame-index=115.97168 floor=115 ceil=116 
+progress=0.97476196 frame-index=116.97144 floor=116 ceil=117 
+89.387283 99.444885 
+progress=0.97476196 frame-index=116.97144 floor=116 ceil=117 
+progress=0.98309326 frame-index=117.97119 floor=117 ceil=118 
+91.994659 99.329453 
+progress=0.98309326 frame-index=117.97119 floor=117 ceil=118 
+progress=0.99142456 frame-index=118.97095 floor=118 ceil=119 
+94.600708 99.468948 
+progress=0.99142456 frame-index=118.97095 floor=118 ceil=119 
+progress=0.99975586 frame-index=119.9707 floor=119 ceil=0 
+99.844025 99.984558 
+progress=0.99975586 frame-index=119.9707 floor=119 ceil=0 
+progress=0.0080871582 frame-index=0.97045898 floor=0 ceil=1 
+102.52357 100.2332 
+progress=0.0080871582 frame-index=0.97045898 floor=0 ceil=1 
+progress=0.016418457 frame-index=1.9702148 floor=1 ceil=2 
+105.10545 100.62035 
+progress=0.016418457 frame-index=1.9702148 floor=1 ceil=2 
+progress=0.024749756 frame-index=2.9699707 floor=2 ceil=3 
+107.66164 101.15147 
+progress=0.024749756 frame-index=2.9699707 floor=2 ceil=3 
+progress=0.033081055 frame-index=3.9697266 floor=3 ceil=4 
+110.18562 101.81917 
+progress=0.033081055 frame-index=3.9697266 floor=3 ceil=4 
+progress=0.041412354 frame-index=4.9694824 floor=4 ceil=5 
+112.67184 102.61618 
+progress=0.041412354 frame-index=4.9694824 floor=4 ceil=5 
+progress=0.049743652 frame-index=5.9692383 floor=5 ceil=6 
+115.11548 103.53558 
+progress=0.049743652 frame-index=5.9692383 floor=5 ceil=6 
+progress=0.058074951 frame-index=6.9689941 floor=6 ceil=7 
+117.51218 104.57124 
+progress=0.058074951 frame-index=6.9689941 floor=6 ceil=7 
+progress=0.06640625 frame-index=7.96875 floor=7 ceil=8 
+119.85818 105.71715 
+progress=0.06640625 frame-index=7.96875 floor=7 ceil=8 
+progress=0.074737549 frame-index=8.9685059 floor=8 ceil=9 
+122.14981 106.96832 
+progress=0.074737549 frame-index=8.9685059 floor=8 ceil=9 
+progress=0.083068848 frame-index=9.9682617 floor=9 ceil=10 
+124.38365 108.31996 
+progress=0.083068848 frame-index=9.9682617 floor=9 ceil=10 
+progress=0.091400146 frame-index=10.968018 floor=10 ceil=11 
+126.55615 109.76816 
+progress=0.091400146 frame-index=10.968018 floor=10 ceil=11 
+progress=0.099731445 frame-index=11.967773 floor=11 ceil=12 
+128.66376 111.30928 
+progress=0.099731445 frame-index=11.967773 floor=11 ceil=12 
+progress=0.10806274 frame-index=12.967529 floor=12 ceil=13 
+130.70255 112.94035 
+progress=0.10806274 frame-index=12.967529 floor=12 ceil=13 
+progress=0.11639404 frame-index=13.967285 floor=13 ceil=14 
+132.66823 114.65878 
+progress=0.11639404 frame-index=13.967285 floor=13 ceil=14 
+progress=0.12472534 frame-index=14.967041 floor=14 ceil=15 
+134.55611 116.46234 
+progress=0.12472534 frame-index=14.967041 floor=14 ceil=15 
+progress=0.13305664 frame-index=15.966797 floor=15 ceil=16 
+136.36075 118.3492 
+progress=0.13305664 frame-index=15.966797 floor=15 ceil=16 
+progress=0.14138794 frame-index=16.966553 floor=16 ceil=17 
+138.07582 120.31775 
+progress=0.14138794 frame-index=16.966553 floor=16 ceil=17 
+progress=0.14971924 frame-index=17.966309 floor=17 ceil=18 
+139.69418 122.36655 
+progress=0.14971924 frame-index=17.966309 floor=17 ceil=18 
+progress=0.15805054 frame-index=18.966064 floor=18 ceil=19 
+141.20738 124.49414 
+progress=0.15805054 frame-index=18.966064 floor=18 ceil=19 
+progress=0.16638184 frame-index=19.96582 floor=19 ceil=20 
+142.60562 126.69893 
+progress=0.16638184 frame-index=19.96582 floor=19 ceil=20 
+progress=0.17471313 frame-index=20.965576 floor=20 ceil=21 
+143.87743 128.97891 
+progress=0.17471313 frame-index=20.965576 floor=20 ceil=21 
+progress=0.18304443 frame-index=21.965332 floor=21 ceil=22 
+145.00949 131.33134 
+progress=0.18304443 frame-index=21.965332 floor=21 ceil=22 
+progress=0.19137573 frame-index=22.965088 floor=22 ceil=23 
+145.9866 133.75212 
+progress=0.19137573 frame-index=22.965088 floor=22 ceil=23 
+progress=0.19970703 frame-index=23.964844 floor=23 ceil=24 
+146.79131 136.23543 
+progress=0.19970703 frame-index=23.964844 floor=23 ceil=24 
+progress=0.20803833 frame-index=24.9646 floor=24 ceil=25 
+147.4045 138.77266 
+progress=0.20803833 frame-index=24.9646 floor=24 ceil=25 
+progress=0.21636963 frame-index=25.964355 floor=25 ceil=26 
+147.8055 141.35178 
+progress=0.21636963 frame-index=25.964355 floor=25 ceil=26 
+progress=0.22470093 frame-index=26.964111 floor=26 ceil=27 
+147.97397 143.95625 
+progress=0.22470093 frame-index=26.964111 floor=26 ceil=27 
+progress=0.23303223 frame-index=27.963867 floor=27 ceil=28 
+147.8911 146.56467 
+progress=0.23303223 frame-index=27.963867 floor=27 ceil=28 
+progress=0.24136353 frame-index=28.963623 floor=28 ceil=29 
+147.54256 149.15085 
+progress=0.24136353 frame-index=28.963623 floor=28 ceil=29 
+progress=0.24969482 frame-index=29.963379 floor=29 ceil=30 
+147.35207 151.74663 
+progress=0.24969482 frame-index=29.963379 floor=29 ceil=30 
+progress=0.25802612 frame-index=30.963135 floor=30 ceil=31 
+147.15347 154.34961 
+progress=0.25802612 frame-index=30.963135 floor=30 ceil=31 
+progress=0.26635742 frame-index=31.962891 floor=31 ceil=32 
+146.80667 156.93715 
+progress=0.26635742 frame-index=31.962891 floor=31 ceil=32 
+progress=0.27468872 frame-index=32.962646 floor=32 ceil=33 
+146.31384 159.50096 
+progress=0.27468872 frame-index=32.962646 floor=32 ceil=33 
+progress=0.28302002 frame-index=33.962402 floor=33 ceil=34 
+145.68236 162.03423 
+progress=0.28302002 frame-index=33.962402 floor=33 ceil=34 
+progress=0.29135132 frame-index=34.962158 floor=34 ceil=35 
+144.91969 164.53116 
+progress=0.29135132 frame-index=34.962158 floor=34 ceil=35 
+progress=0.29968262 frame-index=35.961914 floor=35 ceil=36 
+144.03278 166.98674 
+progress=0.29968262 frame-index=35.961914 floor=35 ceil=36 
+progress=0.30801392 frame-index=36.96167 floor=36 ceil=37 
+143.02802 169.39653 
+progress=0.30801392 frame-index=36.96167 floor=36 ceil=37 
+progress=0.31634521 frame-index=37.961426 floor=37 ceil=38 
+141.91148 171.75664 
+progress=0.31634521 frame-index=37.961426 floor=37 ceil=38 
+progress=0.32467651 frame-index=38.961182 floor=38 ceil=39 
+140.68831 174.06329 
+progress=0.32467651 frame-index=38.961182 floor=38 ceil=39 
+progress=0.33300781 frame-index=39.960938 floor=39 ceil=40 
+139.36348 176.31311 
+progress=0.33300781 frame-index=39.960938 floor=39 ceil=40 
+progress=0.34133911 frame-index=40.960693 floor=40 ceil=41 
+137.94104 178.50253 
+progress=0.34133911 frame-index=40.960693 floor=40 ceil=41 
+progress=0.34967041 frame-index=41.960449 floor=41 ceil=42 
+136.4248 180.62808 
+progress=0.34967041 frame-index=41.960449 floor=41 ceil=42 
+progress=0.35800171 frame-index=42.960205 floor=42 ceil=43 
+134.81779 182.68587 
+progress=0.35800171 frame-index=42.960205 floor=42 ceil=43 
+progress=0.36633301 frame-index=43.959961 floor=43 ceil=44 
+133.12279 184.6718 
+progress=0.36633301 frame-index=43.959961 floor=43 ceil=44 
+progress=0.37466431 frame-index=44.959717 floor=44 ceil=45 
+131.3421 186.58125 
+progress=0.37466431 frame-index=44.959717 floor=44 ceil=45 
+progress=0.38299561 frame-index=45.959473 floor=45 ceil=46 
+129.47765 188.40898 
+progress=0.38299561 frame-index=45.959473 floor=45 ceil=46 
+progress=0.3913269 frame-index=46.959229 floor=46 ceil=47 
+127.53105 190.14896 
+progress=0.3913269 frame-index=46.959229 floor=46 ceil=47 
+progress=0.3996582 frame-index=47.958984 floor=47 ceil=48 
+125.50383 191.79422 
+progress=0.3996582 frame-index=47.958984 floor=47 ceil=48 
+progress=0.4079895 frame-index=48.95874 floor=48 ceil=49 
+123.39745 193.33679 
+progress=0.4079895 frame-index=48.95874 floor=48 ceil=49 
+progress=0.4163208 frame-index=49.958496 floor=49 ceil=50 
+121.21336 194.76714 
+progress=0.4163208 frame-index=49.958496 floor=49 ceil=50 
+progress=0.4246521 frame-index=50.958252 floor=50 ceil=51 
+118.95351 196.07434 
+progress=0.4246521 frame-index=50.958252 floor=50 ceil=51 
+progress=0.4329834 frame-index=51.958008 floor=51 ceil=52 
+116.62036 197.24564 
+progress=0.4329834 frame-index=51.958008 floor=51 ceil=52 
+progress=0.4413147 frame-index=52.957764 floor=52 ceil=53 
+114.21762 198.26627 
+progress=0.4413147 frame-index=52.957764 floor=52 ceil=53 
+progress=0.449646 frame-index=53.95752 floor=53 ceil=54 
+111.75056 199.11946 
+progress=0.449646 frame-index=53.95752 floor=53 ceil=54 
+progress=0.45797729 frame-index=54.957275 floor=54 ceil=55 
+109.22693 199.78636 
+progress=0.45797729 frame-index=54.957275 floor=54 ceil=55 
+progress=0.46630859 frame-index=55.957031 floor=55 ceil=56 
+106.65776 200.2468 
+progress=0.46630859 frame-index=55.957031 floor=55 ceil=56 
+progress=0.47463989 frame-index=56.956787 floor=56 ceil=57 
+104.05833 200.48012 
+progress=0.47463989 frame-index=56.956787 floor=56 ceil=57 
+progress=0.48297119 frame-index=57.956543 floor=57 ceil=58 
+101.44867 200.4669 
+progress=0.48297119 frame-index=57.956543 floor=57 ceil=58 
+progress=0.49130249 frame-index=58.956299 floor=58 ceil=59 
+98.853745 200.19128 
+progress=0.49130249 frame-index=58.956299 floor=58 ceil=59 
+progress=0.49963379 frame-index=59.956055 floor=59 ceil=60 
+96.267395 199.91211 
+progress=0.49963379 frame-index=59.956055 floor=59 ceil=60 
+progress=0.50796509 frame-index=60.955811 floor=60 ceil=61 
+93.662216 199.74924 
+progress=0.50796509 frame-index=60.955811 floor=60 ceil=61 
+progress=0.51629639 frame-index=61.955566 floor=61 ceil=62 
+91.069534 199.44333 
+progress=0.51629639 frame-index=61.955566 floor=61 ceil=62 
+progress=0.52462769 frame-index=62.955322 floor=62 ceil=63 
+88.498642 198.98924 
+progress=0.52462769 frame-index=62.955322 floor=62 ceil=63 
+progress=0.53295898 frame-index=63.955078 floor=63 ceil=64 
+85.956528 198.39458 
+progress=0.53295898 frame-index=63.955078 floor=63 ceil=64 
+progress=0.54129028 frame-index=64.954834 floor=64 ceil=65 
+83.449249 197.66678 
+progress=0.54129028 frame-index=64.954834 floor=64 ceil=65 
+progress=0.54962158 frame-index=65.95459 floor=65 ceil=66 
+80.982025 196.81285 
+progress=0.54962158 frame-index=65.95459 floor=65 ceil=66 
+progress=0.55795288 frame-index=66.954346 floor=66 ceil=67 
+78.559448 195.83942 
+progress=0.55795288 frame-index=66.954346 floor=66 ceil=67 
+progress=0.56628418 frame-index=67.954102 floor=67 ceil=68 
+76.185532 194.75258 
+progress=0.56628418 frame-index=67.954102 floor=67 ceil=68 
+progress=0.57461548 frame-index=68.953857 floor=68 ceil=69 
+73.864075 193.5578 
+progress=0.57461548 frame-index=68.953857 floor=68 ceil=69 
+progress=0.58294678 frame-index=69.953613 floor=69 ceil=70 
+71.598541 192.2601 
+progress=0.58294678 frame-index=69.953613 floor=69 ceil=70 
+progress=0.59127808 frame-index=70.953369 floor=70 ceil=71 
+69.392426 190.86371 
+progress=0.59127808 frame-index=70.953369 floor=70 ceil=71 
+progress=0.59960938 frame-index=71.953125 floor=71 ceil=72 
+67.249207 189.37254 
+progress=0.59960938 frame-index=71.953125 floor=71 ceil=72 
+progress=0.60794067 frame-index=72.952881 floor=72 ceil=73 
+65.172729 187.78981 
+progress=0.60794067 frame-index=72.952881 floor=72 ceil=73 
+progress=0.61627197 frame-index=73.952637 floor=73 ceil=74 
+63.166916 186.11844 
+progress=0.61627197 frame-index=73.952637 floor=73 ceil=74 
+progress=0.62460327 frame-index=74.952393 floor=74 ceil=75 
+61.236267 184.36076 
+progress=0.62460327 frame-index=74.952393 floor=74 ceil=75 
+progress=0.63293457 frame-index=75.952148 floor=75 ceil=76 
+59.385895 182.51878 
+progress=0.63293457 frame-index=75.952148 floor=75 ceil=76 
+progress=0.64126587 frame-index=76.951904 floor=76 ceil=77 
+57.621536 180.59428 
+progress=0.64126587 frame-index=76.951904 floor=76 ceil=77 
+progress=0.64959717 frame-index=77.95166 floor=77 ceil=78 
+55.94989 178.58876 
+progress=0.64959717 frame-index=77.95166 floor=77 ceil=78 
+progress=0.65792847 frame-index=78.951416 floor=78 ceil=79 
+54.378738 176.50363 
+progress=0.65792847 frame-index=78.951416 floor=78 ceil=79 
+progress=0.66625977 frame-index=79.951172 floor=79 ceil=80 
+52.916977 174.34045 
+progress=0.66625977 frame-index=79.951172 floor=79 ceil=80 
+progress=0.67459106 frame-index=80.950928 floor=80 ceil=81 
+51.575287 172.10092 
+progress=0.67459106 frame-index=80.950928 floor=80 ceil=81 
+progress=0.68292236 frame-index=81.950684 floor=81 ceil=82 
+50.365875 169.78731 
+progress=0.68292236 frame-index=81.950684 floor=81 ceil=82 
+progress=0.69125366 frame-index=82.950439 floor=82 ceil=83 
+49.302979 167.40295 
+progress=0.69125366 frame-index=82.950439 floor=82 ceil=83 
+progress=0.69958496 frame-index=83.950195 floor=83 ceil=84 
+48.402771 164.95268 
+progress=0.69958496 frame-index=83.950195 floor=83 ceil=84 
+progress=0.70791626 frame-index=84.949951 floor=84 ceil=85 
+47.683548 162.44345 
+progress=0.70791626 frame-index=84.949951 floor=84 ceil=85 
+progress=0.71624756 frame-index=85.949707 floor=85 ceil=86 
+47.165207 159.88536 
+progress=0.71624756 frame-index=85.949707 floor=85 ceil=86 
+progress=0.72457886 frame-index=86.949463 floor=86 ceil=87 
+46.868454 157.29239 
+progress=0.72457886 frame-index=86.949463 floor=86 ceil=87 
+progress=0.73291016 frame-index=87.949219 floor=87 ceil=88 
+46.813248 154.68329 
+progress=0.73291016 frame-index=87.949219 floor=87 ceil=88 
+progress=0.74124146 frame-index=88.948975 floor=88 ceil=89 
+47.016632 152.08177 
+progress=0.74124146 frame-index=88.948975 floor=88 ceil=89 
+progress=0.74957275 frame-index=89.94873 floor=89 ceil=90 
+47.374802 149.50206 
+progress=0.74957275 frame-index=89.94873 floor=89 ceil=90 
+progress=0.75790405 frame-index=90.948486 floor=90 ceil=91 
+47.503113 146.89531 
+progress=0.75790405 frame-index=90.948486 floor=90 ceil=91 
+progress=0.76623535 frame-index=91.948242 floor=91 ceil=92 
+47.767624 144.29814 
+progress=0.76623535 frame-index=91.948242 floor=91 ceil=92 
+progress=0.77456665 frame-index=92.947998 floor=92 ceil=93 
+48.182327 141.72063 
+progress=0.77456665 frame-index=92.947998 floor=92 ceil=93 
+progress=0.78289795 frame-index=93.947754 floor=93 ceil=94 
+48.739639 139.1701 
+progress=0.78289795 frame-index=93.947754 floor=93 ceil=94 
+progress=0.79122925 frame-index=94.94751 floor=94 ceil=95 
+49.432068 136.65286 
+progress=0.79122925 frame-index=94.94751 floor=94 ceil=95 
+progress=0.79956055 frame-index=95.947266 floor=95 ceil=96 
+50.252533 134.17435 
+progress=0.79956055 frame-index=95.947266 floor=95 ceil=96 
+progress=0.80789185 frame-index=96.947021 floor=96 ceil=97 
+51.194199 131.73927 
+progress=0.80789185 frame-index=96.947021 floor=96 ceil=97 
+progress=0.81622314 frame-index=97.946777 floor=97 ceil=98 
+52.2509 129.35181 
+progress=0.81622314 frame-index=97.946777 floor=97 ceil=98 
+progress=0.82455444 frame-index=98.946533 floor=98 ceil=99 
+53.416931 127.01582 
+progress=0.82455444 frame-index=98.946533 floor=98 ceil=99 
+progress=0.83288574 frame-index=99.946289 floor=99 ceil=100 
+54.68721 124.7348 
+progress=0.83288574 frame-index=99.946289 floor=99 ceil=100 
+progress=0.84121704 frame-index=100.94604 floor=100 ceil=101 
+56.057281 122.51228 
+progress=0.84121704 frame-index=100.94604 floor=100 ceil=101 
+progress=0.84954834 frame-index=101.9458 floor=101 ceil=102 
+57.523117 120.35168 
+progress=0.84954834 frame-index=101.9458 floor=101 ceil=102 
+progress=0.85787964 frame-index=102.94556 floor=102 ceil=103 
+59.08136 118.25676 
+progress=0.85787964 frame-index=102.94556 floor=102 ceil=103 
+progress=0.86621094 frame-index=103.94531 floor=103 ceil=104 
+60.728958 116.23141 
+progress=0.86621094 frame-index=103.94531 floor=103 ceil=104 
+progress=0.87454224 frame-index=104.94507 floor=104 ceil=105 
+62.463501 114.27998 
+progress=0.87454224 frame-index=104.94507 floor=104 ceil=105 
+progress=0.88287354 frame-index=105.94482 floor=105 ceil=106 
+64.282837 112.40736 
+progress=0.88287354 frame-index=105.94482 floor=105 ceil=106 
+progress=0.89120483 frame-index=106.94458 floor=106 ceil=107 
+66.18515 110.61914 
+progress=0.89120483 frame-index=106.94458 floor=106 ceil=107 
+progress=0.89953613 frame-index=107.94434 floor=107 ceil=108 
+68.168869 108.92168 
+progress=0.89953613 frame-index=107.94434 floor=107 ceil=108 
+progress=0.90786743 frame-index=108.94409 floor=108 ceil=109 
+70.232544 107.32248 
+progress=0.90786743 frame-index=108.94409 floor=108 ceil=109 
+progress=0.91619873 frame-index=109.94385 floor=109 ceil=110 
+72.374756 105.83018 
+progress=0.91619873 frame-index=109.94385 floor=109 ceil=110 
+progress=0.92453003 frame-index=110.9436 floor=110 ceil=111 
+74.593857 104.45491 
+progress=0.92453003 frame-index=110.9436 floor=110 ceil=111 
+progress=0.93286133 frame-index=111.94336 floor=111 ceil=112 
+76.887665 103.20842 
+progress=0.93286133 frame-index=111.94336 floor=111 ceil=112 
+progress=0.94119263 frame-index=112.94312 floor=112 ceil=113 
+79.25322 102.10432 
+progress=0.94119263 frame-index=112.94312 floor=112 ceil=113 
+progress=0.94952393 frame-index=113.94287 floor=113 ceil=114 
+81.686234 101.15845 
+progress=0.94952393 frame-index=113.94287 floor=113 ceil=114 
+progress=0.95785522 frame-index=114.94263 floor=114 ceil=115 
+84.180313 100.3884 
+progress=0.95785522 frame-index=114.94263 floor=114 ceil=115 
+progress=0.96618652 frame-index=115.94238 floor=115 ceil=116 
+86.726349 99.81369 
+progress=0.96618652 frame-index=115.94238 floor=115 ceil=116 
+progress=0.97451782 frame-index=116.94214 floor=116 ceil=117 
+89.311462 99.455017 
+progress=0.97451782 frame-index=116.94214 floor=116 ceil=117 
+progress=0.98284912 frame-index=117.94189 floor=117 ceil=118 
+91.918243 99.332626 
+progress=0.98284912 frame-index=117.94189 floor=117 ceil=118 
+progress=0.99118042 frame-index=118.94165 floor=118 ceil=119 
+94.524338 99.464645 
+progress=0.99118042 frame-index=118.94165 floor=118 ceil=119 
+progress=0.99951172 frame-index=119.94141 floor=119 ceil=0 
+99.688065 99.969131 
+progress=0.99951172 frame-index=119.94141 floor=119 ceil=0 
+progress=0.0078430176 frame-index=0.94116211 floor=0 ceil=1 
+102.44739 100.22617 
+progress=0.0078430176 frame-index=0.94116211 floor=0 ceil=1 
+progress=0.016174316 frame-index=1.940918 floor=1 ceil=2 
+105.0298 100.60887 
+progress=0.016174316 frame-index=1.940918 floor=1 ceil=2 
+progress=0.024505615 frame-index=2.9406738 floor=2 ceil=3 
+107.58676 101.13577 
+progress=0.024505615 frame-index=2.9406738 floor=2 ceil=3 
+progress=0.032836914 frame-index=3.9404297 floor=3 ceil=4 
+110.11168 101.79948 
+progress=0.032836914 frame-index=3.9404297 floor=3 ceil=4 
+progress=0.041168213 frame-index=4.9401855 floor=4 ceil=5 
+112.59903 102.59271 
+progress=0.041168213 frame-index=4.9401855 floor=4 ceil=5 
+progress=0.049499512 frame-index=5.9399414 floor=5 ceil=6 
+115.0439 103.50853 
+progress=0.049499512 frame-index=5.9399414 floor=5 ceil=6 
+progress=0.057830811 frame-index=6.9396973 floor=6 ceil=7 
+117.44199 104.54079 
+progress=0.057830811 frame-index=6.9396973 floor=6 ceil=7 
+progress=0.066162109 frame-index=7.9394531 floor=7 ceil=8 
+119.78949 105.68347 
+progress=0.066162109 frame-index=7.9394531 floor=7 ceil=8 
+progress=0.074493408 frame-index=8.939209 floor=8 ceil=9 
+122.0827 106.93156 
+progress=0.074493408 frame-index=8.939209 floor=8 ceil=9 
+progress=0.082824707 frame-index=9.9389648 floor=9 ceil=10 
+124.31824 108.28026 
+progress=0.082824707 frame-index=9.9389648 floor=9 ceil=10 
+progress=0.091156006 frame-index=10.938721 floor=10 ceil=11 
+126.49254 109.72563 
+progress=0.091156006 frame-index=10.938721 floor=10 ceil=11 
+progress=0.099487305 frame-index=11.938477 floor=11 ceil=12 
+128.60205 111.26402 
+progress=0.099487305 frame-index=11.938477 floor=11 ceil=12 
+progress=0.1078186 frame-index=12.938232 floor=12 ceil=13 
+130.64285 112.89247 
+progress=0.1078186 frame-index=12.938232 floor=12 ceil=13 
+progress=0.1161499 frame-index=13.937988 floor=13 ceil=14 
+132.6107 114.60835 
+progress=0.1161499 frame-index=13.937988 floor=13 ceil=14 
+progress=0.1244812 frame-index=14.937744 floor=14 ceil=15 
+134.50085 116.40941 
+progress=0.1244812 frame-index=14.937744 floor=14 ceil=15 
+progress=0.1328125 frame-index=15.9375 floor=15 ceil=16 
+136.30794 118.29382 
+progress=0.1328125 frame-index=15.9375 floor=15 ceil=16 
+progress=0.1411438 frame-index=16.937256 floor=16 ceil=17 
+138.02565 120.25999 
+progress=0.1411438 frame-index=16.937256 floor=16 ceil=17 
+progress=0.1494751 frame-index=17.937012 floor=17 ceil=18 
+139.64687 122.30643 
+progress=0.1494751 frame-index=17.937012 floor=17 ceil=18 
+progress=0.1578064 frame-index=18.936768 floor=18 ceil=19 
+141.16315 124.43172 
+progress=0.1578064 frame-index=18.936768 floor=18 ceil=19 
+progress=0.1661377 frame-index=19.936523 floor=19 ceil=20 
+142.56477 126.63423 
+progress=0.1661377 frame-index=19.936523 floor=19 ceil=20 
+progress=0.17446899 frame-index=20.936279 floor=20 ceil=21 
+143.84029 128.91202 
+progress=0.17446899 frame-index=20.936279 floor=20 ceil=21 
+progress=0.18280029 frame-index=21.936035 floor=21 ceil=22 
+144.97646 131.26233 
+progress=0.18280029 frame-index=21.936035 floor=21 ceil=22 
+progress=0.19113159 frame-index=22.935791 floor=22 ceil=23 
+145.95813 133.68111 
+progress=0.19113159 frame-index=22.935791 floor=22 ceil=23 
+progress=0.19946289 frame-index=23.935547 floor=23 ceil=24 
+146.7679 136.16258 
+progress=0.19946289 frame-index=23.935547 floor=23 ceil=24 
+progress=0.20779419 frame-index=24.935303 floor=24 ceil=25 
+147.38673 138.69826 
+progress=0.20779419 frame-index=24.935303 floor=24 ceil=25 
+progress=0.21612549 frame-index=25.935059 floor=25 ceil=26 
+147.79398 141.27615 
+progress=0.21612549 frame-index=25.935059 floor=25 ceil=26 
+progress=0.22445679 frame-index=26.934814 floor=26 ceil=27 
+147.96927 143.87991 
+progress=0.22445679 frame-index=26.934814 floor=26 ceil=27 
+progress=0.23278809 frame-index=27.93457 floor=27 ceil=28 
+147.8938 146.48822 
+progress=0.23278809 frame-index=27.93457 floor=27 ceil=28 
+progress=0.24111938 frame-index=28.934326 floor=28 ceil=29 
+147.55304 149.07507 
+progress=0.24111938 frame-index=28.934326 floor=28 ceil=29 
+progress=0.24945068 frame-index=29.934082 floor=29 ceil=30 
+147.35745 151.67055 
+progress=0.24945068 frame-index=29.934082 floor=29 ceil=30 
+progress=0.25778198 frame-index=30.933838 floor=30 ceil=31 
+147.1593 154.27332 
+progress=0.25778198 frame-index=30.933838 floor=30 ceil=31 
+progress=0.26611328 frame-index=31.933594 floor=31 ceil=32 
+146.817 156.86134 
+progress=0.26611328 frame-index=31.933594 floor=31 ceil=32 
+progress=0.27444458 frame-index=32.93335 floor=32 ceil=33 
+146.32843 159.42586 
+progress=0.27444458 frame-index=32.93335 floor=32 ceil=33 
+progress=0.28277588 frame-index=33.933105 floor=33 ceil=34 
+145.701 161.96002 
+progress=0.28277588 frame-index=33.933105 floor=33 ceil=34 
+progress=0.29110718 frame-index=34.932861 floor=34 ceil=35 
+144.94218 164.45802 
+progress=0.29110718 frame-index=34.932861 floor=34 ceil=35 
+progress=0.29943848 frame-index=35.932617 floor=35 ceil=36 
+144.0589 166.91483 
+progress=0.29943848 frame-index=35.932617 floor=35 ceil=36 
+progress=0.30776978 frame-index=36.932373 floor=36 ceil=37 
+143.05759 169.32596 
+progress=0.30776978 frame-index=36.932373 floor=36 ceil=37 
+progress=0.31610107 frame-index=37.932129 floor=37 ceil=38 
+141.94432 171.68753 
+progress=0.31610107 frame-index=37.932129 floor=37 ceil=38 
+progress=0.32443237 frame-index=38.931885 floor=38 ceil=39 
+140.72427 173.99576 
+progress=0.32443237 frame-index=38.931885 floor=38 ceil=39 
+progress=0.33276367 frame-index=39.931641 floor=39 ceil=40 
+139.40242 176.24725 
+progress=0.33276367 frame-index=39.931641 floor=39 ceil=40 
+progress=0.34109497 frame-index=40.931396 floor=40 ceil=41 
+137.98283 178.43845 
+progress=0.34109497 frame-index=40.931396 floor=40 ceil=41 
+progress=0.34942627 frame-index=41.931152 floor=41 ceil=42 
+136.46935 180.56587 
+progress=0.34942627 frame-index=41.931152 floor=41 ceil=42 
+progress=0.35775757 frame-index=42.930908 floor=42 ceil=43 
+134.86499 182.62566 
+progress=0.35775757 frame-index=42.930908 floor=42 ceil=43 
+progress=0.36608887 frame-index=43.930664 floor=43 ceil=44 
+133.17256 184.61368 
+progress=0.36608887 frame-index=43.930664 floor=43 ceil=44 
+progress=0.37442017 frame-index=44.93042 floor=44 ceil=45 
+131.39438 186.52539 
+progress=0.37442017 frame-index=44.93042 floor=44 ceil=45 
+progress=0.38275146 frame-index=45.930176 floor=45 ceil=46 
+129.53238 188.35551 
+progress=0.38275146 frame-index=45.930176 floor=45 ceil=46 
+progress=0.39108276 frame-index=46.929932 floor=46 ceil=47 
+127.5882 190.09807 
+progress=0.39108276 frame-index=46.929932 floor=46 ceil=47 
+progress=0.39941406 frame-index=47.929688 floor=47 ceil=48 
+125.56332 191.74612 
+progress=0.39941406 frame-index=47.929688 floor=47 ceil=48 
+progress=0.40774536 frame-index=48.929443 floor=48 ceil=49 
+123.45927 193.2917 
+progress=0.40774536 frame-index=48.929443 floor=48 ceil=49 
+progress=0.41607666 frame-index=49.929199 floor=49 ceil=50 
+121.27747 194.72536 
+progress=0.41607666 frame-index=49.929199 floor=49 ceil=50 
+progress=0.42440796 frame-index=50.928955 floor=50 ceil=51 
+119.01982 196.03619 
+progress=0.42440796 frame-index=50.928955 floor=50 ceil=51 
+progress=0.43273926 frame-index=51.928711 floor=51 ceil=52 
+116.68883 197.21149 
+progress=0.43273926 frame-index=51.928711 floor=51 ceil=52 
+progress=0.44107056 frame-index=52.928467 floor=52 ceil=53 
+114.28812 198.23654 
+progress=0.44107056 frame-index=52.928467 floor=52 ceil=53 
+progress=0.44940186 frame-index=53.928223 floor=53 ceil=54 
+111.82294 199.09468 
+progress=0.44940186 frame-index=53.928223 floor=53 ceil=54 
+progress=0.45773315 frame-index=54.927979 floor=54 ceil=55 
+109.30095 199.76706 
+progress=0.45773315 frame-index=54.927979 floor=54 ceil=55 
+progress=0.46606445 frame-index=55.927734 floor=55 ceil=56 
+106.73311 200.23355 
+progress=0.46606445 frame-index=55.927734 floor=55 ceil=56 
+progress=0.47439575 frame-index=56.92749 floor=56 ceil=57 
+104.13454 200.47357 
+progress=0.47439575 frame-index=56.92749 floor=56 ceil=57 
+progress=0.48272705 frame-index=57.927246 floor=57 ceil=58 
+101.52515 200.46761 
+progress=0.48272705 frame-index=57.927246 floor=57 ceil=58 
+progress=0.49105835 frame-index=58.927002 floor=58 ceil=59 
+98.929764 200.19969 
+progress=0.49105835 frame-index=58.927002 floor=58 ceil=59 
+progress=0.49938965 frame-index=59.926758 floor=59 ceil=60 
+96.34317 199.92027 
+progress=0.49938965 frame-index=59.926758 floor=59 ceil=60 
+progress=0.50772095 frame-index=60.926514 floor=60 ceil=61 
+93.738586 199.75385 
+progress=0.50772095 frame-index=60.926514 floor=60 ceil=61 
+progress=0.51605225 frame-index=61.92627 floor=61 ceil=62 
+91.145493 199.45248 
+progress=0.51605225 frame-index=61.92627 floor=61 ceil=62 
+progress=0.52438354 frame-index=62.926025 floor=62 ceil=63 
+88.573944 199.00273 
+progress=0.52438354 frame-index=62.926025 floor=62 ceil=63 
+progress=0.53271484 frame-index=63.925781 floor=63 ceil=64 
+86.030991 198.41219 
+progress=0.53271484 frame-index=63.925781 floor=63 ceil=64 
+progress=0.54104614 frame-index=64.925537 floor=64 ceil=65 
+83.522675 197.68828 
+progress=0.54104614 frame-index=64.925537 floor=64 ceil=65 
+progress=0.54937744 frame-index=65.925293 floor=65 ceil=66 
+81.054276 196.83804 
+progress=0.54937744 frame-index=65.925293 floor=65 ceil=66 
+progress=0.55770874 frame-index=66.925049 floor=66 ceil=67 
+78.630371 195.8681 
+progress=0.55770874 frame-index=66.925049 floor=66 ceil=67 
+progress=0.56604004 frame-index=67.924805 floor=67 ceil=68 
+76.255035 194.78458 
+progress=0.56604004 frame-index=67.924805 floor=67 ceil=68 
+progress=0.57437134 frame-index=68.924561 floor=68 ceil=69 
+73.932037 193.59296 
+progress=0.57437134 frame-index=68.924561 floor=68 ceil=69 
+progress=0.58270264 frame-index=69.924316 floor=69 ceil=70 
+71.664841 192.29826 
+progress=0.58270264 frame-index=69.924316 floor=69 ceil=70 
+progress=0.59103394 frame-index=70.924072 floor=70 ceil=71 
+69.456985 190.90475 
+progress=0.59103394 frame-index=70.924072 floor=70 ceil=71 
+progress=0.59936523 frame-index=71.923828 floor=71 ceil=72 
+67.31192 189.41637 
+progress=0.59936523 frame-index=71.923828 floor=71 ceil=72 
+progress=0.60769653 frame-index=72.923584 floor=72 ceil=73 
+65.233475 187.83632 
+progress=0.60769653 frame-index=72.923584 floor=72 ceil=73 
+progress=0.61602783 frame-index=73.92334 floor=73 ceil=74 
+63.225586 186.16754 
+progress=0.61602783 frame-index=73.92334 floor=73 ceil=74 
+progress=0.62435913 frame-index=74.923096 floor=74 ceil=75 
+61.29274 184.41238 
+progress=0.62435913 frame-index=74.923096 floor=74 ceil=75 
+progress=0.63269043 frame-index=75.922852 floor=75 ceil=76 
+59.440002 182.57288 
+progress=0.63269043 frame-index=75.922852 floor=75 ceil=76 
+progress=0.64102173 frame-index=76.922607 floor=76 ceil=77 
+57.673126 180.6508 
+progress=0.64102173 frame-index=76.922607 floor=76 ceil=77 
+progress=0.64935303 frame-index=77.922363 floor=77 ceil=78 
+55.998749 178.64764 
+progress=0.64935303 frame-index=77.922363 floor=77 ceil=78 
+progress=0.65768433 frame-index=78.922119 floor=78 ceil=79 
+54.424637 176.56485 
+progress=0.65768433 frame-index=78.922119 floor=78 ceil=79 
+progress=0.66601562 frame-index=79.921875 floor=79 ceil=80 
+52.959656 174.40395 
+progress=0.66601562 frame-index=79.921875 floor=79 ceil=80 
+progress=0.67434692 frame-index=80.921631 floor=80 ceil=81 
+51.614426 172.16666 
+progress=0.67434692 frame-index=80.921631 floor=80 ceil=81 
+progress=0.68267822 frame-index=81.921387 floor=81 ceil=82 
+50.401123 169.85521 
+progress=0.68267822 frame-index=81.921387 floor=81 ceil=82 
+progress=0.69100952 frame-index=82.921143 floor=82 ceil=83 
+49.333908 167.47293 
+FULLSCREEN
+progress=0.69100952 frame-index=82.921143 floor=82 ceil=83 
+progress=0.69934082 frame-index=83.920898 floor=83 ceil=84 
+48.428909 165.02458 
+progress=0.69934082 frame-index=83.920898 floor=83 ceil=84 
+progress=0.70767212 frame-index=84.920654 floor=84 ceil=85 
+47.704361 162.51707 
+progress=0.70767212 frame-index=84.920654 floor=84 ceil=85 
+progress=0.71600342 frame-index=85.92041 floor=85 ceil=86 
+47.180099 159.96039 
+progress=0.71600342 frame-index=85.92041 floor=85 ceil=86 
+progress=0.72433472 frame-index=86.920166 floor=86 ceil=87 
+46.876831 157.36842 
+progress=0.72433472 frame-index=86.920166 floor=86 ceil=87 
+progress=0.73266602 frame-index=87.919922 floor=87 ceil=88 
+46.814514 154.75977 
+progress=0.73266602 frame-index=87.919922 floor=87 ceil=88 
+progress=0.74099731 frame-index=88.919678 floor=88 ceil=89 
+47.010284 152.15799 
+progress=0.74099731 frame-index=88.919678 floor=88 ceil=89 
+progress=0.74932861 frame-index=89.919434 floor=89 ceil=90 
+47.36409 149.57762 
+progress=0.74932861 frame-index=89.919434 floor=89 ceil=90 
+progress=0.75765991 frame-index=90.919189 floor=90 ceil=91 
+47.499725 146.97174 
+progress=0.75765991 frame-index=90.919189 floor=90 ceil=91 
+progress=0.76599121 frame-index=91.918945 floor=91 ceil=92 
+47.759628 144.37424 
+progress=0.76599121 frame-index=91.918945 floor=91 ceil=92 
+progress=0.77432251 frame-index=92.918701 floor=92 ceil=93 
+48.169952 141.79613 
+progress=0.77432251 frame-index=92.918701 floor=92 ceil=93 
+progress=0.78265381 frame-index=93.918457 floor=93 ceil=94 
+48.723099 139.2448 
+progress=0.78265381 frame-index=93.918457 floor=93 ceil=94 
+progress=0.79098511 frame-index=94.918213 floor=94 ceil=95 
+49.41156 136.72658 
+progress=0.79098511 frame-index=94.918213 floor=94 ceil=95 
+progress=0.79931641 frame-index=95.917969 floor=95 ceil=96 
+50.228302 134.24692 
+progress=0.79931641 frame-index=95.917969 floor=95 ceil=96 
+progress=0.80764771 frame-index=96.917725 floor=96 ceil=97 
+51.166412 131.81056 
+progress=0.80764771 frame-index=96.917725 floor=96 ceil=97 
+progress=0.815979 frame-index=97.91748 floor=97 ceil=98 
+52.219757 129.42169 
+progress=0.815979 frame-index=97.91748 floor=97 ceil=98 
+progress=0.8243103 frame-index=98.917236 floor=98 ceil=99 
+53.382599 127.0842 
+progress=0.8243103 frame-index=98.917236 floor=98 ceil=99 
+progress=0.8326416 frame-index=99.916992 floor=99 ceil=100 
+54.649826 124.80156 
+progress=0.8326416 frame-index=99.916992 floor=99 ceil=100 
+progress=0.8409729 frame-index=100.91675 floor=100 ceil=101 
+56.016968 122.57732 
+progress=0.8409729 frame-index=100.91675 floor=100 ceil=101 
+progress=0.8493042 frame-index=101.9165 floor=101 ceil=102 
+57.480011 120.4149 
+progress=0.8493042 frame-index=101.9165 floor=101 ceil=102 
+progress=0.8576355 frame-index=102.91626 floor=102 ceil=103 
+59.035538 118.31805 
+progress=0.8576355 frame-index=102.91626 floor=102 ceil=103 
+progress=0.8659668 frame-index=103.91602 floor=103 ceil=104 
+60.680527 116.29065 
+progress=0.8659668 frame-index=103.91602 floor=103 ceil=104 
+progress=0.8742981 frame-index=104.91577 floor=104 ceil=105 
+62.412521 114.33705 
+progress=0.8742981 frame-index=104.91577 floor=104 ceil=105 
+progress=0.88262939 frame-index=105.91553 floor=105 ceil=106 
+64.229385 112.46211 
+progress=0.88262939 frame-index=105.91553 floor=105 ceil=106 
+progress=0.89096069 frame-index=106.91528 floor=106 ceil=107 
+66.129272 110.6714 
+progress=0.89096069 frame-index=106.91528 floor=106 ceil=107 
+progress=0.89929199 frame-index=107.91504 floor=107 ceil=108 
+68.110596 108.97127 
+progress=0.89929199 frame-index=107.91504 floor=107 ceil=108 
+progress=0.90762329 frame-index=108.91479 floor=108 ceil=109 
+70.171936 107.36919 
+progress=0.90762329 frame-index=108.91479 floor=108 ceil=109 
+progress=0.91595459 frame-index=109.91455 floor=109 ceil=110 
+72.311859 105.87375 
+progress=0.91595459 frame-index=109.91455 floor=109 ceil=110 
+progress=0.92428589 frame-index=110.91431 floor=110 ceil=111 
+74.528702 104.49503 
+progress=0.92428589 frame-index=110.91431 floor=110 ceil=111 
+progress=0.93261719 frame-index=111.91406 floor=111 ceil=112 
+76.820328 103.24474 
+progress=0.93261719 frame-index=111.91406 floor=111 ceil=112 
+progress=0.94094849 frame-index=112.91382 floor=112 ceil=113 
+79.183792 102.13644 
+progress=0.94094849 frame-index=112.91382 floor=112 ceil=113 
+progress=0.94927979 frame-index=113.91357 floor=113 ceil=114 
+81.614822 101.1859 
+progress=0.94927979 frame-index=113.91357 floor=113 ceil=114 
+progress=0.95761108 frame-index=114.91333 floor=114 ceil=115 
+84.107132 100.41066 
+progress=0.95761108 frame-index=114.91333 floor=114 ceil=115 
+progress=0.96594238 frame-index=115.91309 floor=115 ceil=116 
+86.651657 99.8302 
+progress=0.96594238 frame-index=115.91309 floor=115 ceil=116 
+progress=0.97427368 frame-index=116.91284 floor=116 ceil=117 
+89.235641 99.465164 
+progress=0.97427368 frame-index=116.91284 floor=116 ceil=117 
+progress=0.98260498 frame-index=117.9126 floor=117 ceil=118 
+91.841812 99.335815 
+progress=0.98260498 frame-index=117.9126 floor=117 ceil=118 
+progress=0.99093628 frame-index=118.91235 floor=118 ceil=119 
+94.447968 99.460342 
+progress=0.99093628 frame-index=118.91235 floor=118 ceil=119 
+progress=0.99926758 frame-index=119.91211 floor=119 ceil=0 
+99.532104 99.95369 
+progress=0.99926758 frame-index=119.91211 floor=119 ceil=0 
+progress=0.007598877 frame-index=0.91186523 floor=0 ceil=1 
+102.37122 100.21912 
+progress=0.007598877 frame-index=0.91186523 floor=0 ceil=1 
+progress=0.015930176 frame-index=1.9116211 floor=1 ceil=2 
+104.95416 100.5974 
+progress=0.015930176 frame-index=1.9116211 floor=1 ceil=2 
+progress=0.024261475 frame-index=2.911377 floor=2 ceil=3 
+107.51187 101.12009 
+progress=0.024261475 frame-index=2.911377 floor=2 ceil=3 
+progress=0.032592773 frame-index=3.9111328 floor=3 ceil=4 
+110.03775 101.7798 
+progress=0.032592773 frame-index=3.9111328 floor=3 ceil=4 
+progress=0.040924072 frame-index=4.9108887 floor=4 ceil=5 
+112.5262 102.56924 
+progress=0.040924072 frame-index=4.9108887 floor=4 ceil=5 
+progress=0.049255371 frame-index=5.9106445 floor=5 ceil=6 
+114.97234 103.48148 
+progress=0.049255371 frame-index=5.9106445 floor=5 ceil=6 
+progress=0.05758667 frame-index=6.9104004 floor=6 ceil=7 
+117.3718 104.51035 
+progress=0.05758667 frame-index=6.9104004 floor=6 ceil=7 
+progress=0.065917969 frame-index=7.9101562 floor=7 ceil=8 
+119.72078 105.6498 
+progress=0.065917969 frame-index=7.9101562 floor=7 ceil=8 
+progress=0.074249268 frame-index=8.9099121 floor=8 ceil=9 
+122.01559 106.89479 
+progress=0.074249268 frame-index=8.9099121 floor=8 ceil=9 
+progress=0.082580566 frame-index=9.909668 floor=9 ceil=10 
+124.25284 108.24055 
+progress=0.082580566 frame-index=9.909668 floor=9 ceil=10 
+progress=0.090911865 frame-index=10.909424 floor=10 ceil=11 
+126.42894 109.68311 
+progress=0.090911865 frame-index=10.909424 floor=10 ceil=11 
+progress=0.099243164 frame-index=11.90918 floor=11 ceil=12 
+128.54034 111.21878 
+progress=0.099243164 frame-index=11.90918 floor=11 ceil=12 
+progress=0.10757446 frame-index=12.908936 floor=12 ceil=13 
+130.58318 112.84459 
+progress=0.10757446 frame-index=12.908936 floor=12 ceil=13 
+progress=0.11590576 frame-index=13.908691 floor=13 ceil=14 
+132.55316 114.55791 
+progress=0.11590576 frame-index=13.908691 floor=13 ceil=14 
+progress=0.12423706 frame-index=14.908447 floor=14 ceil=15 
+134.44562 116.35648 
+progress=0.12423706 frame-index=14.908447 floor=14 ceil=15 
+progress=0.13256836 frame-index=15.908203 floor=15 ceil=16 
+136.25514 118.23845 
+progress=0.13256836 frame-index=15.908203 floor=15 ceil=16 
+progress=0.14089966 frame-index=16.907959 floor=16 ceil=17 
+137.97548 120.20222 
+progress=0.14089966 frame-index=16.907959 floor=16 ceil=17 
+progress=0.14923096 frame-index=17.907715 floor=17 ceil=18 
+139.59953 122.24631 
+progress=0.14923096 frame-index=17.907715 floor=17 ceil=18 
+progress=0.15756226 frame-index=18.907471 floor=18 ceil=19 
+141.11891 124.36929 
+progress=0.15756226 frame-index=18.907471 floor=18 ceil=19 
+progress=0.16589355 frame-index=19.907227 floor=19 ceil=20 
+142.52391 126.56955 
+progress=0.16589355 frame-index=19.907227 floor=19 ceil=20 
+progress=0.17422485 frame-index=20.906982 floor=20 ceil=21 
+143.80315 128.84514 
+progress=0.17422485 frame-index=20.906982 floor=20 ceil=21 
+progress=0.18255615 frame-index=21.906738 floor=21 ceil=22 
+144.94342 131.19333 
+progress=0.18255615 frame-index=21.906738 floor=21 ceil=22 
+progress=0.19088745 frame-index=22.906494 floor=22 ceil=23 
+145.92964 133.61011 
+progress=0.19088745 frame-index=22.906494 floor=22 ceil=23 
+progress=0.19921875 frame-index=23.90625 floor=23 ceil=24 
+146.74449 136.08975 
+progress=0.19921875 frame-index=23.90625 floor=23 ceil=24 
+progress=0.20755005 frame-index=24.906006 floor=24 ceil=25 
+147.36896 138.62386 
+progress=0.20755005 frame-index=24.906006 floor=24 ceil=25 
+progress=0.21588135 frame-index=25.905762 floor=25 ceil=26 
+147.78244 141.20053 
+progress=0.21588135 frame-index=25.905762 floor=25 ceil=26 
+progress=0.22421265 frame-index=26.905518 floor=26 ceil=27 
+147.96458 143.80356 
+progress=0.22421265 frame-index=26.905518 floor=26 ceil=27 
+progress=0.23254395 frame-index=27.905273 floor=27 ceil=28 
+147.89648 146.41179 
+progress=0.23254395 frame-index=27.905273 floor=27 ceil=28 
+progress=0.24087524 frame-index=28.905029 floor=28 ceil=29 
+147.56354 148.99931 
+progress=0.24087524 frame-index=28.905029 floor=28 ceil=29 
+progress=0.24920654 frame-index=29.904785 floor=29 ceil=30 
+147.36285 151.59447 
+progress=0.24920654 frame-index=29.904785 floor=29 ceil=30 
+progress=0.25753784 frame-index=30.904541 floor=30 ceil=31 
+147.16515 154.19704 
+progress=0.25753784 frame-index=30.904541 floor=30 ceil=31 
+progress=0.26586914 frame-index=31.904297 floor=31 ceil=32 
+146.82733 156.78554 
+progress=0.26586914 frame-index=31.904297 floor=31 ceil=32 
+progress=0.27420044 frame-index=32.904053 floor=32 ceil=33 
+146.34303 159.35075 
+progress=0.27420044 frame-index=32.904053 floor=32 ceil=33 
+progress=0.28253174 frame-index=33.903809 floor=33 ceil=34 
+145.71967 161.88582 
+progress=0.28253174 frame-index=33.903809 floor=33 ceil=34 
+progress=0.29086304 frame-index=34.903564 floor=34 ceil=35 
+144.96468 164.3849 
+progress=0.29086304 frame-index=34.903564 floor=34 ceil=35 
+progress=0.29919434 frame-index=35.90332 floor=35 ceil=36 
+144.08502 166.84291 
+progress=0.29919434 frame-index=35.90332 floor=35 ceil=36 
+progress=0.30752563 frame-index=36.903076 floor=36 ceil=37 
+143.08717 169.2554 
+progress=0.30752563 frame-index=36.903076 floor=36 ceil=37 
+progress=0.31585693 frame-index=37.902832 floor=37 ceil=38 
+141.97717 171.61842 
+progress=0.31585693 frame-index=37.902832 floor=37 ceil=38 
+progress=0.32418823 frame-index=38.902588 floor=38 ceil=39 
+140.76024 173.92822 
+progress=0.32418823 frame-index=38.902588 floor=38 ceil=39 
+progress=0.33251953 frame-index=39.902344 floor=39 ceil=40 
+139.44136 176.18138 
+progress=0.33251953 frame-index=39.902344 floor=39 ceil=40 
+progress=0.34085083 frame-index=40.9021 floor=40 ceil=41 
+138.02464 178.37436 
+progress=0.34085083 frame-index=40.9021 floor=40 ceil=41 
+progress=0.34918213 frame-index=41.901855 floor=41 ceil=42 
+136.51389 180.50366 
+progress=0.34918213 frame-index=41.901855 floor=41 ceil=42 
+progress=0.35751343 frame-index=42.901611 floor=42 ceil=43 
+134.91219 182.56543 
+progress=0.35751343 frame-index=42.901611 floor=42 ceil=43 
+progress=0.36584473 frame-index=43.901367 floor=43 ceil=44 
+133.22234 184.55557 
+progress=0.36584473 frame-index=43.901367 floor=43 ceil=44 
+progress=0.37417603 frame-index=44.901123 floor=44 ceil=45 
+131.44666 186.46953 
+progress=0.37417603 frame-index=44.901123 floor=44 ceil=45 
+progress=0.38250732 frame-index=45.900879 floor=45 ceil=46 
+129.58711 188.30205 
+progress=0.38250732 frame-index=45.900879 floor=45 ceil=46 
+progress=0.39083862 frame-index=46.900635 floor=46 ceil=47 
+127.64532 190.04718 
+progress=0.39083862 frame-index=46.900635 floor=46 ceil=47 
+progress=0.39916992 frame-index=47.900391 floor=47 ceil=48 
+125.62283 191.69803 
+progress=0.39916992 frame-index=47.900391 floor=47 ceil=48 
+progress=0.40750122 frame-index=48.900146 floor=48 ceil=49 
+123.52109 193.24663 
+progress=0.40750122 frame-index=48.900146 floor=48 ceil=49 
+progress=0.41583252 frame-index=49.899902 floor=49 ceil=50 
+121.34157 194.68358 
+progress=0.41583252 frame-index=49.899902 floor=49 ceil=50 
+progress=0.42416382 frame-index=50.899658 floor=50 ceil=51 
+119.08614 195.99803 
+progress=0.42416382 frame-index=50.899658 floor=50 ceil=51 
+progress=0.43249512 frame-index=51.899414 floor=51 ceil=52 
+116.75728 197.17732 
+progress=0.43249512 frame-index=51.899414 floor=51 ceil=52 
+progress=0.44082642 frame-index=52.89917 floor=52 ceil=53 
+114.35861 198.20683 
+progress=0.44082642 frame-index=52.89917 floor=52 ceil=53 
+progress=0.44915771 frame-index=53.898926 floor=53 ceil=54 
+111.89531 199.06989 
+progress=0.44915771 frame-index=53.898926 floor=53 ceil=54 
+progress=0.45748901 frame-index=54.898682 floor=54 ceil=55 
+109.37497 199.74774 
+progress=0.45748901 frame-index=54.898682 floor=54 ceil=55 
+progress=0.46582031 frame-index=55.898438 floor=55 ceil=56 
+106.80846 200.22032 
+progress=0.46582031 frame-index=55.898438 floor=55 ceil=56 
+progress=0.47415161 frame-index=56.898193 floor=56 ceil=57 
+104.21075 200.46703 
+progress=0.47415161 frame-index=56.898193 floor=56 ceil=57 
+progress=0.48248291 frame-index=57.897949 floor=57 ceil=58 
+101.60164 200.46831 
+progress=0.48248291 frame-index=57.897949 floor=57 ceil=58 
+progress=0.49081421 frame-index=58.897705 floor=58 ceil=59 
+99.005783 200.2081 
+progress=0.49081421 frame-index=58.897705 floor=58 ceil=59 
+progress=0.49914551 frame-index=59.897461 floor=59 ceil=60 
+96.418961 199.92845 
+progress=0.49914551 frame-index=59.897461 floor=59 ceil=60 
+progress=0.50747681 frame-index=60.897217 floor=60 ceil=61 
+93.814957 199.75847 
+progress=0.50747681 frame-index=60.897217 floor=60 ceil=61 
+progress=0.51580811 frame-index=61.896973 floor=61 ceil=62 
+91.221451 199.46165 
+progress=0.51580811 frame-index=61.896973 floor=61 ceil=62 
+progress=0.5241394 frame-index=62.896729 floor=62 ceil=63 
+88.649261 199.01624 
+progress=0.5241394 frame-index=62.896729 floor=62 ceil=63 
+progress=0.5324707 frame-index=63.896484 floor=63 ceil=64 
+86.105453 198.42979 
+progress=0.5324707 frame-index=63.896484 floor=63 ceil=64 
+progress=0.540802 frame-index=64.89624 floor=64 ceil=65 
+83.5961 197.70978 
+progress=0.540802 frame-index=64.89624 floor=64 ceil=65 
+progress=0.5491333 frame-index=65.895996 floor=65 ceil=66 
+81.126526 196.86324 
+progress=0.5491333 frame-index=65.895996 floor=65 ceil=66 
+progress=0.5574646 frame-index=66.895752 floor=66 ceil=67 
+78.701309 195.89679 
+progress=0.5574646 frame-index=66.895752 floor=66 ceil=67 
+progress=0.5657959 frame-index=67.895508 floor=67 ceil=68 
+76.324539 194.81657 
+progress=0.5657959 frame-index=67.895508 floor=67 ceil=68 
+progress=0.5741272 frame-index=68.895264 floor=68 ceil=69 
+73.999985 193.62811 
+progress=0.5741272 frame-index=68.895264 floor=68 ceil=69 
+progress=0.5824585 frame-index=69.89502 floor=69 ceil=70 
+71.731155 192.33644 
+progress=0.5824585 frame-index=69.89502 floor=69 ceil=70 
+progress=0.59078979 frame-index=70.894775 floor=70 ceil=71 
+69.521561 190.94582 
+progress=0.59078979 frame-index=70.894775 floor=70 ceil=71 
+progress=0.59912109 frame-index=71.894531 floor=71 ceil=72 
+67.374649 189.46019 
+progress=0.59912109 frame-index=71.894531 floor=71 ceil=72 
+progress=0.60745239 frame-index=72.894287 floor=72 ceil=73 
+65.294235 187.88283 
+progress=0.60745239 frame-index=72.894287 floor=72 ceil=73 
+progress=0.61578369 frame-index=73.894043 floor=73 ceil=74 
+63.284271 186.21663 
+progress=0.61578369 frame-index=73.894043 floor=73 ceil=74 
+progress=0.62411499 frame-index=74.893799 floor=74 ceil=75 
+61.349213 184.464 
+progress=0.62411499 frame-index=74.893799 floor=74 ceil=75 
+progress=0.63244629 frame-index=75.893555 floor=75 ceil=76 
+59.49411 182.62697 
+progress=0.63244629 frame-index=75.893555 floor=75 ceil=76 
+progress=0.64077759 frame-index=76.893311 floor=76 ceil=77 
+57.724701 180.70731 
+progress=0.64077759 frame-index=76.893311 floor=76 ceil=77 
+progress=0.64910889 frame-index=77.893066 floor=77 ceil=78 
+56.047607 178.70653 
+progress=0.64910889 frame-index=77.893066 floor=77 ceil=78 
+progress=0.65744019 frame-index=78.892822 floor=78 ceil=79 
+54.470535 176.62607 
+progress=0.65744019 frame-index=78.892822 floor=78 ceil=79 
+progress=0.66577148 frame-index=79.892578 floor=79 ceil=80 
+53.002335 174.46745 
+progress=0.66577148 frame-index=79.892578 floor=79 ceil=80 
+progress=0.67410278 frame-index=80.892334 floor=80 ceil=81 
+51.653564 172.23239 
+progress=0.67410278 frame-index=80.892334 floor=80 ceil=81 
+progress=0.68243408 frame-index=81.89209 floor=81 ceil=82 
+50.436371 169.92311 
+progress=0.68243408 frame-index=81.89209 floor=81 ceil=82 
+progress=0.69076538 frame-index=82.891846 floor=82 ceil=83 
+49.364853 167.54291 
+progress=0.69076538 frame-index=82.891846 floor=82 ceil=83 
+progress=0.69909668 frame-index=83.891602 floor=83 ceil=84 
+48.455063 165.09648 
+progress=0.69909668 frame-index=83.891602 floor=83 ceil=84 
+progress=0.70742798 frame-index=84.891357 floor=84 ceil=85 
+47.725174 162.59068 
+progress=0.70742798 frame-index=84.891357 floor=84 ceil=85 
+progress=0.71575928 frame-index=85.891113 floor=85 ceil=86 
+47.194992 160.03543 
+progress=0.71575928 frame-index=85.891113 floor=85 ceil=86 
+progress=0.72409058 frame-index=86.890869 floor=86 ceil=87 
+46.885193 157.44446 
+progress=0.72409058 frame-index=86.890869 floor=86 ceil=87 
+progress=0.73242188 frame-index=87.890625 floor=87 ceil=88 
+46.815765 154.83626 
+progress=0.73242188 frame-index=87.890625 floor=87 ceil=88 
+progress=0.74075317 frame-index=88.890381 floor=88 ceil=89 
+47.003937 152.23421 
+progress=0.74075317 frame-index=88.890381 floor=88 ceil=89 
+progress=0.74908447 frame-index=89.890137 floor=89 ceil=90 
+47.353363 149.65318 
+progress=0.74908447 frame-index=89.890137 floor=89 ceil=90 
+progress=0.75741577 frame-index=90.889893 floor=90 ceil=91 
+47.496338 147.04817 
+progress=0.75741577 frame-index=90.889893 floor=90 ceil=91 
+progress=0.76574707 frame-index=91.889648 floor=91 ceil=92 
+47.751648 144.45032 
+progress=0.76574707 frame-index=91.889648 floor=91 ceil=92 
+progress=0.77407837 frame-index=92.889404 floor=92 ceil=93 
+48.157578 141.87163 
+progress=0.77407837 frame-index=92.889404 floor=92 ceil=93 
+progress=0.78240967 frame-index=93.88916 floor=93 ceil=94 
+48.706543 139.3195 
+progress=0.78240967 frame-index=93.88916 floor=93 ceil=94 
+progress=0.79074097 frame-index=94.888916 floor=94 ceil=95 
+49.391068 136.80029 
+progress=0.79074097 frame-index=94.888916 floor=94 ceil=95 
+progress=0.79907227 frame-index=95.888672 floor=95 ceil=96 
+50.204056 134.31949 
+progress=0.79907227 frame-index=95.888672 floor=95 ceil=96 
+progress=0.80740356 frame-index=96.888428 floor=96 ceil=97 
+51.138641 131.88185 
+progress=0.80740356 frame-index=96.888428 floor=96 ceil=97 
+progress=0.81573486 frame-index=97.888184 floor=97 ceil=98 
+52.188614 129.49159 
+progress=0.81573486 frame-index=97.888184 floor=97 ceil=98 
+progress=0.82406616 frame-index=98.887939 floor=98 ceil=99 
+53.348251 127.15257 
+progress=0.82406616 frame-index=98.887939 floor=98 ceil=99 
+progress=0.83239746 frame-index=99.887695 floor=99 ceil=100 
+54.612442 124.86832 
+progress=0.83239746 frame-index=99.887695 floor=99 ceil=100 
+progress=0.84072876 frame-index=100.88745 floor=100 ceil=101 
+55.976669 122.64236 
+progress=0.84072876 frame-index=100.88745 floor=100 ceil=101 
+progress=0.84906006 frame-index=101.88721 floor=101 ceil=102 
+57.436905 120.47812 
+progress=0.84906006 frame-index=101.88721 floor=101 ceil=102 
+progress=0.85739136 frame-index=102.88696 floor=102 ceil=103 
+58.989731 118.37933 
+progress=0.85739136 frame-index=102.88696 floor=102 ceil=103 
+progress=0.86572266 frame-index=103.88672 floor=103 ceil=104 
+60.632111 116.34988 
+progress=0.86572266 frame-index=103.88672 floor=103 ceil=104 
+progress=0.87405396 frame-index=104.88647 floor=104 ceil=105 
+62.361557 114.3941 
+progress=0.87405396 frame-index=104.88647 floor=104 ceil=105 
+progress=0.88238525 frame-index=105.88623 floor=105 ceil=106 
+64.175934 112.51686 
+progress=0.88238525 frame-index=105.88623 floor=105 ceil=106 
+progress=0.89071655 frame-index=106.88599 floor=106 ceil=107 
+66.073395 110.72366 
+progress=0.89071655 frame-index=106.88599 floor=106 ceil=107 
+progress=0.89904785 frame-index=107.88574 floor=107 ceil=108 
+68.052338 109.02086 
+progress=0.89904785 frame-index=107.88574 floor=107 ceil=108 
+progress=0.90737915 frame-index=108.8855 floor=108 ceil=109 
+70.111328 107.41589 
+progress=0.90737915 frame-index=108.8855 floor=108 ceil=109 
+progress=0.91571045 frame-index=109.88525 floor=109 ceil=110 
+72.248947 105.9173 
+progress=0.91571045 frame-index=109.88525 floor=109 ceil=110 
+progress=0.92404175 frame-index=110.88501 floor=110 ceil=111 
+74.463547 104.53513 
+progress=0.92404175 frame-index=110.88501 floor=110 ceil=111 
+progress=0.93237305 frame-index=111.88477 floor=111 ceil=112 
+76.752991 103.28105 
+progress=0.93237305 frame-index=111.88477 floor=111 ceil=112 
+progress=0.94070435 frame-index=112.88452 floor=112 ceil=113 
+79.114349 102.16856 
+progress=0.94070435 frame-index=112.88452 floor=112 ceil=113 
+progress=0.94903564 frame-index=113.88428 floor=113 ceil=114 
+81.543411 101.21335 
+progress=0.94903564 frame-index=113.88428 floor=113 ceil=114 
+progress=0.95736694 frame-index=114.88403 floor=114 ceil=115 
+84.033936 100.43294 
+progress=0.95736694 frame-index=114.88403 floor=114 ceil=115 
+progress=0.96569824 frame-index=115.88379 floor=115 ceil=116 
+86.576965 99.846725 
+progress=0.96569824 frame-index=115.88379 floor=115 ceil=116 
+progress=0.97402954 frame-index=116.88354 floor=116 ceil=117 
+89.159821 99.475311 
+progress=0.97402954 frame-index=116.88354 floor=116 ceil=117 
+progress=0.98236084 frame-index=117.8833 floor=117 ceil=118 
+91.765396 99.339005 
+progress=0.98236084 frame-index=117.8833 floor=117 ceil=118 
+progress=0.99069214 frame-index=118.88306 floor=118 ceil=119 
+94.371597 99.456039 
+progress=0.99069214 frame-index=118.88306 floor=118 ceil=119 
+progress=0.99902344 frame-index=119.88281 floor=119 ceil=0 
+99.376144 99.938263 
+progress=0.99902344 frame-index=119.88281 floor=119 ceil=0 
+progress=0.0073547363 frame-index=0.88256836 floor=0 ceil=1 
+102.29503 100.21208 
+progress=0.0073547363 frame-index=0.88256836 floor=0 ceil=1 
+progress=0.015686035 frame-index=1.8823242 floor=1 ceil=2 
+104.87851 100.58592 
+progress=0.015686035 frame-index=1.8823242 floor=1 ceil=2 
+progress=0.024017334 frame-index=2.8820801 floor=2 ceil=3 
+107.43698 101.1044 
+progress=0.024017334 frame-index=2.8820801 floor=2 ceil=3 
+progress=0.032348633 frame-index=3.8818359 floor=3 ceil=4 
+109.96382 101.76012 
+progress=0.032348633 frame-index=3.8818359 floor=3 ceil=4 
+progress=0.040679932 frame-index=4.8815918 floor=4 ceil=5 
+112.45338 102.54578 
+progress=0.040679932 frame-index=4.8815918 floor=4 ceil=5 
+progress=0.04901123 frame-index=5.8813477 floor=5 ceil=6 
+114.90076 103.45442 
+progress=0.04901123 frame-index=5.8813477 floor=5 ceil=6 
+progress=0.057342529 frame-index=6.8811035 floor=6 ceil=7 
+117.30161 104.47989 
+progress=0.057342529 frame-index=6.8811035 floor=6 ceil=7 
+progress=0.065673828 frame-index=7.8808594 floor=7 ceil=8 
+119.65208 105.6161 
+progress=0.065673828 frame-index=7.8808594 floor=7 ceil=8 
+progress=0.074005127 frame-index=8.8806152 floor=8 ceil=9 
+121.9485 106.85803 
+progress=0.074005127 frame-index=8.8806152 floor=8 ceil=9 
+progress=0.082336426 frame-index=9.8803711 floor=9 ceil=10 
+124.18742 108.20085 
+progress=0.082336426 frame-index=9.8803711 floor=9 ceil=10 
+progress=0.090667725 frame-index=10.880127 floor=10 ceil=11 
+126.36533 109.64058 
+progress=0.090667725 frame-index=10.880127 floor=10 ceil=11 
+progress=0.098999023 frame-index=11.879883 floor=11 ceil=12 
+128.47865 111.17352 
+progress=0.098999023 frame-index=11.879883 floor=11 ceil=12 
+progress=0.10733032 frame-index=12.879639 floor=12 ceil=13 
+130.5235 112.79671 
+progress=0.10733032 frame-index=12.879639 floor=12 ceil=13 
+progress=0.11566162 frame-index=13.879395 floor=13 ceil=14 
+132.49564 114.50746 
+progress=0.11566162 frame-index=13.879395 floor=13 ceil=14 
+progress=0.12399292 frame-index=14.87915 floor=14 ceil=15 
+134.39037 116.30354 
+progress=0.12399292 frame-index=14.87915 floor=14 ceil=15 
+progress=0.13232422 frame-index=15.878906 floor=15 ceil=16 
+136.20233 118.18307 
+progress=0.13232422 frame-index=15.878906 floor=15 ceil=16 
+progress=0.14065552 frame-index=16.878662 floor=16 ceil=17 
+137.92531 120.14445 
+progress=0.14065552 frame-index=16.878662 floor=16 ceil=17 
+progress=0.14898682 frame-index=17.878418 floor=17 ceil=18 
+139.5522 122.18619 
+progress=0.14898682 frame-index=17.878418 floor=17 ceil=18 
+progress=0.15731812 frame-index=18.878174 floor=18 ceil=19 
+141.07468 124.30685 
+progress=0.15731812 frame-index=18.878174 floor=18 ceil=19 
+progress=0.16564941 frame-index=19.87793 floor=19 ceil=20 
+142.48305 126.50487 
+progress=0.16564941 frame-index=19.87793 floor=19 ceil=20 
+progress=0.17398071 frame-index=20.877686 floor=20 ceil=21 
+143.76601 128.77824 
+progress=0.17398071 frame-index=20.877686 floor=20 ceil=21 
+progress=0.18231201 frame-index=21.877441 floor=21 ceil=22 
+144.91039 131.12431 
+progress=0.18231201 frame-index=21.877441 floor=21 ceil=22 
+progress=0.19064331 frame-index=22.877197 floor=22 ceil=23 
+145.90117 133.53909 
+progress=0.19064331 frame-index=22.877197 floor=22 ceil=23 
+progress=0.19897461 frame-index=23.876953 floor=23 ceil=24 
+146.7211 136.01692 
+progress=0.19897461 frame-index=23.876953 floor=23 ceil=24 
+progress=0.20730591 frame-index=24.876709 floor=24 ceil=25 
+147.35118 138.54944 
+progress=0.20730591 frame-index=24.876709 floor=24 ceil=25 
+progress=0.21563721 frame-index=25.876465 floor=25 ceil=26 
+147.7709 141.12491 
+progress=0.21563721 frame-index=25.876465 floor=25 ceil=26 
+progress=0.22396851 frame-index=26.876221 floor=26 ceil=27 
+147.95988 143.72722 
+progress=0.22396851 frame-index=26.876221 floor=26 ceil=27 
+progress=0.2322998 frame-index=27.875977 floor=27 ceil=28 
+147.89919 146.33534 
+progress=0.2322998 frame-index=27.875977 floor=27 ceil=28 
+progress=0.2406311 frame-index=28.875732 floor=28 ceil=29 
+147.57404 148.92355 
+progress=0.2406311 frame-index=28.875732 floor=28 ceil=29 
+progress=0.2489624 frame-index=29.875488 floor=29 ceil=30 
+147.36826 151.51839 
+progress=0.2489624 frame-index=29.875488 floor=29 ceil=30 
+progress=0.2572937 frame-index=30.875244 floor=30 ceil=31 
+147.17097 154.12074 
+progress=0.2572937 frame-index=30.875244 floor=30 ceil=31 
+progress=0.265625 frame-index=31.875 floor=31 ceil=32 
+146.83765 156.70973 
+progress=0.265625 frame-index=31.875 floor=31 ceil=32 
+progress=0.2739563 frame-index=32.874756 floor=32 ceil=33 
+146.35764 159.27565 
+progress=0.2739563 frame-index=32.874756 floor=32 ceil=33 
+progress=0.2822876 frame-index=33.874512 floor=33 ceil=34 
+145.73833 161.81161 
+progress=0.2822876 frame-index=33.874512 floor=33 ceil=34 
+progress=0.2906189 frame-index=34.874268 floor=34 ceil=35 
+144.98717 164.31177 
+progress=0.2906189 frame-index=34.874268 floor=34 ceil=35 
+progress=0.2989502 frame-index=35.874023 floor=35 ceil=36 
+144.11115 166.771 
+progress=0.2989502 frame-index=35.874023 floor=35 ceil=36 
+progress=0.30728149 frame-index=36.873779 floor=36 ceil=37 
+143.11674 169.18483 
+progress=0.30728149 frame-index=36.873779 floor=36 ceil=37 
+progress=0.31561279 frame-index=37.873535 floor=37 ceil=38 
+142.01001 171.54932 
+progress=0.31561279 frame-index=37.873535 floor=37 ceil=38 
+progress=0.32394409 frame-index=38.873291 floor=38 ceil=39 
+140.7962 173.86069 
+progress=0.32394409 frame-index=38.873291 floor=38 ceil=39 
+progress=0.33227539 frame-index=39.873047 floor=39 ceil=40 
+139.4803 176.11552 
+progress=0.33227539 frame-index=39.873047 floor=39 ceil=40 
+progress=0.34060669 frame-index=40.872803 floor=40 ceil=41 
+138.06644 178.31027 
+progress=0.34060669 frame-index=40.872803 floor=40 ceil=41 
+progress=0.34893799 frame-index=41.872559 floor=41 ceil=42 
+136.55843 180.44145 
+progress=0.34893799 frame-index=41.872559 floor=41 ceil=42 
+progress=0.35726929 frame-index=42.872314 floor=42 ceil=43 
+134.95938 182.5052 
+progress=0.35726929 frame-index=42.872314 floor=42 ceil=43 
+progress=0.36560059 frame-index=43.87207 floor=43 ceil=44 
+133.27211 184.49747 
+progress=0.36560059 frame-index=43.87207 floor=43 ceil=44 
+progress=0.37393188 frame-index=44.871826 floor=44 ceil=45 
+131.49895 186.41367 
+progress=0.37393188 frame-index=44.871826 floor=44 ceil=45 
+progress=0.38226318 frame-index=45.871582 floor=45 ceil=46 
+129.64185 188.24858 
+progress=0.38226318 frame-index=45.871582 floor=45 ceil=46 
+progress=0.39059448 frame-index=46.871338 floor=46 ceil=47 
+127.70247 189.99631 
+progress=0.39059448 frame-index=46.871338 floor=46 ceil=47 
+progress=0.39892578 frame-index=47.871094 floor=47 ceil=48 
+125.68233 191.64993 
+progress=0.39892578 frame-index=47.871094 floor=47 ceil=48 
+progress=0.40725708 frame-index=48.87085 floor=48 ceil=49 
+123.58292 193.20155 
+progress=0.40725708 frame-index=48.87085 floor=48 ceil=49 
+progress=0.41558838 frame-index=49.870605 floor=49 ceil=50 
+121.40565 194.6418 
+progress=0.41558838 frame-index=49.870605 floor=49 ceil=50 
+progress=0.42391968 frame-index=50.870361 floor=50 ceil=51 
+119.15245 195.95987 
+progress=0.42391968 frame-index=50.870361 floor=50 ceil=51 
+progress=0.43225098 frame-index=51.870117 floor=51 ceil=52 
+116.82574 197.14317 
+progress=0.43225098 frame-index=51.870117 floor=51 ceil=52 
+progress=0.44058228 frame-index=52.869873 floor=52 ceil=53 
+114.42911 198.17711 
+progress=0.44058228 frame-index=52.869873 floor=52 ceil=53 
+progress=0.44891357 frame-index=53.869629 floor=53 ceil=54 
+111.96768 199.04509 
+progress=0.44891357 frame-index=53.869629 floor=53 ceil=54 
+progress=0.45724487 frame-index=54.869385 floor=54 ceil=55 
+109.44901 199.72844 
+progress=0.45724487 frame-index=54.869385 floor=54 ceil=55 
+progress=0.46557617 frame-index=55.869141 floor=55 ceil=56 
+106.8838 200.20709 
+progress=0.46557617 frame-index=55.869141 floor=55 ceil=56 
+progress=0.47390747 frame-index=56.868896 floor=56 ceil=57 
+104.28696 200.46046 
+progress=0.47390747 frame-index=56.868896 floor=56 ceil=57 
+progress=0.48223877 frame-index=57.868652 floor=57 ceil=58 
+101.67812 200.46901 
+progress=0.48223877 frame-index=57.868652 floor=57 ceil=58 
+progress=0.49057007 frame-index=58.868408 floor=58 ceil=59 
+99.081818 200.21652 
+progress=0.49057007 frame-index=58.868408 floor=58 ceil=59 
+progress=0.49890137 frame-index=59.868164 floor=59 ceil=60 
+96.494736 199.93661 
+progress=0.49890137 frame-index=59.868164 floor=59 ceil=60 
+progress=0.50723267 frame-index=60.86792 floor=60 ceil=61 
+93.891327 199.76308 
+progress=0.50723267 frame-index=60.86792 floor=60 ceil=61 
+progress=0.51556396 frame-index=61.867676 floor=61 ceil=62 
+91.297409 199.47083 
+progress=0.51556396 frame-index=61.867676 floor=61 ceil=62 
+progress=0.52389526 frame-index=62.867432 floor=62 ceil=63 
+88.724564 199.02974 
+progress=0.52389526 frame-index=62.867432 floor=62 ceil=63 
+progress=0.53222656 frame-index=63.867188 floor=63 ceil=64 
+86.179901 198.4474 
+progress=0.53222656 frame-index=63.867188 floor=63 ceil=64 
+progress=0.54055786 frame-index=64.866943 floor=64 ceil=65 
+83.66954 197.73129 
+progress=0.54055786 frame-index=64.866943 floor=64 ceil=65 
+progress=0.54888916 frame-index=65.866699 floor=65 ceil=66 
+81.198776 196.88843 
+progress=0.54888916 frame-index=65.866699 floor=65 ceil=66 
+progress=0.55722046 frame-index=66.866455 floor=66 ceil=67 
+78.772232 195.92548 
+progress=0.55722046 frame-index=66.866455 floor=66 ceil=67 
+progress=0.56555176 frame-index=67.866211 floor=67 ceil=68 
+76.394028 194.84859 
+progress=0.56555176 frame-index=67.866211 floor=67 ceil=68 
+progress=0.57388306 frame-index=68.865967 floor=68 ceil=69 
+74.067947 193.66327 
+progress=0.57388306 frame-index=68.865967 floor=68 ceil=69 
+progress=0.58221436 frame-index=69.865723 floor=69 ceil=70 
+71.79747 192.3746 
+progress=0.58221436 frame-index=69.865723 floor=69 ceil=70 
+progress=0.59054565 frame-index=70.865479 floor=70 ceil=71 
+69.586121 190.98686 
+progress=0.59054565 frame-index=70.865479 floor=70 ceil=71 
+progress=0.59887695 frame-index=71.865234 floor=71 ceil=72 
+67.437363 189.50403 
+progress=0.59887695 frame-index=71.865234 floor=71 ceil=72 
+progress=0.60720825 frame-index=72.86499 floor=72 ceil=73 
+65.354996 187.92934 
+progress=0.60720825 frame-index=72.86499 floor=72 ceil=73 
+progress=0.61553955 frame-index=73.864746 floor=73 ceil=74 
+63.342957 186.26573 
+progress=0.61553955 frame-index=73.864746 floor=73 ceil=74 
+progress=0.62387085 frame-index=74.864502 floor=74 ceil=75 
+61.405685 184.51564 
+progress=0.62387085 frame-index=74.864502 floor=74 ceil=75 
+progress=0.63220215 frame-index=75.864258 floor=75 ceil=76 
+59.548218 182.68106 
+progress=0.63220215 frame-index=75.864258 floor=75 ceil=76 
+progress=0.64053345 frame-index=76.864014 floor=76 ceil=77 
+57.776276 180.76382 
+progress=0.64053345 frame-index=76.864014 floor=76 ceil=77 
+progress=0.64886475 frame-index=77.86377 floor=77 ceil=78 
+56.096466 178.76541 
+progress=0.64886475 frame-index=77.86377 floor=77 ceil=78 
+progress=0.65719604 frame-index=78.863525 floor=78 ceil=79 
+54.516434 176.68729 
+progress=0.65719604 frame-index=78.863525 floor=78 ceil=79 
+progress=0.66552734 frame-index=79.863281 floor=79 ceil=80 
+53.045013 174.53094 
+progress=0.66552734 frame-index=79.863281 floor=79 ceil=80 
+progress=0.67385864 frame-index=80.863037 floor=80 ceil=81 
+51.692719 172.29813 
+progress=0.67385864 frame-index=80.863037 floor=80 ceil=81 
+progress=0.68218994 frame-index=81.862793 floor=81 ceil=82 
+50.471619 169.99101 
+progress=0.68218994 frame-index=81.862793 floor=81 ceil=82 
+progress=0.69052124 frame-index=82.862549 floor=82 ceil=83 
+49.395782 167.61287 
+progress=0.69052124 frame-index=82.862549 floor=82 ceil=83 
+progress=0.69885254 frame-index=83.862305 floor=83 ceil=84 
+48.481201 165.16838 
+progress=0.69885254 frame-index=83.862305 floor=83 ceil=84 
+progress=0.70718384 frame-index=84.862061 floor=84 ceil=85 
+47.745987 162.66431 
+progress=0.70718384 frame-index=84.862061 floor=84 ceil=85 
+progress=0.71551514 frame-index=85.861816 floor=85 ceil=86 
+47.209885 160.11046 
+progress=0.71551514 frame-index=85.861816 floor=85 ceil=86 
+progress=0.72384644 frame-index=86.861572 floor=86 ceil=87 
+46.89357 157.52049 
+progress=0.72384644 frame-index=86.861572 floor=86 ceil=87 
+progress=0.73217773 frame-index=87.861328 floor=87 ceil=88 
+46.817032 154.91273 
+progress=0.73217773 frame-index=87.861328 floor=87 ceil=88 
+progress=0.74050903 frame-index=88.861084 floor=88 ceil=89 
+46.997589 152.31044 
+progress=0.74050903 frame-index=88.861084 floor=88 ceil=89 
+progress=0.74884033 frame-index=89.86084 floor=89 ceil=90 
+47.342651 149.72874 
+progress=0.74884033 frame-index=89.86084 floor=89 ceil=90 
+progress=0.75717163 frame-index=90.860596 floor=90 ceil=91 
+47.49295 147.1246 
+progress=0.75717163 frame-index=90.860596 floor=90 ceil=91 
+progress=0.76550293 frame-index=91.860352 floor=91 ceil=92 
+47.743652 144.52641 
+progress=0.76550293 frame-index=91.860352 floor=91 ceil=92 
+progress=0.77383423 frame-index=92.860107 floor=92 ceil=93 
+48.145187 141.94713 
+progress=0.77383423 frame-index=92.860107 floor=92 ceil=93 
+progress=0.78216553 frame-index=93.859863 floor=93 ceil=94 
+48.690002 139.3942 
+progress=0.78216553 frame-index=93.859863 floor=93 ceil=94 
+progress=0.79049683 frame-index=94.859619 floor=94 ceil=95 
+49.370575 136.87401 
+progress=0.79049683 frame-index=94.859619 floor=94 ceil=95 
+progress=0.79882812 frame-index=95.859375 floor=95 ceil=96 
+50.17981 134.39206 
+progress=0.79882812 frame-index=95.859375 floor=95 ceil=96 
+progress=0.80715942 frame-index=96.859131 floor=96 ceil=97 
+51.110855 131.95314 
+progress=0.80715942 frame-index=96.859131 floor=96 ceil=97 
+progress=0.81549072 frame-index=97.858887 floor=97 ceil=98 
+52.157471 129.56148 
+progress=0.81549072 frame-index=97.858887 floor=97 ceil=98 
+progress=0.82382202 frame-index=98.858643 floor=98 ceil=99 
+53.313919 127.22095 
+progress=0.82382202 frame-index=98.858643 floor=98 ceil=99 
+progress=0.83215332 frame-index=99.858398 floor=99 ceil=100 
+54.575058 124.93507 
+progress=0.83215332 frame-index=99.858398 floor=99 ceil=100 
+progress=0.84048462 frame-index=100.85815 floor=100 ceil=101 
+55.936371 122.7074 
+progress=0.84048462 frame-index=100.85815 floor=100 ceil=101 
+progress=0.84881592 frame-index=101.85791 floor=101 ceil=102 
+57.393799 120.54134 
+progress=0.84881592 frame-index=101.85791 floor=101 ceil=102 
+progress=0.85714722 frame-index=102.85767 floor=102 ceil=103 
+58.943924 118.44061 
+progress=0.85714722 frame-index=102.85767 floor=102 ceil=103 
+progress=0.86547852 frame-index=103.85742 floor=103 ceil=104 
+60.583679 116.40913 
+progress=0.86547852 frame-index=103.85742 floor=103 ceil=104 
+progress=0.87380981 frame-index=104.85718 floor=104 ceil=105 
+62.310593 114.45117 
+progress=0.87380981 frame-index=104.85718 floor=104 ceil=105 
+progress=0.88214111 frame-index=105.85693 floor=105 ceil=106 
+64.122482 112.57161 
+progress=0.88214111 frame-index=105.85693 floor=105 ceil=106 
+progress=0.89047241 frame-index=106.85669 floor=106 ceil=107 
+66.017517 110.77594 
+progress=0.89047241 frame-index=106.85669 floor=106 ceil=107 
+progress=0.89880371 frame-index=107.85645 floor=107 ceil=108 
+67.99408 109.07047 
+progress=0.89880371 frame-index=107.85645 floor=107 ceil=108 
+progress=0.90713501 frame-index=108.8562 floor=108 ceil=109 
+70.050735 107.46259 
+progress=0.90713501 frame-index=108.8562 floor=108 ceil=109 
+progress=0.91546631 frame-index=109.85596 floor=109 ceil=110 
+72.18605 105.96085 
+progress=0.91546631 frame-index=109.85596 floor=109 ceil=110 
+progress=0.92379761 frame-index=110.85571 floor=110 ceil=111 
+74.398392 104.57524 
+progress=0.92379761 frame-index=110.85571 floor=110 ceil=111 
+progress=0.93212891 frame-index=111.85547 floor=111 ceil=112 
+76.685638 103.31737 
+progress=0.93212891 frame-index=111.85547 floor=111 ceil=112 
+progress=0.94046021 frame-index=112.85522 floor=112 ceil=113 
+79.044907 102.20068 
+progress=0.94046021 frame-index=112.85522 floor=112 ceil=113 
+progress=0.9487915 frame-index=113.85498 floor=113 ceil=114 
+81.472 101.2408 
+progress=0.9487915 frame-index=113.85498 floor=113 ceil=114 
+progress=0.9571228 frame-index=114.85474 floor=114 ceil=115 
+83.960754 100.4552 
+progress=0.9571228 frame-index=114.85474 floor=114 ceil=115 
+progress=0.9654541 frame-index=115.85449 floor=115 ceil=116 
+86.502258 99.863235 
+progress=0.9654541 frame-index=115.85449 floor=115 ceil=116 
+progress=0.9737854 frame-index=116.85425 floor=116 ceil=117 
+89.084 99.485458 
+progress=0.9737854 frame-index=116.85425 floor=116 ceil=117 
+progress=0.9821167 frame-index=117.854 floor=117 ceil=118 
+91.688965 99.342178 
+progress=0.9821167 frame-index=117.854 floor=117 ceil=118 
+progress=0.990448 frame-index=118.85376 floor=118 ceil=119 
+94.295242 99.451721 
+progress=0.990448 frame-index=118.85376 floor=118 ceil=119 
+progress=0.9987793 frame-index=119.85352 floor=119 ceil=0 
+99.220169 99.922821 
+progress=0.9987793 frame-index=119.85352 floor=119 ceil=0 
+progress=0.0071105957 frame-index=0.85327148 floor=0 ceil=1 
+102.21884 100.20505 
+progress=0.0071105957 frame-index=0.85327148 floor=0 ceil=1 
+progress=0.015441895 frame-index=1.8530273 floor=1 ceil=2 
+104.80287 100.57445 
+progress=0.015441895 frame-index=1.8530273 floor=1 ceil=2 
+progress=0.023773193 frame-index=2.8527832 floor=2 ceil=3 
+107.36211 101.08871 
+progress=0.023773193 frame-index=2.8527832 floor=2 ceil=3 
+progress=0.032104492 frame-index=3.8525391 floor=3 ceil=4 
+109.88988 101.74043 
+progress=0.032104492 frame-index=3.8525391 floor=3 ceil=4 
+progress=0.040435791 frame-index=4.8522949 floor=4 ceil=5 
+112.38055 102.52231 
+progress=0.040435791 frame-index=4.8522949 floor=4 ceil=5 
+progress=0.04876709 frame-index=5.8520508 floor=5 ceil=6 
+114.82919 103.42738 
+progress=0.04876709 frame-index=5.8520508 floor=5 ceil=6 
+progress=0.057098389 frame-index=6.8518066 floor=6 ceil=7 
+117.23141 104.44943 
+progress=0.057098389 frame-index=6.8518066 floor=6 ceil=7 
+progress=0.065429688 frame-index=7.8515625 floor=7 ceil=8 
+119.58337 105.58243 
+progress=0.065429688 frame-index=7.8515625 floor=7 ceil=8 
+progress=0.073760986 frame-index=8.8513184 floor=8 ceil=9 
+121.88139 106.82127 
+progress=0.073760986 frame-index=8.8513184 floor=8 ceil=9 
+progress=0.082092285 frame-index=9.8510742 floor=9 ceil=10 
+124.12202 108.16115 
+progress=0.082092285 frame-index=9.8510742 floor=9 ceil=10 
+progress=0.090423584 frame-index=10.85083 floor=10 ceil=11 
+126.30173 109.59805 
+progress=0.090423584 frame-index=10.85083 floor=10 ceil=11 
+progress=0.098754883 frame-index=11.850586 floor=11 ceil=12 
+128.41695 111.12828 
+progress=0.098754883 frame-index=11.850586 floor=11 ceil=12 
+progress=0.10708618 frame-index=12.850342 floor=12 ceil=13 
+130.46382 112.74883 
+progress=0.10708618 frame-index=12.850342 floor=12 ceil=13 
+progress=0.11541748 frame-index=13.850098 floor=13 ceil=14 
+132.4381 114.45703 
+progress=0.11541748 frame-index=13.850098 floor=13 ceil=14 
+progress=0.12374878 frame-index=14.849854 floor=14 ceil=15 
+134.33511 116.25061 
+progress=0.12374878 frame-index=14.849854 floor=14 ceil=15 
+progress=0.13208008 frame-index=15.849609 floor=15 ceil=16 
+136.14954 118.1277 
+progress=0.13208008 frame-index=15.849609 floor=15 ceil=16 
+progress=0.14041138 frame-index=16.849365 floor=16 ceil=17 
+137.87514 120.08669 
+progress=0.14041138 frame-index=16.849365 floor=16 ceil=17 
+progress=0.14874268 frame-index=17.849121 floor=17 ceil=18 
+139.50487 122.12608 
+progress=0.14874268 frame-index=17.849121 floor=17 ceil=18 
+progress=0.15707397 frame-index=18.848877 floor=18 ceil=19 
+141.03043 124.24443 
+progress=0.15707397 frame-index=18.848877 floor=18 ceil=19 
+progress=0.16540527 frame-index=19.848633 floor=19 ceil=20 
+142.44218 126.44019 
+progress=0.16540527 frame-index=19.848633 floor=19 ceil=20 
+progress=0.17373657 frame-index=20.848389 floor=20 ceil=21 
+143.72887 128.71136 
+progress=0.17373657 frame-index=20.848389 floor=20 ceil=21 
+progress=0.18206787 frame-index=21.848145 floor=21 ceil=22 
+144.87737 131.05531 
+progress=0.18206787 frame-index=21.848145 floor=21 ceil=22 
+progress=0.19039917 frame-index=22.8479 floor=22 ceil=23 
+145.8727 133.46809 
+progress=0.19039917 frame-index=22.8479 floor=22 ceil=23 
+progress=0.19873047 frame-index=23.847656 floor=23 ceil=24 
+146.69769 135.94408 
+progress=0.19873047 frame-index=23.847656 floor=23 ceil=24 
+progress=0.20706177 frame-index=24.847412 floor=24 ceil=25 
+147.33342 138.47504 
+progress=0.20706177 frame-index=24.847412 floor=24 ceil=25 
+progress=0.21539307 frame-index=25.847168 floor=25 ceil=26 
+147.75938 141.04929 
+progress=0.21539307 frame-index=25.847168 floor=25 ceil=26 
+progress=0.22372437 frame-index=26.846924 floor=26 ceil=27 
+147.9552 143.65086 
+progress=0.22372437 frame-index=26.846924 floor=26 ceil=27 
+progress=0.23205566 frame-index=27.84668 floor=27 ceil=28 
+147.90187 146.25891 
+progress=0.23205566 frame-index=27.84668 floor=27 ceil=28 
+progress=0.24038696 frame-index=28.846436 floor=28 ceil=29 
+147.58453 148.84779 
+progress=0.24038696 frame-index=28.846436 floor=28 ceil=29 
+progress=0.24871826 frame-index=29.846191 floor=29 ceil=30 
+147.37364 151.44232 
+progress=0.24871826 frame-index=29.846191 floor=29 ceil=30 
+progress=0.25704956 frame-index=30.845947 floor=30 ceil=31 
+147.17682 154.04446 
+progress=0.25704956 frame-index=30.845947 floor=30 ceil=31 
+progress=0.26538086 frame-index=31.845703 floor=31 ceil=32 
+146.84798 156.63393 
+progress=0.26538086 frame-index=31.845703 floor=31 ceil=32 
+progress=0.27371216 frame-index=32.845459 floor=32 ceil=33 
+146.37224 159.20055 
+progress=0.27371216 frame-index=32.845459 floor=32 ceil=33 
+progress=0.28204346 frame-index=33.845215 floor=33 ceil=34 
+145.75697 161.73741 
+progress=0.28204346 frame-index=33.845215 floor=33 ceil=34 
+progress=0.29037476 frame-index=34.844971 floor=34 ceil=35 
+145.00966 164.23863 
+progress=0.29037476 frame-index=34.844971 floor=34 ceil=35 
+progress=0.29870605 frame-index=35.844727 floor=35 ceil=36 
+144.13728 166.69908 
+progress=0.29870605 frame-index=35.844727 floor=35 ceil=36 
+progress=0.30703735 frame-index=36.844482 floor=36 ceil=37 
+143.14632 169.11427 
+progress=0.30703735 frame-index=36.844482 floor=36 ceil=37 
+progress=0.31536865 frame-index=37.844238 floor=37 ceil=38 
+142.04286 171.48021 
+progress=0.31536865 frame-index=37.844238 floor=37 ceil=38 
+progress=0.32369995 frame-index=38.843994 floor=38 ceil=39 
+140.83217 173.79317 
+progress=0.32369995 frame-index=38.843994 floor=38 ceil=39 
+progress=0.33203125 frame-index=39.84375 floor=39 ceil=40 
+139.51923 176.04965 
+progress=0.33203125 frame-index=39.84375 floor=39 ceil=40 
+progress=0.34036255 frame-index=40.843506 floor=40 ceil=41 
+138.10823 178.24619 
+progress=0.34036255 frame-index=40.843506 floor=40 ceil=41 
+progress=0.34869385 frame-index=41.843262 floor=41 ceil=42 
+136.60297 180.37923 
+progress=0.34869385 frame-index=41.843262 floor=41 ceil=42 
+progress=0.35702515 frame-index=42.843018 floor=42 ceil=43 
+135.00658 182.44498 
+progress=0.35702515 frame-index=42.843018 floor=42 ceil=43 
+progress=0.36535645 frame-index=43.842773 floor=43 ceil=44 
+133.32188 184.43935 
+progress=0.36535645 frame-index=43.842773 floor=43 ceil=44 
+progress=0.37368774 frame-index=44.842529 floor=44 ceil=45 
+131.55122 186.3578 
+progress=0.37368774 frame-index=44.842529 floor=44 ceil=45 
+progress=0.38201904 frame-index=45.842285 floor=45 ceil=46 
+129.69658 188.19513 
+progress=0.38201904 frame-index=45.842285 floor=45 ceil=46 
+progress=0.39035034 frame-index=46.842041 floor=46 ceil=47 
+127.75961 189.94542 
+progress=0.39035034 frame-index=46.842041 floor=46 ceil=47 
+progress=0.39868164 frame-index=47.841797 floor=47 ceil=48 
+125.74184 191.60182 
+progress=0.39868164 frame-index=47.841797 floor=47 ceil=48 
+progress=0.40701294 frame-index=48.841553 floor=48 ceil=49 
+123.64473 193.15648 
+progress=0.40701294 frame-index=48.841553 floor=48 ceil=49 
+progress=0.41534424 frame-index=49.841309 floor=49 ceil=50 
+121.46976 194.60002 
+progress=0.41534424 frame-index=49.841309 floor=49 ceil=50 
+progress=0.42367554 frame-index=50.841064 floor=50 ceil=51 
+119.21877 195.92172 
+progress=0.42367554 frame-index=50.841064 floor=50 ceil=51 
+progress=0.43200684 frame-index=51.84082 floor=51 ceil=52 
+116.89421 197.10901 
+progress=0.43200684 frame-index=51.84082 floor=51 ceil=52 
+progress=0.44033813 frame-index=52.840576 floor=52 ceil=53 
+114.4996 198.14738 
+progress=0.44033813 frame-index=52.840576 floor=52 ceil=53 
+progress=0.44866943 frame-index=53.840332 floor=53 ceil=54 
+112.04005 199.02029 
+progress=0.44866943 frame-index=53.840332 floor=53 ceil=54 
+progress=0.45700073 frame-index=54.840088 floor=54 ceil=55 
+109.52303 199.70912 
+progress=0.45700073 frame-index=54.840088 floor=54 ceil=55 
+progress=0.46533203 frame-index=55.839844 floor=55 ceil=56 
+106.95914 200.19386 
+progress=0.46533203 frame-index=55.839844 floor=55 ceil=56 
+progress=0.47366333 frame-index=56.8396 floor=56 ceil=57 
+104.36317 200.45392 
+progress=0.47366333 frame-index=56.8396 floor=56 ceil=57 
+progress=0.48199463 frame-index=57.839355 floor=57 ceil=58 
+101.75461 200.46971 
+progress=0.48199463 frame-index=57.839355 floor=57 ceil=58 
+progress=0.49032593 frame-index=58.839111 floor=58 ceil=59 
+99.157837 200.22493 
+progress=0.49032593 frame-index=58.839111 floor=58 ceil=59 
+progress=0.49865723 frame-index=59.838867 floor=59 ceil=60 
+96.570511 199.94479 
+progress=0.49865723 frame-index=59.838867 floor=59 ceil=60 
+progress=0.50698853 frame-index=60.838623 floor=60 ceil=61 
+93.967697 199.7677 
+progress=0.50698853 frame-index=60.838623 floor=60 ceil=61 
+progress=0.51531982 frame-index=61.838379 floor=61 ceil=62 
+91.373367 199.47998 
+progress=0.51531982 frame-index=61.838379 floor=61 ceil=62 
+progress=0.52365112 frame-index=62.838135 floor=62 ceil=63 
+88.799881 199.04323 
+progress=0.52365112 frame-index=62.838135 floor=62 ceil=63 
+progress=0.53198242 frame-index=63.837891 floor=63 ceil=64 
+86.254364 198.46501 
+progress=0.53198242 frame-index=63.837891 floor=63 ceil=64 
+progress=0.54031372 frame-index=64.837646 floor=64 ceil=65 
+83.742966 197.75279 
+progress=0.54031372 frame-index=64.837646 floor=64 ceil=65 
+progress=0.54864502 frame-index=65.837402 floor=65 ceil=66 
+81.271011 196.91362 
+progress=0.54864502 frame-index=65.837402 floor=65 ceil=66 
+progress=0.55697632 frame-index=66.837158 floor=66 ceil=67 
+78.84317 195.95415 
+progress=0.55697632 frame-index=66.837158 floor=66 ceil=67 
+progress=0.56530762 frame-index=67.836914 floor=67 ceil=68 
+76.463531 194.88058 
+progress=0.56530762 frame-index=67.836914 floor=67 ceil=68 
+progress=0.57363892 frame-index=68.83667 floor=68 ceil=69 
+74.13591 193.69843 
+progress=0.57363892 frame-index=68.83667 floor=68 ceil=69 
+progress=0.58197021 frame-index=69.836426 floor=69 ceil=70 
+71.863785 192.41277 
+progress=0.58197021 frame-index=69.836426 floor=69 ceil=70 
+progress=0.59030151 frame-index=70.836182 floor=70 ceil=71 
+69.650681 191.02792 
+progress=0.59030151 frame-index=70.836182 floor=70 ceil=71 
+progress=0.59863281 frame-index=71.835938 floor=71 ceil=72 
+67.500076 189.54785 
+progress=0.59863281 frame-index=71.835938 floor=71 ceil=72 
+progress=0.60696411 frame-index=72.835693 floor=72 ceil=73 
+65.415756 187.97585 
+progress=0.60696411 frame-index=72.835693 floor=72 ceil=73 
+progress=0.61529541 frame-index=73.835449 floor=73 ceil=74 
+63.401627 186.31483 
+progress=0.61529541 frame-index=73.835449 floor=73 ceil=74 
+progress=0.62362671 frame-index=74.835205 floor=74 ceil=75 
+61.462158 184.56726 
+progress=0.62362671 frame-index=74.835205 floor=74 ceil=75 
+progress=0.63195801 frame-index=75.834961 floor=75 ceil=76 
+59.602341 182.73517 
+progress=0.63195801 frame-index=75.834961 floor=75 ceil=76 
+progress=0.64028931 frame-index=76.834717 floor=76 ceil=77 
+57.827866 180.82033 
+progress=0.64028931 frame-index=76.834717 floor=76 ceil=77 
+progress=0.64862061 frame-index=77.834473 floor=77 ceil=78 
+56.145309 178.8243 
+progress=0.64862061 frame-index=77.834473 floor=77 ceil=78 
+progress=0.6569519 frame-index=78.834229 floor=78 ceil=79 
+54.562332 176.7485 
+progress=0.6569519 frame-index=78.834229 floor=78 ceil=79 
+progress=0.6652832 frame-index=79.833984 floor=79 ceil=80 
+53.087692 174.59445 
+progress=0.6652832 frame-index=79.833984 floor=79 ceil=80 
+progress=0.6736145 frame-index=80.83374 floor=80 ceil=81 
+51.731857 172.36386 
+progress=0.6736145 frame-index=80.83374 floor=80 ceil=81 
+progress=0.6819458 frame-index=81.833496 floor=81 ceil=82 
+50.506866 170.05891 
+progress=0.6819458 frame-index=81.833496 floor=81 ceil=82 
+progress=0.6902771 frame-index=82.833252 floor=82 ceil=83 
+49.426712 167.68285 
+progress=0.6902771 frame-index=82.833252 floor=82 ceil=83 
+progress=0.6986084 frame-index=83.833008 floor=83 ceil=84 
+48.507339 165.24028 
+progress=0.6986084 frame-index=83.833008 floor=83 ceil=84 
+progress=0.7069397 frame-index=84.832764 floor=84 ceil=85 
+47.7668 162.73792 
+progress=0.7069397 frame-index=84.832764 floor=84 ceil=85 
+progress=0.715271 frame-index=85.83252 floor=85 ceil=86 
+47.224777 160.1855 
+progress=0.715271 frame-index=85.83252 floor=85 ceil=86 
+progress=0.72360229 frame-index=86.832275 floor=86 ceil=87 
+46.901932 157.59653 
+progress=0.72360229 frame-index=86.832275 floor=86 ceil=87 
+progress=0.73193359 frame-index=87.832031 floor=87 ceil=88 
+46.818283 154.98921 
+progress=0.73193359 frame-index=87.832031 floor=87 ceil=88 
+progress=0.74026489 frame-index=88.831787 floor=88 ceil=89 
+46.991241 152.38666 
+progress=0.74026489 frame-index=88.831787 floor=88 ceil=89 
+progress=0.74859619 frame-index=89.831543 floor=89 ceil=90 
+47.331924 149.80431 
+progress=0.74859619 frame-index=89.831543 floor=89 ceil=90 
+progress=0.75692749 frame-index=90.831299 floor=90 ceil=91 
+47.489578 147.20105 
+progress=0.75692749 frame-index=90.831299 floor=90 ceil=91 
+progress=0.76525879 frame-index=91.831055 floor=91 ceil=92 
+47.735657 144.60251 
+progress=0.76525879 frame-index=91.831055 floor=91 ceil=92 
+progress=0.77359009 frame-index=92.830811 floor=92 ceil=93 
+48.132812 142.02263 
+progress=0.77359009 frame-index=92.830811 floor=92 ceil=93 
+progress=0.78192139 frame-index=93.830566 floor=93 ceil=94 
+48.673447 139.4689 
+progress=0.78192139 frame-index=93.830566 floor=93 ceil=94 
+progress=0.79025269 frame-index=94.830322 floor=94 ceil=95 
+49.350082 136.94772 
+progress=0.79025269 frame-index=94.830322 floor=94 ceil=95 
+progress=0.79858398 frame-index=95.830078 floor=95 ceil=96 
+50.155579 134.46463 
+progress=0.79858398 frame-index=95.830078 floor=95 ceil=96 
+progress=0.80691528 frame-index=96.829834 floor=96 ceil=97 
+51.083069 132.02443 
+progress=0.80691528 frame-index=96.829834 floor=96 ceil=97 
+progress=0.81524658 frame-index=97.82959 floor=97 ceil=98 
+52.126328 129.63136 
+progress=0.81524658 frame-index=97.82959 floor=97 ceil=98 
+progress=0.82357788 frame-index=98.829346 floor=98 ceil=99 
+53.279572 127.28932 
+progress=0.82357788 frame-index=98.829346 floor=98 ceil=99 
+progress=0.83190918 frame-index=99.829102 floor=99 ceil=100 
+54.537674 125.00183 
+progress=0.83190918 frame-index=99.829102 floor=99 ceil=100 
+progress=0.84024048 frame-index=100.82886 floor=100 ceil=101 
+55.896057 122.77243 
+progress=0.84024048 frame-index=100.82886 floor=100 ceil=101 
+progress=0.84857178 frame-index=101.82861 floor=101 ceil=102 
+57.350693 120.60455 
+progress=0.84857178 frame-index=101.82861 floor=101 ceil=102 
+progress=0.85690308 frame-index=102.82837 floor=102 ceil=103 
+58.898117 118.50191 
+progress=0.85690308 frame-index=102.82837 floor=102 ceil=103 
+progress=0.86523438 frame-index=103.82812 floor=103 ceil=104 
+60.535263 116.46837 
+progress=0.86523438 frame-index=103.82812 floor=103 ceil=104 
+progress=0.87356567 frame-index=104.82788 floor=104 ceil=105 
+62.259628 114.50824 
+progress=0.87356567 frame-index=104.82788 floor=104 ceil=105 
+progress=0.88189697 frame-index=105.82764 floor=105 ceil=106 
+64.069046 112.62636 
+progress=0.88189697 frame-index=105.82764 floor=105 ceil=106 
+progress=0.89022827 frame-index=106.82739 floor=106 ceil=107 
+65.961639 110.8282 
+progress=0.89022827 frame-index=106.82739 floor=106 ceil=107 
+progress=0.89855957 frame-index=107.82715 floor=107 ceil=108 
+67.935806 109.12006 
+progress=0.89855957 frame-index=107.82715 floor=107 ceil=108 
+progress=0.90689087 frame-index=108.8269 floor=108 ceil=109 
+69.990128 107.50929 
+progress=0.90689087 frame-index=108.8269 floor=108 ceil=109 
+progress=0.91522217 frame-index=109.82666 floor=109 ceil=110 
+72.123138 106.00441 
+progress=0.91522217 frame-index=109.82666 floor=109 ceil=110 
+progress=0.92355347 frame-index=110.82642 floor=110 ceil=111 
+74.333237 104.61534 
+progress=0.92355347 frame-index=110.82642 floor=110 ceil=111 
+progress=0.93188477 frame-index=111.82617 floor=111 ceil=112 
+76.618301 103.35368 
+progress=0.93188477 frame-index=111.82617 floor=111 ceil=112 
+progress=0.94021606 frame-index=112.82593 floor=112 ceil=113 
+78.975464 102.2328 
+progress=0.94021606 frame-index=112.82593 floor=112 ceil=113 
+progress=0.94854736 frame-index=113.82568 floor=113 ceil=114 
+81.400589 101.26825 
+progress=0.94854736 frame-index=113.82568 floor=113 ceil=114 
+progress=0.95687866 frame-index=114.82544 floor=114 ceil=115 
+83.887558 100.47746 
+progress=0.95687866 frame-index=114.82544 floor=114 ceil=115 
+progress=0.96520996 frame-index=115.8252 floor=115 ceil=116 
+86.427567 99.879745 
+progress=0.96520996 frame-index=115.8252 floor=115 ceil=116 
+progress=0.97354126 frame-index=116.82495 floor=116 ceil=117 
+89.008194 99.495605 
+progress=0.97354126 frame-index=116.82495 floor=116 ceil=117 
+progress=0.98187256 frame-index=117.82471 floor=117 ceil=118 
+91.612549 99.345367 
+progress=0.98187256 frame-index=117.82471 floor=117 ceil=118 
+progress=0.99020386 frame-index=118.82446 floor=118 ceil=119 
+94.218872 99.447418 
+progress=0.99020386 frame-index=118.82446 floor=118 ceil=119 
+progress=0.99853516 frame-index=119.82422 floor=119 ceil=0 
+99.064209 99.907394 
+progress=0.99853516 frame-index=119.82422 floor=119 ceil=0 
+progress=0.0068664551 frame-index=0.82397461 floor=0 ceil=1 
+102.14265 100.198 
+progress=0.0068664551 frame-index=0.82397461 floor=0 ceil=1 
+progress=0.015197754 frame-index=1.8237305 floor=1 ceil=2 
+104.72723 100.56296 
+progress=0.015197754 frame-index=1.8237305 floor=1 ceil=2 
+progress=0.023529053 frame-index=2.8234863 floor=2 ceil=3 
+107.28722 101.07301 
+progress=0.023529053 frame-index=2.8234863 floor=2 ceil=3 
+progress=0.031860352 frame-index=3.8232422 floor=3 ceil=4 
+109.81595 101.72073 
+progress=0.031860352 frame-index=3.8232422 floor=3 ceil=4 
+progress=0.04019165 frame-index=4.822998 floor=4 ceil=5 
+112.30774 102.49884 
+progress=0.04019165 frame-index=4.822998 floor=4 ceil=5 
+progress=0.048522949 frame-index=5.8227539 floor=5 ceil=6 
+114.75763 103.40033 
+progress=0.048522949 frame-index=5.8227539 floor=5 ceil=6 
+progress=0.056854248 frame-index=6.8225098 floor=6 ceil=7 
+117.16122 104.41898 
+progress=0.056854248 frame-index=6.8225098 floor=6 ceil=7 
+progress=0.065185547 frame-index=7.8222656 floor=7 ceil=8 
+119.51468 105.54875 
+progress=0.065185547 frame-index=7.8222656 floor=7 ceil=8 
+progress=0.073516846 frame-index=8.8220215 floor=8 ceil=9 
+121.81429 106.78452 
+progress=0.073516846 frame-index=8.8220215 floor=8 ceil=9 
+progress=0.081848145 frame-index=9.8217773 floor=9 ceil=10 
+124.05661 108.12146 
+progress=0.081848145 frame-index=9.8217773 floor=9 ceil=10 
+progress=0.090179443 frame-index=10.821533 floor=10 ceil=11 
+126.23813 109.55551 
+progress=0.090179443 frame-index=10.821533 floor=10 ceil=11 
+progress=0.098510742 frame-index=11.821289 floor=11 ceil=12 
+128.35526 111.08304 
+progress=0.098510742 frame-index=11.821289 floor=11 ceil=12 
+progress=0.10684204 frame-index=12.821045 floor=12 ceil=13 
+130.40414 112.70094 
+progress=0.10684204 frame-index=12.821045 floor=12 ceil=13 
+progress=0.11517334 frame-index=13.820801 floor=13 ceil=14 
+132.38057 114.40659 
+progress=0.11517334 frame-index=13.820801 floor=13 ceil=14 
+progress=0.12350464 frame-index=14.820557 floor=14 ceil=15 
+134.27988 116.19768 
+progress=0.12350464 frame-index=14.820557 floor=14 ceil=15 
+progress=0.13183594 frame-index=15.820312 floor=15 ceil=16 
+136.09673 118.07233 
+progress=0.13183594 frame-index=15.820312 floor=15 ceil=16 
+progress=0.14016724 frame-index=16.820068 floor=16 ceil=17 
+137.82497 120.02893 
+progress=0.14016724 frame-index=16.820068 floor=16 ceil=17 
+progress=0.14849854 frame-index=17.819824 floor=17 ceil=18 
+139.45753 122.06596 
+progress=0.14849854 frame-index=17.819824 floor=17 ceil=18 
+progress=0.15682983 frame-index=18.81958 floor=18 ceil=19 
+140.98619 124.18201 
+progress=0.15682983 frame-index=18.81958 floor=18 ceil=19 
+progress=0.16516113 frame-index=19.819336 floor=19 ceil=20 
+142.40134 126.37549 
+progress=0.16516113 frame-index=19.819336 floor=19 ceil=20 
+progress=0.17349243 frame-index=20.819092 floor=20 ceil=21 
+143.69173 128.64447 
+progress=0.17349243 frame-index=20.819092 floor=20 ceil=21 
+progress=0.18182373 frame-index=21.818848 floor=21 ceil=22 
+144.84433 130.9863 
+progress=0.18182373 frame-index=21.818848 floor=21 ceil=22 
+progress=0.19015503 frame-index=22.818604 floor=22 ceil=23 
+145.84422 133.39708 
+progress=0.19015503 frame-index=22.818604 floor=22 ceil=23 
+progress=0.19848633 frame-index=23.818359 floor=23 ceil=24 
+146.67429 135.87125 
+progress=0.19848633 frame-index=23.818359 floor=23 ceil=24 
+progress=0.20681763 frame-index=24.818115 floor=24 ceil=25 
+147.31564 138.40063 
+progress=0.20681763 frame-index=24.818115 floor=24 ceil=25 
+progress=0.21514893 frame-index=25.817871 floor=25 ceil=26 
+147.74785 140.97366 
+progress=0.21514893 frame-index=25.817871 floor=25 ceil=26 
+progress=0.22348022 frame-index=26.817627 floor=26 ceil=27 
+147.9505 143.57452 
+progress=0.22348022 frame-index=26.817627 floor=26 ceil=27 
+progress=0.23181152 frame-index=27.817383 floor=27 ceil=28 
+147.90457 146.18246 
+progress=0.23181152 frame-index=27.817383 floor=27 ceil=28 
+progress=0.24014282 frame-index=28.817139 floor=28 ceil=29 
+147.59503 148.77203 
+progress=0.24014282 frame-index=28.817139 floor=28 ceil=29 
+progress=0.24847412 frame-index=29.816895 floor=29 ceil=30 
+147.37904 151.36624 
+progress=0.24847412 frame-index=29.816895 floor=29 ceil=30 
+progress=0.25680542 frame-index=30.81665 floor=30 ceil=31 
+147.18265 153.96817 
+progress=0.25680542 frame-index=30.81665 floor=30 ceil=31 
+progress=0.26513672 frame-index=31.816406 floor=31 ceil=32 
+146.85831 156.55812 
+progress=0.26513672 frame-index=31.816406 floor=31 ceil=32 
+progress=0.27346802 frame-index=32.816162 floor=32 ceil=33 
+146.38684 159.12544 
+progress=0.27346802 frame-index=32.816162 floor=32 ceil=33 
+progress=0.28179932 frame-index=33.815918 floor=33 ceil=34 
+145.77563 161.66322 
+progress=0.28179932 frame-index=33.815918 floor=33 ceil=34 
+progress=0.29013062 frame-index=34.815674 floor=34 ceil=35 
+145.03215 164.16551 
+progress=0.29013062 frame-index=34.815674 floor=34 ceil=35 
+progress=0.29846191 frame-index=35.81543 floor=35 ceil=36 
+144.16341 166.62718 
+progress=0.29846191 frame-index=35.81543 floor=35 ceil=36 
+progress=0.30679321 frame-index=36.815186 floor=36 ceil=37 
+143.17589 169.0437 
+progress=0.30679321 frame-index=36.815186 floor=36 ceil=37 
+progress=0.31512451 frame-index=37.814941 floor=37 ceil=38 
+142.0757 171.4111 
+progress=0.31512451 frame-index=37.814941 floor=37 ceil=38 
+progress=0.32345581 frame-index=38.814697 floor=38 ceil=39 
+140.86813 173.72563 
+progress=0.32345581 frame-index=38.814697 floor=38 ceil=39 
+progress=0.33178711 frame-index=39.814453 floor=39 ceil=40 
+139.55817 175.9838 
+progress=0.33178711 frame-index=39.814453 floor=39 ceil=40 
+progress=0.34011841 frame-index=40.814209 floor=40 ceil=41 
+138.15002 178.18208 
+progress=0.34011841 frame-index=40.814209 floor=40 ceil=41 
+progress=0.34844971 frame-index=41.813965 floor=41 ceil=42 
+136.64751 180.31702 
+progress=0.34844971 frame-index=41.813965 floor=41 ceil=42 
+progress=0.35678101 frame-index=42.813721 floor=42 ceil=43 
+135.05377 182.38477 
+progress=0.35678101 frame-index=42.813721 floor=42 ceil=43 
+progress=0.3651123 frame-index=43.813477 floor=43 ceil=44 
+133.37166 184.38124 
+progress=0.3651123 frame-index=43.813477 floor=43 ceil=44 
+progress=0.3734436 frame-index=44.813232 floor=44 ceil=45 
+131.60352 186.30194 
+progress=0.3734436 frame-index=44.813232 floor=44 ceil=45 
+progress=0.3817749 frame-index=45.812988 floor=45 ceil=46 
+129.75131 188.14166 
+progress=0.3817749 frame-index=45.812988 floor=45 ceil=46 
+progress=0.3901062 frame-index=46.812744 floor=46 ceil=47 
+127.81676 189.89453 
+progress=0.3901062 frame-index=46.812744 floor=46 ceil=47 
+progress=0.3984375 frame-index=47.8125 floor=47 ceil=48 
+125.80133 191.55373 
+progress=0.3984375 frame-index=47.8125 floor=47 ceil=48 
+progress=0.4067688 frame-index=48.812256 floor=48 ceil=49 
+123.70656 193.11139 
+progress=0.4067688 frame-index=48.812256 floor=48 ceil=49 
+progress=0.4151001 frame-index=49.812012 floor=49 ceil=50 
+121.53384 194.55824 
+progress=0.4151001 frame-index=49.812012 floor=49 ceil=50 
+progress=0.4234314 frame-index=50.811768 floor=50 ceil=51 
+119.28508 195.88356 
+progress=0.4234314 frame-index=50.811768 floor=50 ceil=51 
+progress=0.4317627 frame-index=51.811523 floor=51 ceil=52 
+116.96266 197.07486 
+progress=0.4317627 frame-index=51.811523 floor=51 ceil=52 
+progress=0.44009399 frame-index=52.811279 floor=52 ceil=53 
+114.5701 198.11766 
+progress=0.44009399 frame-index=52.811279 floor=52 ceil=53 
+progress=0.44842529 frame-index=53.811035 floor=53 ceil=54 
+112.11244 198.9955 
+progress=0.44842529 frame-index=53.811035 floor=53 ceil=54 
+progress=0.45675659 frame-index=54.810791 floor=54 ceil=55 
+109.59705 199.68982 
+progress=0.45675659 frame-index=54.810791 floor=54 ceil=55 
+progress=0.46508789 frame-index=55.810547 floor=55 ceil=56 
+107.03448 200.18062 
+progress=0.46508789 frame-index=55.810547 floor=55 ceil=56 
+progress=0.47341919 frame-index=56.810303 floor=56 ceil=57 
+104.43938 200.44737 
+progress=0.47341919 frame-index=56.810303 floor=56 ceil=57 
+progress=0.48175049 frame-index=57.810059 floor=57 ceil=58 
+101.8311 200.47041 
+progress=0.48175049 frame-index=57.810059 floor=57 ceil=58 
+progress=0.49008179 frame-index=58.809814 floor=58 ceil=59 
+99.233856 200.23334 
+progress=0.49008179 frame-index=58.809814 floor=58 ceil=59 
+progress=0.49841309 frame-index=59.80957 floor=59 ceil=60 
+96.646301 199.95296 
+progress=0.49841309 frame-index=59.80957 floor=59 ceil=60 
+progress=0.50674438 frame-index=60.809326 floor=60 ceil=61 
+94.044067 199.77232 
+progress=0.50674438 frame-index=60.809326 floor=60 ceil=61 
+progress=0.51507568 frame-index=61.809082 floor=61 ceil=62 
+91.449326 199.48915 
+progress=0.51507568 frame-index=61.809082 floor=61 ceil=62 
+progress=0.52340698 frame-index=62.808838 floor=62 ceil=63 
+88.875183 199.05673 
+progress=0.52340698 frame-index=62.808838 floor=62 ceil=63 
+progress=0.53173828 frame-index=63.808594 floor=63 ceil=64 
+86.328812 198.48262 
+progress=0.53173828 frame-index=63.808594 floor=63 ceil=64 
+progress=0.54006958 frame-index=64.80835 floor=64 ceil=65 
+83.816391 197.77429 
+progress=0.54006958 frame-index=64.80835 floor=64 ceil=65 
+progress=0.54840088 frame-index=65.808105 floor=65 ceil=66 
+81.343262 196.93881 
+progress=0.54840088 frame-index=65.808105 floor=65 ceil=66 
+progress=0.55673218 frame-index=66.807861 floor=66 ceil=67 
+78.914108 195.98283 
+progress=0.55673218 frame-index=66.807861 floor=66 ceil=67 
+progress=0.56506348 frame-index=67.807617 floor=67 ceil=68 
+76.533035 194.91258 
+progress=0.56506348 frame-index=67.807617 floor=67 ceil=68 
+progress=0.57339478 frame-index=68.807373 floor=68 ceil=69 
+74.203857 193.73358 
+progress=0.57339478 frame-index=68.807373 floor=68 ceil=69 
+progress=0.58172607 frame-index=69.807129 floor=69 ceil=70 
+71.930099 192.45093 
+progress=0.58172607 frame-index=69.807129 floor=69 ceil=70 
+progress=0.59005737 frame-index=70.806885 floor=70 ceil=71 
+69.715256 191.06897 
+progress=0.59005737 frame-index=70.806885 floor=70 ceil=71 
+progress=0.59838867 frame-index=71.806641 floor=71 ceil=72 
+67.562805 189.59167 
+progress=0.59838867 frame-index=71.806641 floor=71 ceil=72 
+progress=0.60671997 frame-index=72.806396 floor=72 ceil=73 
+65.476517 188.02234 
+progress=0.60671997 frame-index=72.806396 floor=72 ceil=73 
+progress=0.61505127 frame-index=73.806152 floor=73 ceil=74 
+63.460312 186.36394 
+progress=0.61505127 frame-index=73.806152 floor=73 ceil=74 
+progress=0.62338257 frame-index=74.805908 floor=74 ceil=75 
+61.518631 184.6189 
+progress=0.62338257 frame-index=74.805908 floor=74 ceil=75 
+progress=0.63171387 frame-index=75.805664 floor=75 ceil=76 
+59.656448 182.78926 
+progress=0.63171387 frame-index=75.805664 floor=75 ceil=76 
+progress=0.64004517 frame-index=76.80542 floor=76 ceil=77 
+57.87944 180.87685 
+progress=0.64004517 frame-index=76.80542 floor=76 ceil=77 
+progress=0.64837646 frame-index=77.805176 floor=77 ceil=78 
+56.194168 178.88318 
+progress=0.64837646 frame-index=77.805176 floor=77 ceil=78 
+progress=0.65670776 frame-index=78.804932 floor=78 ceil=79 
+54.608231 176.80971 
+progress=0.65670776 frame-index=78.804932 floor=78 ceil=79 
+progress=0.66503906 frame-index=79.804688 floor=79 ceil=80 
+53.130371 174.65796 
+progress=0.66503906 frame-index=79.804688 floor=79 ceil=80 
+progress=0.67337036 frame-index=80.804443 floor=80 ceil=81 
+51.770996 172.4296 
+progress=0.67337036 frame-index=80.804443 floor=80 ceil=81 
+progress=0.68170166 frame-index=81.804199 floor=81 ceil=82 
+50.54213 170.12683 
+progress=0.68170166 frame-index=81.804199 floor=81 ceil=82 
+progress=0.69003296 frame-index=82.803955 floor=82 ceil=83 
+49.457657 167.75282 
+progress=0.69003296 frame-index=82.803955 floor=82 ceil=83 
+progress=0.69836426 frame-index=83.803711 floor=83 ceil=84 
+48.533478 165.31216 
+progress=0.69836426 frame-index=83.803711 floor=83 ceil=84 
+progress=0.70669556 frame-index=84.803467 floor=84 ceil=85 
+47.787613 162.81154 
+progress=0.70669556 frame-index=84.803467 floor=84 ceil=85 
+progress=0.71502686 frame-index=85.803223 floor=85 ceil=86 
+47.23967 160.26053 
+progress=0.71502686 frame-index=85.803223 floor=85 ceil=86 
+progress=0.72335815 frame-index=86.802979 floor=86 ceil=87 
+46.910294 157.67256 
+progress=0.72335815 frame-index=86.802979 floor=86 ceil=87 
+progress=0.73168945 frame-index=87.802734 floor=87 ceil=88 
+46.81955 155.06569 
+progress=0.73168945 frame-index=87.802734 floor=87 ceil=88 
+progress=0.74002075 frame-index=88.80249 floor=88 ceil=89 
+46.984894 152.46288 
+progress=0.74002075 frame-index=88.80249 floor=88 ceil=89 
+progress=0.74835205 frame-index=89.802246 floor=89 ceil=90 
+47.321213 149.87987 
+progress=0.74835205 frame-index=89.802246 floor=89 ceil=90 
+progress=0.75668335 frame-index=90.802002 floor=90 ceil=91 
+47.486191 147.27748 
+progress=0.75668335 frame-index=90.802002 floor=90 ceil=91 
+progress=0.76501465 frame-index=91.801758 floor=91 ceil=92 
+47.727676 144.67859 
+progress=0.76501465 frame-index=91.801758 floor=91 ceil=92 
+progress=0.77334595 frame-index=92.801514 floor=92 ceil=93 
+48.120438 142.09813 
+progress=0.77334595 frame-index=92.801514 floor=92 ceil=93 
+progress=0.78167725 frame-index=93.80127 floor=93 ceil=94 
+48.656906 139.54359 
+progress=0.78167725 frame-index=93.80127 floor=93 ceil=94 
+progress=0.79000854 frame-index=94.801025 floor=94 ceil=95 
+49.329575 137.02142 
+progress=0.79000854 frame-index=94.801025 floor=94 ceil=95 
+progress=0.79833984 frame-index=95.800781 floor=95 ceil=96 
+50.131332 134.5372 
+progress=0.79833984 frame-index=95.800781 floor=95 ceil=96 
+progress=0.80667114 frame-index=96.800537 floor=96 ceil=97 
+51.055298 132.09572 
+progress=0.80667114 frame-index=96.800537 floor=96 ceil=97 
+progress=0.81500244 frame-index=97.800293 floor=97 ceil=98 
+52.095184 129.70125 
+progress=0.81500244 frame-index=97.800293 floor=97 ceil=98 
+progress=0.82333374 frame-index=98.800049 floor=98 ceil=99 
+53.245239 127.3577 
+progress=0.82333374 frame-index=98.800049 floor=98 ceil=99 
+progress=0.83166504 frame-index=99.799805 floor=99 ceil=100 
+54.500275 125.06859 
+progress=0.83166504 frame-index=99.799805 floor=99 ceil=100 
+progress=0.83999634 frame-index=100.79956 floor=100 ceil=101 
+55.855759 122.83746 
+progress=0.83999634 frame-index=100.79956 floor=100 ceil=101 
+progress=0.84832764 frame-index=101.79932 floor=101 ceil=102 
+57.307587 120.66777 
+progress=0.84832764 frame-index=101.79932 floor=101 ceil=102 
+progress=0.85665894 frame-index=102.79907 floor=102 ceil=103 
+58.85231 118.56319 
+progress=0.85665894 frame-index=102.79907 floor=102 ceil=103 
+progress=0.86499023 frame-index=103.79883 floor=103 ceil=104 
+60.486832 116.5276 
+progress=0.86499023 frame-index=103.79883 floor=103 ceil=104 
+progress=0.87332153 frame-index=104.79858 floor=104 ceil=105 
+62.208649 114.56531 
+progress=0.87332153 frame-index=104.79858 floor=104 ceil=105 
+progress=0.88165283 frame-index=105.79834 floor=105 ceil=106 
+64.015594 112.68111 
+progress=0.88165283 frame-index=105.79834 floor=105 ceil=106 
+progress=0.88998413 frame-index=106.7981 floor=106 ceil=107 
+65.905746 110.88046 
+progress=0.88998413 frame-index=106.7981 floor=106 ceil=107 
+progress=0.89831543 frame-index=107.79785 floor=107 ceil=108 
+67.877548 109.16965 
+progress=0.89831543 frame-index=107.79785 floor=107 ceil=108 
+progress=0.90664673 frame-index=108.79761 floor=108 ceil=109 
+69.92952 107.55598 
+progress=0.90664673 frame-index=108.79761 floor=108 ceil=109 
+progress=0.91497803 frame-index=109.79736 floor=109 ceil=110 
+72.060242 106.04796 
+progress=0.91497803 frame-index=109.79736 floor=109 ceil=110 
+progress=0.92330933 frame-index=110.79712 floor=110 ceil=111 
+74.268082 104.65546 
+progress=0.92330933 frame-index=110.79712 floor=110 ceil=111 
+progress=0.93164062 frame-index=111.79688 floor=111 ceil=112 
+76.550964 103.39 
+progress=0.93164062 frame-index=111.79688 floor=111 ceil=112 
+progress=0.93997192 frame-index=112.79663 floor=112 ceil=113 
+78.906036 102.26491 
+progress=0.93997192 frame-index=112.79663 floor=112 ceil=113 
+progress=0.94830322 frame-index=113.79639 floor=113 ceil=114 
+81.329193 101.29572 
+progress=0.94830322 frame-index=113.79639 floor=113 ceil=114 
+progress=0.95663452 frame-index=114.79614 floor=114 ceil=115 
+83.814377 100.49974 
+progress=0.95663452 frame-index=114.79614 floor=114 ceil=115 
+progress=0.96496582 frame-index=115.7959 floor=115 ceil=116 
+86.352875 99.896255 
+progress=0.96496582 frame-index=115.7959 floor=115 ceil=116 
+progress=0.97329712 frame-index=116.79565 floor=116 ceil=117 
+88.932373 99.505737 
+progress=0.97329712 frame-index=116.79565 floor=116 ceil=117 
+progress=0.98162842 frame-index=117.79541 floor=117 ceil=118 
+91.536118 99.348557 
+progress=0.98162842 frame-index=117.79541 floor=117 ceil=118 
+progress=0.98995972 frame-index=118.79517 floor=118 ceil=119 
+94.142502 99.443115 
+progress=0.98995972 frame-index=118.79517 floor=118 ceil=119 
+progress=0.99829102 frame-index=119.79492 floor=119 ceil=0 
+98.908249 99.891968 
+progress=0.99829102 frame-index=119.79492 floor=119 ceil=0 
+progress=0.0066223145 frame-index=0.79467773 floor=0 ceil=1 
+102.06647 100.19096 
+progress=0.0066223145 frame-index=0.79467773 floor=0 ceil=1 
+progress=0.014953613 frame-index=1.7944336 floor=1 ceil=2 
+104.65158 100.55148 
+progress=0.014953613 frame-index=1.7944336 floor=1 ceil=2 
+progress=0.023284912 frame-index=2.7941895 floor=2 ceil=3 
+107.21234 101.05733 
+progress=0.023284912 frame-index=2.7941895 floor=2 ceil=3 
+progress=0.031616211 frame-index=3.7939453 floor=3 ceil=4 
+109.74202 101.70105 
+progress=0.031616211 frame-index=3.7939453 floor=3 ceil=4 
+progress=0.03994751 frame-index=4.7937012 floor=4 ceil=5 
+112.23491 102.47536 
+progress=0.03994751 frame-index=4.7937012 floor=4 ceil=5 
+progress=0.048278809 frame-index=5.793457 floor=5 ceil=6 
+114.68605 103.37328 
+progress=0.048278809 frame-index=5.793457 floor=5 ceil=6 
+progress=0.056610107 frame-index=6.7932129 floor=6 ceil=7 
+117.09103 104.38852 
+progress=0.056610107 frame-index=6.7932129 floor=6 ceil=7 
+progress=0.064941406 frame-index=7.7929688 floor=7 ceil=8 
+119.44598 105.51508 
+progress=0.064941406 frame-index=7.7929688 floor=7 ceil=8 
+progress=0.073272705 frame-index=8.7927246 floor=8 ceil=9 
+121.74719 106.74776 
+progress=0.073272705 frame-index=8.7927246 floor=8 ceil=9 
+progress=0.081604004 frame-index=9.7924805 floor=9 ceil=10 
+123.99121 108.08176 
+progress=0.081604004 frame-index=9.7924805 floor=9 ceil=10 
+progress=0.089935303 frame-index=10.792236 floor=10 ceil=11 
+126.17451 109.51299 
+progress=0.089935303 frame-index=10.792236 floor=10 ceil=11 
+progress=0.098266602 frame-index=11.791992 floor=11 ceil=12 
+128.29355 111.03778 
+progress=0.098266602 frame-index=11.791992 floor=11 ceil=12 
+progress=0.1065979 frame-index=12.791748 floor=12 ceil=13 
+130.34447 112.65306 
+progress=0.1065979 frame-index=12.791748 floor=12 ceil=13 
+progress=0.1149292 frame-index=13.791504 floor=13 ceil=14 
+132.32303 114.35614 
+progress=0.1149292 frame-index=13.791504 floor=13 ceil=14 
+progress=0.1232605 frame-index=14.79126 floor=14 ceil=15 
+134.22462 116.14474 
+progress=0.1232605 frame-index=14.79126 floor=14 ceil=15 
+progress=0.1315918 frame-index=15.791016 floor=15 ceil=16 
+136.04393 118.01695 
+progress=0.1315918 frame-index=15.791016 floor=15 ceil=16 
+progress=0.1399231 frame-index=16.790771 floor=16 ceil=17 
+137.7748 119.97116 
+progress=0.1399231 frame-index=16.790771 floor=16 ceil=17 
+progress=0.14825439 frame-index=17.790527 floor=17 ceil=18 
+139.41022 122.00584 
+progress=0.14825439 frame-index=17.790527 floor=17 ceil=18 
+progress=0.15658569 frame-index=18.790283 floor=18 ceil=19 
+140.94196 124.11958 
+progress=0.15658569 frame-index=18.790283 floor=18 ceil=19 
+progress=0.16491699 frame-index=19.790039 floor=19 ceil=20 
+142.36047 126.31081 
+progress=0.16491699 frame-index=19.790039 floor=19 ceil=20 
+progress=0.17324829 frame-index=20.789795 floor=20 ceil=21 
+143.65459 128.57758 
+progress=0.17324829 frame-index=20.789795 floor=20 ceil=21 
+progress=0.18157959 frame-index=21.789551 floor=21 ceil=22 
+144.81129 130.91728 
+progress=0.18157959 frame-index=21.789551 floor=21 ceil=22 
+progress=0.18991089 frame-index=22.789307 floor=22 ceil=23 
+145.81575 133.32608 
+progress=0.18991089 frame-index=22.789307 floor=22 ceil=23 
+progress=0.19824219 frame-index=23.789062 floor=23 ceil=24 
+146.65088 135.79842 
+progress=0.19824219 frame-index=23.789062 floor=23 ceil=24 
+progress=0.20657349 frame-index=24.788818 floor=24 ceil=25 
+147.29787 138.32622 
+progress=0.20657349 frame-index=24.788818 floor=24 ceil=25 
+progress=0.21490479 frame-index=25.788574 floor=25 ceil=26 
+147.73631 140.89804 
+progress=0.21490479 frame-index=25.788574 floor=25 ceil=26 
+progress=0.22323608 frame-index=26.78833 floor=26 ceil=27 
+147.9458 143.49817 
+progress=0.22323608 frame-index=26.78833 floor=26 ceil=27 
+progress=0.23156738 frame-index=27.788086 floor=27 ceil=28 
+147.90726 146.10602 

@@ -1,0 +1,20 @@
+class: bubble
+    actor derive
+    prop r
+
+bubble :: init ( - )
+    ;
+    
+: draw-bubble ( - )
+    1e f>ds >r
+    x 2@ 2p>f r @ p>f 1e 1e 1e 1e r> al_draw_circle ;
+
+public
+
+: *bubble ( - bubble )
+    bubble one [[ 10. r ! me ]] ;
+
+: bubbles
+    actives> me bubble is? -exit draw-bubble ;
+
+class; 

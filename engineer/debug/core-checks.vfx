@@ -295,6 +295,7 @@ crucial test: check-place-params ( addr1 len addr2 -- addr1 len addr2 n:result )
 
     addr1 check-valid-address to src-result drop      \ Source valid
     src-result 0 >= if s" Invalid source address" log-error then
+
     addr2 check-valid-address to dest-result drop     \ Destination valid
     dest-result 0 >= if s" Invalid destination address" log-error then
 

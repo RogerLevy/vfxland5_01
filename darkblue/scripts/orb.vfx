@@ -1,0 +1,36 @@
+orb.png 13 13 tileset orb.ts
+
+\ orb.ts animation orb.anm  0 3 range, 3 0 range, 
+
+create orb-anim cell array[
+    \ orb1.png , orb1.png , orb2.png , orb4.png , orb3.png , orb4.png , orb2.png , 
+    orb.ts 0 tile ,
+    orb.ts 1 tile ,
+    orb.ts 2 tile ,
+    orb.ts 3 tile ,
+    orb.ts 3 tile ,
+    orb.ts 2 tile ,
+    orb.ts 1 tile ,
+    orb.ts 0 tile ,
+array] drop
+
+class: orb
+    actor derive
+    is-a vessel
+class;
+
+: ?laser
+    0.1 passed? -exit
+    me beam laser-hit? -exit
+    me unload ;
+
+orb :: init
+    orb2.png bmp !
+    0.5 r !
+    10. m !
+    \ orb.anm 0.5 cycle
+    act>
+        \ gamelife @ 4 / 2 mod if orb2.png else orb3.png then bmp !
+        gamelife @ 1.75 p/ orb-anim #items mod orb-anim [] @ bmp !
+        ?cull ?laser ;
+        

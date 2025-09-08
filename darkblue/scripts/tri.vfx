@@ -1,0 +1,65 @@
+require %lib%/claude-math.vfx
+
+tri.png 17 17 tileset tri.ts
+
+class: tri
+    actor derive
+    prop r
+    prop m
+    prop a
+    prop vang
+    prop bounced
+class;
+
+: repel
+    player0  -exit
+    player0 me 75e 2.5e 0e repelling-force vx 2+!
+    ; \ vx 2@ 2+ 1. clamplen vx 2! ;
+
+: ang>bmp ( ts n. - n )
+    360. umod dup >r
+    5. p/ .> 36 mod tile r> 180. >= if hv| then ;
+
+: flicker  gamelife @ 2 / 1 and 0<> and ;
+
+: ?flicker  bounced @ -exit flicker ;
+
+: x-bounce  vx @ negate vx ! ;
+: y-bounce  vy @ negate vy ! ;
+
+: ?bounce/cull
+    bounced @ 0= if
+        x @ vx @ + 0 gamew 1 - >. within? not if
+            bounced on
+            x-bounce
+            0 time !
+        then
+        y @ vy @ + 0 gameh >. within? not if
+            bounced on
+            y-bounce 
+            0 time !
+        then
+    else
+        ?cull
+    then ;
+
+: move-tri
+    \ repel
+    vang @ a +!
+    ?bounce/cull ;
+
+: !bmp
+    tri.ts a @ ang>bmp ( ?flicker ) bmp ! ;
+
+tri :: init
+    tri.ts 0 tile bmp !
+    4. r !
+    0. m !
+    360. rnd a !
+    9. 2 rnd if negate then vang !
+    1 worth !
+    act>
+        move-tri
+        !bmp ;
+        
+public
