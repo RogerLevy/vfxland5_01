@@ -86,13 +86,17 @@ trait;
     >pad find 0= if
         drop
         pad count f" desbin+ >> Encountered unknown class name: `%s`" type cr
+        cell+ \ skip version
         skip-properties 0 exit
     then
     >body dup valid-class? not if
         drop
         pad count f" desbin+ >> Not a class: `%s`" type cr
+        cell+ \ skip version
         skip-properties 0 exit
-    then ;
+    then 
+    ( a' class ) cell u+ \ skip version
+;    
 
 || : @property+ ( a - a' property|0 )
     $@+ \ fetch property name
@@ -124,9 +128,6 @@ trait;
     {: data xt | property0 :}
     data 
     @class+ ?dup if 
-        ( a class ) >r
-        @+ drop  \ fetch and drop version
-        r>
         ( a class ) xt execute [[
             \ fetch properties into returned object
             @+ for
