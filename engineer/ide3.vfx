@@ -121,16 +121,14 @@ create hist-dev   0 , vectors ,
 \ =============================================================================
 
 variable active  active on
-variable stackmode
-stackmode jumptable ?.
-    ' . , ' p. , ' h. , ' .name ,
 
-\ : win/ ( x. y. - x y )
-\     winw winh 2swap 2p* ;
-\ 
-\ : pos ( x. y. - )
-\     \ Position the pen proportionally to the display
-\     win/ at ;
+variable stack-mode
+stack-mode jumptable ?.   ' . , ' p. , ' h. , ' .name ,
+: ints  0 stack-mode ! ;
+: fixes  1 stack-mode ! ;
+: hexes  2 stack-mode ! ;
+: names  3 stack-mode ! ;
+: +stackmode  stack-mode @ 1 + 4 mod stack-mode ! ;
 
 variable hsplit   0.5 hsplit !
 
@@ -180,7 +178,7 @@ borrow engineer/ draw-game
 
 borrow engineer/ func[]
 : .hotkeys ( - )
-    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  " type cr
+    s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  CTRL+\=Stack" type cr
     12 for
         i func[] c@ if
             i func[] count >uppercase i 1 + f" F%n=%s  " type
@@ -246,11 +244,6 @@ borrow engineer/ func[]
     0 0 at
     s[ render-history s] print-colorful ;
 
-: ints  0 stackmode ! ;
-: fixes  1 stackmode ! ;
-: hexes  2 stackmode ! ;
-: names  3 stackmode ! ;
-
 : ?.s ( - )
     depth | d |
     d 0 max 0 ?do d 1 - i - pick ?. loop
@@ -259,13 +252,7 @@ borrow engineer/ func[]
 : stack-display ( - )
     1. 2. scaled>
     0 6 lines from-bottom scaled-at
-    s[
-        names ?.s
-        ints ?.s
-        fixes ?.s
-        hexes ?.s
-        \ f.s
-    s] 12 print2 ;
+    s[ ?.s s] 12 print2 ;
 
 : .tib ( - ) 
     context @ .name
@@ -366,7 +353,7 @@ assign (DoAbortMessage) to-do DoAbortMessage
     checkdict ;
 
 : ide-char ( n - )
-    alt? if drop exit then
+    alt? ctrl? or if drop exit then
     case
         ( bksp ) 8 of #tib @ -exit -1 #tib +! exit endof
         ( tab ) 9 of exit endof
@@ -529,6 +516,9 @@ public
             ALLEGRO_EVENT_KEY_DOWN happened? if
                 the-key <f1> - 0 12 within? if
                     the-key ?func
+                then
+                the-key <\> = ctrl? and if 
+                    +stackmode
                 then
             then
             repl-events
