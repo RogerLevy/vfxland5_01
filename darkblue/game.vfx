@@ -34,5 +34,5 @@ require scripts\ship.vfx
 : game  show> think render ;
 
 \ Assign BOOT hook
-: boot-darkblue  init-supershow eval" title" ;
+: boot-darkblue  init-supershow shout" title" ;
 ' boot-darkblue is boot

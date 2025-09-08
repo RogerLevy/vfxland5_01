@@ -24,7 +24,7 @@ variable gamemode
     *snd-02*
     just
     1.0 timer>
-    eval" start" ;
+    shout" start" ;
 
 : *selector
     title-arrow one as> act>
