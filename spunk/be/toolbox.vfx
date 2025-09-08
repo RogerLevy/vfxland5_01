@@ -1,4 +1,4 @@
-require %idir%\..\..\supershow\ui\ui.vfx
+require %engineer%\supershow\ui\ui.vfx
 
 element-class toolbox%
 

@@ -1,6 +1,6 @@
 include %idir%/smooth.vfx
-require %idir%/../../lib/mouse.vfx
-require %idir%/../../supershow/ui/ui.vfx
+require %lib%/mouse.vfx
+require %engineer%/supershow/ui/ui.vfx
 
 variable recording
 variable waiting
