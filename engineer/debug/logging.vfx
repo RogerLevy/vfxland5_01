@@ -181,7 +181,7 @@ public
 \     errno format-error
 \     s" [ERROR " 2swap $+ s" ] Actor #" $+
 \     actor actor# 0 <# #s #> $+
-\     actor -> cla @ body> >name count s"  (" 2swap $+ s" ): " $+
+\     actor -> cla @ body>name s"  (" 2swap $+ s" ): " $+
 \     errno Err$ nip if Err$ $+ then
 \     log ;
 

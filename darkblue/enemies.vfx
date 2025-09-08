@@ -133,7 +133,7 @@ enemy :: init
     act> ?shoot ;
 
 : auto-bitmap ( - )
-    classifier body> >name count f" %s.png" >pad find if
+    classifier body>name f" %s.png" >pad find if
         execute template -> bmp !
     else drop then ;
 

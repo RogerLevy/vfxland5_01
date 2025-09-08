@@ -37,7 +37,7 @@ create cb-p /screen allot
     i j ag spot @ ?dup if
         cr 
         i j pg spot @ ?dup if . ." priority " then
-        i . j . ." att " body> >name count type ."  *[[ ]]"
+        i . j . ." att " body>name type ."  *[[ ]]"
     then ;
 
 : .ag ( - )

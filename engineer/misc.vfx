@@ -280,3 +280,5 @@ aka save-exe save
 
 : ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
 : ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
+: body>name ( a - a' ) body> >name count ;
+: u+  rot + swap ;

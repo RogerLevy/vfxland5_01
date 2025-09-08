@@ -180,7 +180,7 @@ cstring wordname$
         vtor -> level @ level !
         0 xt !                          \ Will fetch dynamically from validator
         vtor validator !
-        vtor body> >name count test-name$ place
+        vtor body>name test-name$ place
         enabled on
     me ]] ;
 
@@ -608,7 +608,7 @@ public
     [[ 
         xt @ validator-xt @ = if
             ." disabling for "
-            the-contract @ body> >name count 9 - type 
+            the-contract @ body>name 9 - type 
             enabled off
         then
     ]] ;
@@ -625,7 +625,7 @@ public
     [[ 
         xt @ validator-xt @ = if
             ." enabling for "
-            the-contract @ body> >name count 9 - type 
+            the-contract @ body>name 9 - type 
             enabled on
         then
     ]] -1 ;

@@ -32,7 +32,7 @@ cstring update-name$
         2drop
         me valid-object? not abort" ME is not a valid object - nothing to update!"
         cla @ to class0
-        class0 body> >name count update-name$ place
+        class0 body>name update-name$ place
     then
     
     update-name$ count f" %s.vfx" file-exists? if
@@ -56,7 +56,7 @@ cstring update-name$
     \ Switch to matching vocabulary if it exists.
     bl parse to len to name
     len 0= if
-        cla @ body> >name count to len to name
+        cla @ body>name to len to name
     then
 
     name len f" %s/" >pad find if execute else drop then

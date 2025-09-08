@@ -394,7 +394,7 @@ actor :: on-error ( xt err# - )
             srcpath$ count write[
                 n[ count 
                 f" class: %s" line,
-                script-class @ body> >name count
+                script-class @ body>name
                 f"     %s derive" line,
                 n[ count has-image? if
                     n[ count 

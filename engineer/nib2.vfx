@@ -24,7 +24,7 @@ magic-id MAGIC_CLASSIFIER CLAS
 \ ==============================================================================
 
 : my-name ( - a len )
-    me body> >name count ;
+    me body>name ;
 
 : field ( ofs size <name> - n ) ( a - a )
     create 0 , MAGIC_FIELD , over , +
@@ -138,7 +138,7 @@ variable osp   os osp ! \ object stack pointer
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
     to me
-    cla @ body> >name count f" %s/"
+    cla @ body>name f" %s/"
     >pad find if execute else drop then ;
 
 \ ==============================================================================
@@ -396,7 +396,7 @@ create _protocol  _class make [[
         -1
         size
         property0 -> property-size @
-        property0 body> >name count
+        property0 body>name
         f" NPROPERTY >> %s changed from %n to %n bytes - reload/restart required."
         .abort
     then
@@ -519,9 +519,9 @@ create _protocol  _class make [[
                 origin >cla @ _class <> if  \ Origin is a trait, not a class
                     origin trait0 <> if     \ Different trait owns it
                         -1
-                        trait0 body> >name count
-                        origin body> >name count  
-                        protocol0 body> >name count
+                        trait0 body>name
+                        origin body>name  
+                        protocol0 body>name
                         f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
                     then
                 then
@@ -630,7 +630,7 @@ defer protocol-validations ( obj protocol - obj protocol )
             ( protocol ) >r
             -1
             cla @ >name count
-            r> body> >name count
+            r> body>name
             f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
         then
         ( xt ) oexec
@@ -650,7 +650,7 @@ defer protocol-validations ( obj protocol - obj protocol )
     {: protocol0 c | name[ 256 ] :} 
     protocol0 [[
         my-name name[ place
-        c body> >name count 
+        c body>name 
         name[ count
         :method ( xt ) c offset @ + !
         s" ?compile-validate-dispatch" evaluate

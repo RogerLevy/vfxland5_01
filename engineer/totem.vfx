@@ -124,7 +124,7 @@ _totem :apply ( class - )
 
 : reload-instances ( class - )
     {: class0 :}
-    class0 body> >name count f" Reloading %s totems..." type cr
+    class0 body>name f" Reloading %s totems..." type cr
     class0 -> instances list-count for
         @next reload
     loop drop ;
@@ -156,7 +156,7 @@ _totem :apply ( class - )
     \ If class's extension$ is empty, include directories in discovery
     
     11 push-attribute
-    dup body> >name count f" Loading %s totems..." type cr
+    dup body>name f" Loading %s totems..." type cr
     pop-attribute
     
     to class0   
@@ -195,7 +195,7 @@ _totem :apply ( class - )
 \ : save-totems ( - )
 \     _totem -> dependents list-count for
 \         @next 
-\         dup body> >name count f" Saving %s totems..." type cr
+\         dup body>name f" Saving %s totems..." type cr
 \         -> instances list-count for
 \             @next commit
 \         loop drop
@@ -216,7 +216,7 @@ _totem :apply ( class - )
 
 : unload-instances ( class - )
     {: class0 :}
-    class0 body> >name count f" Unloading %s totems..." type cr
+    class0 body>name f" Unloading %s totems..." type cr
     class0 -> instances list-count for
         @next unload
     loop drop ;
@@ -232,7 +232,7 @@ _totem :apply ( class - )
 \ : empty-totems ( - )
 \     _totem -> dependents list-count for
 \         @next 
-\         dup body> >name count f" Unloading %s totems..." type cr
+\         dup body>name f" Unloading %s totems..." type cr
 \         empty-instances
 \     loop drop ;
 

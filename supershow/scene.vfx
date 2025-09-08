@@ -27,7 +27,7 @@ scene :: _keep ( - )
 
 || : actor-instance ( class - actor )
     dup actor is? not if
-        body> >name count
+        body>name
         f" Class %s does not inherit from ACTOR." -1 -rot .abort 
     then 
     one ;
