@@ -1,3 +1,0 @@
-actor-class coffee%
-coffee :: init
-    coffee.png bmp ! ;

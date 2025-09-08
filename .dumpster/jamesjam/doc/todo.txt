@@ -1,8 +1,0 @@
-generic rat sprites
-
-rat portraits
-
-fix ERR #999
-
-make some rooms
-

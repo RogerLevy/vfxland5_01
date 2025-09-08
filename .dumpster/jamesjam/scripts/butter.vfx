@@ -1,3 +1,0 @@
-actor-class butter%
-butter :: init
-    but.png bmp ! ;

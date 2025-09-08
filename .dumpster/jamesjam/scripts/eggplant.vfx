@@ -1,3 +1,0 @@
-actor-class eggplant%
-eggplant :: init
-    egg.png bmp ! ;

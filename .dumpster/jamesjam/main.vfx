@@ -1,9 +1,0 @@
-\ ------------------------------------------------------------------------------
-\ James Jam (Jan 2025)
-\ ------------------------------------------------------------------------------
-
-include %idir%\..\spunk\loader.vfx
-debug @ [if]
-    include %idir%\..\spunk\tools.vfx
-    include %idir%\testing.vfx
-[then]
