@@ -2,15 +2,18 @@
 \ Create classes from bitmaps automatically
 \ =============================================================================
 
+: .evaluate  2dup type cr evaluate ;
+
 : create-autoclass ( a n - )
     -path | n a |
     a n s" png" ext? -exit
     a n -ext >pad find nip ?exit
     \ ." Creating auto-class from bitmap " a n type cr
     push-order only forth definitions
-    a n -ext f" class: %s actor derive autoclass on" 2dup type cr evaluate
-    a n f"     template [[ %s bmp ! ]]" 2dup type cr evaluate 
-    s" class;" 2dup type cr evaluate 
+    a n -ext f" class: %s actor derive autoclass on" .evaluate
+    a n f"     template [[ %s bmp ! ]]" .evaluate
+    s" class;" .evaluate
+    a n -ext 2dup f" aka _%s %s" .evaluate
     pop-order ;
 
 : create-autoclasses

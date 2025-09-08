@@ -22,7 +22,10 @@ cstring update-name$
     {: | class0 :}
     bl parse
     dup if
-        >pad find not abort" Class not found!"
+        >pad find not if
+            drop pad count f" _%s" >pad find not
+            abort" Class not found!"
+        then
         execute to class0
         pad count update-name$ place
     else
