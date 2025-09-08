@@ -48,6 +48,10 @@ private
 
 : ctrl+s  save ;
 
+: order-swap  get-order >r swap r> set-order ;
+
+: as  as  ['] sketchpad/ >body @ +order  order-swap ;
+
 \ =============================================================================
 
 0 value mx 
