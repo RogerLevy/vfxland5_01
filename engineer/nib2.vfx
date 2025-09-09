@@ -565,14 +565,16 @@ create _protocol  _class make [[
         _object classifier -1 apply-trait 
     ]] ;
 
-: template ( [class] - a )
-    {: | class0 :}
-    classifier dup 0= if drop then to class0 
+: >template ( class - a )
+    {: class0 :}
     class0 >cla @ _trait = abort" template >> Traits cannot have templates, only classes."
     class0 -> class-template @ ?dup 0= if
         class0 make class0 -> class-template !
         class0 -> class-template @
     then ;
+
+: template ( [class] - a )
+    classifier dup 0= if drop then >template ;
 
 : class; ( - )
     template drop

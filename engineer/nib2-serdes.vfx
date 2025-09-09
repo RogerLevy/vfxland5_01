@@ -51,10 +51,9 @@ trait;
         cla @ -> property-list list-count for
             @next to property0
             property0 serialize? if
-                
                 \ get the property address in the instance and in the template
                 me property0 -> offset @ prop+ to val-addr
-                cla @ template property0 -> offset @ prop+ to tmpl-addr
+                cla @ >template property0 -> offset @ prop+ to tmpl-addr
 
                 \ check if the value differs from the class's template
                 val-addr   property0 -> property-size @ 
@@ -67,7 +66,6 @@ trait;
                     property0 -> property-type @ cells bin-ser-table + @ execute
                     here &psize - cell- &psize !
                 then
-
             then
         loop drop 
     ]] ;
