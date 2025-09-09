@@ -144,16 +144,13 @@ actor :: .summary ( actor - )
 
 || 0 value xt
 
-|| : (find) ( 0 actor - 0|actor f )
-    to me
-    en @ 0= ?dup ?exit
-    xt execute if me swap else -1 then ;
+|| : (find) ( 0 actor - 0|actor )
+    dup -> en @ 0= if drop exit then    
+    [[ xt execute if enough drop me then ]] ;
 
-: who> ( - actor ) ( - f )
-    me >r
+: who> ( - actor|0 ) ( - f )
     r> to xt
-    0 ['] (find) actors each
-    r> to me ; 
+    0 ['] (find) actors each ;
 
 \ =============================================================================
 \ Actor drawing
@@ -197,9 +194,12 @@ actor :: unload ( - )
     \ .rs
     en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
 
+: clear-stage ( - )
+    0 next# !  actives>  me unload ;
+
 : just ( - )
     ." JUST >> Clearing all actors!" cr
-    0 next# !  gamew 2 / gameh 2 / at  actives>  me unload ;
+    clear-stage gamew 2 / gameh 2 / at  ;
 
 0 actor :construct ( - )
     at@ 2>. x 2! ;
@@ -319,7 +319,7 @@ c: timer @actor xt1 dur ;
 actor :derive ( source-class derived-class - )
     2drop
     private
-    template as  \ allows immediate assignment of template (TODO: revisit)
+    template to me \ allows immediate assignment of template (TODO: revisit)
 ;
 
 : hide-autoclass ( a len - )

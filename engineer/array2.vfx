@@ -13,10 +13,10 @@ trait;
 
 : #items ( iterable - n ) -> item-count @ ;
 
-variable (enough)
+|| variable (enough)
 : enough  (enough) on ;
 
-: (each) ( xt - ) ( ... a - ... )
+|| : (each) ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
         i me [] xt execute
@@ -29,8 +29,8 @@ _iterable :: each ( xt - ) ( ... a - ... )
     ['] (each) catch
     r> (enough) !
     throw ;
-    
-: (each@) ( xt - ) ( ... a - ... )
+
+|| : (each@) ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
         i me deref-index xt execute
