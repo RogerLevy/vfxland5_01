@@ -19,9 +19,9 @@ variable room#
 \ Low-level stuff
 \ =============================================================================
 
-: roombase$  room# @ s" maps\room" >datadir f" %s%03n" >pad count ;
-: room.dat$  roombase$ f" %s.dat" ;
-: room.scn$  roombase$ f" %s.scn" ;
+: roombase$  room# @ s" map\room" >datadir f" %s%03n" >pad count ;
+: room-datfile  roombase$ f" %s.dat" ;
+: room-scnfile  roombase$ f" %s.vfx" ;
 : screen  1023 and /screen * mram + ;
 
 \ =============================================================================
@@ -80,13 +80,15 @@ variable load-room-chain
 : +warp ( n - )
     room# @ + 1000 + 1000 mod warp ;
 
+: ?read  2dup file-exists? if read else 2drop then ;
+
 : revert-bg ( - )
-    bg0 ` /screen ` room.dat$ `` read ;
+    bg0 /screen room-datfile ?read ;
 
 : revert ( - )
     revert-bg
-    just
-    room.scn$ ?included
+    clear-stage
+    room-scnfile ?included
     load-room-chain do-chain ;
 
 : load-world ( - )

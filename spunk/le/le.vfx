@@ -63,13 +63,13 @@ create cb-p /screen allot
     loop loop ;
 
 : save-ag ( - )
-    s[ .ag s] room.scn$ write ;
+    s[ .ag s] room-scnfile write ;
 
 : clear-ag ( - )
     ag /screen erase  pg /screen erase ;
     
 : load-ag ( - )
-    context @  le/  clear-ag  room.scn$ ?included  context ! ; 
+    context @  le/  clear-ag  room-scnfile ?included  context ! ; 
 
 \ ------------------------------------------------------------------------------
 
@@ -127,8 +127,8 @@ create cb-p /screen allot
 : cut ( - )   copy clear ;
 
 : save-room
-    bg0 /screen room.dat$ write
-    cr ." Saved to " room.dat$ type
+    bg0 /screen room-datfile write
+    cr ." Saved to " room-datfile type
     save-ag
     0 mark! ;
 
@@ -138,14 +138,14 @@ create cb-p /screen allot
     room ;
     
 : @roombase
-    bl parse s" maps\" >datadir f" %s%s" roombase$ place ;
+    bl parse s" map\" >datadir f" %s%s" roombase$ place ;
 
 : saveas ( - <path> )
     @roombase save ;
 
 : (load)
-    room.dat$ file-exists? not if clear-ag exit then
-    bg0 /screen room.dat$ read
+    room-datfile file-exists? not if clear-ag exit then
+    bg0 /screen room-datfile read
     load-ag ;
 
 : load ( - <path> )
