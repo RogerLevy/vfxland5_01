@@ -558,7 +558,7 @@ borrow nib2/ init-nib
 
 : cartridge ( - )
     \ Load user program
-    empty
+    empty page
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
 : turnkey? ( - b )
