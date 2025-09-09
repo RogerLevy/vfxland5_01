@@ -6,6 +6,12 @@
 : wd ( - a len )
     buf 256 buf GetCurrentDirectory ;
 
+: ?notfound ( fp len - )
+    {: fp len :} 
+    fp len file-exists? not if
+        fp len f" File not found: %s" -1 -rot .abort
+    then ;
+
 : evaluate-lines ( addr len -- )
     {: addr len | line-start line-len pos :}
     addr to line-start
@@ -36,7 +42,8 @@
 
 : file, ( fn len - )
     expand
-    r/o open-file abort" File not found"
+    2dup ?notfound
+    r/o open-file abort" File open error"
     | #1 |
     here 
     #1 bytes-left allot
@@ -44,7 +51,7 @@
     #1 close-file drop 0 , ;
 
 : fsize ( fn len - n )
-    2dup file-exists? not abort" File not found"
+    2dup ?notfound
     r/o open-file abort" File open error" 
     dup file-size throw drop swap close-file throw ;
 
@@ -115,7 +122,7 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
     r> close-file drop ;
 
 : read ( dest len path len - )
-    2dup file-exists? not abort" File not found"
+    2dup ?notfound
     r/o open-file abort" File open error" >r
     ( dest len ) r@ file-size drop drop min
     r@ read-file nip abort" File read error"

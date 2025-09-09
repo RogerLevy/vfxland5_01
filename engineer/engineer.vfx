@@ -136,8 +136,7 @@ wordlist constant honing-wl
     \ Normal
     fn len f" %s.vfx" >abspath to len to fn
 
-    fn len file-exists? not
-        abort" File not found."
+    fn len ?notfound 
 
     prj-path$ count fn len instring not 
     prj-path$ count nip 0= or if
