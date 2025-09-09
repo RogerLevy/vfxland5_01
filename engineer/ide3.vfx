@@ -73,6 +73,9 @@ variable hsp   hist-stack hsp !
     0 to >str
     0 out !
     ;
+
+: hist-ff
+    drop free-history init-history ;
     
 create vectors
   ' drop ,
@@ -89,7 +92,7 @@ create vectors
   ' hist-type ,
   ' hist-cr ,
   ' drop ,
-  ' drop ,
+  ' hist-ff ,
   ' drop ,
   ' drop ,
   ' drop ,
@@ -240,7 +243,6 @@ borrow engineer/ func[]
 : command-history ( - )
     1. 2. scaled>
     \ split-x s>f 0e 1e 1e 0e transform
-    monh 7 lines - 24 / visible-lines !
     0 0 at
     s[ render-history s] print-colorful ;
 
@@ -556,6 +558,7 @@ is draw-ide
 
 : init-ide ( - )
     init-history
+    monh 7 lines - 24 / visible-lines !
     0 display-mode !
     >ide
     welcome ;
