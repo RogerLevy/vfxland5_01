@@ -245,7 +245,7 @@ actor object dummy
     \ Parse-ahead instantiation for serialized objects/actors
     \ Allows property settings between *[[ ]] that can be picked up by INIT
     s" (one) [[ " evaluate
-    ']' parse evaluate  1 >in +!
+    ']' parse' evaluate  1 >in +!
     s" me init ]]" evaluate ; immediate
 
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;

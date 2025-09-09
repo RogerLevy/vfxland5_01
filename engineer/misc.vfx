@@ -109,6 +109,7 @@ include %idir%/../textmode/textmode-tools.vfx
     -1 +loop ;
 : -file ( a len - a len' ) slashes '\' <scan ;
 aka file-exists? fileexists?
+aka parse' parse
 : parse  parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
