@@ -89,7 +89,7 @@ class: bitmap
 class;
 
 bitmap :: load ( - )
-    bitmap:load ts @ ?dup if reload then ;
+    bitmap:load   ts @ ?dup if reload then ;
 
 || : reconnect-bmp ( - ) 
     my-name -ext f" %s.png" 

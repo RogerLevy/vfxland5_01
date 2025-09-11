@@ -1,0 +1,166 @@
+\ ------------------------------------------------------------------------------
+\ Simple sample-based audio
+\ TODO: I should probably leave this alone until I finish some games.
+\ ------------------------------------------------------------------------------
+defer voice? ( sndid - flag )
+:noname ( sndid - flag ) drop -1 ; 
+    is voice?
+
+256 ?constant #samples
+variable next-smp#  1 next-smp# !
+#samples cell array sounds
+: sound[]  sounds [] @ ;
+
+|| 2variable ch 
+|| 0 value strm
+
+|| variable play-gain  1. play-gain !
+
+class: sound
+    is-a playable
+    prop id          \ index into sounds array
+    prop selfchoke <save
+class;
+
+class: sample
+    sound derive
+    is-a _totem
+    prop alsmp
+    2 cells nprop channel
+    extension: ogg
+    default-dir: dat/smp
+class;
+
+class: wav-sample
+    sample derive
+    extension: wav
+class;
+
+class: streaming-sample
+    sound derive
+    is-a _totem
+    prop loopmode <save <int
+    extension: ogg
+    default-dir: dat/bgm
+class;
+
+\ =============================================================================
+\ Wrappers
+\ =============================================================================
+
+|| : play-sample ( allegro-sample - )
+    ?dup -exit
+    play-gain @ p>f 0e 1e  ALLEGRO_PLAYMODE_ONCE  ch  al_play_sample
+    1.0 play-gain ! ;
+    
+|| : sample-playing? ( ALLEGRO_SAMPLE_ID* - f )
+    dup al_lock_sample_id
+    al_get_sample_instance_playing
+    swap al_unlock_sample_id ;
+
+|| : load-sample ( a n - allegro-sample )
+    >zpad al_load_sample ;
+
+\ =============================================================================
+\ Playback
+\ =============================================================================
+
+|| : ?choke ( sample - )
+    dup -> selfchoke @ if stop else drop then ;
+
+: sound ( sndid - )
+    sound[] ?dup -exit
+    dup -> id @ voice? not if drop exit then
+    dup ?choke play ;
+
+sample :: play ( - )
+    alsmp @ play-sample
+    ch 2@ rot sound[] -> channel 2! ;
+
+sample :: stop ( - )
+    channel al_stop_sample ;
+
+\ =============================================================================
+\ Automatic loading
+\ =============================================================================
+
+|| : *sample* ( name len - )
+    -ext f" *%s*" >pad
+    $create r> name> >body @ ,
+    does> @ sound ;
+
+|| : does-sample  does> @ ;
+
+sample :: load ( - )
+    srcpath$ count load-sample alsmp ! ;
+
+sample :: _intake ( - )
+    me load   me new? if 
+        does-sample my-name 
+        *sample* 
+        next-smp# @ id !   1 next-smp# +!
+        me id @ sounds [] ! 
+        selfchoke on
+    then ;
+
+sample :: unload ( - )
+    alsmp @ al_destroy_sample
+    0 alsmp ! ;
+
+: load-samples ( - )
+    sample load-default-dir
+    wav-sample load-default-dir
+    streaming-sample load-default-dir ;
+
+\ =============================================================================
+\ Streaming Samples
+\ =============================================================================
+
+streaming-sample :: load ( - )
+    ;
+
+|| : stream-sample ( a n loopmode - )
+    \ Can only stream one at a time
+    \ Allegro destroys the stream handle on exit
+    \ strm ?dup if  al_destroy_audio_stream  0 to strm  then
+    locals| lm |
+    strm ?dup if  0 al_set_audio_stream_playing drop  then
+    >zpad 3 2048 al_load_audio_stream 
+    dup 0= if ." al_load_audio_stream failed" cr  drop exit then
+    to strm
+    strm play-gain @ p>f al_set_audio_stream_gain drop
+    1.0 play-gain !
+    strm lm al_set_audio_stream_playmode drop
+    strm almixer al_attach_audio_stream_to_mixer drop ;
+
+streaming-sample :: play ( - )
+    srcpath$ count loopmode @ stream-sample ;
+
+streaming-sample :: stop ( - )
+    ;
+
+\ =============================================================================
+\ Control
+\ =============================================================================
+
+: loud ( n. - )
+    play-gain ! ;
+
+: stream-gain ( n. - )
+    p>f strm al_set_audio_stream_gain drop ;
+
+|| : stop-sounds ( - )
+    strm ?dup if  0 al_set_audio_stream_playing drop  then
+    ['] stop sounds each@ ;
+
+: hush ( - )
+    stop-sounds ;
+
+: gain ( n. - )
+    p>f almixer al_set_mixer_gain drop ;
+
+: seek ( f:secs - )
+    strm al_seek_audio_stream_secs drop ;
+
+: playhead ( - f:secs )
+    strm al_get_audio_stream_position_secs ;
