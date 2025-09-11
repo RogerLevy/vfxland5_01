@@ -532,6 +532,7 @@ public
     then ;
 
 :noname ( - )
+    hist[ ?dirchange hist]
     +m identity cls draw-display-mode -m ;
 is draw-ide
 

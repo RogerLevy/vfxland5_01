@@ -120,6 +120,7 @@ _totem :apply ( class - )
 \ =============================================================================
 
 : reload ( totem - )
+    dup _totem is? not if drop exit then
     dup unload intake ;
 
 : reload-instances ( class - )

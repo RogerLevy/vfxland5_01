@@ -84,6 +84,7 @@ GetForegroundWindow value vfx-hwnd
 \ Persistence system
 \ =============================================================================
 
+include %idir%/changes.vfx
 include %idir%/totem.vfx
 
 \ =============================================================================
@@ -573,15 +574,15 @@ also forth definitions
     +xrefs
     256 1024 * xref-kb
     s" %bin%\.." expand vfxland5 place
+    wd mondir
 ;
-previous
-
+previous previous
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
     debug @ if init-dev then
-    wd count home-path$ place
+    wd home-path$ place
     init-mersenne
     init-allegro
     *display

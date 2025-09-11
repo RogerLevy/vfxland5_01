@@ -71,6 +71,13 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 prune: cleanup-supershow ;
 \ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
 
+: process-filechange ( notify - )
+    drop
+    changed-file -path >pad find if
+        .changed-file
+        >body reload
+    else drop then ;
+
 : init-supershow ( - )
     hold off
     init-bitmaps
@@ -78,7 +85,8 @@ prune: cleanup-supershow ;
     load-samples
     init-crt
     debug @ if
-        ['] reload-graphics is onSwitchIn
+        \ ['] reload-graphics is onSwitchIn
+        ['] process-filechange is process-dirchange
     else
         display al_hide_mouse_cursor
     then ;
