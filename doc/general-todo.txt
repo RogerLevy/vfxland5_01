@@ -1,4 +1,14 @@
 
+2025/09/11
+[ ] (Engineer) Make game pause on focus lost only if REPL is active
+    Conditional pause behavior based on whether the REPL/IDE is running.
+
+[ ] (Tileset System) Support tilesets with bitmaps of different basename
+    Allow tileset loading from bitmaps that don't match the tileset's base filename.
+
+[ ] (Asset System) Detect new files and create totems from them
+    Implement automatic file detection and totem creation system.
+
 2025/09/03
 [ ] (Engineer) Protect against buffer overrun when deserializing cstrings
     Add bounds checking and safe string handling to prevent buffer overflow vulnerabilities.
