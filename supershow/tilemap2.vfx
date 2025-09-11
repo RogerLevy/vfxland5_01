@@ -19,6 +19,13 @@ class: tileset
     prop #tiles <save <int 
     prop metas-array <ref _array
 
+    prop bw \ parent bitmap dims, used to determine if reallocating sub-bitmaps is needed
+    prop bh 
+
+    : bitmap-size-changed? ( - flag )
+        bmp @ bmpw bw @ <>
+        bmp @ bmph bh @ > or 
+        bmp @ bmpwh bw 2! ;
 class;
 
 || : /metas ( - )
@@ -48,12 +55,20 @@ tileset :construct ( - )
 \ tileset :: use ( - )
 \     baseid @ pile ! ;
 
+: update-tileset ( tileset - )
+    as>
+        next-bmp# @ >r   baseid @ next-bmp# ! 
+        me slice-tileset
+        r> next-bmp# ! ;
+
 tileset :: load ( - )
     \ slice up the tile set's source bitmap.
     \ if the tileset is being re-loaded, refresh the allocated bitmap range.
-    me new? not if next-bmp# @ >r   baseid @ next-bmp# ! then
-    me slice-tileset
-    me new? not if r> next-bmp# ! then ;
+    me new?   bitmap-size-changed? or if 
+        me slice-tileset
+    else
+        me update-tileset
+    then ;
 
 : tile ( tileset n - n )
     swap -> baseid @ + ;
