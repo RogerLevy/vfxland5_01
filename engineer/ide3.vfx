@@ -396,7 +396,7 @@ assign (DoAbortMessage) to-do DoAbortMessage
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         active off
-        ide @ if hold @ old-hold ! hold on then
+        repl @ if hold @ old-hold ! hold on then
     then
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
         active on

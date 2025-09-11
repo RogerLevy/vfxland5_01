@@ -1,6 +1,6 @@
 
 2025/09/11
-[ ] (Engineer) Make game pause on focus lost only if REPL is active
+[x] (Engineer) Make game pause on focus lost only if REPL is active
     Conditional pause behavior based on whether the REPL/IDE is running.
 
 [ ] (Tileset System) Support tilesets with bitmaps of different basename
