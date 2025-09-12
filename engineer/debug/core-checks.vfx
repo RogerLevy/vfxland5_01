@@ -337,8 +337,8 @@ wrap-word c@
 before c! check-char-store-params
 wrap-word c!
 
-before c+! check-char-store-params
-wrap-word c+!
+\ before c+! check-char-store-params
+\ wrap-word c+!
 
 before 2@ check-fetch-address
 wrap-word 2@
