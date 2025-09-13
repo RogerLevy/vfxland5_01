@@ -1,7 +1,5 @@
 include %idir%/libcurl.fth
 
-CURL_GLOBAL_DEFAULT curl_global_init
-
 extern: void * "C" curl_easy_init();
 extern: void "C" curl_easy_setopt( void * curl, int opt, int val );
 extern: bool "C" curl_easy_perform( void * curl );
@@ -49,7 +47,7 @@ fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
     curl CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
     curl CURLOPT_HTTP_VERSION 1 curl_easy_setopt    \ Force HTTP/1.1
     \ curl CURLOPT_VERBOSE 1 curl_easy_setopt
-    \ curl CURLOPT_TIMEOUT 5 curl_easy_setopt
+    curl CURLOPT_TIMEOUT 10 curl_easy_setopt
     curl setopts-xt execute   
     
     \ Execute request
@@ -60,7 +58,6 @@ fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
     curl curl_easy_cleanup ;
 
 cstring p2key$ 
-cstring response$ 
 
 fromC 4 1 callproc: p2key-cb ( ptr size nmemb userdata -- bytes-written )
     {: ptr size nmemb userdata :}
@@ -167,6 +164,7 @@ cstring msg$
 
 : say:  0 parse' send listen ;
 
+CURL_GLOBAL_DEFAULT curl_global_init
 test-get
 get-p2key
 npc-create

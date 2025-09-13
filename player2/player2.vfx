@@ -1,0 +1,130 @@
+include %idir%\aclient.vfx
+
+16 request object-array player2-requests
+player2-requests aclient object player2
+cstring p2key$
+cstring npc$
+
+: game-client-id s" 01993e9f-bc67-7182-b044-4df0c82aa295" ;
+
+fromC 4 1 callproc: p2key-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr size nmemb * 
+    @json s" p2Key" @field p2key$ place
+    p2key$ count type cr
+    size nmemb * ;
+
+: init-player2 ( - request ) 
+    player2 init
+    game-client-id f" http://localhost:4315/v1/login/web/%s"
+    player2 post>
+        p2key-cb CURLOPT_WRITEFUNCTION setopt 
+        s" " setfields
+        me ;
+
+fromC 4 1 callproc: npc-create-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr size nmemb * 1 -2 2+ npc$ place
+    npc$ count type cr
+    size nmemb * ;
+
+: npc-create ( payload len - request )
+    s" https://api.player2.game/v1/npcs/spawn" 
+    player2 post>
+        0 
+        p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+        z" Content-Type: application/json" curl_slist_append 
+        \ z" User-Agent: MyApp/1.0" curl_slist_append 
+        setheaders
+        ( payload len ) setfields 
+        npc-create-cb CURLOPT_WRITEFUNCTION setopt 
+        me
+;
+
+: npc-send ( payload len - )
+    npc$ count f" https://api.player2.game/v1/npcs/%s/chat" 
+    player2 post>
+        0 
+        p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+        z" Content-Type: application/json" curl_slist_append 
+        z" Accept: text/plain; charset=US-ASCII" curl_slist_append 
+        setheaders
+        ( payload len ) 
+        setfields
+;
+
+fromC 4 1 callproc: listen-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ." Listen-cb fired" cr
+    ptr   size nmemb * dup if 
+        @json s" message" @field type cr  
+    else 2drop then 
+    size nmemb * ;
+
+: listen ( - )
+    s" https://api.player2.game/v1/npcs/responses" 
+    player2 get>
+        0 
+        p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+        setheaders
+        streaming on 
+        listen-cb CURLOPT_WRITEFUNCTION setopt 
+;
+
+create wpayload 5000 allot
+: gen-payload
+    s[
+        .\" {\"name\": \"Captain Blackbeard\","
+        .\" \"short_name\": \"Captain\","
+        .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
+        .\" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure\","
+        .\" \"tts\": {"
+        .\" \"voice_ids\": [\"01955d76-ed5b-753f-9f74-c0674216f0f5\"],"
+        .\" \"speed\": 1.0,"
+        .\" \"audio_format\": \"mp3\"}}"
+    s] ;
+\ gen-payload wpayload wplace
+
+cstring gamestate$
+
+: gen-payload2
+    s[
+        .\" {\"sender_name\": \"Roger\","
+        .\" \"sender_message\": \"Hello.\","
+        gamestate$ count fe" \"game_state_info\": \"%s\"}" type
+        \ .\" \"game_state_info\": \"Player is on a tropical island with palm trees and a beach\"}" 
+    s] ;
+gen-payload2 wpayload wplace
+
+: test
+    CURL_GLOBAL_DEFAULT curl_global_init
+    abort" curl_global_init failed"
+    init-player2 as>
+    on-complete> 
+    listen 
+    \ wpayload wcount 2dup dump npc-create as>
+    gen-payload npc-create as>
+    on-complete>
+    wpayload wcount npc-send ;
+
+: blocking
+    begin player2 process 100 ms key? until ;
+
+: in-engineer
+    show> player2 process ;
+
+: state: 0 parse gamestate$ place ;
+: say: 
+    s[
+        .\" {\"sender_name\": \"Roger\","
+        0 parse fe" \"sender_message\": \"%s\"," type
+        gamestate$ count fe" \"game_state_info\": \"%s\"}" type
+    s] npc-send ;
+
+state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
+
+going @ [if]
+    test in-engineer
+[else]
+    test blocking
+[then]

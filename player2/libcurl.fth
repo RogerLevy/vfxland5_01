@@ -1428,12 +1428,13 @@ CURLOPTTYPE_type num + constant CURLOPT_name
 2 constant CURL_IPRESOLVE_V6       \ resolve to ipv6 addresses
 
 ((
-  /* three convenient "aliases" that follow the name scheme better */
+  /* convenient "aliases" that follow the name scheme better */
+))
+
 #define CURLOPT_WRITEDATA CURLOPT_FILE
 #define CURLOPT_READDATA  CURLOPT_INFILE
 #define CURLOPT_HEADERDATA CURLOPT_WRITEHEADER
 #define CURLOPT_RTSPHEADER CURLOPT_HTTPHEADER
-))
 
 \ These enums are for use with the CURLOPT_HTTP_VERSION option.
 0 constant  CURL_HTTP_VERSION_NONE \ setting this means we don't care, and that we'd

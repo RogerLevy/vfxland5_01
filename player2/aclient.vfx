@@ -1,0 +1,198 @@
+include %idir%/libcurl.fth
+
+extern: void * "C" curl_easy_init();
+extern: void "C" curl_easy_setopt( void * curl, int opt, int val );
+extern: int "C" curl_easy_perform( void * curl );
+extern: void "C" curl_easy_cleanup( void * curl );
+extern: void * "C" curl_multi_init();                    \ Create multi manager
+extern: int "C" curl_multi_add_handle( multi, easy );     \ Add a request to manager
+extern: void "C" curl_multi_remove_handle( multi, easy );  \ Remove a request
+extern: int "C" curl_multi_perform( multi, int *running );    \ Do network work (non-blocking)
+extern: void "C" curl_multi_cleanup( multi );            \ Clean up multi manager
+extern: void * "C" curl_multi_info_read( multi, *msgs );  \ Check for completed requests
+
+struct /curl-msg
+    int msg.msg        \ what this message means
+    int msg.handle     \ the handle it concerns 
+    int msg.whatever   \ message-specific data 
+    int msg.result     \ return code for transfer 
+end-struct
+
+trait: _object
+    :: init ( - ) ;
+    :: deinit ( - ) ;
+    :: process ( - ) ;
+trait;
+
+class: aclient              \ asynchronous http client using libcurl
+    prop multi-handle     \ Main multi handle - manages all connections
+    prop #transfers
+    prop #messages
+    prop #requests
+    prop requests <ref _array
+class;
+
+class: request
+    prop en
+    \ prop id
+    prop easy-handle 
+    prop on-completion-xt <xt   \ scoped to completed request
+    prop user-data          \ arbitrary data for callback
+    prop streaming
+    prop headers            \ slist, automatically freed on completion
+class;
+
+\ variable next-req#
+
+\ 0 request :construct ( - )
+\     next-req# @ id !   1 next-req# +! ;
+
+1 aclient :construct ( request-array - )
+    dup _array is? not abort" aclient:construct >> request-array must be an array"
+    requests ! ;
+
+aclient :: init ( - )
+    curl_multi_init multi-handle !
+    multi-handle @ 0= abort" curl_multi_init failed" ;
+
+private
+
+fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
+    {: ptr size nmemb userdata :}
+    ptr   size nmemb * dup if 
+        type   cr  
+    else 2drop then 
+    size nmemb * ;
+
+: *request ( aclient - request )
+    as>
+        requests @ #items for
+            i requests @ deref-index 
+            dup -> en @ 0= if
+                1 #requests +!
+                request over construct
+                [[ en on   me ]] unloop exit
+            else drop then
+        loop 
+        -1 abort" Out of request objects" ;
+
+: /request ( url len aclient - request ) 
+    {: url len aclient | easy zurl[ 1024 ] :}
+    url len zurl[ zplace
+    url len type cr
+
+    aclient *request [[
+        curl_easy_init to easy
+        easy 0= abort" curl_easy_init failed"
+        easy easy-handle !
+        easy CURLOPT_SSL_VERIFYPEER 0 curl_easy_setopt
+        easy CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
+        easy CURLOPT_URL zurl[ curl_easy_setopt
+        easy CURLOPT_HTTP_VERSION 1 curl_easy_setopt 
+        easy CURLOPT_WRITEFUNCTION output-cb curl_easy_setopt  \ default callback
+
+    me ]] ;
+
+: sendoff ( request aclient - )
+    over [[ 
+        easy-handle @ CURLOPT_WRITEDATA user-data @ curl_easy_setopt
+        streaming @ if
+            easy-handle @ CURLOPT_TIMEOUT 0 curl_easy_setopt 
+        then 
+    ]]
+    -> multi-handle @   swap -> easy-handle @   curl_multi_add_handle 
+    ?dup if
+        f" curl_multi_add_handle failed with err # %n" -1 -rot .abort
+    then ;
+
+: /get ( - ) easy-handle @ CURLOPT_HTTPGET 1 curl_easy_setopt ;
+: /post ( - ) easy-handle @ CURLOPT_POST 1 curl_easy_setopt ;
+: /put ( - ) easy-handle @ CURLOPT_CUSTOMREQUEST z" PUT" curl_easy_setopt ;
+: /delete ( - ) easy-handle @ CURLOPT_CUSTOMREQUEST z" DELETE" curl_easy_setopt ;
+
+: handle-curl-msg ( curl-msg aclient - )
+    {: msg aclient | handle req :}
+    0 to req
+    aclient as>
+        msg msg.handle @ to handle
+        requests @ #items for
+            i requests @ deref-index 
+            dup -> en @ 0<>
+            over -> easy-handle @ handle = and if
+                to req leave
+            else drop then
+        loop
+        req -exit
+        req [[
+            sp@ >r 
+            on-completion-xt @ ?dup if 
+                execute 
+            then
+            r> sp!
+            headers @ ?dup if curl_slist_free_all then
+        ]] 
+        multi-handle @ handle curl_multi_remove_handle
+        handle curl_easy_cleanup
+        req -> en off 
+        -1 #requests +! ;
+
+public
+
+aclient :: process ( - )
+    multi-handle @ -exit
+    multi-handle @ #transfers curl_multi_perform ?dup if 
+        f" curl_multi_perform failed with err # %n" -1 -rot .abort
+    then
+    begin
+        multi-handle @ #messages curl_multi_info_read
+    ?dup while
+        ." incoming curl message..." cr
+        me handle-curl-msg
+    repeat ;
+
+: setopt ( val opt - ) 
+    swap easy-handle @ -rot curl_easy_setopt ;
+
+: on-complete> ( - )
+    r> on-completion-xt ! ;
+
+: setheaders ( slist - )
+    dup headers !   CURLOPT_HTTPHEADER setopt ;
+
+create lastfields 5000 allot
+: .fields lastfields wcount type ;
+
+: setfields ( payload len - )
+    ." Fields: " 
+     \ 2dup dump
+    2dup type cr
+    \ 2dup lastfields wplace
+    \ lastfields wplace
+    \ lastfields wcount
+    CURLOPT_POSTFIELDSIZE setopt   CURLOPT_COPYPOSTFIELDS setopt ;
+
+: get> ( ... url len aclient - ) ( ... - )
+    r> {: url len aclient xt :}
+    url len aclient /request [[ /get  xt execute   me ]] aclient sendoff ;
+
+: post> ( ... url len aclient - ) ( ... - )
+    r> {: url len aclient xt :}
+    url len aclient /request [[ /post  xt execute   me ]] aclient sendoff ;
+ 
+: @json ( a len - a' len' )
+    \ strips braces from returned payload; simple version
+    1 -2 2+ ;
+
+: cutoff
+    >r 2dup r> scan nip - ;
+
+: @field ( payload len name len - val len )
+    \ fetch field from returned payload; assumes value is a string surrounded
+    \ by double-quotes.
+    {: pl pl-len name name-len | buf[ 256 ] :}
+    name name-len fe" \"%s\"" buf[ place
+    pl pl-len buf[ count search 0= if
+        buf[ count f" Field %s not found" -1 -rot .abort 
+    then
+    buf[ count nip 2 + /string 
+    '"' cutoff ;
