@@ -89,7 +89,8 @@ public
 
 defer process-dirchange ( NOTIFY_INFO - )
 : .changed-file ." File changed: " changed-file type cr ;
-:noname 256 dump .changed-file ; is process-dirchange
+\ :noname .changed-file 128 dump ; is process-dirchange
+:noname drop ; is process-dirchange
 
 : ?dirchange ( - )
     dir-handle overlapped bytes-returned 0 GetOverlappedResult if
