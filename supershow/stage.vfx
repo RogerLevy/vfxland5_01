@@ -10,7 +10,7 @@ variable gamelife
 0 0 2value gametime
 
 class: actor
-    is-a thinker
+    \ is-a thinker
     is-a unloadable
     /actor field-space
     prop en

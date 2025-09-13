@@ -51,7 +51,7 @@ class;
 \ =============================================================================
 
 class: playback
-    is-a thinker
+    \ is-a thinker
     prop path0 <ref path        \ pointer to path definition
     prop seg <int               \ current segment index
     prop journey <fixed         \ path progress 0-1.0  
