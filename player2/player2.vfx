@@ -7,26 +7,21 @@ cstring npc$
 
 : game-client-id s" 01993e9f-bc67-7182-b044-4df0c82aa295" ;
 
-fromC 4 1 callproc: p2key-cb ( ptr size nmemb userdata -- bytes-written )
-    {: ptr size nmemb userdata :}
-    ptr size nmemb * 
+: p2key-write ( a len - )
     @json s" p2Key" @field p2key$ place
-    p2key$ count type cr
-    size nmemb * ;
+    p2key$ count type cr ;
 
 : init-player2 ( - request ) 
     player2 init
     game-client-id f" http://localhost:4315/v1/login/web/%s"
     player2 post>
-        p2key-cb CURLOPT_WRITEFUNCTION setopt 
+        ['] p2key-write write-xt !
         s" " setfields
         me ;
 
-fromC 4 1 callproc: npc-create-cb ( ptr size nmemb userdata -- bytes-written )
-    {: ptr size nmemb userdata :}
-    ptr size nmemb * 1 -2 2+ npc$ place
-    npc$ count type cr
-    size nmemb * ;
+: npc-create-write ( a len - )
+    1 -2 2+ npc$ place
+    npc$ count type cr ;
 
 : npc-create ( payload len - request )
     s" https://api.player2.game/v1/npcs/spawn" 
@@ -37,7 +32,7 @@ fromC 4 1 callproc: npc-create-cb ( ptr size nmemb userdata -- bytes-written )
         \ z" User-Agent: MyApp/1.0" curl_slist_append 
         setheaders
         ( payload len ) setfields 
-        npc-create-cb CURLOPT_WRITEFUNCTION setopt 
+        ['] npc-create-write write-xt !
         me
 ;
 
@@ -53,13 +48,8 @@ fromC 4 1 callproc: npc-create-cb ( ptr size nmemb userdata -- bytes-written )
         setfields
 ;
 
-fromC 4 1 callproc: listen-cb ( ptr size nmemb userdata -- bytes-written )
-    {: ptr size nmemb userdata :}
-    ." Listen-cb fired" cr
-    ptr   size nmemb * dup if 
-        @json s" message" @field type cr  
-    else 2drop then 
-    size nmemb * ;
+: listen-write ( a len - )
+    @json s" message" @field type cr ;
 
 : listen ( - )
     s" https://api.player2.game/v1/npcs/responses" 
@@ -68,7 +58,8 @@ fromC 4 1 callproc: listen-cb ( ptr size nmemb userdata -- bytes-written )
         p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
         setheaders
         streaming on 
-        listen-cb CURLOPT_WRITEFUNCTION setopt 
+        ['] listen-write write-xt !
+        hist-dev op !
 ;
 
 create wpayload 5000 allot

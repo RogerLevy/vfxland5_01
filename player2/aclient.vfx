@@ -25,7 +25,7 @@ trait: _object
 trait;
 
 class: aclient              \ asynchronous http client using libcurl
-    prop multi-handle     \ Main multi handle - manages all connections
+    prop multi-handle       \ Main multi handle - manages all connections
     prop #transfers
     prop #messages
     prop #requests
@@ -37,9 +37,11 @@ class: request
     \ prop id
     prop easy-handle 
     prop on-completion-xt <xt   \ scoped to completed request
-    prop user-data          \ arbitrary data for callback
     prop streaming
     prop headers            \ slist, automatically freed on completion
+    prop op                 \ output handle for callbacks, defaults to consoledev
+    prop write-xt           \ ( a len - ) , scoped to the request
+    prop data               \ arbitrary data pointer available to write-xt
 class;
 
 \ variable next-req#
@@ -57,12 +59,26 @@ aclient :: init ( - )
 
 private
 
-fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
-    {: ptr size nmemb userdata :}
-    ptr   size nmemb * dup if 
-        type   cr  
-    else 2drop then 
-    size nmemb * ;
+fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
+    \ userdata is the request
+    {: ptr size nmemb req :}
+    req [[
+        op-handle @ >r   op @ op-handle !
+        write-xt @ if
+            ptr   size nmemb *   write-xt @ catch .throw
+        else
+            ptr   size nmemb * type   cr  
+        then
+        r> op-handle !
+        size nmemb * 
+    ]] ;
+
+\ fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
+\     {: ptr size nmemb userdata :}
+\     ptr   size nmemb * dup if 
+\         type   cr  
+\     else 2drop then 
+\     size nmemb * ;
 
 : *request ( aclient - request )
     as>
@@ -89,13 +105,13 @@ fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
         easy CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
         easy CURLOPT_URL zurl[ curl_easy_setopt
         easy CURLOPT_HTTP_VERSION 1 curl_easy_setopt 
-        easy CURLOPT_WRITEFUNCTION output-cb curl_easy_setopt  \ default callback
-
+        easy CURLOPT_WRITEFUNCTION standard-cb curl_easy_setopt  \ standard callback
+        easy CURLOPT_WRITEDATA me curl_easy_setopt  \ set userdata = the request
+        consoledev op ! 
     me ]] ;
 
 : sendoff ( request aclient - )
     over [[ 
-        easy-handle @ CURLOPT_WRITEDATA user-data @ curl_easy_setopt
         streaming @ if
             easy-handle @ CURLOPT_TIMEOUT 0 curl_easy_setopt 
         then 
