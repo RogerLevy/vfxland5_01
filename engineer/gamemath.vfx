@@ -3,8 +3,8 @@
 \ ------------------------------------------------------------------------------
 
 \ 2D Vectors
-synonym d@ 2@
-synonym d! 2!
+aka d@ 2@
+aka d! 2!
 : x@ @ ;
 : y@ cell+ @ ;
 : 2@ dup @ swap 4 + @ ;
@@ -43,5 +43,5 @@ synonym d! 2!
 \ Misc
 \ =============================================================================
 
-synonym << lshift
-synonym >> rshift
+aka << lshift
+aka >> rshift

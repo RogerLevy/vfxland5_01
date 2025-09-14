@@ -9,9 +9,8 @@ public
 defer draw-ide
 
 private   
-include %idir%/history.vfx   \ private to this file's vocabulary
 
-synonym dup-endcase end-case
+aka dup-endcase end-case
 aligned-page uios
 variable uiosp  uios uiosp !
 variable display-mode  \ 0 = IDE, 1 = Fullscreen (game), 2 = Windowed (game)
@@ -32,94 +31,9 @@ create (pen) 0 , 0 ,
 \ History I/O device
 \ =============================================================================
 
-create str 256 allot
-0 value >str
+include %idir%/history.vfx   \ private to this file's vocabulary
 
-aligned-page hist-stack
-variable hsp   hist-stack hsp ! 
-: hist-push ( ? - ) hsp @ !  4 hsp c+! ;
-: hist-pop ( - ? ) -4 hsp c+!  hsp @ @ ;
-
-: hist-emit ( c sid - )
-    drop  
-    >str 256 = if drop exit then
-    str >str + c!  1 +to >str  1 out +! ;
-
-: hist-type ( a len - )
-    drop  bounds ?do  i c@ 0 hist-emit  loop ;
-
-: (echo) ( - )
-    \ Echo to VFX console
-    {: | skip :} 
-    >str -exit
-    op-handle @ >r
-    consoledev op-handle !
-    str >str bounds do
-        1 to skip
-        i c@ ATTR_FG = if 3 to skip then
-        i c@ ATTR_BG = if 3 to skip then
-        skip 1 = if
-            i c@ 10 ATTR_CODES 1 - within if i c@ emit then
-        then
-    skip +loop
-    r> op-handle ! ;
-
-: hist-cr
-    drop
-    10 emit
-    refresh-attribute
-    (echo)
-    str >str add-history
-    0 to >str
-    0 out !
-    ;
-
-: hist-ff
-    drop free-history init-history ;
-    
-create vectors
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' hist-emit ,
-  ' drop ,
-  ' hist-type ,
-  ' hist-cr ,
-  ' drop ,
-  ' hist-ff ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-  ' drop ,
-
-create hist-dev   0 , vectors ,
-
-: hist[ ( - )
-    op-handle @ hist-push
-    textmode @ hist-push textmode on 
-    >str out !
-    hist-dev op-handle ! ;
-
-: hist] ( - )
-    hist-pop textmode ! 
-    hist-pop op-handle !
-    str >str add-history
-    (echo)
-    0 to >str ;
-
-: hist[ ; : hist] ; 
+\ : hist[ ; : hist] ; 
 
 \ =============================================================================
 \ IDE Components Display
@@ -161,7 +75,7 @@ borrow engineer/ draw-game
     
     hist[
     (2x-game)
-    >str if cr then
+    out @ if cr then
     hist]
   
 
@@ -245,8 +159,7 @@ borrow engineer/ func[]
 : command-history ( - )
     1. 2. scaled>
     \ split-x s>f 0e 1e 1e 0e transform
-    0 0 at
-    s[ render-history s] print-colorful ;
+    0 0 at   draw-history ;
 
 : ?.s ( - )
     depth | d |
@@ -273,7 +186,6 @@ borrow engineer/ func[]
     s] print ;
     
 : ide-layout ( - )
-    textmode off
     \ title-bar
     game-window     command-history
     info-box        stack-display
@@ -350,7 +262,7 @@ assign (DoAbortMessage) to-do DoAbortMessage
     osp @ >r uiosp @ osp !
     .tib cr 
     tib #tib @ >interpret
-    >str if cr then
+    out @ if cr then
     ?dup if .throw cr rs state off then 
     0 #tib ! 
     osp @ uiosp ! r> osp !
@@ -572,7 +484,6 @@ is draw-ide
 : ide-quit
     ." IDE-QUIT" cr
     running off
-    textmode off
     consoledev setio
     ((quit))
 ;

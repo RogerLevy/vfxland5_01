@@ -217,7 +217,7 @@ include %idir%/../textmode/textmode.vfx
     ustime 1000 m/ to mstime
     sdelta f>p to pdelta ;
 
-synonym z zoom
+aka z zoom
 
 \ =============================================================================
 \ Event handling
@@ -712,9 +712,6 @@ create zcommand 256 allot
 : engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
     over zcount zcommand zplace
     vfxforth-entrypoint ;
-
-borrow ide3/ history-stats
-borrow ide3/ visible-lines
 
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args

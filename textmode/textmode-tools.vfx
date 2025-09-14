@@ -1,55 +1,25 @@
 variable attr
-variable textmode 
-
-250 constant ATTR_CODES
-ATTR_CODES 1 -
-1 + dup constant ATTR_PUSH
-1 + dup constant ATTR_POP
-1 + dup constant ATTR_FG
-1 + dup constant ATTR_BG  
-drop
 
 : attribute ( n - )
     \ $0000BBFF = F = foreground, B = background
-    \ If textmode is off, don't emit control characters.
-    \ This prevents issues with normal terminal output.
-    dup attr !
-    textmode @ 0= if drop exit then
-    ATTR_FG emit  dup $ff and emit
-    ATTR_BG emit  8 rshift $ff and emit ;
+    attr ! ;
 
-: tm-emit ( n - )
-    textmode @ 0= if drop exit then
-    emit ;
-
-: refresh-attribute ( - )
-    attr @ attribute ;
-
-create attr-stack 16 cells allot
+aligned-page attr-stack
 variable attr-sp
-
-: save-attribute ( -- )
-    attr @ attr-stack attr-sp @ cells + !
-    attr-sp @ 1 + 15 and attr-sp ! ;
-
-: restore-attribute ( -- )
-    attr-sp @ 1 - 15 and attr-sp !
-    attr-stack attr-sp @ cells + @ attr ! ;
-
-: push-attribute ( n - )
-    save-attribute 
-    ATTR_PUSH tm-emit
+attr-stack attr-sp !
+: push-attribute ( n -- )
+    attr @ attr-sp @ !
+    4 attr-sp c+! 
     attribute ;
-    
-: pop-attribute ( - )
-    restore-attribute
-    ATTR_POP tm-emit ;
+
+: pop-attribute ( -- )
+    -4 attr-sp c+! 
+    attr-sp @ @ attr ! ;
 
 \ Initialize everything to 7 (light grey)
-\ -----------------------------------
-7 attr !
-:noname 16 for save-attribute loop ; execute
+:noname 256 cell / for 7 push-attribute loop ; execute
 
+\ Redefine redefhook
 : textmode-redef	
   6 push-attribute LastNameFound .NAME ." is redefined " pop-attribute cr ;
 ' textmode-redef is redefhook  

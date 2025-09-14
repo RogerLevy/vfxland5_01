@@ -19,8 +19,11 @@ aka cd cwd
 : 2-  rot swap - >r - r> ;
 : for  s" 0 ?do" evaluate ; immediate
 : @+  dup cell+ swap @ ;
+: c@+  dup 1 + swap c@ ;
 : lc  ( n - n) dup 'A' 'Z' within? if $20 or then ;
 : ltype for dup c@ lc emit 1 + loop drop ;      
+: pagealign ( - )  here $ff and 256 swap - allot ;
+: aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 
 include %idir%/../textmode/textmode-tools.vfx
 
@@ -276,6 +279,7 @@ cstring lastword
 : locate  !lastword locate ;
 : see  !lastword see ;
 : show  !lastword show ;
+: aka  !lastword aka ;
 
 aka save-exe save
 
