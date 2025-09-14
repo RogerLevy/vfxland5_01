@@ -33,8 +33,6 @@ create (pen) 0 , 0 ,
 
 include %idir%/history.vfx   \ private to this file's vocabulary
 
-\ : hist[ ; : hist] ; 
-
 \ =============================================================================
 \ IDE Components Display
 \ =============================================================================
@@ -73,10 +71,10 @@ borrow engineer/ draw-game
     2s>f 1e 1e 0e transform
 
     
-    hist[
+    \ hist[
     (2x-game)
     out @ if cr then
-    hist]
+    \ hist]
   
 
     1e f>ds >r
@@ -428,7 +426,7 @@ public
 
 : ide-events ( - )
     debug @ if
-        hist[
+        \ hist[
             ALLEGRO_EVENT_KEY_DOWN happened? if
                 the-key <f1> - 0 12 within? if
                     the-key ?func
@@ -442,11 +440,13 @@ public
             ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
                 onSwitchIn
             then
-        hist] 
+        \ hist] 
     then ;
 
 :noname ( - )
-    hist[ ?dirchange hist]
+    \ hist[ 
+    ?dirchange 
+    \ hist]
     +m identity cls draw-display-mode -m ;
 is draw-ide
 
@@ -455,9 +455,10 @@ is draw-ide
 : >ide ( - )
     \ Switch to IDE mode with proper visual formatting
     running on 
-    hist[ 7 attribute hist]
+    hist[ 7 attribute
     enact-display-mode
-    >display ;
+    >display 
+    rs ;
 
 : .rainbow
     bounds do
@@ -475,7 +476,7 @@ is draw-ide
     init-history
     monh 7 lines - 24 / visible-lines !
     0 display-mode !
-    >ide
+    \ >ide
     welcome ;
 
 : ide-interpret ( a len - res )
