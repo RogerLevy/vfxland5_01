@@ -195,9 +195,17 @@ variable hsp   hist-stack hsp !
 
 : hist-emit ( c sid - )
     drop   
+    
+    dup 10 = if
+        drop
+        0 hist-cr
+        exit
+    then
+
     out @ 120 >= if
         0 hist-cr
     then
+    
     dup add-history-byte   
     attr c@ add-history-byte
     attr 1 + c@ add-history-byte
