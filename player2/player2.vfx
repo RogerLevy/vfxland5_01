@@ -49,7 +49,7 @@ cstring npc$
 ;
 
 : listen-write ( a len - )
-    @json s" message" @field type cr ;
+    @json s" message" @field 2dup dump type cr ;
 
 : listen ( - )
     s" https://api.player2.game/v1/npcs/responses" 
@@ -77,13 +77,13 @@ cstring npc$
     s] ;
 \ gen-payload wpayload wplace
 
-cstring gamestate$
+create gamestate$ 5000 allot&erase
 
 : say ( msg len - )
     s[
         .\" {\"sender_name\": \"Roger\","
         ( msg len ) fe" \"sender_message\": \"%s\"," type
-        gamestate$ count fe" \"game_state_info\": \"%s\"}" type
+        gamestate$ wcount fe" \"game_state_info\": \"%s\"}" type
     s] npc-send ;
     
 : test
@@ -102,10 +102,15 @@ cstring gamestate$
 : in-engineer
     show> player2 process ;
 
-: state: 0 parse gamestate$ place ;
+: state: 0 parse gamestate$ wplace ;
+: +state: s" \n" gamestate$ wappend   0 parse gamestate$ wappend ;
 : say: 0 parse say ;
 
-state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
+\ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
+state: Player is on a beach.  
++state: After responding, if you choose, you may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect on the player.  
++state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
++State: The following is the list of available system commands:  \n |give-map| \n |give-gold amount| \n |steal-gold amount| \n |give-sword| \n |give-lamp| \n |give-parrot| \n |fight| \n |run-away|
 
 going @ [if]
     test in-engineer
