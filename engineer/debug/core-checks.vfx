@@ -366,8 +366,8 @@ wrap-word cells
 before count check-counted-string
 wrap-word count
 
-before type check-type-params
-wrap-word type
+\ before type check-type-params
+\ wrap-word type
 
 before move check-move-params
 wrap-word move
