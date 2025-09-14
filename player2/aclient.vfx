@@ -44,11 +44,6 @@ class: request
     prop data               \ arbitrary data pointer available to write-xt
 class;
 
-\ variable next-req#
-
-\ 0 request :construct ( - )
-\     next-req# @ id !   1 next-req# +! ;
-
 1 aclient :construct ( request-array - )
     dup _array is? not abort" aclient:construct >> request-array must be an array"
     requests ! ;
@@ -72,13 +67,6 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         r> op-handle !
         size nmemb * 
     ]] ;
-
-\ fromC 4 1 callproc: output-cb ( ptr size nmemb userdata -- bytes-written )
-\     {: ptr size nmemb userdata :}
-\     ptr   size nmemb * dup if 
-\         type   cr  
-\     else 2drop then 
-\     size nmemb * ;
 
 : *request ( aclient - request )
     as>
@@ -104,7 +92,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         easy CURLOPT_SSL_VERIFYPEER 0 curl_easy_setopt
         easy CURLOPT_SSL_VERIFYHOST 0 curl_easy_setopt
         easy CURLOPT_URL zurl[ curl_easy_setopt
-        easy CURLOPT_HTTP_VERSION 1 curl_easy_setopt 
+        easy CURLOPT_HTTP_VERSION 2 curl_easy_setopt 
         easy CURLOPT_WRITEFUNCTION standard-cb curl_easy_setopt  \ standard callback
         easy CURLOPT_WRITEDATA me curl_easy_setopt  \ set userdata = the request
         consoledev op ! 
@@ -162,7 +150,7 @@ aclient :: process ( - )
     begin
         multi-handle @ #messages curl_multi_info_read
     ?dup while
-        ." incoming curl message..." cr
+        \ ." incoming curl message..." cr
         me handle-curl-msg
     repeat ;
 
@@ -180,18 +168,16 @@ create lastfields 5000 allot
 
 : setfields ( payload len - )
     ." Fields: " 
-     \ 2dup dump
     2dup type cr
-    \ 2dup lastfields wplace
-    \ lastfields wplace
-    \ lastfields wcount
     CURLOPT_POSTFIELDSIZE setopt   CURLOPT_COPYPOSTFIELDS setopt ;
 
 : get> ( ... url len aclient - ) ( ... - )
+    ." GET: " cr
     r> {: url len aclient xt :}
     url len aclient /request [[ /get  xt execute   me ]] aclient sendoff ;
 
 : post> ( ... url len aclient - ) ( ... - )
+    ." POST: " cr
     r> {: url len aclient xt :}
     url len aclient /request [[ /post  xt execute   me ]] aclient sendoff ;
  

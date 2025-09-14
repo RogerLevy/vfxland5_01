@@ -56,14 +56,15 @@ cstring npc$
     player2 get>
         0 
         p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+        z" Accept: text/plain; charset=US-ASCII" curl_slist_append 
         setheaders
         streaming on 
         ['] listen-write write-xt !
         hist-dev op !
 ;
 
-create wpayload 5000 allot
-: gen-payload
+\ create wpayload 5000 allot
+: npc-fields
     s[
         .\" {\"name\": \"Captain Blackbeard\","
         .\" \"short_name\": \"Captain\","
@@ -78,25 +79,22 @@ create wpayload 5000 allot
 
 cstring gamestate$
 
-: gen-payload2
+: say ( msg len - )
     s[
         .\" {\"sender_name\": \"Roger\","
-        .\" \"sender_message\": \"Hello.\","
+        ( msg len ) fe" \"sender_message\": \"%s\"," type
         gamestate$ count fe" \"game_state_info\": \"%s\"}" type
-        \ .\" \"game_state_info\": \"Player is on a tropical island with palm trees and a beach\"}" 
-    s] ;
-gen-payload2 wpayload wplace
-
+    s] npc-send ;
+    
 : test
     CURL_GLOBAL_DEFAULT curl_global_init
     abort" curl_global_init failed"
     init-player2 as>
     on-complete> 
     listen 
-    \ wpayload wcount 2dup dump npc-create as>
-    gen-payload npc-create as>
+    npc-fields npc-create as>
     on-complete>
-    wpayload wcount npc-send ;
+    s" Hello." say ;
 
 : blocking
     begin player2 process 100 ms key? until ;
@@ -105,12 +103,7 @@ gen-payload2 wpayload wplace
     show> player2 process ;
 
 : state: 0 parse gamestate$ place ;
-: say: 
-    s[
-        .\" {\"sender_name\": \"Roger\","
-        0 parse fe" \"sender_message\": \"%s\"," type
-        gamestate$ count fe" \"game_state_info\": \"%s\"}" type
-    s] npc-send ;
+: say: 0 parse say ;
 
 state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
 
