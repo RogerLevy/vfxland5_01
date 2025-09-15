@@ -177,6 +177,8 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     {: msg aclient | handle req :}
     0 to req
     aclient as>
+        ." curl msg result: " msg msg.result @ . cr
+
         msg msg.handle @ to handle
         requests @ #items for
             i requests @ deref-index 
@@ -185,7 +187,10 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
                 to req leave
             else drop then
         loop
-        req -exit
+        req 0= if
+            msg msg.handle @ f" handle-curl-msg >> Handle %n not found" type cr
+            exit
+        then
         req [[
             sp@ >r 
             on-completion-xt @ ?dup if 
