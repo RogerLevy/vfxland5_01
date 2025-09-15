@@ -19,3 +19,9 @@
 
 : *wstring ( a len - wstr )
     here -rot  dup cell+ allot here wplace ;
+
+: w$,  ( a len - )
+    *wstring drop ;
+
+: w$@+ ( a - a' w$ len - )
+    wcount 2dup + -rot ;
