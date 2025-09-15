@@ -53,7 +53,10 @@ create msg$$ 65536 allot&erase
 variable msg-waiting
 
 : listen-write ( a len - )
-    @json s" message" @field 2dup type cr msg$$ wplace 
+    @json s" message" @field  msg$$ wplace 
+    10 push-attribute
+    msg$$ wcount type cr 
+    pop-attribute
     msg-waiting on ;
 
 : listen ( - )
@@ -71,19 +74,29 @@ variable msg-waiting
     again
 ;
 
-\ create wpayload 5000 allot
+create systemprompt$$ 2000 allot
+s" IF AND ONLY IF it is appropriate to the situation AND does not violate the inventory rule, the NPC may issue one or more system commands, separated by spaces. Each command must be in the format `|command optional_param|`. \n"
+systemprompt$$ wappend
+s" These commands represent actions that the NPC can take to have a direct effect on the game and should not be confused for imperatives directed at the player. \n"
+systemprompt$$ wappend
+s" IMPORTANT: Commands that are not listed in the current game state are considered INVALID.  ONLY issue valid commands that are listed in the game state. \n"
+systemprompt$$ wappend
+s" **CRITICAL**: Giving items that the NPC does not actually possess - even if the command is available - is IMPOSSIBLE and PROHIBITED. \n" 
+systemprompt$$ wappend
+s" Again, items that are not in your inventory CANNOT be given to the player.  Doing so will result in a system error and must be avoided. \n"
+systemprompt$$ wappend
+
 : npc-fields
     s[
         .\" {\"name\": \"Captain Blackbeard\","
         .\" \"short_name\": \"Captain\","
         .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
-        .\" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure\","
+        systemprompt$$ wcount fe" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure. \\n\\n %s \","  type
         .\" \"tts\": {"
         .\" \"voice_ids\": [\"01955d76-ed5b-753f-9f74-c0674216f0f5\"],"
         .\" \"speed\": 1.0,"
         .\" \"audio_format\": \"mp3\"}}"
     s] ;
-\ gen-payload wpayload wplace
 
 create gamestate$$ 5000 allot&erase
 
@@ -127,9 +140,10 @@ vocabulary commands
 
 : parse-response ( a len - )
     2>r get-order 2r>
-    ['] (parse-response) catch ?dup if .throw nip nip then
+    ['] (parse-response) catch ?dup if .throw 2drop then
     set-order ;
 
+['] parse-response on-response !
 
 honing @ [if]
 
@@ -160,10 +174,7 @@ honing @ [if]
     : npc-draw-sword  ." NPC initiated battle" cr ;
     previous definitions
 
-    ['] parse-response on-response !
-
     s" Testing. |npc-give-map| |npc-give-gold 123| Testing. |npc-give-parrot Squawkbeak|" parse-response
-
 
     : test
         CURL_GLOBAL_DEFAULT curl_global_init

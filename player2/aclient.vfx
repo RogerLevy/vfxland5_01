@@ -201,8 +201,8 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         ]] 
         multi-handle @ handle curl_multi_remove_handle
         handle curl_easy_cleanup
-        req -> en off 
-        -1 #requests +! ;
+        req -> streaming @ not if req -> en off   -1 #requests +! then 
+;
 
 public
 
