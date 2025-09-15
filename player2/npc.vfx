@@ -1,0 +1,37 @@
+class: npc
+    is-a _totem
+    64 nprop player2-id$ <save <cstring
+    prop req  <ref request
+    prop descr             \ wstring pointer
+    extension: npc
+    default-dir: dat/npc
+class;
+
+: npc-totem-create-write ( a len - )
+    1 -2 2+ 2dup type cr req @ [[ player2-id$ place ]] ;
+
+npc :: load ( - )
+    \ TODO: Delete existing NPC on server
+    data @ wcount npc-create [[ 
+        you req !
+        ['] npc-totem-create-write write-xt !
+    ]] ;
+
+: (des) ( - )
+    des> deser-me+ w$@+ *wstring descr !
+
+npc :: _intake ( - )
+    (des) me load ;
+
+npc :: _keep ( - )
+    ser> ser-me, descr @ wcount w$, ;
+
+: +npc ( descr len <name> - )
+    npc +totem [[ *wstring descr ! me ]] dup load keep ;
+
+: say-to ( payload len npc - )
+    -> player2-id$ count say ;
+
+: load-npcs ( - )
+    npc load-default-dir ;
+
