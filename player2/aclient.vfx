@@ -246,7 +246,7 @@ aclient :: process ( - )
     \ strips braces from returned payload; simple version
     1 -2 2+ ;
 
-: cutoff
+: cutoff ( a len char - a` len` )
     >r 2dup r> scan nip - ;
 
 : @field ( payload len name len - val len )

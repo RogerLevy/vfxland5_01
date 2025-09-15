@@ -48,8 +48,11 @@ cstring npc$
         setfields
 ;
 
+variable on-response ( a len - )
+create msg$$ 65536 allot&erase
+
 : listen-write ( a len - )
-    @json s" message" @field type cr ;
+    @json s" message" @field 2dup type cr msg$$ wplace ;
 
 : listen ( - )
     begin
@@ -80,13 +83,13 @@ cstring npc$
     s] ;
 \ gen-payload wpayload wplace
 
-create gamestate$ 5000 allot&erase
+create gamestate$$ 5000 allot&erase
 
 : say ( msg len - )
     s[
         .\" {\"sender_name\": \"Roger\","
         ( msg len ) fe" \"sender_message\": \"%s\"," type
-        gamestate$ wcount fe" \"game_state_info\": \"%s\"}" type
+        gamestate$$ wcount fe" \"game_state_info\": \"%s\"}" type
     s] npc-send ;
     
 : test
@@ -99,9 +102,6 @@ create gamestate$ 5000 allot&erase
     on-complete>
     s" Hello." say ;
 
-: blocking
-    begin player2 process 100 ms key? until ;
-
 variable ctr
 : ?health
     ctr @
@@ -113,18 +113,60 @@ variable ctr
         p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
         setheaders ;
 
-: in-engineer
-    show> player2 process   ?health ;
+: ?parse
+    msg$$ @ -exit
+    on-response @ ?dup if msg$$ wcount rot execute then 
+    msg$$ off ;
 
-: state: 0 parse gamestate$ wplace ;
-: +state: s" \n" gamestate$ wappend   0 parse gamestate$ wappend ;
+: process-chat  player2 process   ?health   ?parse ;
+
+: blocking
+    begin process-chat 100 ms key? until ;
+
+: in-engineer
+    show> process-chat ;
+
+: state: 0 parse gamestate$$ wplace ;
+: +state: s" \n" gamestate$$ wappend   0 parse gamestate$$ wappend ;
 : say: 0 parse say ;
 
 \ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
 state: Player is on a beach.  
 +state: After responding, if the NPC chooses, they may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect in the game.  
 +state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
-+State: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot| \n |npc-draw-sword| \n |npc-flee|
++State: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot name| \n |npc-draw-sword| \n |npc-flee|
+
+vocabulary commands
+
+also commands definitions
+: npc-give-map   ." Got map" cr ;
+: npc-give-sword   ." Got sword" cr ;
+: npc-give-lamp   ." Got lamp" cr ;
+: npc-give-parrot   ." Got parrot named "  0 parse type cr ;
+: npc-give-gold  ." Got gold of amount "  0 parse evaluate . cr ;
+: npc-steal-gold  ." Lost gold of amount "  0 parse evaluate . cr ;
+: npc-flee  ." NPC ran away" cr ;
+: npc-draw-sword  ." NPC initiated battle" cr ;
+previous definitions
+
+: (parse-response) ( a len - )
+    only previous previous commands
+    begin '|' scan dup while
+        1 /string
+        2dup \ remainder
+        '|' cutoff evaluate
+        '|' scan 1 /string
+    repeat 
+    2drop ;
+
+: parse-response ( a len - )
+    2>r get-order 2r>
+    ['] (parse-response) catch ?dup if .throw nip nip then
+    set-order ;
+
+s" Testing. |npc-give-map| |npc-give-gold 123| Testing. |npc-give-parrot Squawkbeak|" parse-response
+
+['] parse-response on-response !
 
 going @ [if]
     test in-engineer
