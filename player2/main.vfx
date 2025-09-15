@@ -1,0 +1,61 @@
+include %idir%/player2.vfx
+
+\ Blackbeard
+include %vfxland5%\spunk\loader.vfx
+
+: state: 0 parse gamestate$$ wplace ;
+: +state: s" \n" gamestate$$ wappend   0 parse gamestate$$ wappend ;
+: say: 0 parse npc$ count chat ;
+
+\ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
+state: Player is on a beach.  
++state: After responding, IF AND ONLY IF it is appropriate to the situation, the NPC may issue one or more system commands, separated by spaces.  
++state: Each command must be in the format `|command optional_param|`.  These commands will have a real effect on the game.  
++state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
++state: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot name| \n |npc-start-battle| \n |npc-flee|
+
+items.png 16 16 +tileset items.ts
+
+class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
+class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
+class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
+class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
+class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
+
+public
+gamew 2 / 100 +  gameh 2 / at   blackbeard one constant blackbeard0
+
+: act-gravity  act> 0.1 vy +! ;
+: toss  blackbeard0 0 0 from   one [[ -1.25 -4. vx 2! act-gravity ]] ;
+
+also commands definitions
+: npc-give-map   ." Got map" cr   map toss ;
+: npc-give-sword   ." Got sword" cr   sword toss ;
+: npc-give-lamp   ." Got lamp" cr   lamp toss ;
+: npc-give-parrot   ." Got parrot named "  0 parse type cr   parrot toss ;
+: npc-give-gold  ." Got gold of amount "  0 parse evaluate . cr   gold toss ;
+: npc-steal-gold  ." Lost gold of amount "  0 parse evaluate . cr ;
+: npc-flee  ." NPC ran away" cr ;
+: npc-start-battle  ." NPC initiated battle" cr ;
+previous definitions
+
+['] parse-response on-response !
+
+: dialog
+    0 0 at   msg$$ wcount 240 mltext ;
+
+: game
+    show> step process-chat dialog sprites ;
+
+: test
+    CURL_GLOBAL_DEFAULT curl_global_init
+    abort" curl_global_init failed"
+    init-player2 as>
+    on-complete> 
+    listen 
+    npc-fields npc-create as>
+    on-complete>
+    s" Hello." npc$ count chat ;
+
+
+test game

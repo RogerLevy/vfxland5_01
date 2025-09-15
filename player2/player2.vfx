@@ -50,9 +50,11 @@ cstring npc$
 
 variable on-response ( a len - )
 create msg$$ 65536 allot&erase
+variable msg-waiting
 
 : listen-write ( a len - )
-    @json s" message" @field 2dup type cr msg$$ wplace ;
+    @json s" message" @field 2dup type cr msg$$ wplace 
+    msg-waiting on ;
 
 : listen ( - )
     begin
@@ -104,9 +106,9 @@ variable ctr
         setheaders ;
 
 : ?parse
-    msg$$ @ -exit
+    msg-waiting @ -exit
     on-response @ ?dup if msg$$ wcount rot execute then 
-    msg$$ off ;
+    msg-waiting off ;
 
 : process-chat  
     player2 process   ?health   ?parse ;
@@ -158,10 +160,10 @@ honing @ [if]
     : npc-draw-sword  ." NPC initiated battle" cr ;
     previous definitions
 
+    ['] parse-response on-response !
 
     s" Testing. |npc-give-map| |npc-give-gold 123| Testing. |npc-give-parrot Squawkbeak|" parse-response
 
-    ['] parse-response on-response !
 
     : test
         CURL_GLOBAL_DEFAULT curl_global_init
