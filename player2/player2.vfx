@@ -36,8 +36,8 @@ cstring npc$
         me
 ;
 
-: npc-send ( payload len - )
-    npc$ count f" https://api.player2.game/v1/npcs/%s/chat" 
+: npc-send ( payload len npc len - )
+    f" https://api.player2.game/v1/npcs/%s/chat" 
     player2 post>
         0 
         p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
@@ -85,23 +85,13 @@ create msg$$ 65536 allot&erase
 
 create gamestate$$ 5000 allot&erase
 
-: say ( msg len - )
+: chat ( msg len npc len - )
     s[
         .\" {\"sender_name\": \"Roger\","
-        ( msg len ) fe" \"sender_message\": \"%s\"," type
+        2swap ( npc len msg len ) fe" \"sender_message\": \"%s\"," type
         gamestate$$ wcount fe" \"game_state_info\": \"%s\"}" type
-    s] npc-send ;
+    s] 2swap npc-send ;
     
-: test
-    CURL_GLOBAL_DEFAULT curl_global_init
-    abort" curl_global_init failed"
-    init-player2 as>
-    on-complete> 
-    listen 
-    npc-fields npc-create as>
-    on-complete>
-    s" Hello." say ;
-
 variable ctr
 : ?health
     ctr @
@@ -118,36 +108,10 @@ variable ctr
     on-response @ ?dup if msg$$ wcount rot execute then 
     msg$$ off ;
 
-: process-chat  player2 process   ?health   ?parse ;
-
-: blocking
-    begin process-chat 100 ms key? until ;
-
-: in-engineer
-    show> process-chat ;
-
-: state: 0 parse gamestate$$ wplace ;
-: +state: s" \n" gamestate$$ wappend   0 parse gamestate$$ wappend ;
-: say: 0 parse say ;
-
-\ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
-state: Player is on a beach.  
-+state: After responding, if the NPC chooses, they may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect in the game.  
-+state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
-+State: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot name| \n |npc-draw-sword| \n |npc-flee|
+: process-chat  
+    player2 process   ?health   ?parse ;
 
 vocabulary commands
-
-also commands definitions
-: npc-give-map   ." Got map" cr ;
-: npc-give-sword   ." Got sword" cr ;
-: npc-give-lamp   ." Got lamp" cr ;
-: npc-give-parrot   ." Got parrot named "  0 parse type cr ;
-: npc-give-gold  ." Got gold of amount "  0 parse evaluate . cr ;
-: npc-steal-gold  ." Lost gold of amount "  0 parse evaluate . cr ;
-: npc-flee  ." NPC ran away" cr ;
-: npc-draw-sword  ." NPC initiated battle" cr ;
-previous definitions
 
 : (parse-response) ( a len - )
     only previous previous commands
@@ -164,12 +128,54 @@ previous definitions
     ['] (parse-response) catch ?dup if .throw nip nip then
     set-order ;
 
-s" Testing. |npc-give-map| |npc-give-gold 123| Testing. |npc-give-parrot Squawkbeak|" parse-response
 
-['] parse-response on-response !
+honing @ [if]
 
-going @ [if]
-    test in-engineer
-[else]
-    test blocking
+    : blocking
+        begin process-chat 100 ms key? until ;
+
+    : in-engineer
+        show> process-chat ;
+
+    : state: 0 parse gamestate$$ wplace ;
+    : +state: s" \n" gamestate$$ wappend   0 parse gamestate$$ wappend ;
+    : say: 0 parse npc$ count chat ;
+
+    \ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
+    state: Player is on a beach.  
+    +state: After responding, if the NPC chooses, they may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect in the game.  
+    +state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
+    +State: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot name| \n |npc-draw-sword| \n |npc-flee|
+
+    also commands definitions
+    : npc-give-map   ." Got map" cr ;
+    : npc-give-sword   ." Got sword" cr ;
+    : npc-give-lamp   ." Got lamp" cr ;
+    : npc-give-parrot   ." Got parrot named "  0 parse type cr ;
+    : npc-give-gold  ." Got gold of amount "  0 parse evaluate . cr ;
+    : npc-steal-gold  ." Lost gold of amount "  0 parse evaluate . cr ;
+    : npc-flee  ." NPC ran away" cr ;
+    : npc-draw-sword  ." NPC initiated battle" cr ;
+    previous definitions
+
+
+    s" Testing. |npc-give-map| |npc-give-gold 123| Testing. |npc-give-parrot Squawkbeak|" parse-response
+
+    ['] parse-response on-response !
+
+    : test
+        CURL_GLOBAL_DEFAULT curl_global_init
+        abort" curl_global_init failed"
+        init-player2 as>
+        on-complete> 
+        listen 
+        npc-fields npc-create as>
+        on-complete>
+        s" Hello." npc$ count chat ;
+
+    going @ [if]
+        test in-engineer
+    [else]
+        test blocking
+    [then]
 [then]
