@@ -307,6 +307,14 @@ _totem :apply ( class - )
     rot throw
     srcpath$ count write ;
 
+: deser-me+ ( - ) ['] into-me desbin+ ;
+: move+  ( src dest n - src' ) 
+    {: src dest n :}
+    src dest n move
+    src n + ;
+: ser-me, ( - ) me serbin, ;
+: move, ( a len - ) dup >r here swap move r> allot ;
+    
 \ =============================================================================
 \ Defaults
 
