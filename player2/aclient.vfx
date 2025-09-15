@@ -51,20 +51,80 @@ aclient :: init ( - )
     curl_multi_init multi-handle !
     multi-handle @ 0= abort" curl_multi_init failed" ;
 
+create response$ 65536 allot
+: .response  response$ wcount dump   response$ wcount type ;
+
 private
+
+fast[
+: >ascii ( src len dest - dest len )
+    {: src len dest | src-end dest-start :}
+    dest to dest-start
+    src len +   to src-end
+    begin src src-end < while 
+        src c@ '\' = if
+            src-end src 1 + -   5 >= if
+                src 1 +   5   s" u003c" compare 0= if
+                    '<' dest c!   1 +to dest   6 +to src
+                else src 1 +   5   s" u003e" compare 0= if
+                    '>' dest c!   1 +to dest   6 +to src  
+                else src 1 +   c@ 'n' = if
+                    10 dest c!   1 +to dest   2 +to src
+                else
+                    \ Copy backslash as-is
+                    src c@ dest c!   1 +to dest   1 +to src
+                then then then 
+            else
+                \ Not enough chars, copy backslash
+                src c@ dest c!   1 +to dest   1 +to src
+            then
+        else src c@ $E2 = if
+            src 2 +   src-end < if
+                src 1 +   c@ $80 = 
+                src 2 +   c@ $99 = and if
+                    [char] ' dest c!   1 +to dest   3 +to src
+                else 
+                src 1 +   c@ $80 = 
+                src 2 +   c@ $94 = and if
+                    '-' dest c!   1 +to dest   
+                    '-' dest c!   1 +to dest   3 +to src
+                else
+                src 1 +   c@ $80 = 
+                src 2 +   c@ $a6 = and if
+                    '.' dest c!   1 +to dest   
+                    '.' dest c!   1 +to dest   
+                    '.' dest c!   1 +to dest   3 +to src
+                else
+                    src c@ dest c!   1 +to dest   1 +to src
+                then then then
+            else
+                src c@ dest c!   1 +to dest   1 +to src
+            then
+        else
+            \ Copy character as-is
+            src c@ dest c!   1 +to dest   1 +to src
+        then then
+    repeat
+    dest-start   dest dest-start - ;  
+fast]
 
 fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     \ userdata is the request
-    {: ptr size nmemb req :}
+    {: ptr size nmemb req | buf len :}
+    size nmemb * 0= if 0 exit then
     req [[
         op-handle @ >r   op @ op-handle !
+        ptr size nmemb * response$ wplace
+        size nmemb *  allocate throw to buf
+        ptr size nmemb *  buf >ascii to len drop
         write-xt @ if
-            ptr   size nmemb *   write-xt @ catch .throw
+            buf len   write-xt @ catch .throw
         else
-            ptr   size nmemb * type   cr  
+            buf len type   cr  
         then
-        r> op-handle !
-        size nmemb * 
+        buf free drop
+        r> op-handle !        
+        ptr size nmemb * 
     ]] ;
 
 : *request ( aclient - request )
