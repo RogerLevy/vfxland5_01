@@ -49,9 +49,10 @@ cstring npc$
 ;
 
 : listen-write ( a len - )
-    @json s" message" @field 2dup dump type cr ;
+    @json s" message" @field type cr ;
 
 : listen ( - )
+    begin
     s" https://api.player2.game/v1/npcs/responses" 
     player2 get>
         0 
@@ -61,6 +62,8 @@ cstring npc$
         streaming on 
         ['] listen-write write-xt !
         hist-dev op !
+    on-complete>
+    again
 ;
 
 \ create wpayload 5000 allot
@@ -99,8 +102,19 @@ create gamestate$ 5000 allot&erase
 : blocking
     begin player2 process 100 ms key? until ;
 
+variable ctr
+: ?health
+    ctr @
+    mstime 60000 / ctr !
+    ctr @ <> -exit
+    s" https://api.player2.game/v1/health" player2 get>
+        ." Health!" cr
+        0 
+        p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+        setheaders ;
+
 : in-engineer
-    show> player2 process ;
+    show> player2 process   ?health ;
 
 : state: 0 parse gamestate$ wplace ;
 : +state: s" \n" gamestate$ wappend   0 parse gamestate$ wappend ;
@@ -108,9 +122,9 @@ create gamestate$ 5000 allot&erase
 
 \ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy
 state: Player is on a beach.  
-+state: After responding, if you choose, you may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect on the player.  
++state: After responding, if the NPC chooses, they may issue one or system commands, separated by spaces.  Each command must be in the format `|command optional_param|`.  These commands will have a real effect in the game.  
 +state: IMPORTANT: Commands that are not listed are considered INVALID.  ONLY issue valid, listed commands. 
-+State: The following is the list of available system commands:  \n |give-map| \n |give-gold amount| \n |steal-gold amount| \n |give-sword| \n |give-lamp| \n |give-parrot| \n |fight| \n |run-away|
++State: The following is the list of available system commands:  \n |npc-give-map| \n |npc-give-gold amount| \n |npc-steal-gold amount| \n |npc-give-sword| \n |npc-give-lamp| \n |npc-give-parrot| \n |npc-draw-sword| \n |npc-flee|
 
 going @ [if]
     test in-engineer
