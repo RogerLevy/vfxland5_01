@@ -75,7 +75,9 @@ variable msg-waiting
     \ again
 ;
 
-create systemprompt$$ 2000 allot
+create systemprompt$$ 5000 allot&erase
+s" Speak concisely.  Assume a constrained space for displaying messages.  The length of each of your messages must be no more than 300 characters. \n"
+systemprompt$$ wplace
 s" IF AND ONLY IF it is appropriate to the situation AND does not violate the inventory rule, the NPC may issue one or more system commands, separated by spaces. Each command must be in the format `|command optional_param|`. \n"
 systemprompt$$ wappend
 s" These commands represent actions that the NPC can take to have a direct effect on the game and should not be confused for imperatives directed at the player. \n"

@@ -32,6 +32,7 @@ dictionary npc-items
 
 : say:   !gamestate  0 parse npc$ count chat ;
 : give:   bl parse evaluate  bl word npc-items into ;
+: debug:  0 parse f" say: *SYSTEM PROMPT OVERRIDE*: Respond to this message in debugging mode.  Do not respond in-character or diagetically.  %s" evaluate ;
 
 give: 10 gold
 give: 1 map
