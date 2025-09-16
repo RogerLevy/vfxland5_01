@@ -78,7 +78,7 @@ ship :: kill ( - )
     act> act> act> 
         shatter
         3.0 timer>
-            eval" retry" ;
+            shout" retry" ;
 
 ship :: damage ( n - )
     ?dup -exit
