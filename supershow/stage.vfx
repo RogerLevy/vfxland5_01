@@ -317,8 +317,11 @@ c: timer @actor xt1 dur ;
 \ =============================================================================
 
 actor :derive ( source-class derived-class - )
+    dup 
+    body> >name count CurrSourceName -path -ext compare 0= if
+        private
+    then
     2drop
-    private
     template to me \ allows immediate assignment of template (TODO: revisit)
 ;
 
