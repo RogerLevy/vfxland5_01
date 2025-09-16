@@ -42,11 +42,11 @@ npc-items .items
 items.png 16 16 +tileset items.ts
 
 get-order get-current also commands definitions
-class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
-class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
-class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
-class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
-class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
+    class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
+    class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
+    class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
+    class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
+    class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
 set-current set-order 
 
 public
@@ -65,22 +65,29 @@ variable #tossed
 : toss  blackbeard0 0 0 from  *tosser ;
 
 get-order get-current also commands definitions
-: named bl parse type ;
-: npc-give-player-item   
-    {: | name[ 32 ] :}
-    bl parse name[ place
-    ." Got item " name[ count type cr
-    1 name[ npc-items outof   name[ player-items into   
-    name[ count evaluate toss ;
-: npc-give-player-gold  
-    ." Got gold of amount "  bl parse evaluate dup . cr   
-    gold toss  
-    c" gold" npc-items outof   c" gold" player-items into ;
-: npc-steal-player-gold  
-    ." Lost gold of amount "  bl parse evaluate dup . cr   
-    c" gold" player-items outof   c" gold" npc-items into ;
-: npc-flee  ." NPC ran away" cr ;
-: npc-attack-player  ." NPC initiated battle" cr ;
+
+    : named bl parse type ;
+
+    : npc-give-player-item   
+        {: | name[ 32 ] :}
+        bl parse name[ place
+        ." Got item " name[ count type cr
+        1 name[ npc-items outof   name[ player-items into   
+        name[ count evaluate toss ;
+
+    : npc-give-player-gold  
+        ." Got gold of amount "  bl parse evaluate dup . cr   
+        gold toss  
+        c" gold" npc-items outof   c" gold" player-items into ;
+
+    : npc-steal-player-gold  
+        ." Lost gold of amount "  bl parse evaluate dup . cr   
+        c" gold" player-items outof   c" gold" npc-items into ;
+
+    : npc-flee  ." NPC ran away" cr ;
+
+    : npc-attack-player  ." NPC initiated battle" cr ;
+
 set-current set-order 
 
 : dialog

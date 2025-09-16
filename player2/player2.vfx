@@ -7,8 +7,8 @@ cstring npc$
 
 : game-client-id s" 01993e9f-bc67-7182-b044-4df0c82aa295" ;
 
-: p2key-write ( a len - )
-    @json s" p2Key" @field p2key$ place
+: p2key-write ( cjson - )
+    z" p2Key" get-string p2key$ place
     p2key$ count type cr ;
 
 : init-player2 ( - request ) 
@@ -19,8 +19,8 @@ cstring npc$
         s" " setfields
         me ;
 
-: npc-create-write ( a len - )
-    1 -2 2+ npc$ place
+: npc-create-write ( cjson - )
+    get-string-content npc$ place
     npc$ count type cr ;
 
 : npc-create ( payload len - request )
@@ -52,8 +52,8 @@ variable on-response ( a len - )
 create msg$$ 65536 allot&erase
 variable msg-waiting
 
-: listen-write ( a len - )
-    @json s" message" @field  msg$$ wplace 
+: listen-write ( cjson - )
+    z" message" get-string msg$$ wplace 
     10 push-attribute
     msg$$ wcount type cr 
     pop-attribute

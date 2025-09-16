@@ -1,4 +1,5 @@
 include %idir%/libcurl.fth
+include %idir%/cjson.vfx
 
 extern: void * "C" curl_easy_init();
 extern: void "C" curl_easy_setopt( void * curl, int opt, int val );
@@ -39,7 +40,7 @@ class: request
     prop streaming
     prop headers            \ slist, automatically freed on completion
     prop op                 \ output handle for callbacks, defaults to consoledev
-    prop write-xt           \ ( a len - ) , scoped to the request
+    prop write-xt           \ ( cjson - ) , scoped to the request
     prop data               \ arbitrary data pointer available to write-xt
 class;
 
@@ -56,73 +57,20 @@ create response$ 65536 allot
 
 private
 
-fast[
-: >ascii ( src len dest - dest len )
-    {: src len dest | src-end dest-start :}
-    dest to dest-start
-    src len +   to src-end
-    begin src src-end < while 
-        src c@ '\' = if
-            src-end src 1 + -   5 >= if
-                src 1 +   5   s" u003c" compare 0= if
-                    '<' dest c!   1 +to dest   6 +to src
-                else src 1 +   5   s" u003e" compare 0= if
-                    '>' dest c!   1 +to dest   6 +to src  
-                else src 1 +   c@ 'n' = if
-                    10 dest c!   1 +to dest   2 +to src
-                else
-                    \ Copy backslash as-is
-                    src c@ dest c!   1 +to dest   1 +to src
-                then then then 
-            else
-                \ Not enough chars, copy backslash
-                src c@ dest c!   1 +to dest   1 +to src
-            then
-        else src c@ $E2 = if
-            src 2 +   src-end < if
-                src 1 +   c@ $80 = 
-                src 2 +   c@ $99 = and if
-                    [char] ' dest c!   1 +to dest   3 +to src
-                else 
-                src 1 +   c@ $80 = 
-                src 2 +   c@ $94 = and if
-                    '-' dest c!   1 +to dest   
-                    '-' dest c!   1 +to dest   3 +to src
-                else
-                src 1 +   c@ $80 = 
-                src 2 +   c@ $a6 = and if
-                    '.' dest c!   1 +to dest   
-                    '.' dest c!   1 +to dest   
-                    '.' dest c!   1 +to dest   3 +to src
-                else
-                    src c@ dest c!   1 +to dest   1 +to src
-                then then then
-            else
-                src c@ dest c!   1 +to dest   1 +to src
-            then
-        else
-            \ Copy character as-is
-            src c@ dest c!   1 +to dest   1 +to src
-        then then
-    repeat
-    dest-start   dest dest-start - ;  
-fast]
-
 fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     \ userdata is the request
-    {: ptr size nmemb req | buf len :}
+    {: ptr size nmemb req | cjson :}
     size nmemb * 0= if 0 exit then
     req [[
         op-handle @ >r   op @ op-handle !
         ptr size nmemb * response$ wplace
-        size nmemb *  allocate throw to buf
-        ptr size nmemb *  buf >ascii to len drop
+        ptr size nmemb * parse-json to cjson
         write-xt @ if
-            buf len   write-xt @ catch .throw
+            cjson write-xt @ catch .throw
         else
-            buf len type   cr  
+            cjson cjson. cr  
         then
-        buf free drop
+        cjson delete-cjson
         r> op-handle !        
         ptr size nmemb * 
     ]] ;
@@ -241,21 +189,3 @@ aclient :: process ( - )
     ." POST: " cr
     r> {: url len aclient xt :}
     url len aclient /request [[ /post  xt execute   me ]] aclient sendoff ;
- 
-: @json ( a len - a' len' )
-    \ strips braces from returned payload; simple version
-    1 -2 2+ ;
-
-: cutoff ( a len char - a` len` )
-    >r 2dup r> scan nip - ;
-
-: @field ( payload len name len - val len )
-    \ fetch field from returned payload; assumes value is a string surrounded
-    \ by double-quotes.
-    {: pl pl-len name name-len | buf[ 256 ] :}
-    name name-len fe" \"%s\"" buf[ place
-    pl pl-len buf[ count search 0= if
-        buf[ count f" Field %s not found" -1 -rot .abort 
-    then
-    buf[ count nip 2 + /string 
-    '"' cutoff ;
