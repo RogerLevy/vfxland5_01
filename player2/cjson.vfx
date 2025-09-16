@@ -19,20 +19,23 @@ extern: int STDCALL _cJSON_GetArraySize@4( void * array );
 : create-cjson ( - cjson ) _cJSON_CreateObject@0 ;
 : serialize-cjson ( cjson - heap-zstr ) _cJSON_PrintUnformatted@4 ;
 
+: get-string-content ( cjson - a len )
+    _cJSON_GetStringValue@4 zcount ;
+
 : get-field ( zkey cjson - cjson )
-    swap _cJSON_GetObjectItem@8 ;
+    _cJSON_GetObjectItem@8 ;
 
-: get-string ( zkey cjson - zstr ) 
-    get-field _cJSON_GetStringValue@4 ;
+: get-string ( cjson zkey - a len ) 
+    get-field _cJSON_GetStringValue@4 zcount ;
 
-: add-string ( zkey zvalue cjson - ) 
-    -rot _cJSON_AddStringToObject@12 ;
+: set-string ( a len zvalue cjson - ) 
+    -rot >r >zpad r> _cJSON_AddStringToObject@12 ;
 
 : array-length ( cjson - n )
     _cJSON_GetArraySize@4 ;
 
-: get-array-item ( n zkey cjson - cjson )
-    get-field swap _cJSON_GetArrayItem@8 ;
+: get-array-item ( cjson zkey n  - cjson )
+    >r get-field r> _cJSON_GetArrayItem@8 ;
 
 : cjson. ( cjson - ) 
     serialize-cjson dup zcount type _cJSON_free@4 ;
@@ -41,7 +44,7 @@ extern: int STDCALL _cJSON_GetArraySize@4( void * array );
 honing @ [if]
     s" test.json" file@ parse-json value it
 
-    : user[] z" users" it get-array-item ;
+    : user[] it z" users" rot get-array-item ;
     0 user[] cjson.
     1 user[] cjson.
 [then]
