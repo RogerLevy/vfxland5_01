@@ -287,3 +287,18 @@ aka save-exe save
 : ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
 : body>name ( a - a' ) body> >name count ;
 : u+  rot + swap ;
+
+: >shout ( a len - ) 
+    2>r get-order get-current 2r>
+    ['] evaluate catch ?dup if .throw 2drop then
+    set-current set-order ;
+
+: shout" ( - <string>" )
+    \ Late-bound execution; don't care if it succeeds.  
+    \ Search order is preserved.
+    \ Caller cannot pass params in directly.
+    state @ if
+        postpone (s") ", postpone >shout
+    else
+        '"' parse >syspad >shout
+    then ; immediate

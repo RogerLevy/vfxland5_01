@@ -84,18 +84,6 @@ aka <start> <enter>
 : (blank) show> backdrop ;
 : blank 'show @ (blank) 10 for frame loop 'show ! ;
 
-: >shout ( a len - ) 
-    ['] evaluate catch drop ;
-
-: shout" ( - <string>" )
-    \ Late-bound execution; don't care if it succeeds.  
-    \ Caller cannot pass params in directly.
-    state @ if
-        postpone (s") ", postpone >shout
-    else
-        '"' parse >syspad >shout
-    then ; immediate
-
 : from-top ( xratio. y. -- x. y. )
     >r gamew *  r> ;
 

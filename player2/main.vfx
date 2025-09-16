@@ -99,23 +99,7 @@ set-current set-order
     on-complete>
     s" Hello." npc$ count chat ;
 
-
 test game
-
-: >shout ( a len - ) 
-    2>r get-order get-current 2r>
-    ['] evaluate catch ?dup if .throw 2drop then
-    set-current set-order ;
-
-: shout" ( - <string>" )
-    \ Late-bound execution; don't care if it succeeds.  
-    \ Search order is preserved.
-    \ Caller cannot pass params in directly.
-    state @ if
-        postpone (s") ", postpone >shout
-    else
-        '"' parse >syspad >shout
-    then ; immediate
 
 : test-toss
     shout" commands npc-give-player-item map" 
