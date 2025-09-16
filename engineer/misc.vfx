@@ -302,3 +302,6 @@ aka save-exe save
     else
         '"' parse >syspad >shout
     then ; immediate
+
+: cutoff ( a len char - a` len` )
+    >r 2dup r> scan nip - ;
