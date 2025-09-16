@@ -216,13 +216,13 @@ borrow engineer/ func[]
 : (DoErrorMessage) ( err - )
     4 push-attribute
     dup -13 = if
+        drop
         lastword count type ." ? " 
     else
         dup Err$ nip if			\ if text available
             .ErrDef     		\ generate error message
         else
-            ." No text available for THROW code "
-            base @ >r  decimal 0 .r ." (10)"  r> base !
+            ." No text available for THROW code #" #.
         then
         cr 
         .source-line
