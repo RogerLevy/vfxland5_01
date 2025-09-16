@@ -60,18 +60,19 @@ variable msg-waiting
     msg-waiting on ;
 
 : listen ( - )
-    begin
-    s" https://api.player2.game/v1/npcs/responses" 
-    player2 get>
-        0 
-        p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
-        z" Accept: text/plain; charset=US-ASCII" curl_slist_append 
-        setheaders
-        streaming on 
-        ['] listen-write write-xt !
-        hist-dev op !
-    on-complete>
-    again
+    \ begin
+        s" https://api.player2.game/v1/npcs/responses" 
+        player2 get>
+            0 
+            p2key$ count f" Authorization: Bearer %s" >zpad curl_slist_append 
+            z" Accept: text/plain; charset=US-ASCII" curl_slist_append 
+            setheaders
+            streaming on 
+            ['] listen-write write-xt !
+            hist-dev op !
+    \     on-complete>
+    \         me player2 remove-request
+    \ again
 ;
 
 create systemprompt$$ 2000 allot

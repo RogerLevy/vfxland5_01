@@ -121,6 +121,11 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
 : /put ( - ) easy-handle @ CURLOPT_CUSTOMREQUEST z" PUT" curl_easy_setopt ;
 : /delete ( - ) easy-handle @ CURLOPT_CUSTOMREQUEST z" DELETE" curl_easy_setopt ;
 
+public
+: remove-request ( request aclient - )
+    [[ -> en off   -1 #requests +! ]] ;
+private
+
 : handle-curl-msg ( curl-msg aclient - )
     {: msg aclient | handle req :}
     0 to req
@@ -147,9 +152,11 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
             r> sp!
             headers @ ?dup if curl_slist_free_all then
         ]] 
-        multi-handle @ handle curl_multi_remove_handle
-        handle curl_easy_cleanup
-        req -> streaming @ not if req -> en off   -1 #requests +! then 
+        req -> streaming @ not if 
+            multi-handle @ handle curl_multi_remove_handle
+            handle curl_easy_cleanup
+            req aclient remove-request 
+        then 
 ;
 
 public
