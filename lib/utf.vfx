@@ -1,0 +1,14 @@
+library utf_convert.dll
+
+extern: int "C" utf8_to_code_point( void ** sequence );
+extern: int "C" utf8_to_code_point_la1( void ** sequence );
+extern: int "C" utf8_decoder_add_byte( void * ps, int byte );
+extern: int "C" utf32_to_utf8( void * buffer, int max_length, int code_point );
+extern: int "C" utf32_to_utf16( void * buffer, int max_length, int code_point );
+extern: int "C" utf16_to_code_point( void * sequence );
+extern: int "C" utf16_to_code_point_la1( void * sequence );
+extern: int "C" utf16_decoder_add_code_unit( void * ps, int code_unit );
+
+: utf8@+ ( a - a' n )
+    sp@ utf8_to_code_point ;
+
