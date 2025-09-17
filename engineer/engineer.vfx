@@ -498,7 +498,6 @@ magic-id MAGIC_TWEAK TWK
 \ Reset System Classifiers
 \ =============================================================================
 
-|| : move,  dup >r here swap move r> allot ;
 || : fresh,  dup , /classifier move, ;
 
 || create fresh-classifiers 
@@ -522,8 +521,11 @@ magic-id MAGIC_TWEAK TWK
 || : reset-classifier ( a - )
     @+ ( src dest ) /classifier move ;
 
-: reset-system-classifiers ( - )
-    ['] reset-classifier fresh-classifiers each ;
+|| create fresh-all-classifiers classifiers #max-classifiers cells move,
+
+|| : reset-system-classifiers ( - )
+    ['] reset-classifier fresh-classifiers each 
+    fresh-all-classifiers classifiers #max-classifiers cells move ;
 
 \ =============================================================================
 \ Entry Points  

@@ -7,6 +7,7 @@
 1024 constant #max-classifiers
 4096 constant /classifier
 #max-classifiers 8 / constant /bit-table
+create classifiers #max-classifiers cells allot&erase
 
 0 value me              \ current object
 0 value classifier      \ current classifier
@@ -179,10 +180,11 @@ variable osp   os osp ! \ object stack pointer
 dup constant /classifier-base
 to /static
 
-: allocate-classifier-bit ( - )
+: allocate-classifier-id ( - )
     next-classifier# @ classifier -> id-table set-bit
     next-classifier# @ classifier -> can-table set-bit
     next-classifier# @ classifier -> classifier# !
+    classifier  next-classifier# @ cells classifiers + !
     1 next-classifier# +! ;
 
 || : (classifier) ( class - class )
@@ -190,7 +192,7 @@ to /static
     dup to classifier
     [[
         /classifier instance-size !
-        allocate-classifier-bit
+        allocate-classifier-id
     me ]]  ;
     
 : (init-class) ( - )
@@ -307,7 +309,7 @@ create _protocol  _class make [[
     \ push-order only forth definitions
     create make to classifier
     1 classifier -> #openings +!
-    allocate-classifier-bit
+    allocate-classifier-id
     ; \ pop-order ;
 
 : end-classifier ( - )
@@ -480,6 +482,13 @@ create _protocol  _class make [[
 \ Classifier definition
 \ ==============================================================================
 
+: track-dependent ( src-classifier dest-classifier - )
+    {: src dest :}
+    dest -> dependents list-count for
+        @next src = if drop unloop exit then
+    loop drop 
+    src dest -> dependents add-to ;
+
 : apply-trait ( trait class b:id? - )
     {: trait0 class0 id? | could? protocol0 origin :}
     class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
@@ -536,8 +545,8 @@ create _protocol  _class make [[
         dup is-property-mapped? if drop else dup add-property map-property then
     loop drop
     
-    \ Add class to dependents
-    class0 trait0 -> dependents add-to 
+    \ Add class to trait's dependents
+    class0 trait0 track-dependent
     
     \ Execute on-apply if set
     trait0 -> on-apply-xt @ ?dup if
@@ -756,11 +765,7 @@ defer protocol-validations ( obj protocol - obj protocol )
     \ Restore the classifier bits
     classifier -> classifier# @ classifier -> id-table set-bit
     classifier -> classifier# @ classifier -> can-table set-bit
-    
-    \ Set parent bit for inheritance queries
-    \ I believe this is not needed as it is set in the bit tables by begin-classifier
-    \ source-class -> classifier# @ classifier -> can-table set-bit
-    
+        
     \ Copy template if one exists, updating its class
     source-class -> class-template @ ?dup if
         ( source-template ) template source-class -> instance-size @ move
@@ -771,8 +776,18 @@ defer protocol-validations ( obj protocol - obj protocol )
     source-class -> constructor-xt @ classifier -> constructor-xt !
     source-class -> constructor-#params @ classifier -> constructor-#params !
 
-    \ Add class to dependents
-classifier source-class -> dependents add-to 
+    \ Track class in dependencies
+    classifier source-class track-dependent
+    next-classifier# @ for
+        i classifier -> id-table test-bit
+        i classifier -> can-table test-bit or if
+            i cells classifiers + @ [[ 
+                cla @ _trait = if
+                    classifier me track-dependent
+                then
+            ]]
+        then
+    loop
 
     \ Execute on-derive if set
     source-class -> on-derive-xt @ ?dup if
@@ -1012,9 +1027,9 @@ _static is-a _object
 || variable fresh-/static
 
 || : init-nib ( - )
-||     fresh-next-classifier# @ next-classifier# ! 
-||     fresh-/static @ to /static
-||     0 to classifier ;
+     fresh-next-classifier# @ next-classifier# ! 
+     fresh-/static @ to /static
+     0 to classifier ;
 
 || : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
