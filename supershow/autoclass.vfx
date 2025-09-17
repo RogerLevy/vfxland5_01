@@ -19,7 +19,7 @@
 : create-autoclasses
     ." Creating autoclasses..." cr
     s" gfx" >datadir dir-exists? -exit
-    get-order get-current
+    push-order
         s" gfx" >datadir
         ['] create-autoclass each-file
-    set-current set-order ;
+    pop-order ;

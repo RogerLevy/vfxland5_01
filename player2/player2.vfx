@@ -142,9 +142,9 @@ vocabulary commands
     2drop ;
 
 : parse-response ( a len - )
-    2>r get-order 2r>
+    push-order
     ['] (parse-response) catch ?dup if .throw 2drop then
-    set-order ;
+    pop-order ;
 
 ['] parse-response on-response !
 

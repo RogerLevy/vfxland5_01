@@ -42,13 +42,13 @@ npc-items .items
 
 items.png 16 16 +tileset items.ts
 
-get-order get-current also commands definitions
+push-order also commands definitions
     class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
     class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
     class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
     class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
     class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
-set-current set-order 
+pop-order
 
 public
 gamew 2 / 100 +  gameh 2 / at   blackbeard one constant blackbeard0
