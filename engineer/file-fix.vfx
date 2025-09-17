@@ -11,6 +11,7 @@ create temp-path-buf$ 256 allot
 
 : >abspath ( c-addr u -- c-addr2 u2 )
     \ Convert any path to absolute canonical form using Windows API
+    \ Assumes path is either already absolute or relative to the cwd
     2dup temp-path-buf$ zplace
     temp-path-buf$ 256 abs-path-buf$ 0 GetFullPathName
         0> if

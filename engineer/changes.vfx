@@ -72,7 +72,7 @@ public
 
 : changed-file ( - fp len ) changed-fp$ count ;
 
-: uni>place ( src len dest - )
+|| : utf16>place ( src len dest - )
     {: src len dest :}
     len dest c!
     1 +to dest
@@ -80,24 +80,29 @@ public
         src i 2 * + w@ dest c!
         1 +to dest
     loop ;
- 
-\ || : w@+  dup w@ 2 u+ ;
 
-|| : @changed-fp ( notify - )
-    2 cells + @+ changed-fp$ uni>place
-    changed-fp$ count >abspath changed-fp$ place ;
+: .changed-file ." File changed: " changed-file type cr ;
+
+|| : @changed-fp ( NOTIFY_INFO - )
+    2 cells + @+ changed-fp$ utf16>place
+    wd
+    mondir$ count $cwd
+    changed-fp$ count >abspath changed-fp$ place 
+    $cwd 
+    .changed-file ;
 
 defer process-dirchange ( NOTIFY_INFO - )
-: .changed-file ." File changed: " changed-file type cr ;
-\ :noname .changed-file 128 dump ; is process-dirchange
+
 :noname drop ; is process-dirchange
 
 : ?dirchange ( - )
     dir-handle overlapped bytes-returned 0 GetOverlappedResult if
-        buffer begin 
+        buffer 
+        begin 
             dup @changed-fp
             dup process-dirchange
-        dup @ while
+            dup @ 
+        while
             dup @ +
         repeat
         drop
