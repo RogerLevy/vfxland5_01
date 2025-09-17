@@ -373,7 +373,7 @@ create _protocol  _class make [[
     then ;
 
 : supports-protocol? ( protocol classifier - bool )
-    swap -> offset @ + @ 0<> ;
+    swap -> offset @ + 2@ or 0<> ;
 
 : >origin ( protocol-xt-addr - origin-addr ) cell+ ;
 
@@ -657,17 +657,29 @@ defer protocol-validations ( obj protocol - obj protocol )
 
 : ?compile-validate-dispatch ; immediate
 
+create protocol-link 0 , 0 ,
+
+: implementing-protocol?  protocol-link @ 0<> ;
+
+: ; ( - )
+    implementing-protocol? if
+        protocol-link 2@ ! \ completed compilation so it's time to put the xt in the class
+        protocol-link off 
+    then 
+    postpone ;
+; immediate
+
 : implement-protocol ( protocol classifier - )
     {: protocol0 c | name[ 256 ] :} 
     protocol0 [[
         my-name name[ place
         c body>name 
         name[ count
-        :method ( xt ) c offset @ + !
+        :method ( xt ) c offset @ + protocol-link 2!
         s" ?compile-validate-dispatch" evaluate
         c c offset @ + >origin !  \ Store class as origin when class implements protocol
     ]] ;
-    
+
 : define-protocol ( trait <name> - ) ( ... object - ... )
     {: trait0 | class0 protocol0 buf[ 256 ] :}
     bl preparse buf[ place
