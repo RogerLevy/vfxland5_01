@@ -561,7 +561,7 @@ borrow nib2/ init-nib
 
 : cartridge ( - )
     \ Load user program
-    empty page
+    empty page hold off
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
 : turnkey? ( - b )
@@ -583,6 +583,7 @@ previous previous
 : frigid ( - )
     \ Initialize runtime environment
     rs
+    hold off
     debug @ if init-dev then
     wd home-path$ place
     init-mersenne
