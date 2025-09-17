@@ -63,12 +63,31 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 prune: cleanup-supershow ;
 \ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
 
-: process-filechange ( notify - )
-    drop
-    changed-file -path >pad find if
-        .changed-file
-        >body reload
-    else drop then ;
+: supershow-process-dirchange ( NOTIFY_INFO - )
+    cell+ @ case
+        FILE_ACTION_ADDED of
+            ." FILE_ACTION_ADDED" cr
+            _totem -> dependents list-count for
+                @next [[
+                    changed-file me -> default-dir$ count strin? if
+                        changed-file '.' ending me -> extension$ count compare 0= if
+                            ." New file discovered!" cr
+                            changed-file me manifest o.
+                        then
+                    then
+                ]]
+            loop drop
+        endof
+        FILE_ACTION_MODIFIED of
+            ." FILE_ACTION_MODIFIED" cr
+            changed-file -path >pad find if
+                ." Reloading file!" cr
+                >body reload
+            else
+                drop
+            then
+        endof
+    endcase ;
 
 : init-supershow ( - )
     hold off
@@ -77,8 +96,7 @@ prune: cleanup-supershow ;
     load-samples
     init-crt
     debug @ if
-        \ ['] reload-graphics is onSwitchIn
-        ['] process-filechange is process-dirchange
+        ['] supershow-process-dirchange is process-dirchange
     else
         display al_hide_mouse_cursor
     then ;

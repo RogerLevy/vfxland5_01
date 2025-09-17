@@ -66,7 +66,7 @@ _totem :apply ( class - )
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : format: ( <ver> - ) bl parse evaluate classifier -> format ! ;
 : extension: ( <ext> - ) bl parse 3 ?toolong classifier -> extension$ place ;
-: default-dir: ( <path> - ) bl parse classifier -> default-dir$ place ;
+: default-dir: ( <path> - ) bl parse slashes classifier -> default-dir$ place ;
 : default-dir@ ( class - a len ) -> default-dir$ count ;
 
 \ =============================================================================
@@ -313,7 +313,6 @@ _totem :apply ( class - )
     src dest n move
     src n + ;
 : ser-me, ( - ) me serbin, ;
-: move, ( a len - ) dup >r here swap move r> allot ;
     
 \ =============================================================================
 \ Defaults
