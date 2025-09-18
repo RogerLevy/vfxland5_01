@@ -317,7 +317,8 @@ c: timer @actor xt1 dur ;
 \ =============================================================================
 
 : (actor-definition) ( class - )
-    dup body> >name count CurrSourceName -path -ext compare 0= if
+    dup body>name >pad count >lowercase CurrSourceName -path -ext >lowercase 
+    compare 0= if
         private
     then
     template to me \ allows immediate assignment of template (TODO: revisit)
@@ -326,15 +327,11 @@ c: timer @actor xt1 dur ;
 actor :derive ( source-class derived-class - )
     nip (actor-definition) ;
 
-: hide-autoclass ( a len - )
-    \ Hide existing autoclass if any to fix LOCATE,
-    \ which would otherwise take us to the call to reheat-scripts
-    \ in cases where we want to (re)define it within a script.
-    >pad find if
-        dup execute -> autoclass @ if
-            >name hidename
-        else drop then 
-    else drop then ;
+: ?hide-autoclass ( class - )
+    \ Hide autoclass to fix LOCATE
+    \ otherwise it would take us to the call to load-autoclasses
+    \ even if it's been defined in a script
+    dup -> autoclass @ if >name hidename else drop then ;
 
 actor :reopen ( class - )
     \ Hide generated autoclass when defining an actor class.
@@ -342,7 +339,7 @@ actor :reopen ( class - )
     \ TODO: There's a better way: modify the class's source file string.  
     \       (Hopefully there's a string pointer we can change.)
     \       This will prevent any dangling references to autoclasses. 
-    dup >name count hide-autoclass 
+    dup ?hide-autoclass 
     (actor-definition) ;
 
 
