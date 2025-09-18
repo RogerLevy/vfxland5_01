@@ -388,8 +388,8 @@ before */mod check-star-slash
 wrap-word */mod
 
 \ Conversion Words
-before d>s check-double-to-single
-wrap-word d>s
+\ before d>s check-double-to-single
+\ wrap-word d>s
 
 before f>s check-float-to-single
 wrap-word f>s
