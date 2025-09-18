@@ -1,0 +1,7 @@
+require events/test1.vfx
+
+:event
+    shout" reset"
+\    0.5 loud *bgm1* 50e seek
+\    test1 drop
+;    

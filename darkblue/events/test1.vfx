@@ -14,8 +14,7 @@ enemy1 tweak class
     0 speed @ negate vx 2! ;
 
 :event
-    shout" reset"
-\    0.5 loud *bgm1* 50e seek
+\    50e seek
     gamew gameh 0.75 0.5 2p* at
     s" bigbug" find-class one [[ ]] 
 

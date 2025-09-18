@@ -1,4 +1,4 @@
-require %lib%/claude-math.vfx
+require %vfxland5%/lib/claude-math.vfx
 
 tri.png 17 17 tileset tri.ts
 

@@ -8,7 +8,7 @@
 
 \ title
 game
-run test1 
+run gauntlet-a
 
 \ try ../supershow/tools/sketchpad
 

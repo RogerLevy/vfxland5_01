@@ -112,7 +112,7 @@ create charge-levels 4 cells array[
     20  , 10 , 5 ,   ' fire-medium , \ medium projectile, damages one enemy
     35  , 25 , 10 ,  ' fire-large ,  \ large projectile, damages one enemy
     60 ,  50 , 1 ,    ' fire-thin ,    \ thin laser cannon, damages multiple enemies over a brief time
-    150 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
+    100 ,  100 , 100 ,  ' fire-wide ,   \ wide laser cannon, damages multiple enemies
 array] drop
 
 : >charge  charge-levels [] @ ;
