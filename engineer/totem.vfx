@@ -152,7 +152,7 @@ _totem :apply ( class - )
         then 
     then
 
-    2dup -path type cr
+    ." Discovered " 2dup -path type cr
     class0 materialize intake ;
 
 : load-dir ( path-a path-len class - )
