@@ -40,13 +40,14 @@ class: event
     prop delay-secs <fixed
     prop starting-xt <xt
     prop curves <ref _array
+    32 nprop name$ <cstring
 class;   
 
 : (suicidal) ( - )
     act> 
         ." Event finished: " cr 
         me unload 
-        me .summary cr ;   
+        me .summary cr ;
 
 : start-event ( - )
     at@ 2>r
@@ -102,7 +103,7 @@ public
     a len f" %s/" $private 
     a len >event-path f" ?hone %s" evaluate
     a len >pad find if
-        execute
+        execute ( event ) as
     else
         drop -1 abort" event not found! did you forget :event ? "
     then ;
@@ -136,16 +137,23 @@ public
     s" events" ['] ?load-curve each-file ;
 
 || : does-event ( - )
-    does> ( template ) event one copy [[ start-event ]] ;
+    does> ( template ) event one copy [[ start-event me ]] ;
 
-: :event ( - ) ( ... - )
+: :event ( - ) ( ... - event )
     \ Create executable event named after the file being included.
-    public
-    currsourcename -path -ext >pad $create
-    here event instance [[ does-event :noname starting-xt ! ( load-curves ) ]] ;
-
-\ : +event ( - <name> )   \ TODO: automated event file creation
+    event currsourcename -path -ext public $object [[ 
+        me body>name name$ place
+        does-event :noname starting-xt ! ( load-curves ) 
+    ]] ;
 
 : curve ( n - )
     dup curves @ ?bounds not if drop exit then
     curves @ [] @ #items ? ;
+
+event :: .summary ( actor - )
+    11 push-attribute ." [ "
+    me actor# dup 0 >= if ." #" . else drop me .name then
+    cla @ .name
+    name$ count type space
+    ." at: " x 2@ 2.> swap . . 
+    ." ] " pop-attribute ;
