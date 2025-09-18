@@ -1,6 +1,6 @@
 include %idir%/smooth.vfx
-require %lib%/mouse.vfx
-require %engineer%/supershow/ui/ui.vfx
+require %vfxland5%/lib/mouse.vfx
+require %vfxland5%/supershow/ui/ui.vfx
 
 variable recording
 variable waiting
@@ -8,17 +8,8 @@ variable waiting
 #max-coords 2 cells stack raw-coords
 #max-coords 2 cells stack coords
 
-|| static size
-|| : class:  /obj 4 to /obj bl word create-class lastbody ;
-|| : property ( - <name> ) ( - a ) cell ofield ; 
-|| : class;  /obj swap -> size ! to /obj ;
-|| : (!classes)  [[ dup cla ! ]] -1 ;
-|| : object-array ( n class - <name> ) ( - array )
-    dup >r -> size @ array
-    r> ['] (!classes) lastbody each drop ;
-|| : object  here >r dup , -> size @ cell- allot&erase r> ;
-
 class: ui-path
+    element derive
 class;
 
 : @coords

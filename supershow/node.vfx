@@ -1,0 +1,119 @@
+trait: node  
+    prop parent <ref node
+    prop lowest <ref node
+    prop highest <ref node
+    prop next <ref node
+    prop prev <ref node
+trait;
+
+node :: remove ( node - )
+    {: | p :}
+    parent @ ?dup if to p else exit then
+    0 parent !
+    p -> lowest @ p -> highest @ = if
+        me p -> lowest @ = if
+            0 p -> lowest ! 0 p -> highest !
+            exit 
+        then
+        -1 abort" remove: Corrupt tree!"
+    else
+        n p -> lowest @ = if
+            0 next @ -> prev !
+            next @ p -> lowest !
+            0 prev ! 0 next !
+            exit 
+        then
+        n p -> highest @ = if
+            0 prev @ -> next !
+            prev @ p -> highest !
+            0 prev ! 0 next !
+            exit 
+        then
+        next @ prev @ -> next !
+        prev @ next @ -> prev !
+        0 prev ! 0 next !
+    then ;
+
+|| : (dlinit)  ( node parent - )
+    {: n p :}
+    n p -> lowest ! 
+    n p -> highest !
+    p n -> parent ! ;
+
+node :: push  ( node - )
+    {: n :}
+    n me = abort" insert: Same node!" 
+    n remove
+    lowest @ 0= if  n me (dlinit)  exit  then
+    n highest @ -> next !
+    highest @ n -> prev !
+    n highest !
+    p n -> parent ! ;
+
+node :: insert-after ( node - )
+    {: n | neighbor dest src :}
+    n me = abort" insert-after: Same node!"
+    parent @ -exit
+    n remove 
+    next @ 0= if  n parent @ push  exit  then
+    n me next @ to neighbor to dest to src
+    src dest -> next !
+    dest src -> prev !
+    neighbor src -> next !
+    src neighbor -> prev !
+    dest -> parent @   src -> parent ! ;
+
+node :: unshift  ( node - )
+    {: n :} 
+    n me = abort" insert: Same node!" 
+    n remove
+    lowest @ 0= if  n me (dlinit)  exit  then
+    lowest @ n -> next !
+    n lowest @ -> prev ! 
+    n lowest !
+    me n -> parent ! ;
+
+borrow array2/ (enough)
+
+|| : (each) ( xt - ) ( ... node - ... )
+    lowest @ ?dup if
+        [[
+            begin  me 0<>   (enough) @ not   and while
+                next @ >r  dup >r execute r>  r> to me
+            repeat
+            drop
+        ]]
+    else ( xt ) drop then  
+    (enough) off ;
+
+node :: each ( xt - ) ( node - )
+    (enough) @ >r
+    (enough) off
+    ['] (each) catch
+    r> (enough) !
+    throw ;
+
+|| : (dlorphan) ( - )
+    0 next ! 0 prev ! 0 parent ! ;
+
+node :: vacate ( - )
+    lowest @ ?dup if
+        [[
+            begin  me while
+                next @  (dlorphan)  to me
+            repeat
+        ]]
+        0 lowest ! 0 highest !
+    then ;
+
+node :: #items ( - n )
+    0 lowest @ ?dup -exit begin 1 u+   -> next @ ?dup 0= until ;
+
+node :: []@ ( n - node )
+    lowest @ me #items for -> next @ loop ;
+
+: is-descendant? ( node parent - flag )
+    {: n p :}
+    n begin -> parent @ ?dup while
+        dup p = if drop -1 exit then
+    repeat 0 ;
