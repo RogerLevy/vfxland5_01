@@ -217,7 +217,7 @@ include %idir%/../textmode/textmode.vfx
     ustime 1000 m/ to mstime
     sdelta f>p to pdelta ;
 
-aka z zoom
+: z zoom @ ;
 
 \ =============================================================================
 \ Event handling
@@ -304,7 +304,7 @@ magic-id MAGIC_TWEAK TWK
     create-display  going off ;
 
 || : winmode ( - )
-    2 to zoom
+    2 zoom ! 
     appw apph fullscreen? resize-display
     !delta !delta ;
     
@@ -380,7 +380,7 @@ magic-id MAGIC_TWEAK TWK
     else
         monw appw /
     then
-    to zoom ;
+    zoom ! ;
 
 : fs-w  appw z * ;
 : fs-h  apph z * ;
@@ -411,7 +411,7 @@ magic-id MAGIC_TWEAK TWK
     fullscreen? if
         refit border
     else
-        0e 0e zoom s>f fdup 0e transform
+        0e 0e z s>f fdup 0e transform
     then ; 
 
 || : draw-tv ( - )

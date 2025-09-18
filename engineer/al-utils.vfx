@@ -3,7 +3,7 @@
 \ ------------------------------------------------------------------------------
 public
 
-2 value zoom
+variable zoom  2 zoom !
 320 value appw
 240 value apph
 0 value winw
@@ -87,7 +87,7 @@ public
     fullscreen? if
         monw to winw  monh to winh
     else
-        appw zoom * to winw  apph zoom * to winh
+        appw zoom @ * to winw  apph zoom @ * to winh
     then
     
     display-flags
@@ -112,7 +112,7 @@ public
         monw to winw  monh to winh
     else
         2dup to apph to appw
-        zoom * to winh zoom * to winw
+        zoom @ * to winh zoom @ * to winw
         display winw winh al_resize_display 0= if
             ." RESIZE-DISPLAY >> al_resize_display failed!" cr 
         then 
