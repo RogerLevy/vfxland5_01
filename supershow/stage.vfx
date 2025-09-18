@@ -316,14 +316,15 @@ c: timer @actor xt1 dur ;
 \ Script Classes
 \ =============================================================================
 
-actor :derive ( source-class derived-class - )
-    dup 
-    body> >name count CurrSourceName -path -ext compare 0= if
+: (actor-definition) ( class - )
+    dup body> >name count CurrSourceName -path -ext compare 0= if
         private
     then
-    2drop
     template to me \ allows immediate assignment of template (TODO: revisit)
 ;
+
+actor :derive ( source-class derived-class - )
+    nip (actor-definition) ;
 
 : hide-autoclass ( a len - )
     \ Hide existing autoclass if any to fix LOCATE,
@@ -341,7 +342,8 @@ actor :reopen ( class - )
     \ TODO: There's a better way: modify the class's source file string.  
     \       (Hopefully there's a string pointer we can change.)
     \       This will prevent any dangling references to autoclasses. 
-    >name count hide-autoclass ;
+    dup >name count hide-autoclass 
+    (actor-definition) ;
 
 
 20 cell stack script-classes
