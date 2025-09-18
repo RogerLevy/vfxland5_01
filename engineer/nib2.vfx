@@ -555,9 +555,10 @@ create _protocol  _class make [[
    
 : class: ( <name> - )
     _class already? if
-        \ Execute on-reopen if set
         preword find drop >body to classifier
+        \ Execute on-reopen if set
         classifier -> on-reopen-xt @ ?dup if
+            classifier body>name f" Reopening class %s..." type cr
             classifier swap execute  \ ( class - )
         then
     then
@@ -787,6 +788,10 @@ create protocol-link 0 , 0 ,
     \ Copy constructor
     source-class -> constructor-xt @ classifier -> constructor-xt !
     source-class -> constructor-#params @ classifier -> constructor-#params !
+
+    \ Copy on-derive and on-reopen
+    source-class -> on-derive-xt @ classifier -> on-derive-xt !
+    source-class -> on-reopen-xt @ classifier -> on-reopen-xt !
 
     \ Track class in dependencies
     classifier source-class track-dependent
