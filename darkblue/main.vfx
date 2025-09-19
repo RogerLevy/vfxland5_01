@@ -3,3 +3,30 @@
 \ ------------------------------------------------------------------------------
 
 include %vfxland5%\spunk\loader.vfx
+
+debug @ [if]
+
+    \ Custom overlay for Sketchpad
+    \ Show tags and calltimes
+
+    sketchpad/ definitions
+    variable overlay  2 overlay !
+
+    \ : ?cycle-overlaymode ( - )
+    \     <tab> pressed? -exit   overlaymode @ 1 + 3 mod overlaymode ! ;
+
+    : tags  1 overlay ! ;
+    : calltimes  2 overlay ! ;
+    : tag:  0 parse tag$ place ;
+
+    : darkblue-sketchpad-overlay 
+        actives>
+            x 2@ 2.> at
+            overlay @ 1 = if tag$ count print then
+            overlay @ 2 = if calltime @ ?dup if f" %p" print then then
+            \ ?cycle-overlaymode
+    ;
+
+    ['] darkblue-sketchpad-overlay is sketchpad-overlay
+
+[then]
