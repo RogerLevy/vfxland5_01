@@ -28,6 +28,7 @@ class: actor
     prop prio <int <save            \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
     prop id <int <save
+    24 nprop tag$ <cstring <save
 
     template [[ -1 id ! ]]
 
@@ -139,7 +140,7 @@ actor :: .summary ( actor - )
     then ;
 
 \ =============================================================================
-\ Find actor
+\ Find actors
 \ =============================================================================
 
 || 0 value xt
@@ -151,6 +152,11 @@ actor :: .summary ( actor - )
 : who> ( - actor|0 ) ( - f )
     r> to xt
     0 ['] (find) actors each ;
+
+|| 0 value $
+
+: tagged ( $ - actor|0 )
+    to $ who> $ count tag$ count compare 0= ;
 
 \ =============================================================================
 \ Actor drawing
