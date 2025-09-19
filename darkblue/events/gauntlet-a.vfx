@@ -1,7 +1,24 @@
-require events/test1.vfx
+aka float floating
 
+: towards ( actor speed. - ) 
+    >r pos@ me pos@ 2- ang r> vec vx 2! 
+    act> ;
+
+0 value n
+: schedule
+    0.0 to n
+    temps>
+        n calltime !
+        2.0 +to n ;
+
+borrow enemies/ enemy-physics
 :event
     shout" reset"
-\    0.5 loud *bgm1* 50e seek
-\    test1 drop
-;    
+    test2.scn load&stow
+    schedule
+    act>
+        temps>
+            +time   me ready? -exit
+            me unstashed as>
+                float player0 1. towards
+;

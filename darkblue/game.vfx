@@ -1,5 +1,4 @@
-require-event test1
-\ : test1 ;
+require-event event1
 
 require laser.vfx
 require scripts\bubble.vfx
@@ -25,7 +24,7 @@ require scripts\ship.vfx
 : retry ( - )
     blank blank blank
     1.0 to starfield-speed
-    test1 ;
+    event1 ;
 
 \ Gameplay main loop 
 : scale>  +m 0e 0e 2p>f 0e transform r> execute -m ;
