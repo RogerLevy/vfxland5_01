@@ -277,9 +277,9 @@ _totem :apply ( class - )
 : bin[ ( - ) data[ MAGIC_BIN , ;
 : bin] ( - a len ) data] ;
 
-: des> ( a - ) ( a - a' )
+continuation: des> ( a - ) ( a - a' )
     ?totem
-    r> {: xt | a :}
+    ( xt )  {: xt | a :}
     srcpath$ c@ 0= if
         s" Totem has no source path, skipping..." type cr
         exit
@@ -298,7 +298,8 @@ _totem :apply ( class - )
     a binfree throw
     throw ;
 
-: ser> ( - ) ( - )
+continuation: ser> ( - ) ( - )
+    ( xt ) >r 
     ?totem
     bin[
     format @ ,

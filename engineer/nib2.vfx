@@ -134,7 +134,7 @@ variable osp   os osp ! \ object stack pointer
 : ]] ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
-: as> ( actor - ) ( - ) [[ r> execute ]] ;
+continuation: as> ( actor - ) ( - ) swap [[ ( xt ) execute ]] ;
 
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one

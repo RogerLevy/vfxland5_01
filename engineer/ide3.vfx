@@ -21,8 +21,8 @@ variable old-hold
 create scalexy 0 , 0 ,
 create (pen) 0 , 0 , 
 
-: scaled>  ( x. y. - <code> ; )
-    2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> execute -m ;
+continuation: scaled>  ( x. y. - <code> ; )
+    ( xt ) >r 2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> ( xt ) execute -m ;
 
 : scaled-at ( x y - )
     scalexy 2@ 2p/ at ;

@@ -348,8 +348,8 @@ magic-id MAGIC_TWEAK TWK
     ?kb-unlock 
     2r> at ;
 
-: show> ( - ) ( - )
-    r> dup 'show ! cls execute ; 
+continuation: show> ( - ) ( - )
+    ( xt ) dup 'show ! cls execute ; 
 
 || : poll ( - )
     poll-keyboard  

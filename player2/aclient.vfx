@@ -187,12 +187,12 @@ aclient :: process ( - )
     2dup type cr
     CURLOPT_POSTFIELDSIZE setopt   CURLOPT_COPYPOSTFIELDS setopt ;
 
-: get> ( ... url len aclient - ) ( ... - )
+continuation: get> ( ... url len aclient - ) ( ... - )
     ." GET: " cr
-    r> {: url len aclient xt :}
+    ( xt ) {: url len aclient xt :}
     url len aclient /request [[ /get  xt execute   me ]] aclient sendoff ;
 
-: post> ( ... url len aclient - ) ( ... - )
+continuation: post> ( ... url len aclient - ) ( ... - )
     ." POST: " cr
-    r> {: url len aclient xt :}
+    ( xt ) {: url len aclient xt :}
     url len aclient /request [[ /post  xt execute   me ]] aclient sendoff ;

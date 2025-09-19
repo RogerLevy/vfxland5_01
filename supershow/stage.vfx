@@ -45,9 +45,9 @@ class;
 : free? ( actor - f ) -> en @ 0= ;
 : actor[] ( n - actor ) actors [] ;
 : actor# ( actor - n ) -> id @ ;
-: act> ( - ) ( - ) 0 time !  r> beha ! ; 
-: act&> ( - ) ( - ) 0 time !  r@ execute  r> beha ! ; 
-: physics> ( - ) ( - ) r> phys ! ;
+continuation: act> ( - ) ( - ) 0 time !  ( xt ) beha ! ; 
+continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
+continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 
 : exists? ( actor - f )
     dup 0= if drop 0 exit then
@@ -56,8 +56,8 @@ class;
 
 fast[
 
-: actives> ( - ) ( - )
-    r> {: xt :}
+continuation: actives> ( - ) ( - )
+    ( xt ) {: xt :}
     0 actor[] [[
         #actors for
             en @ if xt execute then
@@ -149,8 +149,8 @@ actor :: .summary ( actor - )
     dup -> en @ 0= if drop exit then    
     [[ xt execute if enough drop me then ]] ;
 
-: who> ( - actor|0 ) ( - f )
-    r> to xt
+continuation: who> ( - actor|0 ) ( - f )
+    ( xt ) to xt
     0 ['] (find) actors each ;
 
 || 0 value $
@@ -299,8 +299,8 @@ c: timer @actor xt1 dur ;
 || : (timer) ( time. xt -- )
     xt1 ! 0 max dur ! act-timer ;
 
-: timer> ( time. - ) ( - )
-    r> timer one [[ (timer) ]] ;
+continuation: timer> ( time. - ) ( - )
+    ( xt ) timer one [[ (timer) ]] ;
 
 \ =============================================================================
 \ Secondary actor storage
@@ -318,8 +318,8 @@ c: timer @actor xt1 dur ;
     loop  -1 abort" Out of temps" ;
 
 fast[
-: temps> ( - ) ( - )
-    r> {: xt :}
+continuation: temps> ( - ) ( - )
+    ( xt )  {: xt :}
     0 temp[] [[
         #temps for
             en @ if xt execute then
@@ -409,7 +409,7 @@ actor :: on-error ( xt err# - )
     bl parse f" %s.vfx" to len to fn
     fn len class0 >default-dir 2dup
     file-exists? abort" Script already exists"
-    class0 materialize as>    
+    class0 materialize [[
         my-name -ext n[ place
         srcpath$ count file-exists? not if
             srcpath$ count write[
@@ -431,7 +431,8 @@ actor :: on-error ( xt err# - )
             srcpath$ count included
         then
         n[ count f" locate %s" evaluate 
-        me ;
+        me 
+    ]] ;
 
 : +actor ( - <name> )
     actor-script +script drop ;

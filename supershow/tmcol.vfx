@@ -131,7 +131,8 @@ defer hit ( f: x y - f: x y )
 \ Collide with solid tiles
 public
 
-: tmcol>  ( x y w h a me=obj - ) ( f - f )
+continuation: tmcol>  ( x y w h a me=obj - ) ( f - f )
+    ( xt ) >r
     gap s>f to fgap
     \ -1 to unhit?
     to map  s>f to mbh  s>f to mbw

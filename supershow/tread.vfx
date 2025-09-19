@@ -13,8 +13,8 @@
 
 || : pen-colrow  at@ gap dup 2/ ;
 
-: tread> ( x y w h a - code ; ) ( pen=xy a - )
-     to a  to lh to lw to ly to lx  r> to xt
+continuation: tread> ( x y w h a - code ; ) ( pen=xy a - )
+     to xt  to a  to lh to lw to ly to lx 
      x @ .> lx + dup to lx  lw + 1 - to lx2 
      y @ .> ly + dup to ly  lh + 1 - to ly2
      ly2 gap + ly do

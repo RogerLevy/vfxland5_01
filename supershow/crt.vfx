@@ -19,7 +19,9 @@
     0.5e z" scanstr" float!
     buf:bmp 0e 0e 0e 0e 2e 4e 0e 0 al_draw_scaled_rotated_bitmap
 ;
-|| : (tv)
+
+continuation: crt>
+    ( xt ) >r
     +m
     buf:bmp al_set_target_bitmap
     0e 0e 0e 1e al_clear_to_color  0 0 at 
@@ -40,9 +42,6 @@
     ALLEGRO_MIN_LINEAR ALLEGRO_MAG_LINEAR or al_set_new_bitmap_flags
     1280 960 al_create_bitmap to tv:bmp
     $1000 al_set_new_bitmap_flags ;
-
-: crt> ( - <code;> )
-    postpone (tv) discard-sinline ; immediate
 
 : cleanup-crt ( - )
     ." Destroying CRT objects..." cr 
