@@ -255,8 +255,11 @@ actor object dummy
     s" me init ]]" evaluate ; immediate
 
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;
+
 : from ( actor x y - ) rot as> x 2@ 2.> 2+ at  ; \ me actor# priority ;
+
 : halt  beha off  0 0 vx 2! ;
+
 : morph ( class - )
     >r x 2@ vx 2@
     default me /actor move
@@ -264,12 +267,16 @@ actor object dummy
     vx 2! x 2! init ;
 
 : vanish  y @ 16384. or y ! ;
+
 : appear  y @ 16384. invert and y ! ;
-: expanded ( a1 n - a2 )
+
+: expanded ( actor amt - actor' )
     swap dummy copy as>
         dup negate dup x1 2+! 2 * dup w1 2+!
         me ;
+
 : hitbox! ( x y w h - ) w1 2! x1 2! ;
+
 : freemove ( - )
     halt floating act>
         <left> held? if -2. x +! then
