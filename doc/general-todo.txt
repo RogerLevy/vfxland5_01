@@ -6,7 +6,7 @@
 [ ] (Tileset System) Support tilesets with bitmaps of different basename
     Allow tileset loading from bitmaps that don't match the tileset's base filename.
 
-[ ] (Asset System) Detect new files and create totems from them
+[x] (Asset System) Detect new files and create totems from them
     Implement automatic file detection and totem creation system.
 
 2025/09/03
@@ -24,7 +24,7 @@
     Consolidate TRY and LD functionality.
 
 2025/08/20
-[ ] (Engineer) Improve history buffer API 
+[x] (Engineer) Improve history buffer API 
     - It should provide an "emit" style interface, not a line-based interface.
     - Get rid of the string buffer in ide3.vfx; this will prevent memory corruption
 
@@ -49,7 +49,7 @@
 [ ] (NIBS) Add runtime protocol reassignment word REASSIGN
     Implement REASSIGN ( xt protocol-xt class - ) to dynamically change protocol implementations at runtime.
 
-[ ] (Asset System) Add multiple file extension support to totems
+[-] (Asset System) Add multiple file extension support to totems
     Implement filtering mechanism so totem classes can specify supported file extensions.
     Edit: Might not be necessary?  Sub-classing with specific file extensions might be enough. 
     Alternatively, make LOAD-DEFAULT-DIR work recursively on classes and their descendents.
