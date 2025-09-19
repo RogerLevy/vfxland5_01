@@ -305,3 +305,12 @@ aka save-exe save
 
 : cutoff ( a len char - a` len` ) >r 2dup r> scan nip - ;
 : move, ( a len - ) dup >r here swap move r> allot ;
+
+: continuation: ( <name> - ) ( ... xt - ... )
+    create immediate
+    here 0 ,
+    :noname swap !
+    postpone r>
+    does> 
+        lvcount @ abort" Can't use locals with continuations."
+        @ compile, ;
