@@ -253,8 +253,9 @@ cstring wordname$
     then ;
     
 || : validated-word ( wrapper -- )
+    {: | impl-xt c :}  \ must go first, this allows the locals to be optimized
+
     safety @ 0= if @ execute exit then
-    {: | impl-xt c :}
     @+ to impl-xt
     @ to c ( contract )
     
