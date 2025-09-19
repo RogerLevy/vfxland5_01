@@ -317,10 +317,16 @@ c: timer @actor xt1 dur ;
         tnext# @ 1 + #temps mod tnext# !
     loop  -1 abort" Out of temps" ;
 
+fast[
 : temps> ( - ) ( - )
-    r> #temps for
-        i swap >r temp[] [[ en @ if r@ execute then ]] r>
-    loop drop ;
+    r> {: xt :}
+    0 temp[] [[
+        #temps for
+            en @ if xt execute then
+            /actor +to me
+        loop
+    ]] ; 
+fast]
 
 : clear-temps ( - )
     temps> me unload ;
