@@ -47,7 +47,7 @@ cstring update-name$
     actives> me .summary cr ;
 
 : .temps ( - )
-    temps> me free? ?exit me .summary cr ;
+    temps> me .summary cr ;
 
 : edit ( - <classname> )
     {: | name len :}

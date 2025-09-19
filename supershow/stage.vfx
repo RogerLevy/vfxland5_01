@@ -3,7 +3,7 @@
 \ ------------------------------------------------------------------------------
 
 1024 ?constant #actors
-#actors 8 * ?constant #temps
+1024 ?constant #temps
 512 ?constant /actor
 
 variable gamelife
@@ -307,10 +307,10 @@ c: timer @actor xt1 dur ;
 \ =============================================================================
 
 || variable tnext#
-: temp ( n - a ) temps [] ;
+: temp[] ( n - a ) temps [] ;
 : *temp ( - a )
     #temps for
-        tnext# @ temp dup free? if
+        tnext# @ temp[] dup free? if
             unloop exit
         then
         drop
@@ -319,7 +319,7 @@ c: timer @actor xt1 dur ;
 
 : temps> ( - ) ( - )
     r> #temps for
-        i swap >r temp [[ r@ execute ]] r>
+        i swap >r temp[] [[ en @ if r@ execute then ]] r>
     loop drop ;
 
 : clear-temps ( - )
