@@ -157,3 +157,10 @@ event :: .summary ( actor - )
     name$ count type space
     ." at: " x 2@ 2.> swap . . 
     ." ] " pop-attribute ;
+
+class: actor
+    prop calltime <fixed <save
+class;
+
+: ready? ( actor - flag )
+    [[ calltime @ time @ <= ]] ;
