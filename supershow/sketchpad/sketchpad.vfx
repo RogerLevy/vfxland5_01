@@ -25,11 +25,18 @@
 
 include %vfxland5%/lib/mouse.vfx
 
-\ ------------------------------------------------------------------------------
+\ ==============================================================================
+
+public
+
+defer sketchpad-overlay
+['] noop is sketchpad-overlay
 
 private
 
 0 value this
+
+\ ==============================================================================
 
 \ Commands
 
@@ -57,7 +64,6 @@ private
 0 value mx 
 0 value my
 0 value dragee
-\ create anchor 0 , 0 ,
 
 : editable? ( obj - flag ) 
     serializable? ;
@@ -73,7 +79,6 @@ private
         bmp @ -exit
         me editable? -exit
         mouse 2dup bmpbox overlap? if
-            \ bmp @ bitmap-file type cr
             drop me 
         then ;
 
@@ -110,13 +115,12 @@ variable flicker-ctr
     1 flicker-ctr +!  flicker-ctr @ 1 and ?exit sprite ;
 
 : sprites ( - )
-    batch> actives> me editable? if sprite else flicker  then ;
+    batch> actives> me editable? if sprite else flicker then ;
 
-borrow forth hold  \ import system variable
-aka _hold hold     \ and shadow it
+aka _hold hold     \ shadow system variable
 variable hold      \ new private variable will work with f8 and persist
 
-\ ------------------------------------------------------------------------------
+\ =============================================================================
 
 public
 
@@ -124,7 +128,13 @@ public
     hold on
     repl on
     sketchpad/ 
-    show> hold @ _hold ! step sprites input ;
+    gamew 2 / gameh 2 / at 
+    show> 
+        hold @ _hold ! 
+        step sprites sketchpad-overlay
+        input ;
+
+\ =============================================================================
 
 honing @ [if]
 sketchpad
