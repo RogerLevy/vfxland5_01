@@ -36,11 +36,26 @@ class: actor
 class;  
 
 || : belong?
-    r# @ room# @ = ` r# @ -1 = ` or ;
+    r# @ room# @ =   r# @ -1 = or ;
 
-: stash ( - )
-    r# @ -1 <> if room# @ r# ! then
-    me actor# a# !  me *temp /actor move  me unload ;
+: unstashed ( actor - actor' )
+    as>
+        belong? -exit
+        a# @ priority
+        *actor 
+        me over /actor move
+        en off ;
+
+: unstash ( actor - )
+    unstashed drop ;
+
+: stashed ( actor - actor' )
+    as>
+        r# @ -1 <> if room# @ r# ! then
+        me actor# a# !   *temp    me over /actor move   me unload ;
+
+: stash ( actor - )
+    stashed drop ;
 
 : throwaway ( - )
     -2 r# ! ;
@@ -52,15 +67,18 @@ timer :: init ( - )
     -1 r# ! ;
 
 : stow ( - )
-    actives> r# @ -2 = if me unload else stash then ;
+    actives>   r# @ -2 = if me unload else me stash then ;
 
 : takeout ( - )
-    temps>
-        me free? ?exit
-        belong? -exit
-        a# @ priority
-        me *actor /actor move
-        me unload ;
+    temps>   me unstash ;
+
+borrow scene/ actor-instance
+|| : temp-instance ( class - actor )
+    actor-instance stashed ;
+
+: load&stow ( scene - )
+    \ load actors from disk to temps
+    as> des> ['] into-me desbin+  ['] temp-instance desmulti+ ;
 
 \ =============================================================================
 \ Room control
