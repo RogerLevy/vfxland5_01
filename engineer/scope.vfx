@@ -29,16 +29,6 @@ variable public-xt  ' forth public-xt !
     only public-xt @ execute definitions wlname ?wordlist +order ;
 : || private 0 parse evaluate public ; immediate
 
-\ Search order stack
-aligned-page search-order-stack
-variable sosp   search-order-stack sosp ! \ object stack pointer
-: sos-push ( ? - ) sosp @ !  4 sosp c+! ;
-: sos-pop ( - ? ) -4 sosp c+!  sosp @ @ ;
-: sos-pushes ( ... n - ) dup >r for sos-push loop r> sos-push ;
-: sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
-: push-order ( - ) get-order sos-pushes get-current sos-push ;
-: pop-order ( - ) sos-pop set-current sos-pops set-order ;
-
 \ Importing words from other files
 : borrow ( - <vocabulary> <word> )
     push-order private

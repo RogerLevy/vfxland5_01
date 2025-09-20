@@ -288,10 +288,20 @@ aka save-exe save
 : body>name ( a - a' ) body> >name count ;
 : u+  rot + swap ;
 
+\ Search order stack
+aligned-page search-order-stack
+variable sosp   search-order-stack sosp ! \ object stack pointer
+: sos-push ( ? - ) sosp @ !  4 sosp c+! ;
+: sos-pop ( - ? ) -4 sosp c+!  sosp @ @ ;
+: sos-pushes ( ... n - ) dup >r for sos-push loop r> sos-push ;
+: sos-pops ( - ... n ) sos-pop dup >r for sos-pop loop r> ;
+: push-order ( - ) get-order sos-pushes get-current sos-push ;
+: pop-order ( - ) sos-pop set-current sos-pops set-order ;
+
 : >shout ( a len - ) 
-    2>r get-order get-current 2r>
+    2>r push-order 2r>
     ['] evaluate catch ?dup if .throw 2drop then
-    set-current set-order ;
+    pop-order ;
 
 : shout" ( - <string>" )
     \ Late-bound execution; don't care if it succeeds.  
