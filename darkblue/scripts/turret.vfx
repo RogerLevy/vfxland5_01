@@ -28,7 +28,6 @@ turret.png 32 32 tileset turret.ts
 : flicker ( n - n )
     gamelife @ 1 and if drop 0 then ;
 
-variable charging
 \ variable charge  \ moved to common.vfx
 variable charge-level
 variable level-ctr
@@ -62,7 +61,9 @@ array] drop
         act>
             ?cull ;
 
-: pea ( atk - ) *shoot* 8. shot shoot ;
+: fire-pea ( atk - ) *shoot* 8. shot shoot ;
+: pea ( atk - ) fire-pea  -1 energy +! ;
+
 : fire-medium ( atk - ) *shoot* 8. missile1 shoot ;
 : fire-large ( atk - ) *shoot* 8. missile2 shoot ;
 
