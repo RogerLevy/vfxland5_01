@@ -191,7 +191,7 @@ _stack :: redim ( #items - )
 
 \ ------------------------------------------------------------------------------
 
-: array[ ( item-size - )
+: array[ ( item-size - array )
     0 swap _array make [[
     here data !  me ]] ;  \ just to be sure
 
