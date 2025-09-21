@@ -37,25 +37,6 @@ variable watch-context
 variable esc-quits   esc-quits on 
 
 \ =============================================================================
-\ Oversight - Contract-orientation system
-\ =============================================================================
-
-public
-
-include %idir%/debug/oversight.vfx
-
-\ Enable Oversight and validated Forth core words if debugging mode enabled
-\ - Performance can be increased by 30-50% by disabling VALIDATIONS,
-\       (just, keeping it disabled requires preserving the value of VALUDATIONS)
-\ - In addition, because validators are compiled lazily, validator
-\       compilation errors can happen if words aren't found etc but the error
-\       is not intuitive, showing the wrong source location.
-
-init-oversight
-include %idir%/debug/core-checks.vfx
-include %idir%/checks.vfx
-
-\ =============================================================================
 \ Additional Facilities
 \ =============================================================================
 

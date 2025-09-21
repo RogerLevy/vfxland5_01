@@ -2,6 +2,12 @@
 \ Oversight Validation System
 \ Contract-based debugging with inline self-healing and hybrid syntax
 \  made in collaboration with Claude Sonnet 4
+
+\ - Performance can be increased by 30-50% by disabling VALIDATIONS,
+\       (just, keeping it disabled requires preserving the value of VALUDATIONS)
+\ - In addition, because validators are compiled lazily, validator
+\       compilation errors can happen if words aren't found etc but the error
+\       is not intuitive, showing the wrong source location.
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================

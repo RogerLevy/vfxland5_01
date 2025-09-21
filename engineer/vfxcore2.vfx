@@ -29,6 +29,12 @@ include %idir%/nib2.vfx
 include %idir%/nib2-tools.vfx
 include %idir%/nib2-compact.vfx
 include %idir%/nib2-serdes.vfx
+
+include %idir%/debug/oversight.vfx
+init-oversight
+include %idir%/debug/core-checks.vfx
+include %idir%/checks.vfx
+
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx
 include %idir%/../lib/wstring.vfx
