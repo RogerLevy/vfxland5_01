@@ -340,7 +340,7 @@ fast]
     s= if
         private
     then
-    template to me \ allows immediate assignment of template (TODO: revisit)
+    >template to me \ allows immediate assignment of template (TODO: revisit)
 ;
 
 actor :derive ( source-class derived-class - )
