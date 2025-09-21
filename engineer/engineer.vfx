@@ -681,7 +681,7 @@ previous previous
     {: | name[ 256 ] path[ 256 ] :}
     bl parse name[ place
     name[ c@ 0=
-    name[ count s" ." compare 0= or if 
+    name[ count s" ." s= or if 
         wd '\' ending name[ place 
         s" ." >abspath path[ place
     else

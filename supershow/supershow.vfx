@@ -70,7 +70,7 @@ prune: cleanup-supershow ;
             _totem -> dependents list-count for
                 @next [[
                     changed-file me -> default-dir$ count strin? if
-                        changed-file '.' ending me -> extension$ count compare 0= if
+                        changed-file '.' ending me -> extension$ count s= if
                             ." New file discovered!" cr
                             changed-file me manifest o.
                         then

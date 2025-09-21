@@ -156,7 +156,7 @@ continuation: who> ( - actor|0 ) ( - f )
 || 0 value $
 
 : tagged ( $ - actor|0 )
-    to $ who> $ count tag$ count compare 0= ;
+    to $ who> $ count tag$ count s= ;
 
 \ =============================================================================
 \ Actor drawing
@@ -337,7 +337,7 @@ fast]
 
 : (actor-definition) ( class - )
     dup body>name >pad count >lowercase CurrSourceName -path -ext >lowercase 
-    compare 0= if
+    s= if
         private
     then
     template to me \ allows immediate assignment of template (TODO: revisit)

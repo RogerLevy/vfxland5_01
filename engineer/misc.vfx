@@ -283,7 +283,8 @@ cstring lastword
 
 aka save-exe save
 
-: ext? ( fn len ext len - flag ) 2swap '.' ending compare 0= ;
+: s= compare 0= ;
+: ext? ( fn len ext len - flag ) 2swap '.' ending s= ;
 : ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
 : body>name ( a - a' ) body> >name count ;
 : u+  rot + swap ;

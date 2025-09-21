@@ -9,7 +9,7 @@ continuation: batch>  1 al_hold_bitmap_drawing ( xt ) catch 0 al_hold_bitmap_dra
 : h|  $1000000 or ;
 : v|  $2000000 or ;
 : hv|  h| v| ;
-: named? ( xt $ - f ) >r >name count r> count >uppercase compare 0= ; 
+: named? ( xt $ - f ) >r >name count r> count >uppercase s= ; 
 : bmpw bmpwh drop ;
 : bmph bmpwh nip ;
 

@@ -117,7 +117,7 @@ public
     {: fn len :} 
     fn len me body>name strin?
     fn len s" curve" strin? and
-    fn len '.' ending s" dat" compare 0= and ;
+    fn len '.' ending s" dat" s= and ;
 
 || : ?load-curve ( fn len - )
     {: fn len :} 

@@ -62,7 +62,7 @@ cstring update-name$
     name len f" %s/" >pad find if execute else drop then
     name len f" locate %s" evaluate ;
 
-|| : s= compare 0= ;
+|| : s= s= ;
 
 : [testing] ( - )
     \ Conditionally compile test code - active only in honing mode

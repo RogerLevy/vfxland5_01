@@ -158,7 +158,7 @@ leaderboard% :derive ( source-class derived-class - )
     board [[
     players @ #items for
         i players @ [] @ -> handle count
-        addr len compare 0= if
+        addr len s= if
             i 1 + unloop ]] exit  \ Return 1-based rank
         then
     loop
