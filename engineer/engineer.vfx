@@ -415,7 +415,7 @@ continuation: show> ( - ) ( - )
     then ; 
 
 || : draw-tv ( - )
-    ?border draw-game ;
+    zoom @ >r ?border draw-game r> zoom ! ;
 
 \ =============================================================================
 \ Interface Module
