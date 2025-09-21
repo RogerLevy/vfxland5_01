@@ -41,6 +41,8 @@ trait;
 ||     ' bin-deser-float ,
 ||     ' bin-deser-cstring ,
 
+borrow nib2/ prop+
+
 : serbin, ( obj - )
     \ serialize object into dictionary in binary format
     {: obj | property0 &count &psize tmpl-addr :}
@@ -52,8 +54,8 @@ trait;
             @next to property0
             property0 serialize? if
                 \ get the property address in the instance and in the template
-                me property0 -> offset @ prop+ to val-addr
-                cla @ >template property0 -> offset @ prop+ to tmpl-addr
+                me property0 prop+ to val-addr
+                cla @ >template property0 prop+ to tmpl-addr
 
                 \ check if the value differs from the class's template
                 val-addr   property0 -> property-size @ 
@@ -113,7 +115,7 @@ trait;
     {: a property0 :}
     a @+ swap ( n a )
     property0 -> serialize-flag @ if
-        me property0 -> offset @ prop+ to val-addr   \ get dest address
+        me property0 prop+ to val-addr   \ get dest address
         ( n a ) dup 
         property0 -> property-type @ cells bin-deser-table + @ execute 
         drop

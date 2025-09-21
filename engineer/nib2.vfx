@@ -39,16 +39,17 @@ constant /magical-base
 
 ' cla >body 2 cells + @ constant cla-offset
 
-: prop+ ( object offset - a )
-    \ Optimizes down to two instructions with validations off 
-    s" over cla-offset + @ + @ +" evaluate ; immediate
-
 : >cla  s" cla-offset +" evaluate ;  immediate
 
+: (->property) ( obj property - a' )
+    2 cells + @ ?literal 
+    s" over >cla @ + @ +" evaluate 
+; immediate
+
 : -> ( object <name> - a )
-    preword find not abort" -> >> field name not found!"
+    preword find not abort" -> >> Field name not found"
     >body cell+ @ MAGIC_PROPERTY = if
-        ' >body 2 cells + @ ?literal s" prop+" evaluate
+        ' >body s" (->property)" evaluate 
     else
         ' >body 2 cells + @ ?literal s" +" evaluate
     then ; immediate 
@@ -323,24 +324,18 @@ create _protocol  _class make [[
         abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
     /static offset !
     +to /static ;
-    
-: ?prop ( n - n )
-    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
 
-|| 0 value (property)
+: ->property ( obj property - a' )
+    over >r >r
+    dup >cla @ r@ 2 cells + @ + @ dup >r +    
+    r> if 2r> 2drop exit then
+    r> body>name 
+    r> >cla @ body>name
+    2swap
+    f" Property %s not mapped for class %s" -1 -rot .abort ;
+
 : does-property 
-    does> 
-        to (property)
-        me 
-        dup >cla @ 
-        (property) -> offset @ 
-        + @ 
-        dup 0= if
-            cla @ body>name
-            (property) body>name 
-            f" Property %s not mapped for class %s" -1 -rot .abort
-        then
-        + ;
+    does> me swap ->property ;
  
 : create-property ( size <name> - property ) 
     push-order only forth definitions 
@@ -994,11 +989,14 @@ aka instance make  \ Backward compatibility
         TYPE_OBJREF     of val-addr @ .object endof
     endcase cr ;
 
+\ unsafe!  just an internal utility
+|| : prop+  -> offset @ over >cla @ + @ + ;
+
 : .props ( object - )
     [[
         cla @ -> property-list list-count for
             @next                       \ get property
-            me over -> offset @ prop+   \ get field address
+            me over prop+   \ get field address
             ."     " inspect-property
         loop drop 
     ]] ;

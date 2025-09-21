@@ -9,27 +9,24 @@ wrap-word [[
 before as check-object
 wrap-word as
 
-: ?prop ( n - n )
-    validations @ -exit
-    dup ?exit -1 abort" ?PROP >> Property not mapped for this class!" ;
 
-: prop+ ( object offset - a )
-    \ Optimizes down to two instructions with validations off 
-    fast[ s" over cla-offset + @ + @" evaluate fast]
-    validations @ if s" ?prop" evaluate then
-    s" +" evaluate ; immediate
-
-aka (->) ->
+: (->property) ( property - ) ( obj - a )
+    \ dynamically called by old ->
+    \ optimizes down to 2 instructions when compiled with validations off
+    validations @ if 
+        ( property ) ?literal s" ->property" evaluate
+    exit then
+    2 cells + @ ?literal \ -> offset @ ?literal 
+    fast[ s" over >cla @ + @ +" evaluate fast] 
+; immediate
 
 : validate-object
     dup valid-object? not 
         abort" VALIDATE-OBJECT >> Invalid object." ;
 
 : -> 
-    validations @ if
-        s" validate-object" evaluate
-    then
-    postpone (->) ; immediate
+    validations @ if   s" validate-object" evaluate   then
+    postpone -> ; immediate
 
 :noname  ( obj protocol - obj protocol )
     safety @ -exit
