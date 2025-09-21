@@ -11,19 +11,13 @@ wrap-word as
 
 : ?prop ( n - n )
     validations @ -exit
-    dup 0= abort" ?PROP >> Property not mapped for this class!" ;
+    dup ?exit -1 abort" ?PROP >> Property not mapped for this class!" ;
 
 : prop+ ( object offset - a )
     \ Optimizes down to two instructions with validations off 
     fast[ s" over cla-offset + @ + @" evaluate fast]
     validations @ if s" ?prop" evaluate then
     s" +" evaluate ; immediate
-
-\ -----------------------------------------------------------------------------
-\ This is redefined here because FAST[ FAST] have been defined at this point
-: does-property 
-    immediate does> fast[ >property fast] ; 
-\ -----------------------------------------------------------------------------
 
 aka (->) ->
 

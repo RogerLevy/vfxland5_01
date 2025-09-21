@@ -327,15 +327,20 @@ create _protocol  _class make [[
 : ?prop ( n - n )
     dup 0= abort" ?PROP >> Property not mapped for this class!" ;
 
-: >property ( property - ) 
-    \ Compile the code to resolve property address. 
-    ( protocol ) >r 
-    s" me dup >cla @" evaluate 
-    r> -> offset @ ?literal 
-    s" + @ ?prop +" evaluate ;  
- 
+|| 0 value (property)
 : does-property 
-    immediate does> >property ; 
+    does> 
+        to (property)
+        me 
+        dup >cla @ 
+        (property) -> offset @ 
+        + @ 
+        dup 0= if
+            cla @ body>name
+            (property) body>name 
+            f" Property %s not mapped for class %s" -1 -rot .abort
+        then
+        + ;
  
 : create-property ( size <name> - property ) 
     push-order only forth definitions 
