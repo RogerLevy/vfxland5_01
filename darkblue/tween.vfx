@@ -36,7 +36,7 @@ constant EASE-IN-OUT
 
 \ Tween object
 
-class: tween
+class: _tween
     actor derive
     prop d <xt
     prop adr <addr
@@ -57,7 +57,7 @@ class;
 \ Tweening
 
 : *tween ( ease dir adr n2. len. - tween )
-    tween one [[
+    _tween one [[
         len! n2 ! adr ! d ! ease !
         adr @ @ n1 !
         tween-act
