@@ -191,34 +191,34 @@ playback :: init ( - )
     {: seg# n pth | f: fp seg sx sy dx dy t :}
     
     seg# pth segment[] to seg
-    seg# 0 = if 0 0 else seg# 1 - pth endxy scalex 2@ 2p* then
+    seg# 0 = if 0 0 else seg# 1 - pth endxy then
         to sy to sx
         
     n seg ease to fp
     
-    seg# pth endxy scalex 2@ 2p* to dy to dx
+    seg# pth endxy to dy to dx
     
     fp ` sx dx 2p>f ``
-        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+        seg [[ c1x @ c2x @ ]] sx dup 2+ 2p>f `` bezier-x f>p
     fp ` sy dy 2p>f ``
-        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+        seg [[ c1y @ c2y @ ]] sy dup 2+ 2p>f `` bezier-y f>p
 ;
 
 || : pinpoint ( playback ) ( seg# local-progress. path - x. y. )
     {: seg# n pth | f: fp seg sx sy dx dy t :}
     
     seg# pth segment[] to seg
-    seg# 0 = if 0 0 else seg# 1 - pth endxy scalex 2@ 2p* then
+    seg# 0 = if 0 0 else seg# 1 - pth endxy then
         to sy to sx
         
     n p>f to fp
     
-    seg# pth endxy scalex 2@ 2p* to dy to dx
+    seg# pth endxy to dy to dx
     
     fp ` sx dx 2p>f ``
-        seg [[ c1x @ c2x @ ]] scalex 2@ 2p* sx dup 2+ 2p>f `` bezier-x f>p
+        seg [[ c1x @ c2x @ ]] sx dup 2+ 2p>f `` bezier-x f>p
     fp ` sy dy 2p>f ``
-        seg [[ c1y @ c2y @ ]] scalex 2@ 2p* sy dup 2+ 2p>f `` bezier-y f>p
+        seg [[ c1y @ c2y @ ]] sy dup 2+ 2p>f `` bezier-y f>p
 ;
 
 \ =============================================================================
@@ -366,8 +366,8 @@ variable drift-error-y
     \ ." floor=" floor-frame . 
     \ ." ceil=" ceil-frame . 
 
-    floor-frame point@ scalex 2@ 2p* to floor-y to floor-x
-    ceil-frame point@ scalex 2@ 2p* to ceil-y to ceil-x
+    floor-frame point@ to floor-y to floor-x
+    ceil-frame point@ to ceil-y to ceil-x
 
     \ Raw interpolation
     ceil-x floor-x - fract p* floor-x + to raw-x
@@ -380,7 +380,7 @@ variable drift-error-y
     \ Update drift compensation (track error vs expected loop closure)
     progress 1.0 >= if
         \ At loop completion, measure drift from expected start position
-        0 point@ scalex 2@ 2p* \ expected start position
+        0 point@ \ expected start position
         corrected-y - drift-error-y +!
         corrected-x - drift-error-x +!
     then
@@ -426,7 +426,9 @@ variable drift-error-y
     me actor# 3 * + playbacks [] ;
 
 : meander ( -- vx. vy. )
-    0 0  3 for i pb [[ active @ if velstep 2+ then ]] loop ;
+    0 0  3 for 
+        i pb [[ active @ if velstep scalex 2@ 2p* 2+ then ]] 
+    loop ;
     
 : path-follow ( path playback - )
     {: p pb :}
