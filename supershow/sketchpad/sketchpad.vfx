@@ -120,11 +120,21 @@ variable flicker-ctr
 aka _hold hold     \ shadow system variable
 variable hold      \ new private variable will work with f8 and persist
 
+variable 'oldshow
+: ?toggle-mode
+    'show @ ip>nfa name> r@ ip>nfa name> = if
+        r> drop \ this is fine with locals because it's not a continuation
+        'oldshow @ ip>nfa name> execute
+    else
+        'show @ 'oldshow !
+    then ;
+
 \ =============================================================================
 
 public
 
 : sketchpad
+    ?toggle-mode
     hold on
     repl on
     sketchpad/ 
@@ -138,5 +148,5 @@ public
 
 honing @ [if]
 sketchpad
-push-order
+push-order \ TODO: is this needed anymore? (see ?HONE)
 [then]
