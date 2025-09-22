@@ -23,9 +23,9 @@ class: segment
     prop segtype <int           \ segment type (waypoint/event)
     prop x <fixed               \ target position
     prop y <fixed               \ 
-    prop c1x <fixed             \ curve control point
+    prop c1x <fixed             \ curve! control point
     prop c1y <fixed             \ 
-    prop c2x <fixed             \ curve control point 2
+    prop c2x <fixed             \ curve! control point 2
     prop c2y <fixed             \ 
     prop duration <int          \ milliseconds
     prop easetype <int          \ easing function ID

@@ -14,7 +14,7 @@
     \ Calculate repulsion force (inverse square law) 
     force-strength distance f/ distance f/ to force-magnitude
     
-    \ Blend with edge strength based on distance
+    \ Blend with edge strength! based on distance
     distance repel-radius f/ to force-ratio
     force-magnitude 1e force-ratio f- f* edge-strength force-ratio f* f+ to force-magnitude
 
