@@ -434,8 +434,7 @@ continuation: show> ( - ) ( - )
 \ =============================================================================
 
 || : ?event ( - f )
-    alqueue e al_get_next_event 0<>
-    dup -exit
+    alqueue e al_get_next_event 0<> dup -exit
     >r global-events ide-events r> ;
     
 || : (pump) ( - )
@@ -443,9 +442,9 @@ continuation: show> ( - ) ( - )
     begin ?event not until ;
 
 :noname ( - )
-    ['] (pump) catch 
-    ?throw need-pump on ;
-    is pump
+    ['] (pump) catch hist[ .throw hist]
+    need-pump on ;
+is pump
 
 redef : event? ( - f )
     repl @ if 0 exit then
