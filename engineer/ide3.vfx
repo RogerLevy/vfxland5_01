@@ -269,7 +269,6 @@ assign (DoAbortMessage) to-do DoAbortMessage
     checkdict ;
 
 : ide-char ( n - )
-    alt? ctrl? or if drop exit then
     case
         ( bksp ) 8 of #tib @ -exit -1 #tib +! exit endof
         ( tab ) 9 of exit endof
@@ -298,16 +297,24 @@ assign (DoAbortMessage) to-do DoAbortMessage
 
 : repl-events ( - )
     ALLEGRO_EVENT_KEY_DOWN happened? if
-        the-key <tab> = if
-            repl toggle
-            repl @ not if hold off then
-        then
-        the-key <`> = if
-            ide @ not if
+        ctrl? not alt? not and if
+            the-key <tab> = if
                 repl toggle
+                repl @ not if hold off then
+            then
+            the-key <`> = if
+                ide @ not if
+                    repl toggle
+                then
             then
         then
     then
+    ALLEGRO_EVENT_KEY_CHAR happened? if
+        repl @ ctrl? not and alt? not and if
+            the-char ide-char
+            the-key ide-key
+        then
+    then 
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT happened? if
         active off
         repl @ if ( hold @ old-hold ! ) hold on then
@@ -318,12 +325,6 @@ assign (DoAbortMessage) to-do DoAbortMessage
         ide @ if hold on then
         \ ide @ repl @ not and if hold off then
         \ ide @ repl @ and if old-hold @ hold ! then
-    then
-    repl @ if
-        ALLEGRO_EVENT_KEY_CHAR happened? if
-            the-char ide-char
-            the-key ide-key
-        then
     then ;
 
 \ =============================================================================
@@ -375,7 +376,7 @@ full-mode :: activate ( - )
 
 : full-mode-draw ( - )
     draw-tv
-    ( draw repl here ) ;
+    ( TODO: draw repl ) ;
 
 ' full-mode-draw full-mode -> draw-xt !
 
@@ -430,27 +431,35 @@ public
 
 : ide-events ( - )
     debug @ if
-        \ hist[
+        ide @ if
+            repl-events
+
             ALLEGRO_EVENT_KEY_DOWN happened? if
                 the-key <f1> - 0 12 within? if
                     the-key ?func
                 then
-                the-key <\> = ctrl? and if 
-                    +stackmode
+                ctrl? if
+                    the-key <\> = if +stackmode exit then
                 then
             then
-            repl-events
 
-            ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
-                onSwitchIn
+            ALLEGRO_EVENT_KEY_CHAR happened? if
+                ctrl? if
+                    1 pad c!
+                    the-char pad 1 + c! 
+                    pad f" ctrl+%$" >pad find if execute else drop then
+                then
             then
-        \ hist] 
+
+        then
+
+        ALLEGRO_EVENT_DISPLAY_SWITCH_IN happened? if
+            onSwitchIn
+        then
     then ;
 
 :noname ( - )
-    \ hist[ 
     ?dirchange 
-    \ hist]
     +m identity cls draw-display-mode -m ;
 is draw-ide
 
