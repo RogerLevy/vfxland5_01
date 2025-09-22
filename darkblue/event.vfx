@@ -105,7 +105,7 @@ public
     a len >pad find if
         execute ( event ) as
     else
-        drop -1 abort" event not found! did you forget :event ? "
+        drop -1 abort" Event entry point not found! did you forget :event ? "
     then ;
 
 \ : clear ( - )
