@@ -81,7 +81,7 @@ wordlist constant honing-wl
 
 : ?hone ( - <path> )
     honing @ if honing-wl +order then
-    bl parse ['] included catch
+    bl parse ['] old-included catch
     honing @ if honing-wl -order then 
     throw ;
 
@@ -90,8 +90,8 @@ wordlist constant honing-wl
     2dup ld-action$ place
     evaluate ;
 
-: >hone
-    honing on  >ld ;
+: >hone ( a len - )
+    only forth definitions   honing on   >ld ;
 
 : ld-again ( - )
     ld-action$ count >ld ;

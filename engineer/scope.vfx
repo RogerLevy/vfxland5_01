@@ -38,18 +38,17 @@ variable public-xt  ' forth public-xt !
     pop-order ;
 
 \ Extend include words to preserve the search order
-: preserve-order ( a:file len:file xt - )
-    push-order
-    only forth definitions
-    execute
-    pop-order ;
+|| : /order only forth definitions ;
 
-redef : include getPathSpec ['] included preserve-order ;
-redef : included ['] included preserve-order ;
-redef : require getPathSpec ['] required preserve-order ;
-redef : required ['] required preserve-order ;
+aka old-included included
+
+redef : include  push-order /order getPathSpec included pop-order ;
+redef : included push-order /order included pop-order ;
+redef : require  push-order /order getPathSpec required pop-order ;
+redef : required push-order /order required pop-order ;
 : ?included  2dup fileExist? if included else 2drop then ;
 : ?required  2dup fileExist? if required else 2drop then ;
+
 
 
 only forth definitions
