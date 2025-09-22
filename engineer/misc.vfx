@@ -325,3 +325,17 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
     does> 
         lvcount @ abort" Can't use locals with continuations."
         @ compile, ;
+
+: redef ( - )
+    postpone -warnings 0 parse evaluate postpone +warnings ;
+
+errdef err_redefined "Word redefined"
+
+\ Redefine redefhook: protection from unintentional redefinitions (use REDEF)
+: vfxland-redefhook
+  6 push-attribute 
+  ." Word was redefined! (Precede with REDEF to override.)" 
+  pop-attribute
+  err_redefined throw ;
+
+' vfxland-redefhook is redefhook  

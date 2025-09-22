@@ -375,7 +375,7 @@ wrap-word move
 before fill check-fill-params
 wrap-word fill
 
-: erase  0 fill ;
+redef : erase  0 fill ;
 
 before place check-place-params
 wrap-word place

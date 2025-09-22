@@ -7,7 +7,7 @@ trait: _iterable
     :: vacate ( - ) 0 item-count ! ;
     :: index ( a - n ) stub ; 
     :: deref-index ( n - ? ) stub ;
-    :: [] ( n - a ) stub ; \ pronounced "box"
+    redef :: [] ( n - a ) stub ; \ pronounced "box"
     :: redim ( #items - ) stub ;
 trait;
 
@@ -203,10 +203,10 @@ _stack :: redim ( #items - )
     \ Pad out an array being built, to given count
     over [[ data @ item-size @ rot * + here - allot&erase ]] ;
 
-: array ( max width - <name> )
+redef : array ( max width - <name> )
     _array object ;
 
-: stack ( max width - <name> )
+redef : stack ( max width - <name> )
     _stack object ;
 
 class: _object-array

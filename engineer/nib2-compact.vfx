@@ -3,7 +3,7 @@
 \ Python script to perform expansion, but it's still useful for quick
 \ experiments and stuff that I don't need help from Claude with.
 
-: number? ( a len - f )
+|| redef : number? ( a len - f )
     isnumber? case
         1 of drop -1 exit endof
         2 of drop drop -1 exit endof
@@ -91,7 +91,7 @@
     then
     ?comment ;
 
-: token ( - )
+|| redef : token ( - )
     ?invalid
     ?class ?exit
     ?trait ?exit

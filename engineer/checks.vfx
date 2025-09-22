@@ -10,7 +10,7 @@ before as check-object
 wrap-word as
 
 
-: (->property) ( property - ) ( obj - a )
+redef : (->property) ( property - ) ( obj - a )
     \ dynamically called by old ->
     \ optimizes down to 2 instructions when compiled with validations off
     validations @ if 
@@ -24,7 +24,7 @@ wrap-word as
     dup valid-object? not 
         abort" VALIDATE-OBJECT >> Invalid object." ;
 
-: -> 
+redef : -> 
     validations @ if   s" validate-object" evaluate   then
     postpone -> ; immediate
 

@@ -18,8 +18,3 @@ attr-stack attr-sp !
 
 \ Initialize everything to 7 (light grey)
 :noname 256 cell / for 7 push-attribute loop ; execute
-
-\ Redefine redefhook
-: textmode-redef	
-  6 push-attribute LastNameFound .NAME ." is redefined " pop-attribute cr ;
-' textmode-redef is redefhook  

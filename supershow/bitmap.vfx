@@ -13,7 +13,7 @@ variable next-bmp# 1 next-bmp# !
 
 || #bitmaps cell array bitmap-totems
 
-class: bitmap
+redef class: bitmap
     is-a _totem
     prop id 
     prop albmp

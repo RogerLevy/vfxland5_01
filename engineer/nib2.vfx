@@ -2,8 +2,6 @@
 \ Engineer OOP extension - NIBS (NIBS Interactive Behavior System) a.k.a Nib 2.0
 \ ------------------------------------------------------------------------------
 
-\ validations off
-
 1024 constant #max-classifiers
 4096 constant /classifier
 #max-classifiers 8 / constant /bit-table
@@ -27,7 +25,7 @@ magic-id MAGIC_CLASSIFIER CLAS
 : my-name ( - a len )
     me body>name ;
 
-: field ( ofs size <name> - n ) ( a - a )
+redef : field ( ofs size <name> - n ) ( a - a )
     create 0 , MAGIC_FIELD , over , +
     does> 2 cells + @ me + ;
 
@@ -46,7 +44,7 @@ constant /magical-base
     s" over >cla @ + @ +" evaluate 
 ; immediate
 
-: -> ( object <name> - a )
+redef : -> ( object <name> - a )
     preword find not abort" -> >> Field name not found"
     >body cell+ @ MAGIC_PROPERTY = if
         ' >body s" (->property)" evaluate 
@@ -58,20 +56,18 @@ constant /magical-base
     {: n :}
     preword find if >body @ n = else drop 0 then ;
 
-|| : ?literal  state @ if postpone literal then ;
-
-cstring name$
+|| cstring name$
 : >$ ( a len - $ )
     name$ place name$ ;
 
-: set-bit ( bit# addr - )
+redef : set-bit ( bit# addr - )
     {: bit# addr | byte-ofs bit-ofs :}
     bit# 8 / to byte-ofs
     bit# 8 mod to bit-ofs
     addr byte-ofs +
     dup c@ 1 bit-ofs lshift or swap c! ;
 
-: test-bit ( bit# adr - b )
+redef : test-bit ( bit# adr - b )
     >r 8 /mod ( bit-ofs byte-ofs )
     r> + c@ 1 rot lshift and 0<> ;
 
@@ -131,8 +127,8 @@ variable osp   os osp ! \ object stack pointer
 \ Object scoping
 \ ==============================================================================
 
-: [[ ( object - ) me osp @ !  4 osp c+!  to me ;
-: ]] ( - ) -4 osp c+!  osp @ @ to me ;
+redef : [[ ( object - ) me osp @ !  4 osp c+!  to me ;
+redef : ]] ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
 continuation: as> ( actor - ) ( - ) swap [[ ( xt ) execute ]] ;
@@ -204,7 +200,7 @@ create _class _class (classifier) [[ (init-class) ]]
 || : create-class ( <name> - class )
     create _class (classifier) dup [[ (init-class) ]] ;
 
-: sizeof ( class|object - n )
+redef : sizeof ( class|object - n )
     dup >cla @ _class = if -> instance-size @
     else >cla @ -> instance-size @ then ;
 
@@ -250,14 +246,14 @@ _object [[
     swap over >cla !   \ Store class pointer
     [[ me !template ]] ;
 
-: construct ( ... class addr - )
+redef : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
     [[
         me !template
         cla @ -> constructor-xt @ ?dup if execute then
     ]] ;
     
-: make ( ... class - object )
+redef : make ( ... class - object )
     \ TODO: validate class
     here >r
     dup -> instance-size @ allot
@@ -662,7 +658,7 @@ create protocol-link 0 , 0 ,
 
 : implementing-protocol?  protocol-link @ 0<> ;
 
-: ; ( - )
+redef : ; ( - )
     implementing-protocol? if
         protocol-link 2@ ! \ completed compilation so it's time to put the xt in the class
         protocol-link off 

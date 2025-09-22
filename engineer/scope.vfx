@@ -43,10 +43,11 @@ variable public-xt  ' forth public-xt !
     only forth definitions
     execute
     pop-order ;
-: include getPathSpec ['] included preserve-order ;
-: included ['] included preserve-order ;
-: require getPathSpec ['] required preserve-order ;
-: required ['] required preserve-order ;
+
+redef : include getPathSpec ['] included preserve-order ;
+redef : included ['] included preserve-order ;
+redef : require getPathSpec ['] required preserve-order ;
+redef : required ['] required preserve-order ;
 : ?included  2dup fileExist? if included else 2drop then ;
 : ?required  2dup fileExist? if required else 2drop then ;
 

@@ -52,4 +52,4 @@ continuation: batch>  1 al_hold_bitmap_drawing ( xt ) catch 0 al_hold_bitmap_dra
 \ Blank the screen
 \ =============================================================================
 
-: blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;
+redef : blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;

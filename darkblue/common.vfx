@@ -36,7 +36,7 @@ _object :: kill ( - ) me unload ;
 : die  me kill ;
 
 \ Common logic
-actor :: serializable? ( - flag ) 
+redef actor :: serializable? ( - flag ) 
     \ TODO: this is fine because we know that all Dark Blue actors have firers,
     \ but if we wanted more modularity, implementing this across traits 
     \ would have to be accumulative, rather than destructive.
@@ -82,7 +82,7 @@ aka <start> <enter>
 
 : backdrop  0 0 at backdrop.png put ;
 : (blank) show> backdrop ;
-: blank 'show @ (blank) 10 for frame loop 'show ! ;
+redef : blank 'show @ (blank) 10 for frame loop 'show ! ;
 
 : from-top ( xratio. y. -- x. y. )
     >r gamew *  r> ;

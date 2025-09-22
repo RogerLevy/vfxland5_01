@@ -103,7 +103,7 @@ class: bitmap
     prop ts <ref tileset
 class;
 
-bitmap :: load ( - )
+redef bitmap :: load ( - )
     bitmap:load ts @ ?dup if reload then ;
 
 || : reconnect-bmp ( - ) 

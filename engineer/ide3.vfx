@@ -337,9 +337,9 @@ borrow engineer/ draw-tv
 
 \ Displaymode-like trait
 trait: displaymode-like
-    prop _ide
-    prop _repl
-    prop _hold
+    redef prop _ide
+    redef prop _repl
+    redef prop _hold
     static draw-xt
 trait;
 

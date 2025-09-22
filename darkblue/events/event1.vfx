@@ -1,6 +1,6 @@
 1. tweak timing
 enemy1 tweak class
-1.5 tweak speed 
+redef 1.5 tweak speed 
 
 : *enemy ( - actor )
     class @ spawn ;

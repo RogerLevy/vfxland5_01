@@ -122,7 +122,7 @@ constant /contract
 \ Validation instance struct - individual validation attached to a contract
 0 
     \ Keep this as the first field to allow `on` and `off`
-    cell field enabled       
+    redef cell field enabled       
     cell field xt            \ Execution token of validation function
     cell field level         \ Validation type (crucial/charmful)
     cell field validator     \ Reference to original validator struct
@@ -131,9 +131,9 @@ constant /validation
 
 \ Validator struct - stores cached source and compilation state
 0
-    cell field enabled       \ (currently unused)
-    cell field xt            \ Execution token (0 if not compiled)
-    cell field level         \ Validation type (crucial/charmful)
+    redef cell field enabled \ (currently unused)
+    redef cell field xt      \ Execution token (0 if not compiled)
+    redef cell field level   \ Validation type (crucial/charmful)
     cell field source-addr   \ Pointer to cached source text
     cell field source-len    \ Length of cached source
     cell field compiled?     \ Flag: has source been compiled?
@@ -202,7 +202,7 @@ cstring wordname$
 
 : caller-rp  rp@ 11 cells + ;
 
--999 #Errdef err_oversight "ERR: Validation failed."
+errdef err_oversight "ERR: Validation failed."
 
 : run-validation ( ... contract validation -- ... )
     \ dup 0= if 2drop exit then 
@@ -248,7 +248,7 @@ cstring wordname$
         f" %s >> VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
         .s
-        -999 throw
+        err_oversight throw
     then
     res 1 = if
         val -> validator @ >name count 
@@ -536,7 +536,7 @@ public
     $create
     r> is redefhook ;
 
-: : ( -- <word-name> )
+redef : : ( -- <word-name> )
     \ Note that contracts do not support immediate words
     {: | c :}
 
@@ -561,7 +561,7 @@ public
         :
     then ;
 
-: ; ( -- )
+redef : ; ( -- )
     \ First, complete compilation of the word
     postpone ;
 

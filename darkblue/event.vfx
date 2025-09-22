@@ -146,7 +146,7 @@ public
         does-event :noname starting-xt ! ( load-curves ) 
     ]] ;
 
-: curve ( n - )
+: curve[] ( n - )
     dup curves @ ?bounds not if drop exit then
     curves @ [] @ #items ? ;
 

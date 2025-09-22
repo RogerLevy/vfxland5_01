@@ -2,13 +2,13 @@
 \ Cell-counted strings
 \ ------------------------------------------------------------------------------
 
-: wcount ( wstr - addr len )
+redef : wcount ( wstr - addr len )
     dup cell+ swap @ ;
 
 : wplace ( addr len wstr - )
     2dup ! cell+ swap move ;
 
-: wappend ( addr len wstr - )
+redef : wappend ( addr len wstr - )
     >r
     r@ cell+ r@ @ +  ( addr len dest )
     over >r swap move r>
@@ -20,7 +20,7 @@
 : *wstring ( a len - wstr )
     here -rot  dup cell+ allot here wplace ;
 
-: w$,  ( a len - )
+redef : w$,  ( a len - )
     *wstring drop ;
 
 : w$@+ ( a - a' w$ len - )

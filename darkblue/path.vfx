@@ -32,7 +32,7 @@ class: segment
     prop in-amt <fixed          \ easing in amount
     prop out-amt <fixed         \ easing out amount
     prop data <int              \ general purpose data
-    prop string <addr           \ event string (event only)
+    \ prop str <addr           \ event string (event only)
 class;
 
 \ =============================================================================
@@ -479,7 +479,7 @@ variable drift-error-y
         at@ last-coord 2!
     me ]] ;
         
-: ease ( segment ) ( n - )
+redef : ease ( segment ) ( n - )
     easetype ! ;
     
 : strength ( segment ) ( in. out. - )

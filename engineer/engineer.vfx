@@ -28,7 +28,7 @@ variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
 variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
 defer repl  ' _repl is repl
 defer ide  ' _ide is ide
-defer hold  ' _hold is hold
+redef defer hold  ' _hold is hold
 defer pump ' noop is pump
 cstring watch$
 variable watch-xt
@@ -188,7 +188,7 @@ include %idir%/../textmode/textmode.vfx
 0 value pdelta \ fixed, in seconds
 0e fvalue sdelta \ in seconds
 
-: ticks  ( n - ms )
+redef : ticks  ( n - ms )
     s>f 1000e tps f/ f* f>s ;
 
 || : !delta  ( - )
@@ -346,7 +346,7 @@ continuation: show> ( - ) ( - )
     !delta
     poll ;
 
-|| : spin ( - f: n )
+|| redef : spin ( - f: n )
     ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
 
 \ =============================================================================
@@ -439,7 +439,7 @@ continuation: show> ( - ) ( - )
     ?throw need-pump on ;
     is pump
 
-: event? ( - f )
+redef : event? ( - f )
     repl @ if 0 exit then
     need-pump off ?event ;
 
@@ -534,7 +534,7 @@ borrow nib2/ init-nib
     ['] noop is onSwitchIn
     honing off ;
 
-: empty ( - )
+redef : empty ( - )
     debug @ -exit
     empty-engineer
     only forth definitions
@@ -574,7 +574,7 @@ previous previous
     0 0 to ustime 
     init-history ;
 
-: cold ( - )
+redef : cold ( - )
     \ Release cold start sequence - initialize all systems and begin execution
     frigid boot go ;
 

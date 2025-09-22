@@ -318,9 +318,9 @@ continuation: ser> ( - ) ( - )
 \ =============================================================================
 \ Defaults
 
-_totem :: _intake ( - )
+redef _totem :: _intake ( - )
     des> ['] into-me desbin+ ;
 
-_totem :: _keep ( - )
+redef _totem :: _keep ( - )
     ser> me serbin, ;
 
