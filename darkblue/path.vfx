@@ -47,45 +47,50 @@ class: path
 class;
 
 \ =============================================================================
-\ Playback class
+\ Path player
 \ =============================================================================
 
-class: playback
-    \ is-a thinker
+trait: player
+    prop pos <fixed            \ progress 0-1.0 
+    prop spd <fixed
+    :: play ( obj - ) drop ;
+    redef :: stop ( - ) ;
+\    :: playing? ( - flag ) stub ;   \ TODO: add after totemizing samples
+trait;
+
+class: pathplayer
+    actor derive
+    is-a player
+
+    prop playing 
     prop path0 <ref path        \ pointer to path definition
     prop seg <int               \ current segment index
-    prop journey <fixed         \ path progress 0-1.0  
     prop startx <fixed          \ starting position
     prop starty <fixed          \ 
     prop starttime <int         \ milliseconds when started
-    prop speed <fixed           \ speed multiplier
-    prop scalex <fixed          \ runtime scaling
-    prop scaley <fixed          \ 
+    prop sx <fixed              \ runtime scaling
+    prop sy <fixed              \ 
     prop rotation <fixed        \ runtime rotation angle
-    prop active                 \ slot is active
     prop #loops <int            \ completed loops
     prop ppdir <int             \ pingpong direction 1/-1
     prop alp <addr              \ arc-length parameterized coordinates
                                 \ (optional)
 \   property lastevent            \ n \ last event index fired
+
+    template [[
+        1.0 spd !
+        1.0 1.0 sx 2!
+        1 ppdir !
+    ]]
+
 class;
 
-\ =============================================================================
-\ Playback array
-\ =============================================================================
-
-#pb-slots playback object-array playbacks
-
-\ =============================================================================
-\ Playback slot management
-\ =============================================================================
-
-playback :: init ( - )
-    1.0 speed !
-    1.0 scalex ! 1.0 scaley !
-    1 ppdir !
-    active on
-    gametime drop starttime ! ;
+\ extend ACTOR with path player references; up to 3
+class: actor
+    prop pp1 <ref pathplayer
+    prop pp2 <ref pathplayer
+    prop pp3 <ref pathplayer
+class;
 
 \ =============================================================================
 \ Status checks
@@ -184,7 +189,7 @@ playback :: init ( - )
         t \ default: no change
     endcase ;
 
-|| : ease ( n. segment - f: n )
+|| : ease ( n. segment - f: n ) 
     [[ p>f in-amt @ p>f out-amt @ p>f easetype @ ?ease ]] ;
     
 || : pinpoint-eased ( playback ) ( seg# local-progress. path - x. y. )
@@ -236,17 +241,17 @@ playback :: init ( - )
     then ;
 
 || : +journey ( n. - )
-    journey @ + ?boundary journey ! ;
+    pos @ + ?boundary pos ! ;
 
 || : step ( playback ) ( - ) \ Update progress by one frame
     path0 @ -exit
-    speed @ 1000. fps / p*  path0 @ timespan >. p/  ppdir @ * +journey ;
+    spd @ 1000. fps / p*  path0 @ timespan >. p/  ppdir @ * +journey ;
 
 || : vel ( playback ) ( -- vx. vy. )
     path0 @ ?dup 0= if 0 0 exit then
     {: p | n1 n2 :}
-    journey @ to n1
-    speed @ 1000. fps / p*  p timespan >. p/  ppdir @ *
+    pos @ to n1
+    spd @ 1000. fps / p*  p timespan >. p/  ppdir @ *
         n1 + 0 1. clamp to n2
     n2 p leg p pinpoint-eased 
     n1 p leg p pinpoint-eased 2- ;
@@ -255,7 +260,7 @@ playback :: init ( - )
 \ Arc-length parameterization for even motion
 \ =============================================================================
 
-|| playback object playback-obj
+|| pathplayer object alp-pp
 || 2variable first-point
 
 fast[ \ validations are way too slow for this
@@ -266,9 +271,8 @@ fast[ \ validations are way too slow for this
        f: prev-length f: next-length f: ratio bracket-index 
        seg# local-progress :}
     
-    playback-obj [[
-        playback cla !
-        1.0 scalex ! 1.0 scaley !
+    alp-pp [[
+        1.0 1.0 sx 2!
         
         path0 timespan to total-duration
         total-duration 60 1000 */ to #target-samples
@@ -349,7 +353,7 @@ fast]
 variable drift-error-x
 variable drift-error-y
 
-: alp-position ( playback ) ( progress. - x. y. )
+: alp-position ( pathplayer - ) ( progress. - x. y. )
     {: progress | frame-index floor-frame ceil-frame fract
        floor-x floor-y ceil-x ceil-y
        raw-x raw-y corrected-x corrected-y :}
@@ -387,7 +391,7 @@ variable drift-error-y
 
     corrected-x corrected-y ;
     
-: alp-displacement ( playback ) ( progress1. progress2. - dx. dy. )
+: alp-displacement ( pathplayer ) ( progress1. progress2. - dx. dy. )
     swap alp-position 2>r alp-position 2r> 2- ;
 
 : getstart ( seg# array - n )
@@ -409,9 +413,9 @@ variable drift-error-y
 
 || : velstep ( playback ) ( - vx. vy. )
     alp @ if
-        1. alp @ #items / speed @ p* >r
-        journey @ ?alp-ease
-            journey @ r@ + dup 1.0 >= if 1.0 - then ?alp-ease 
+        1. alp @ #items / spd @ p* >r
+        pos @ ?alp-ease
+            pos @ r@ + dup 1.0 >= if 1.0 - then ?alp-ease 
             alp-displacement 
             r> +journey
     else
@@ -422,35 +426,36 @@ variable drift-error-y
 \ Actor integration
 \ =============================================================================
 
-: pb ( n -- a ) 
-    me actor# 3 * + playbacks [] ;
+pathplayer :: init ( - )
+    gametime drop starttime ! ;
 
-: meander ( -- vx. vy. )
-    0 0  3 for 
-        i pb [[ active @ if velstep scalex 2@ 2p* 2+ then ]] 
+\ pathplayer :: playing? ( - flag )
+\     playing @ ;
+
+|| : ?pp ( a - pathplayer )
+    dup @ ?dup if nip exit then
+    pathplayer one dup rot ! 
+    dup as> you owner ! act> velstep sx 2@ 2p* vx 2! phys off ;
+
+: pathplayer[] ( n -- a ) 
+    cells pp1 + ?pp ;
+
+: pathvel ( -- vx. vy. )
+    0 0  
+    3 for 
+        i cells pp1 + @ ?dup if
+            -> vx 2@ 2+
+        then
     loop ;
     
-: path-follow ( path playback - )
-    {: p pb :}
-    x 2@
-    pb [[
-        init p path0 !
-        path0 @ -> alpdata @ alp !
-        ( x y ) startx 2! 
-    ]] ;
-    
-: path-speed ( playback - )
-    -> speed ! ;
+pathplayer :: play ( path - )
+    path0 !  path0 @ -> alpdata @ alp !  0 pos !  playing on ;
 
-: path-scale ( playback - )
-    -> scalex 2! ;
+pathplayer :: stop ( - )
+    playing off ;
 
 : #laps ( -- n )
-    0 pb -> #loops @ ;
-
-: pb1 ( - playback ) 0 pb ;
-: pb2 ( - playback ) 1 pb ;
-: pb3 ( - playback ) 2 pb ;
+    pp1 @ -> #loops @ ;
 
 \ =============================================================================
 \ Path definition helpers
@@ -464,7 +469,7 @@ variable drift-error-y
     dx 2 3 */ 
     dy 2 3 */ ;
 
-: curve ( segment ) ( c1x c1y c2x c2y - )
+: curve! ( segment ) ( c1x c1y c2x c2y - )
     c2x 2! c1x 2! ;
 
 2variable last-coord
@@ -475,14 +480,14 @@ variable drift-error-y
         at@ 2>. x 2!
         1. in-amt ! 1. out-amt !
         last-coord 2@ 2>.
-            x 2@ (linear) curve
-        at@ last-coord 2!
+            x 2@ (linear) curve!
+        at@ last-coord 2! 
     me ]] ;
-        
-redef : ease ( segment ) ( n - )
-    easetype ! ;
     
-: strength ( segment ) ( in. out. - )
+: ease! ( n - )
+    easetype ! ;
+
+: strength! ( in. out. - )
     out-amt ! in-amt ! ;
 
 : *alpdata ( - )
@@ -496,24 +501,3 @@ redef : ease ( segment ) ( n - )
 
 : easing[ *alpdata segment sizeof array[ ;
 : easing] array] easedata ! ;
-
-\ =============================================================================
-\ todo?
-\ =============================================================================
-
-\ 0 value easing-path
-\ 0 value easing-seg#
-\ 0 value easing-ease
-\ 0 value easing-str-in
-\ 0 value easing-str-out
-\ : easing-settings ( ease str-in. str-out. - )
-\     to easing-str-out to easing-str-in to easing-ease ;
-\ : (fill-in) ( from - )   
-\     ;   
-\ : for-segments {: from count -- :}
-\     (fill-in)
-\     0 from count do
-\         easing-path segment -> duration @ +
-\     loop waypoint ;
-\ : (complete) ;
-

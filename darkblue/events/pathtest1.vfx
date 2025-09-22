@@ -1,0 +1,28 @@
+path[ infinity-path
+    segments[
+        58 28 at 1.0 waypoint [[ 28.4 0.0 28.0 28.9 curve! ]]
+        58 0 at 1.0 waypoint [[  25.8 -2.2 19.6 -29.8 curve! ]]
+        0 28 at 1.0 waypoint [[  -25.8 0.0 -32.4 26.7 curve! ]]
+        0 0 at 1.0 waypoint [[   -17.8 0.0 -26.7 -27.6 curve! ]]
+    segments]
+    easing[
+        1.0 waypoint [[ 1 ease!  0.15 0.15 strength! ]]
+        1.0 waypoint [[ 2 ease!  0.15 0.15 strength! ]]
+        1.0 waypoint [[ 1 ease!  0.15 0.15 strength! ]]
+        1.0 waypoint [[ 2 ease!  0.15 0.15 strength! ]]
+    easing]
+path]
+
+: /at ( xfact. yfact. - ) 
+    gamew. gameh. 2p* 2.> at ;
+
+: mainpath 0 pathplayer[] ;
+
+:event
+    shout" reset"   
+    0.75 0.5 /at enemy1 one [[
+        infinity-path mainpath play
+        0.5 mainpath -> spd !
+        1.5 2. mainpath -> sx 2!
+    ]]
+;

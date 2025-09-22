@@ -81,22 +81,22 @@ path]
 
 : *pathguy1
     100 100 at enemy9 one as>
-        angular-path pb1 path-follow  1.0 pb1 path-speed
+        angular-path pp1 path-follow  1.0 pp1 path-speed
         0. n1 !
         act>
-            meander x 2+! 
+            pathvel x 2+! 
             <[> pressed? if -1 bmp +! then
             <]> pressed? if 1 bmp +! then ;
         
 
 : *pathguy2
     200 100 at enemy1 one as>
-        infinity-path pb1 path-follow  1.0 pb1 path-speed
+        infinity-path pp1 path-follow  1.0 pp1 path-speed
         0. n1 !
-        \ 2. 2. pb1 path-scale
+        \ 2. 2. pp1 path-scale
         act>
-            meander x 2+! ;
-            \ n1 @ dup pb1 path-scale
+            pathvel x 2+! ;
+            \ n1 @ dup pp1 path-scale
             \ 0.005 n1 +! 
     
 : pathtest

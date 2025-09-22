@@ -8,7 +8,8 @@
 
 \ title
 game
-run gauntlet-a
+\ run gauntlet-a
+run pathtest1
 
 \ try ../supershow/tools/sketchpad
 
