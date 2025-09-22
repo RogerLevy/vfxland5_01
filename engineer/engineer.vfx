@@ -35,6 +35,19 @@ variable watch-xt
 variable watch-context
 || variable need-pump
 variable esc-quits   esc-quits on 
+variable honing
+cstring ld-action$
+wordlist constant honing-wl
+
+\ Redefine redefhook: protection from unintentional redefinitions (use REDEF)
+: vfxland-redefhook2
+    honing @ ?exit
+    6 push-attribute 
+    ." Word was redefined! (Precede with REDEF to override.)" 
+    pop-attribute
+    err_redefined throw ;
+
+' vfxland-redefhook2 is redefhook  
 
 \ =============================================================================
 \ Additional Facilities
@@ -73,11 +86,6 @@ include %idir%/totem.vfx
 \ =============================================================================
 
 \ Try/Honing - Convenient code testing
-
-variable honing
-cstring ld-action$
-
-wordlist constant honing-wl
 
 : ?hone ( - <path> )
     honing @ if honing-wl +order then
