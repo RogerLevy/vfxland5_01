@@ -38,6 +38,16 @@ variable esc-quits   esc-quits on
 variable honing
 cstring ld-action$
 wordlist constant honing-wl
+0 value alt?
+0 value ctrl?
+0 value shift?
+|| 60e fvalue tps \ float, ticks per second
+|| 0 0 2value ustime \ long, in microseconds
+0 value mstime \ int, in milliseconds
+0 value usdelta
+0 value pdelta \ fixed, in seconds
+0e fvalue sdelta \ in seconds
+create zcommand 256 allot 
 
 \ Redefine redefhook: protection from unintentional redefinitions (use REDEF)
 : vfxland-redefhook2
@@ -108,7 +118,7 @@ include %idir%/totem.vfx
     \ Usage: 
     \ - ld projectname
     \ - ld filename (no extension)
-    \ - ld ../test/filename (no extension)
+    \ - ld <path>/filename (no extension)
 
     bl parse {: fn len :}
 
@@ -181,20 +191,10 @@ include %idir%/../textmode/textmode.vfx
 : kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
 : pressed? ( - f )  kdelta 1 = ;
 : letgo? ( - f )  kdelta -1 = ;
-0 value alt?
-0 value ctrl?
-0 value shift?
     
 \ =============================================================================
 \ Framerate independence
 \ =============================================================================
-
-|| 60e fvalue tps \ float, ticks per second
-|| 0 0 2value ustime \ long, in microseconds
-0 value mstime \ int, in milliseconds
-0 value usdelta
-0 value pdelta \ fixed, in seconds
-0e fvalue sdelta \ in seconds
 
 redef : ticks  ( n - ms )
     s>f 1000e tps f/ f* f>s ;
@@ -697,8 +697,6 @@ redef : cold ( - )
 \ =============================================================================
 \ Kickoff
 \ =============================================================================
-
-create zcommand 256 allot 
 
 : engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
     over zcount zcommand zplace

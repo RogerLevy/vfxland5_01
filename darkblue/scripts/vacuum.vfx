@@ -89,9 +89,7 @@ path[ infinity-path
         0 0 at 1.0 waypoint [[   -17.8 0.0 -26.7 -27.6 curve! ]]
     segments]
     easing[
-    dup o. .s 
         1.0 waypoint [[ 1 ease!   0.15 0.15 strength! ]]
-    dup o. .s 
         1.0 waypoint [[ 2 ease! 0.15 0.15 strength! ]]
         1.0 waypoint [[ 1 ease! 0.15 0.15 strength! ]]
         1.0 waypoint [[ 2 ease! 0.15 0.15 strength! ]]

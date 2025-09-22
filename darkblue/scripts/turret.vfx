@@ -106,7 +106,6 @@ array] drop
             0.5 passed? -exit
             me unload ;
 
-( ease dir adr n2. len. - )        
 create charge-levels 4 cells array[
     \ charge , cost , atk , xt ,
     10  , 0 , 0 ,   ' drop , 
