@@ -2,8 +2,8 @@
 \ Engineer OOP extension - NIBS (NIBS Interactive Behavior System) a.k.a Nib 2.0
 \ ------------------------------------------------------------------------------
 
-1024 constant #max-classifiers
-4096 constant /classifier
+1024 ?constant #max-classifiers
+8192 ?constant /classifier
 #max-classifiers 8 / constant /bit-table
 create classifiers #max-classifiers cells allot&erase
 
@@ -104,9 +104,6 @@ redef : test-bit ( bit# adr - b )
         @next dest add-to
     loop drop ;
 
-\ : .list ( list - ) 
-\     cr list-count for @next 2 indent .name cr loop drop ;  
-
 : .list ( list - )
     {: | cnt :}
     0 to cnt 
@@ -138,20 +135,6 @@ continuation: as> ( actor - ) ( - ) swap [[ ( xt ) execute ]] ;
     to me
     cla @ body>name f" %s/"
     >pad find if execute else drop then ;
-
-\ ==============================================================================
-\ CATCH/THROW support
-\ ==============================================================================
-
-\ aligned-page oes
-\ variable oesp  oes oesp !
-
-\ : >oes   oesp @ ! 4 oesp c+! ; 
-\ : oes>   -4 oesp c+! oesp @ @ ;
-\ : catch  me >oes osp @ >oes catch oes> osp ! oes> to me ;
-\ : throw  ?dup -exit oes> osp ! oes> to me throw ;
-
-\ :noname  256 2 / cell / for  os i 2 * cells oes + !  loop ;  execute
 
 \ ==============================================================================
 \ Classes
@@ -273,7 +256,6 @@ create _property  _class make [[
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
-        cell field next-property
         cell field property-size
         cell field property-type
         cell field property-reftype
