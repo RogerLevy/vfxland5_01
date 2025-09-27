@@ -10,8 +10,8 @@ trait: _object
     static version              \ always 0 for now, serialized but not checked
 trait;
 
-: serialize? ( property - flag )
-    -> serialize-flag @ ;
+: serialize? ( property class - flag )
+    >serialize-flag @ ;
 
 || 0 value val-addr
 
@@ -52,20 +52,20 @@ borrow nib2/ prop+
         here to &count 0 , 
         cla @ -> property-list list-count for
             @next to property0
-            property0 serialize? if
+            property0 cla @ serialize? if
                 \ get the property address in the instance and in the template
                 me property0 prop+ to val-addr
                 cla @ >template property0 prop+ to tmpl-addr
 
                 \ check if the value differs from the class's template
-                val-addr   property0 -> property-size @ 
-                tmpl-addr   property0 -> property-size @ 
+                val-addr   property0 cla @ >property-size @ 
+                tmpl-addr   property0 cla @ >property-size @ 
                 compare 0<> if
                     \ it differs: serialize the property
                     1 &count +!
                     property0 >name count $,
                     here to &psize 0 , 
-                    property0 -> property-type @ cells bin-ser-table + @ execute
+                    property0 cla @ >property-type @ cells bin-ser-table + @ execute
                     here &psize - cell- &psize !
                 then
             then
@@ -111,13 +111,13 @@ borrow nib2/ prop+
         skip-data 0 exit
     then ;
 
-|| : deser-property ( a property - a' )
-    {: a property0 :}
+|| : deser-property ( a property class - a' )
+    {: a property0 class :}
     a @+ swap ( n a )
-    property0 -> serialize-flag @ if
+    property0 class >serialize-flag @ if
         me property0 prop+ to val-addr   \ get dest address
         ( n a ) dup 
-        property0 -> property-type @ cells bin-deser-table + @ execute 
+        property0 class >property-type @ cells bin-deser-table + @ execute 
         drop
     then 
     ( n a ) + ;
@@ -131,7 +131,7 @@ borrow nib2/ prop+
         ( a class ) xt execute [[
             \ fetch properties into returned object
             @+ for
-                @property+ ?dup if deser-property then
+                @property+ ?dup if cla @ deser-property then
             loop
         ]]
     then
