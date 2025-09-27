@@ -91,14 +91,14 @@ _iterable :: tail@ ( - ? )
     item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
-\ iterable% :: map ( xt dest - )
+\ iterable :: map ( xt dest - )
 \     {: xt dest :}
 \     item-count @ for
 \         i me [] xt execute
 \         i dest [] !
 \     loop ;
 \ 
-\ iterable% :: filter ( xt dest - count )
+\ iterable :: filter ( xt dest - count )
 \     {: xt dest | j :}
 \     item-count @ for
 \         i me [] dup xt execute if

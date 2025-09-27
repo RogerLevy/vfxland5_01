@@ -38,7 +38,7 @@ defer auto-zoom
 
 \ Mouse
 create mousex 0 , 0 , here cell- constant mousey
-create mickeyx 0 , 0 , here cell- constant mickeyx
+create mickeyx 0 , 0 , here cell- constant mickeyy
 variable mbuttons
 : mouse  mousex 2@ ;
 : mickey mickeyx 2@ ;

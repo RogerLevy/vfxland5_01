@@ -8,7 +8,7 @@ borrow be/ file$
             al_get_parent_bitmap p = if i n + unloop exit then
         then
     loop n ;
-info% :: init
+info :: init
     draw>
         4 4 +at
         the-bmp @ is-tile? if

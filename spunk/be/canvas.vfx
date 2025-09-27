@@ -33,7 +33,7 @@ borrow be/ rb
         in? -exit
         lb if mouse >local at dot then
         rb if mouse >local at eyedrop then ;
-canvas% :: init
+canvas :: init
     act-paint
     draw>
         the-bmp @ -exit
