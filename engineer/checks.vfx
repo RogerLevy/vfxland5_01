@@ -24,9 +24,14 @@ redef : (->property) ( property - ) ( obj - a )
     dup valid-object? not 
         abort" VALIDATE-OBJECT >> Invalid object." ;
 
-redef : -> 
-    validations @ if   s" validate-object" evaluate   then
-    postpone -> ; immediate
+redef : -> ( object <name> - a )
+    preword find not abort" -> >> Field name not found"
+    >body cell+ @ MAGIC_PROPERTY = if
+        validations @ if   s" validate-object" evaluate   then
+        ' >body s" (->property)" evaluate 
+    else
+        ' >body 2 cells + @ ?literal s" +" evaluate
+    then ; immediate 
 
 :noname  ( obj protocol - obj protocol )
     safety @ -exit
