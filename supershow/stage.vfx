@@ -120,7 +120,8 @@ actor :: .summary ( actor - )
     actives> ?benched physics ;
 
 : +gametime ( - )
-    gametime usdelta 0 d+ to gametime  1 gamelife +! ;
+    gametime usdelta 0 d+ to gametime  
+    1 gamelife +! ;
 
 : +time ( - )
     ?benched pdelta time +! ;

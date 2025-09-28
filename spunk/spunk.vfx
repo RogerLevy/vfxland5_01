@@ -35,12 +35,11 @@ class: actor
     prop a#  \ we also try to restore the ordering using actor#
 class;  
 
-|| : belong?
+|| : belong? ( - flag )
     r# @ room# @ =   r# @ -1 = or ;
 
 : unstashed ( actor - actor' )
     as>
-        belong? -exit
         a# @ priority
         *actor 
         me over /actor move
@@ -50,9 +49,10 @@ class;
     unstashed drop ;
 
 : stashed ( actor - actor' )
-    as>
+    [[
         r# @ -1 <> if room# @ r# ! then
-        me actor# a# !   *temp    me over /actor move   me unload ;
+        me actor# a# !   *temp    me over /actor move   me unload 
+    ]] ;
 
 : stash ( actor - )
     stashed drop ;
@@ -70,7 +70,7 @@ timer :: init ( - )
     actives>   r# @ -2 = if me unload else me stash then ;
 
 : takeout ( - )
-    temps>   me unstash ;
+    temps>   belong? -exit   me unstash ;
 
 borrow scene/ actor-instance
 || : temp-instance ( class - actor )
@@ -98,7 +98,8 @@ variable load-room-chain
 : +warp ( n - )
     room# @ + 1000 + 1000 mod warp ;
 
-: ?read  2dup file-exists? if read else 2drop then ;
+: ?read ( a n a n - )
+    2dup file-exists? if read else 2drop 2drop then ;
 
 : revert-bg ( - )
     bg0 /screen room-datfile ?read ;
@@ -111,6 +112,11 @@ variable load-room-chain
 
 : load-world ( - )
     clear-temps #rooms for i room revert stow loop ;
+
+: clear-world ( - )
+    mram /screen #rooms * erase 
+    clear-temps 
+    clear-stage ;
 
 \ =============================================================================
 \ Read/write the background
