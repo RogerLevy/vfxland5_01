@@ -100,12 +100,12 @@ actor :: .summary ( actor - )
         \ Compare SP to previous SP.
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if  
-            s[ ." Positive stack imbalance in logic for actor " me .summary cr 
-            s] log-warning .s
+            s[ ." Positive stack imbalance in logic for actor " me .summary 
+            s] log-warning .rs .s
         then
         dup sp@ cell+ cell+ < if
-            s[ ." Negative stack imbalance in logic for actor " me .summary cr
-            s] log-warning .s
+            s[ ." Negative stack imbalance in logic for actor " me .summary
+            s] log-warning .rs .s
         then
     then
     sp! ;
@@ -327,7 +327,7 @@ continuation: temps> ( - ) ( - )
             /actor +to me
         loop
     ]] ; 
-fast]
+fast] 
 
 : clear-temps ( - )
     temps> me unload ;

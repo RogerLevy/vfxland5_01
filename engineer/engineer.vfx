@@ -338,7 +338,7 @@ magic-id MAGIC_TWEAK TWK
     2r> at ;
 
 continuation: show> ( - ) ( - )
-    ( xt ) dup 'show ! cls execute ; 
+    ( xt ) 'show ! cls ; 
 
 || : poll ( - )
     poll-keyboard  

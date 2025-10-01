@@ -91,7 +91,7 @@ variable load-room-chain
 
 : warp ( n - )
     1023 and
-    cr ." WARPING TO ROOM " dup .
+    ." WARPING TO ROOM " dup . cr
     stow  room  takeout
     load-room-chain do-chain ;
 
