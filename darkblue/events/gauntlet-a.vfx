@@ -20,5 +20,5 @@ borrow enemies/ enemy-physics
         temps>
             +time   me ready? -exit
             me unstashed as>
-                float player0 1. towards
+                float p1 1. towards
 ;

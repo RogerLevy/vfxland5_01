@@ -37,9 +37,9 @@ _object :: kill ( - ) me unload ;
 
 \ Common logic
 redef actor :: serializable? ( - flag ) 
-    \ TODO: this is fine because we know that all Dark Blue actors have firers,
-    \ but if we wanted more modularity, implementing this across traits 
-    \ would have to be accumulative, rather than destructive.
+    \ this is fine for now 10/3
+    \ TODO: for support for multiple trait logic contributions
+    \ we'd need a different approach, such as a static bitmask property.
     actor:serializable? firer @ 0= and ;
 
 : fired? ( firer actor - b )
@@ -47,7 +47,7 @@ redef actor :: serializable? ( - flag )
     -> firer @ = ;
  
 \ Global variables
-dummy value player0
+dummy value p1
 variable energy  1000 energy !
 variable automatic
 variable charge
@@ -77,7 +77,7 @@ aka <start> <enter>
     y @ 0. r @ 2 * - gameh. r @ 2 * + within? and ;
 : ?cull in? ?exit me unload ;
 : center-pos  160. 120. ;
-: player-pos  player0 pos@ ;
+: player-pos  p1 pos@ ;
 : chance ( dividend divisor -- f ) rnd swap < ;
 
 : backdrop  0 0 at backdrop.png put ;

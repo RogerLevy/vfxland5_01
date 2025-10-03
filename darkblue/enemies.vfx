@@ -94,7 +94,7 @@ enemy :: kill
     4096 512 + next# !
     me 0 0 from s" orb" find-class one [[
         you firer !
-        player0 pos@ me pos@ 2- ang 1. vec vx 2!
+        p1 pos@ me pos@ 2- ang 1. vec vx 2!
     ]]
     \ next# @ orbs-next# !
     r> next# ! ;
@@ -117,7 +117,7 @@ enemy :: damage ( n - )
     then
     actives>
         \ me projectile is? -exit
-        player0 me fired? -exit
+        p1 me fired? -exit
         you me rhit? if
             atk @ you damage
             me unload

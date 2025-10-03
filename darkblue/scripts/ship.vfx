@@ -156,7 +156,7 @@ ship :: damage ( n - )
     turret one own turret0 ! ;
 
 ship :: init
-    me to player0
+    me to p1
     /turret
     ship.ts 0 tile bmp !
     13. r !

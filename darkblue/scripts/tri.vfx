@@ -12,8 +12,8 @@ class: tri
 class;
 
 : repel
-    player0  -exit
-    player0 me 75e 2.5e 0e repelling-force vx 2+!
+    p1  -exit
+    p1 me 75e 2.5e 0e repelling-force vx 2+!
     ; \ vx 2@ 2+ 1. clamplen vx 2! ;
 
 : ang>bmp ( ts n. - n )
