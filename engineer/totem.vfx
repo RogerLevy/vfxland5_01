@@ -86,11 +86,11 @@ _totem :apply ( class - )
         class0 path len -path 
         \ ." Materializing " 2dup type cr
         $object
-        [[ 
-            path len >abspath me srcpath!
-        me ]]
         dup class0 -> instances add-to
-    then ;
+    then 
+    [[ 
+        path len >abspath me srcpath!
+    me ]] ;
 
 || : @default-dir
     my-name
