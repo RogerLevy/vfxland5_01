@@ -27,6 +27,31 @@ aka cd cwd
 
 include %idir%/../textmode/textmode-tools.vfx
 
+: IP>NFA        \ addr -- nfa
+\ *G Attempt to move backwards from an address within a definition to
+\ ** the relevant NFA.
+  13 -			\ NFA (count byte) is at least this far back
+  1024 for
+    dup InForth? 0= if drop  C" <???> "  unloop exit then
+    dup name? if unloop exit then
+    1-
+  loop 
+  drop  C" <???> " ;
+
+: >name         \ xt -- nfa|xt
+\ *G Move a pointer from an XT back to the NFA or name-pointer.
+\ ** If the original pointer was not an XT or if the definition in
+\ ** question has no name header in the dictionary the returned pointer
+\ ** will be useless. Care should be taken when manipulating or scanning
+\ ** the Forth dictionary in this way. If *\i{xt} is outside the
+\ ** dictionary, a dummy for "???" is returned.
+  dup inForth? if
+    unalign  ip>nfa
+  else
+    drop  dummyNFA
+  endif
+;
+
 : .name ( a - )
     \ Smart name print
     \ NOTE: Slow!
@@ -47,6 +72,19 @@ include %idir%/../textmode/textmode-tools.vfx
         then
         pop-attribute
     else . then ;
+
+\ : .test  0 0 do i .ip cr 1000 +loop ; 
+
+\ : .ip ( a - )
+\     dup body> inForth? if
+\         ip>nfa dup count 2drop
+\     else drop then ;
+
+\ : .ip  dup inForth? if ip>nfa count type space cr else drop then ;
+
+\ : .test  0 0 do i dup .ip drop loop ; 
+
+\ 0 ' .test catch .s throw
 
 : .data ( a - )
     dup body> inForth? if

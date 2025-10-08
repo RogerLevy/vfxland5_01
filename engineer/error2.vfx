@@ -64,19 +64,6 @@ create ds 16 cells allot
         drop Z" Undefined"
     end-case ;
 
-\    >r
-\    r@ 0= if
-\        ." ( 0 ) "
-\        r> drop exit
-\    then
-\    r@ ip>nfa dup count type
-\    ."  ( " r@ h.8
-\    ." + " name>  r> swap - .
-\    ." ) " ;
-
-\ : .ip ( a - )
-\     .name ;
-
 : rtrace ( a n - )
     swap over cells + swap
     for ."         " cell- dup @ .ip cr loop drop ;
@@ -119,7 +106,7 @@ private
 : console-debugger ( err context - filter? )
     ( context ) context /context move
     cr \ ." Windows exception: "
-    ( err ) dup h.8 lookup-exception zcount type cr
+    ( err ) dup lookup-exception zcount type ."  ( #" h.8 ."  )" cr
     context -> ESP @ rs 16 cells move
     context -> EBP @ ds 16 cells move
     ."     In: " context -> EIP @ .ip cr
@@ -138,4 +125,4 @@ private
 \ -------------------
 
 \ ' null-catch-save ' debug-catch-restore extends-catch
-' console-debugger to-callback debugger
+\ ' console-debugger to-callback debugger
