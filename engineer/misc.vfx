@@ -377,3 +377,27 @@ errdef err_redefined "Word redefined"
   err_redefined throw ;
 
 ' vfxland-redefhook is redefhook  
+
+
+: evaluate-lines ( addr len -- )
+    {: addr len | line-start line-len pos :}
+    addr to line-start
+    0 to pos
+    begin
+        pos len < while
+        addr pos + c@ 10 = if           \ Found newline
+            addr pos + line-start - to line-len
+            line-len if
+                \ line-start line-len type cr
+                line-start line-len evaluate
+            then
+            addr pos + 1+ to line-start \ Start of next line
+        then
+        1 +to pos
+    repeat
+    \ Handle last line if no trailing newline
+    addr pos + line-start - to line-len
+    line-len if
+        line-start line-len type cr
+        line-start line-len evaluate
+    then ;

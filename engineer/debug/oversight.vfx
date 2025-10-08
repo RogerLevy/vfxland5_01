@@ -684,3 +684,5 @@ variable include-levels
 
 : fast[  save-validations validations off ;
 : fast]  restore-validations ;
+
+init-oversight
