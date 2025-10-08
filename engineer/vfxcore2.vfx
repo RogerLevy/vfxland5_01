@@ -10,19 +10,23 @@ include %idir%/misc.vfx
 include %idir%/scope.vfx
 include %idir%/fixed.vfx
 include %idir%/format.vfx
+
 include %idir%/nib2.vfx
 include %idir%/nib2-tools.vfx
 include %idir%/nib2-compact.vfx
 include %idir%/nib2-serdes.vfx
+
 include %idir%/debug/oversight.vfx
 include %idir%/debug/core-checks.vfx
 include %idir%/checks.vfx
+
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx
 include %idir%/fstools.vfx
 include %idir%/../lib/wstring.vfx
-include %idir%/strout.vfx
 include %idir%/gamemath.vfx
+
+include %idir%/strout.vfx
 
 \ =============================================================================
 \ Allegro bindings and utilities

@@ -8,20 +8,20 @@
 : ```` ; immediate
 synonym aka synonym
 aka not 0=
-: >zpad  pad zplace pad ;
-: >pad  pad place pad ;
-: $+  ( $ a n - $ ) rot dup >r append r> ;
-: ?exit  s" if exit then" evaluate ; immediate
-: -exit  s" 0= if exit then" evaluate ; immediate 
+: >zpad  ( a n - z$ ) pad zplace pad ;
+: >pad   ( a n - $ ) pad place pad ;
+: $+     ( $ a n - $ ) rot dup >r append r> ;
+: ?exit  ( n - ) s" if exit then" evaluate ; immediate
+: -exit  ( n - ) s" 0= if exit then" evaluate ; immediate 
 aka | locals|
 aka cd cwd
-\ : 2+  rot + >r + r> ;
-: 2-  rot swap - >r - r> ;
-: for  s" 0 ?do" evaluate ; immediate
-: @+  dup cell+ swap @ ;
-: c@+  dup 1 + swap c@ ;
-: lc  ( n - n) dup 'A' 'Z' within? if $20 or then ;
-: ltype for dup c@ lc emit 1 + loop drop ;      
+: 2+  ( x y x y - x' y' ) rot + >r + r> ;
+: 2-  ( x y x y - x' y' ) rot swap - >r - r> ;
+: for ( n - ) s" 0 ?do" evaluate ; immediate
+: @+  ( a - a' n ) dup cell+ swap @ ;
+: c@+ ( a - a' n )  dup 1 + swap c@ ;
+: lc  ( n - n ) dup 'A' 'Z' within? if $20 or then ;
+: ltype  ( a n - ) for c@+ lc emit loop drop ;      
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 
@@ -98,7 +98,7 @@ include %idir%/../textmode/textmode-tools.vfx
         pop-attribute
     else . then ;
 
-: f>ds  0 >r rp@ sf! r> ;
+: f>ds  ( f:n - dl dh ) 0 >r rp@ sf! r> ;
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 
 : link ( list - )
@@ -119,6 +119,7 @@ include %idir%/../textmode/textmode-tools.vfx
     then
     ." ] "
     pop-attribute cr ;
+
 : f.s 
     fdepth | d |
     d 0< -400 ?throw
@@ -131,16 +132,21 @@ include %idir%/../textmode/textmode-tools.vfx
     then
     ." ] "
     pop-attribute cr ;
-: rs reset-stacks ;
+
+: rs ( - ) reset-stacks ;
+
 : ending ( a len c - a' len' )
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
+
 : slashes ( a len - a len )  
     2dup  over + swap do  i c@ '/' = if
     '\' i c!  then  #1 +loop ; 
+
 : -path ( a len - a len' ) slashes  '\' ending  0 max ;
 : -ext  ( a len - a len' ) 2dup '.' scan nip - ;
+
 : <scan ( a len c - a len' )
     {: a len c :}
     a len 
@@ -148,39 +154,47 @@ include %idir%/../textmode/textmode-tools.vfx
         i c@ c = if 1 - exit then 
         1 - 
     -1 +loop ;
+
 : -file ( a len - a len' ) slashes '\' <scan ;
+
 aka file-exists? fileexists?
 aka parse' parse
-: parse  parse-word ;
+
+: parse ( - a len )
+    parse-word ;
 : preword ( - pad )
     >in @ bl parse rot >in ! >pad ;
 : preparse ( - a len )
     >in @ swap parse-word rot >in ! ;
+
 : ?constant ( n - <name> ) ( - n )
     preword find nip if drop ' drop else constant then ;
 : ?fconstant ( n - <name> ) ( - n )
     preword find nip if fdrop ' drop else fconstant then ;
 : ?value ( n - <name> ) ( - n )
     preword find nip if drop ' drop else value then ;
+
 : lastbody ( - a ) last @ ctrl>nfa name> >body ;
-: >lowercase ( a c - a c) 2dup bounds ?do i dup c@ lc swap c! loop ;
+
+: >lowercase ( a c - a c ) 2dup bounds ?do i dup c@ lc swap c! loop ;
 : >uppercase ( a c - a c ) 2dup upper ;
+
 : jumptable ( a - <name> ) ( ... - ... ) 
     create , does> @+ @ cells + @ execute ;
-: h. ." $" base @ swap hex u. base ! ;
-: #.  base @ >r  decimal . r> base ! ;
-: h.8
+
+: h. ( n - ) ." $" base @ swap hex u. base ! ;
+: #. ( n - ) base @ >r  decimal . r> base ! ;
+
+: h.8 ( n - )
     base @ hex  swap
     0 <# # # # # # # # # #> type
     base !
-    space
-;
+    space ;
 
 variable saved-dp
 : d[ ( a - ) dp @ saved-dp ! dp ! ;
 : d] ( - ) saved-dp @ dp ! ;
 
-\ r0 @ constant .rsbase
 : (.rs) ( a -- )
     {: rp :}
     3 push-attribute
@@ -188,9 +202,6 @@ variable saved-dp
     \ Walk from bottom (r0) to top (rp@), going downward
     rp r0 @ over 9 cells + min  ?do
         i @ .name                    \ Print return address
-        \ i rp <> if                  \ Not the last item?
-        \     ." > "                   \ Print separator
-        \ then
     cell negate +loop
     ." ] "
     pop-attribute cr ;
@@ -198,9 +209,9 @@ variable saved-dp
 : .rs ( -- )
     rp@ (.rs) ;
 
+: clamp ( n lo hi - n' ) >r max r> min ;
 
-: clamp >r max r> min ;
-: umod ( a b -- n ) 2dup mod dup 0< if + else nip then nip ;
+: umod ( n n -- n' ) 2dup mod dup 0< if + else nip then nip ;
 
 aka se" s\"        \ " \ syntax highlight guard
 
@@ -236,7 +247,7 @@ aka se" s\"        \ " \ syntax highlight guard
     bl parse drop @ swap !
     does> @ ;
 
-: .-  (.) type ;
+: .- ( n - ) (.) type ;
 
 : .comma ( n - )
     \ Format number with commas e.g. 100000000 -> 100,000,000
@@ -288,13 +299,6 @@ aka se" s\"        \ " \ syntax highlight guard
 : strin?  search nip nip ;    
 : ?literal  state @ if postpone literal then ;
 : .:  postpone (s") 0 parse $, postpone type postpone cr ; immediate
-
-\ Make variable names show up properly in data stack traces
-\ debug @ [if]
-\ : variable  create 0 , ;
-\ : dvariable  create 0 , 0 , ;
-\ : 2variable  create 0 , 0 , ;
-\ [then]
 
 : toggle dup @ 0= swap ! ;
 : udup  over swap ;
