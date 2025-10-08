@@ -21,7 +21,7 @@ class;
 
 tilemap :: load ( - )
     des>
-        deser-me+
+        des-me+
         data @ tm-size move+ ;
 
 tilemap :: _intake ( - )

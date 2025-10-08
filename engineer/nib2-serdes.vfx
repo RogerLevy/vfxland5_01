@@ -21,11 +21,11 @@ trait;
 || : bin-ser-float ( - ) val-addr @ , ;
 || : bin-ser-cstring ( - ) val-addr count $, ;
 
-|| : bin-deser-cell ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-int ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-fixed ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-float ( a - a' ) @+ val-addr ! ;
-|| : bin-deser-cstring ( a -a'  ) $@+ val-addr place ;
+|| : bin-des-cell ( a - a' ) @+ val-addr ! ;
+|| : bin-des-int ( a - a' ) @+ val-addr ! ;
+|| : bin-des-fixed ( a - a' ) @+ val-addr ! ;
+|| : bin-des-float ( a - a' ) @+ val-addr ! ;
+|| : bin-des-cstring ( a -a'  ) $@+ val-addr place ;
 
 || create bin-ser-table
 ||     ' bin-ser-cell ,
@@ -34,12 +34,12 @@ trait;
 ||     ' bin-ser-float ,
 ||     ' bin-ser-cstring ,
 
-|| create bin-deser-table
-||     ' bin-deser-cell ,
-||     ' bin-deser-int ,
-||     ' bin-deser-fixed ,
-||     ' bin-deser-float ,
-||     ' bin-deser-cstring ,
+|| create bin-des-table
+||     ' bin-des-cell ,
+||     ' bin-des-int ,
+||     ' bin-des-fixed ,
+||     ' bin-des-float ,
+||     ' bin-des-cstring ,
 
 borrow nib2/ prop+
 
@@ -111,13 +111,13 @@ borrow nib2/ prop+
         skip-data 0 exit
     then ;
 
-|| : deser-property ( a property class - a' )
+|| : des-property ( a property class - a' )
     {: a property0 class :}
     a @+ swap ( n a )
     property0 class >serialize-flag @ if
         me property0 prop+ to val-addr   \ get dest address
         ( n a ) dup 
-        property0 class >property-type @ cells bin-deser-table + @ execute 
+        property0 class >property-type @ cells bin-des-table + @ execute 
         drop
     then 
     ( n a ) + ;
@@ -131,7 +131,7 @@ borrow nib2/ prop+
         ( a class ) xt execute [[
             \ fetch properties into returned object
             @+ for
-                @property+ ?dup if cla @ deser-property then
+                @property+ ?dup if cla @ des-property then
             loop
         ]]
     then
@@ -145,7 +145,7 @@ borrow nib2/ prop+
 \     property0 -> serialize-flag @ if
 \         val-addr >r
 \         property0 -> property-size @ allocate throw to val-addr
-\         ( a ) property0 -> property-type @ cells bin-deser-table + @ execute drop
+\         ( a ) property0 -> property-type @ cells bin-des-table + @ execute drop
 \         property0 val-addr cb execute
 \         val-addr free throw
 \         r> to val-addr

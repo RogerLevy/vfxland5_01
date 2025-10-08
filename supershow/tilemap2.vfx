@@ -94,7 +94,7 @@ tileset :: unload ( - )
         then 
     ]] ;
 
-|| : deser-tileset ( - )
+|| : des-tileset ( - )
     des>
         ['] into-me desbin+
         metas-array @ @array+ ;
@@ -118,7 +118,7 @@ bitmap :: reload ( - )
     me bmp @ bmptotem -> ts ! ;
 
 tileset :: _intake ( - )
-    deser-tileset   reconnect-bmp   me load ;
+    des-tileset   reconnect-bmp   me load ;
 
 tileset :: _keep ( - )
     ser>

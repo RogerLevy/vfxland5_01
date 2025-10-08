@@ -309,7 +309,7 @@ continuation: ser> ( - ) ( - )
     rot throw
     srcpath$ count write ;
 
-: deser-me+ ( - ) ['] into-me desbin+ ;
+: des-me+ ( - ) ['] into-me desbin+ ;
 : move+  ( src dest n - src' ) 
     {: src dest n :}
     src dest n move

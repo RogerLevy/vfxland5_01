@@ -32,15 +32,15 @@ scene :: _keep ( - )
     then 
     one ;
 
-|| : deser-scene+ ( a - a' )
+|| : des-scene+ ( a - a' )
     ['] into-me desbin+ ;
 
 scene :: load ( - )
     \ load actors from disk to stage
-    des> deser-scene+  ['] actor-instance desmulti+  ;
+    des> des-scene+  ['] actor-instance desmulti+  ;
 
 scene :: _intake ( - )
-    des> deser-scene+ ;
+    des> des-scene+ ;
 
 : +scene ( <name> - scene ) 
     scene +totem ;
