@@ -58,7 +58,7 @@
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
 
-: each-file ( path:a n xt - ) ( a n - )
+: each-file ( path:a n xt - ) ( path n - )
     -rot >zpad al_create_fs_entry locals| e xt |
     e al_open_directory if
         begin  e al_read_directory ?dup while
@@ -74,7 +74,7 @@
     then 
     e al_destroy_fs_entry ;
 
-: each-file-and-dir ( path:a n xt - ) ( a n - )
+: each-file-and-dir ( path:a n xt - ) ( path n - )
     -rot >zpad al_create_fs_entry locals| e xt |
     e al_open_directory if
         begin  e al_read_directory ?dup while

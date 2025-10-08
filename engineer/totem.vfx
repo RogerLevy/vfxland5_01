@@ -39,8 +39,10 @@ trait: _totem
 
     :: load ( - ) ;                     \ Load/create external resources.  optional.
     :: unload ( - ) ;                   \ Free external resources.  optional.
-    :: _intake ( - ) ;                   \ Load from filesystem.
-    :: _keep ( - ) ;                     \ Save to disk.
+    :: _intake ( - ) ;                  \ Load from filesystem.
+    :: _keep ( - ) ;                    \ Save to disk.
+
+    :: reload ( - ) ;                   \ Hot-reload
     
 trait;
 
@@ -120,12 +122,11 @@ _totem :apply ( class - )
 \ I/O
 \ =============================================================================
 
-: reload ( totem - )
-    dup _totem is? not if drop exit then
-    dup -> last-kept @ counter swap - 2000 <= if 
-        drop ." System-saved totem, skipping reload..." cr exit 
+redef _totem :: reload ( - )
+    counter last-kept @ - 2000 <= if 
+        ." System-saved totem, skipping reload..." cr exit 
     then
-    dup unload intake ;
+    me unload me intake ;
 
 : reload-instances ( class - )
     {: class0 :}

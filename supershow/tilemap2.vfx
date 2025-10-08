@@ -103,8 +103,9 @@ class: bitmap
     prop ts <ref tileset
 class;
 
-redef bitmap :: load ( - )
-    bitmap:load ts @ ?dup if reload then ;
+bitmap :: reload ( - )
+    _totem:reload
+    ts @ ?dup if reload then ;
 
 || : reconnect-bmp ( - ) 
     my-name -ext f" %s.png" 
