@@ -509,7 +509,10 @@ borrow error2/ console-debugger
     running @ if pop-attribute hist] then
 ;
 
-' ide-debugger to-callback debugger
+[defined] native-debugger not [if]
+    ' ide-debugger to-callback debugger
+[then]
+
 ' ide-quit is quit
 ' noop is boot
 ' noop is onSwitchIn
