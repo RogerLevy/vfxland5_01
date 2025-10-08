@@ -1,0 +1,65 @@
+\ =============================================================================
+\ Polled input
+\ =============================================================================
+
+: held? ( n - flag )  kbs0 swap al_key_down 0<> ;
+: kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
+: pressed? ( n - flag )  kdelta 1 = ;
+: letgo? ( n - flag )  kdelta -1 = ;
+
+: poll ( - )
+    poll-keyboard  
+    <alt> held? <altgr> held? or to alt? 
+    <lshift> held? <rshift> held? or to shift? 
+    <lctrl> held? <rctrl> held? or to ctrl? ;
+
+\ =============================================================================
+\ Event handling
+\ =============================================================================
+
+create the-event /ALLEGRO_EVENT allot&erase
+: happened? ( n - f ) the-event ALLEGRO_EVENT.type @ = ;
+: the-char ( - n ) the-event KEYBOARD_EVENT.unichar @ ;
+: the-key ( - n ) the-event KEYBOARD_EVENT.keycode @ ;
+: the-wheel ( - n ) the-event MOUSE_EVENT.dz @ ;
+: the-mouse ( - n ) the-event MOUSE_EVENT.x 2@ ; 
+: the-walt ( - n ) the-event MOUSE_EVENT.dx 2@ ; 
+: the-mbutton ( - n ) the-event MOUSE_EVENT.button @ ;
+
+\ =============================================================================
+\ Function Keys
+\ =============================================================================
+
+: func[] 256 * funcs + ;
+   
+: func ( a c n - )
+    <f1> - func[] place ;
+
+: clear-funcs ( - )
+    funcs 256 12 * erase
+    s" ?reload" <f5> func
+    s" hold toggle" <f9> func ;
+
+: ?func ( n - )
+    <f1> - dup 0 12 within? if
+        func[] count dup if
+            state off
+            evaluate
+        else
+            2drop
+            ." Unassigned function key." cr
+        then
+    else drop then ;
+
+
+\ =============================================================================
+\ Keyboard state control
+\ =============================================================================
+
+|| create kbs2 /ALLEGRO_KEYBOARD_STATE allot
+: save-kb  kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move ;
+: erase-kb  kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
+: restore-kb  kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
+: ?kb-lock repl @ if save-kb erase-kb then ; 
+: ?kb-unlock repl @ if restore-kb then ;
+: -keys  reset-keyboard ;

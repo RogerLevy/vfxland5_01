@@ -2,6 +2,8 @@
 \ Misc
 \ ------------------------------------------------------------------------------
 
+: e -1 abort" e is not defined" ;
+
 : ` ; immediate
 : `` ; immediate
 : ``` ; immediate

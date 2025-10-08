@@ -1,0 +1,107 @@
+\ Try/Honing - Convenient code testing
+
+: ?hone ( - <path> )
+    honing @ if honing-wl +order then
+    bl parse ['] old-included catch
+    honing @ if honing-wl -order then 
+    throw ;
+
+: >ld ( a len - )
+    dup 0= if 2drop exit then
+    2dup ld-action$ place
+    evaluate ;
+
+: >hone ( a len - )
+    only forth definitions   honing on   >ld ;
+
+: ld-again ( - )
+    ld-action$ count >ld ;
+
+: ld ( - <namespec> )
+    \ Usage: 
+    \ - ld projectname
+    \ - ld filename (no extension)
+    \ - ld <path>/filename (no extension)
+
+    bl parse {: fn len :}
+
+    \ Load last file again?
+    len 0= if
+        ld-again exit
+    then
+
+    \ Project?
+    fn len home-path$ count f" %s/%s/main.vfx" file-exists? if
+        fn len f" ldp %s" evaluate
+        exit
+    then
+
+    \ Normal
+    fn len f" %s.vfx" >abspath to len to fn
+
+    fn len ?notfound 
+
+    prj-path$ count fn len instring not 
+    prj-path$ count nip 0= or if
+        fn len -file $cwd
+    then
+
+    fn len f" ?hone %s" >hone ;
+    
+: hone! ( a len - ) 
+    dup 0= abort" Tried to set load action to null string."
+    ld-action$ place
+    honing on ;
+    
+push-order
+honing-wl +order definitions
+: require include ;
+: required included ;
+pop-order
+
+: rld ( - )
+    prj-path$ count $cwd
+    honing off
+    cartridge
+    repl on ;
+
+: ?reload ( - )
+    honing @ 0<> reload-shift? not and if
+        ld-again
+    else
+        rld
+    then ;
+
+: watch ( - <code> )
+    context @ watch-context !
+    0 parse 2dup f" :noname %s ;" evaluate watch-xt !
+    watch$ place ;
+
+: ldp ( - <name> )
+    {: | name[ 256 ] path[ 256 ] :}
+    bl parse name[ place
+    name[ c@ 0=
+    name[ count s" ." s= or if 
+        wd '\' ending name[ place 
+        s" ." >abspath path[ place
+    else
+        name[ count 
+        home-path$ count f" %s\%s" >lowercase path[ place 
+    then
+    path[ count f" %s\main.vfx" file-exists? not if
+        name[ count f" '%s' doesn't exist or is not a project!" type cr
+        exit 
+    then
+    name[ count >uppercase f" Loading %s..." type cr
+    path[ count prj-path$ place
+    prj-path$ count $cwd
+    500 ms
+    cartridge
+;
+
+: +project ( - <name> )
+    home-path$ count $cwd
+    bl preparse f" spunk\project.bat %s" cr 2dup type shellcmd
+    200 ms
+    ldp
+;

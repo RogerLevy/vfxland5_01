@@ -1,0 +1,27 @@
+magic-id MAGIC_TWEAK TWK
+: tweak ( n - <name> )
+    \ Define a variable with initial value n, but only if the name doesn't already exist
+    \    in CURRENT.
+    push-order
+    only current @ +order
+    MAGIC_TWEAK already? not if 
+        create , MAGIC_TWEAK ,
+    else
+        drop ' drop
+    then
+    pop-order ;
+
+: (?.tweak) ( thread# nfa - f )
+    nip
+    {: nfa :} 
+    nfa name> >body cell+ @ MAGIC_TWEAK = if
+        cr
+        ."     "
+        nfa count type
+        ."  = "
+        nfa name> >body @ dup .name p.
+    then
+    -1 ;
+
+: .tweaks ( - )
+    ['] (?.tweak) walk-order ;

@@ -1,0 +1,48 @@
+variable 'show ( - ) \ app logic and rendering
+' noop 'show !
+defer desktop ( - ) \ default behavior of SHOW (restored on EMPTY)
+defer boot ( - ) \ app startup code like loading assets
+defer onSwitchIn ( - ) \ Window gets focus
+variable going
+cstring home-path$
+cstring prj-path$
+create funcs 256 12 * allot&erase
+0 value reload-shift?
+variable _repl  _repl on   \ enable commandline
+variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
+variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
+defer repl  ' _repl is repl
+defer ide  ' _ide is ide
+redef defer hold  ' _hold is hold
+defer pump ' noop is pump
+cstring watch$
+variable watch-xt
+variable watch-context
+variable need-pump
+variable esc-quits   esc-quits on 
+variable honing
+cstring ld-action$
+wordlist constant honing-wl
+0 value alt?
+0 value ctrl?
+0 value shift?
+60e fvalue tps \ float, ticks per second
+0 0 2value ustime \ long, in microseconds
+0 value mstime \ int, in milliseconds
+0 value usdelta
+0 value pdelta \ fixed, in seconds
+0e fvalue sdelta \ in seconds
+create zcommand 256 allot 
+
+\ =============================================================================
+\ Add protection from unintentional redefinitions (use REDEF) when honing
+\ =============================================================================
+
+: vfxland-redefhook2
+    honing @ ?exit
+    6 push-attribute 
+    ." Word was redefined! (Precede with REDEF to override.)" 
+    pop-attribute
+    err_redefined throw ;
+
+' vfxland-redefhook2 is redefhook  

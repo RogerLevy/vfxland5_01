@@ -8,7 +8,19 @@ public
 
 defer draw-ide
 
-private   
+|| : ?game-throw ( n - ) 
+    dup -1 = if drop exit then
+    dup if going off >vfx then throw ;
+
+: draw-game ( - ) 
+    at@ 2>r
+    cls
+    ?kb-lock 
+    'show @ catch ?game-throw
+    ?kb-unlock 
+    2r> at ;
+
+private
 
 aka dup-endcase end-case
 aligned-page uios
@@ -58,7 +70,6 @@ variable hsplit   0.5 hsplit !
 : lines ( n - h )
     24 * ;
 
-borrow engineer/ draw-game
 : zoomed-game z >. dup scaled> draw-game ;
 
 : margin-x  split-x 2 / appw 2 / z * - ;
@@ -95,7 +106,7 @@ borrow engineer/ draw-game
     -m
     0 0 monw monh al_set_clipping_rectangle ;
 
-borrow engineer/ func[]
+\ borrow engineer/ func[]
 : .hotkeys ( - )
     s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  CTRL+\=Stack" type cr
     12 for
@@ -331,10 +342,10 @@ assign (DoAbortMessage) to-do DoAbortMessage
 \ Display Modes
 \ =============================================================================
 
-borrow engineer/ fullscreen
-borrow engineer/ windowed
-borrow engineer/ winmode
-borrow engineer/ draw-tv
+\ borrow engineer/ fullscreen
+\ borrow engineer/ windowed
+\ borrow engineer/ winmode
+\ borrow engineer/ draw-tv
 
 \ Displaymode-like trait
 trait: displaymode-like
@@ -375,7 +386,7 @@ full-mode :: activate ( - )
     fullscreen winmode ;
 
 : full-mode-draw ( - )
-    draw-tv
+    ['] draw-game draw-tv
     ( TODO: draw repl ) ;
 
 ' full-mode-draw full-mode -> draw-xt !
@@ -417,7 +428,7 @@ display-mode jumptable current-mode
 \ Public Words
 \ =============================================================================
 
-borrow engineer/ -keys
+\ borrow engineer/ -keys
 
 public
 

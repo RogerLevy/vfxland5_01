@@ -42,6 +42,7 @@ variable public-xt  ' forth public-xt !
 
 aka old-included included
 
+: fload getPathSpec included ;
 redef : include  push-order /order getPathSpec included pop-order ;
 redef : included push-order /order included pop-order ;
 redef : require  push-order /order getPathSpec required pop-order ;

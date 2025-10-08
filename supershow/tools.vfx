@@ -78,4 +78,4 @@ cstring update-name$
 engineer/
 : fp ( - )
     \ Game frame profile
-    ['] draw-tv time? ;
+    ['] draw-game time? ;

@@ -7,7 +7,7 @@ optimising off \ DO NOT REMOVE
 \ =============================================================================
 
 include %idir%/misc.vfx
-include %idir%/scope.vfx
+include %idir%/scope.vfx \ TODO: test this
 include %idir%/fixed.vfx
 include %idir%/format.vfx
 
