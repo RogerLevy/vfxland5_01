@@ -247,20 +247,6 @@ assign (DoErrorMessage) to-do DoErrorMessage
 : (DoAbortMessage) $. .source-line ;
 assign (DoAbortMessage) to-do DoAbortMessage
 
-: (interpret)	\ --
-    page-check
-    begin  
-        ?stack 
-        parse-name 
-        2dup lastword place
-        dup
-    while
-        parser execute
-    repeat
-    2drop ;
-
-' (interpret) is interpret
-
 \ : .throw ( n - )
 \     case
 \         0 of  endof				                    \ not an error

@@ -407,3 +407,17 @@ errdef err_redefined "Word redefined"
         line-start line-len type cr
         line-start line-len evaluate
     then ;
+
+redef : (interpret)	\ --
+    page-check
+    begin  
+        ?stack 
+        parse-name 
+        2dup lastword place
+        dup
+    while
+        parser execute
+    repeat
+    2drop ;
+
+' (interpret) is interpret
