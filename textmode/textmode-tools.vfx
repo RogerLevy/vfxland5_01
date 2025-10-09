@@ -8,7 +8,7 @@ aligned-page attr-stack
 variable attr-sp
 attr-stack attr-sp !
 
-: push-attribute ( n -- )
+: push-attribute ( attr-n -- )
     attr @ attr-sp @ !
     4 attr-sp c+! 
     attribute ;
@@ -19,3 +19,6 @@ attr-stack attr-sp !
 
 \ Initialize everything to 7 (light grey)
 :noname 256 cell / for 7 push-attribute loop ; execute
+
+: atype ( a len attr-n - )
+    push-attribute type pop-attribute ;

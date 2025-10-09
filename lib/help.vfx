@@ -1,9 +1,6 @@
-
 redef variable commands
 
-: atype  push-attribute type pop-attribute ;
-
-redef : help
+redef : help ( - )
     commands
     begin @ ?dup while
         dup cell+ 
@@ -13,7 +10,7 @@ redef : help
             + count 6 /string type cr 
     repeat ;
 
-redef : command 
+redef : command ( - )
     save-input
     commands link
     0 parse $, 
