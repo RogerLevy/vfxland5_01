@@ -105,7 +105,7 @@ init-supershow
 
 \ Default engine configuration
 ' init-supershow is boot
-:now show> step sprites ;
+:now show> sprites step ;
 
 \ Tools
 debug @ [if]
