@@ -38,6 +38,7 @@ tileset :construct ( - )
     \ slice up the source bitmap into tile sub-bitmaps.
     \ add them to the global bitmap registry.
     as>
+        bmp @ -exit
         next-bmp# @ baseid !
         bmp @ bmph th @ - 1 + for
             bmp @ bmpw tw @ - 1 + for
@@ -57,6 +58,7 @@ tileset :construct ( - )
 
 : update-tileset ( tileset - )
     as>
+        bmp @ -exit
         next-bmp# @ >r   baseid @ next-bmp# ! 
         me slice-tileset
         r> next-bmp# ! ;
