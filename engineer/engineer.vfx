@@ -96,9 +96,6 @@ redef : empty ( - )
     empty page hold off
     s" main.vfx" fileExist? if s" main.vfx" included then ;
 
-: turnkey? ( - b )
-    home-path$ count nip 0<> ;
-
 also substitutions definitions
 cstring vfxland5
 also forth definitions
