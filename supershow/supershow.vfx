@@ -99,13 +99,12 @@ prune: cleanup-supershow ;
         ['] supershow-process-dirchange is process-dirchange
     else
         display al_hide_mouse_cursor
-    then ;
+    then 
+    show> sprites step ;
 
 init-supershow
 
-\ Default engine configuration
 ' init-supershow is boot
-:now show> sprites step ;
 
 \ Tools
 debug @ [if]
