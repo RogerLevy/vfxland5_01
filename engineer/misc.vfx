@@ -104,9 +104,10 @@ include %idir%/../textmode/textmode-tools.vfx
 : :now  :noname  ';' parse evaluate  postpone ;  execute ;
 
 : link ( list - )
+    \ backward-linked list (chain)
     here  over @ ,  swap ! ;
 
-: do-chain ( list - )
+: do-chain ( chain - )
     begin @ ?dup while dup cell+ @ execute repeat ;
 
 : .s
@@ -384,7 +385,6 @@ errdef err_redefined "Word redefined"
 
 ' vfxland-redefhook is redefhook  
 
-
 : evaluate-lines ( addr len -- )
     {: addr len | line-start line-len pos :}
     addr to line-start
@@ -408,6 +408,10 @@ errdef err_redefined "Word redefined"
         line-start line-len evaluate
     then ;
 
+\ =============================================================================
+\ Extend INTERPRET to track last word interpreted
+\ =============================================================================
+
 redef : (interpret)	\ --
     page-check
     begin  
@@ -421,3 +425,10 @@ redef : (interpret)	\ --
     2drop ;
 
 ' (interpret) is interpret
+
+\ =============================================================================
+\ Float-color utilities
+\ =============================================================================
+
+: 4f@  sf@+ sf@+ sf@+ sf@ ;
+: 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;

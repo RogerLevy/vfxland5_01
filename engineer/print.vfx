@@ -16,13 +16,9 @@ include %idir%/vga13h.vfx
 : font@  vga-8x8 ;
 
 || create fg  1e sf, 1e sf, 1e sf, 1e sf, 
-|| : sf-!  cell- dup sf! ;
-|| : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
 || : fcolor  fg 4f! ;
 || : c  dup 24 >> s>f 255e f/ ;
 || : (color)  c 8 << c 8 << c 8 << c drop fcolor ;
-|| : sf@+  dup sf@ cell+ ;
-|| : 4f@  sf@+ sf@+ sf@+ sf@ ;
 
 \ Rendering
 : color ( n - )
