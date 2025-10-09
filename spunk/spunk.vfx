@@ -12,7 +12,7 @@ tmw tmh * cells constant /screen
 || : ?flip  4 rnd 24 << or ;
 || : randoms,  for 256 rnd ?flip , loop ;
 create mram /screen cell/ #rooms * randoms,
-mram value bg0
+mram value playfield
 variable room#
 
 \ =============================================================================
@@ -86,7 +86,7 @@ borrow scene/ actor-instance
 
 variable load-room-chain
 
-: room ( n - ) 1023 and room# ! room# @ screen to bg0 ;
+: room ( n - ) 1023 and room# ! room# @ screen to playfield ;
 : +room ( n - ) room# @ + room ;
 
 : warp ( n - )
@@ -98,11 +98,14 @@ variable load-room-chain
 : +warp ( n - )
     room# @ + 1000 + 1000 mod warp ;
 
-: ?read ( a n a n - )
+: ?read ( dest len path len - )
     2dup file-exists? if read else 2drop 2drop then ;
 
+: load-room ( path len dest-a - )
+    /screen 2swap ?read ;
+
 : revert-bg ( - )
-    bg0 /screen room-datfile ?read ;
+    room-datfile playfield load-room ;
 
 : revert ( - )
     revert-bg
@@ -123,20 +126,20 @@ variable load-room-chain
 \ =============================================================================
 
 : colrow  ( - c r ) x 2@ `` xy>cr ;
-: +tile@  ( c r - n ) colrow 2+ `` bg0 ` spot c@ ;
-: +tile!  ( n c r - ) colrow 2+ `` bg0 ` spot c! ;
-: ftile@  ( f: c r - n ) 2f>p xy>cr `` bg0 ` spot c@ ;
-: ftile!  ( n f: c r - ) 2f>p xy>cr `` bg0 ` spot c! ;
+: +tile@  ( c r - n ) colrow 2+ `` playfield ` spot c@ ;
+: +tile!  ( n c r - ) colrow 2+ `` playfield ` spot c! ;
+: ftile@  ( f: c r - n ) 2f>p xy>cr `` playfield ` spot c@ ;
+: ftile!  ( n f: c r - ) 2f>p xy>cr `` playfield ` spot c! ;
 
 \ =============================================================================
 \ Rendering
 \ =============================================================================
 
-\ A word could change bg0 and we call BG multiple times
+\ A word could change playfield and we call BG multiple times
 \ to draw multiple layers.
 \ Ex:
 \ variable layer#
 \ 2 /screen array layer-array
-\ : layer dup layer# ! layer-array [] to bg0 ;
+\ : layer dup layer# ! layer-array [] to playfield ;
 \ : layers 0 layer bg 1 layer bg ;
-: bg  0 0 at bg0 lay ;
+: bg  0 0 at playfield lay ;

@@ -23,6 +23,3 @@ continuation: tread> ( x y w h a - code ; ) ( pen=xy a - )
             me free? if unloop unloop exit then
         gap +loop
      gap +loop ;
-
-\ : ?get  dup @ 1 <> if drop exit then  0 swap ! ;
-\ : test  -8 -8 16 16 bg0 tread> cr  pen 2?  dup ? ?get ; 

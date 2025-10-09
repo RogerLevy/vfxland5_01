@@ -22,7 +22,7 @@ create cb-p /screen allot
 : mark@ room# @ marks + c@ ;
 : ag room# @ /screen * agrids + ;
 : pg room# @ /screen * pgrids + ;
-: loc  actormode @ if ag else bg0 then spot ;
+: loc  actormode @ if ag else playfield then spot ;
 : tube ( - a ) actormode @ if c else t then ;
 : mouse  mousex 2@ ;
 : quantize  2dup gap dup 2mod 2- ;
@@ -94,7 +94,7 @@ create cb-p /screen allot
 : lay-with  pile @ >r pile ! lay r> pile ! ;
 
 : ui
-    0 0 at  bg0 t0 @ lay-with
+    0 0 at  playfield t0 @ lay-with
     actormode @ if
         actorgrid
         ?room#
@@ -111,15 +111,15 @@ create cb-p /screen allot
 : t+! ( n - ) shift? if 8 * then t @ + 255 and t ! ;
 : paint ( - ) tube @ colrow loc !  1 mark! ;
 : eyedrop ( - ) colrow loc @ tube ! ;
-: clear ( - ) bg0 /screen erase clear-ag  1 mark! ;
+: clear ( - ) playfield /screen erase clear-ag  1 mark! ;
 
 : copy ( - )
-    bg0 cb-t /screen move 
+    playfield cb-t /screen move 
     ag  cb-a /screen move 
     pg  cb-p /screen move ;
 
 : paste ( - )
-    cb-t bg0 /screen move 
+    cb-t playfield /screen move 
     cb-a ag  /screen move 
     cb-p pg  /screen move
     1 mark! ;
@@ -127,7 +127,7 @@ create cb-p /screen allot
 : cut ( - )   copy clear ;
 
 : save-room
-    bg0 /screen room-datfile write
+    playfield /screen room-datfile write
     cr ." Saved to " room-datfile type
     save-ag
     0 mark! ;
@@ -145,7 +145,7 @@ create cb-p /screen allot
 
 : (load)
     room-datfile file-exists? not if clear-ag exit then
-    bg0 /screen room-datfile read
+    playfield /screen room-datfile read
     load-ag ;
 
 : load ( - <path> )

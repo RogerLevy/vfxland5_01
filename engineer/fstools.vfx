@@ -62,11 +62,13 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
 : write ( src len path len - )
 \    2dup file-exists? if 2dup delete-file throw then
+    2dup f" File write: %s" type cr
     w/o create-file abort" File create error" >r
     r@ write-file abort" File write error"
     r> close-file drop ;
 
 : read ( dest len path len - )
+    2dup f" File read: %s" type cr
     2dup ?notfound
     r/o open-file abort" File open error" >r
     ( dest len ) r@ file-size drop drop min
