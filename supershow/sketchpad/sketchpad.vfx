@@ -23,7 +23,10 @@
                     \ and load the scene.
 \ ==============================================================================
 
-include %vfxland5%/lib/mouse.vfx
+private
+
+fload %vfxland5%/lib/mouse.vfx
+fload %vfxland5%/lib/help.vfx
 
 \ ==============================================================================
 
@@ -40,24 +43,31 @@ private
 
 \ Commands
 
-: save ( - )
+command : save ( - )
+    \ Save current scene.
     this 0= 
         abort" No current scene!  Required: `SAVEAS <scene>` or `EDIT <scene>`"
     this keep ;    
 
 : (friendly-scene)  bl parse f" +scene %s.scn" evaluate ;
 
-: saveas ( <name> - )
+command : saveas ( <name> - )
+    \ Save stage as scene with given name.
     (friendly-scene) to this   save ; 
 
-: edit ( <name> - )
+command : edit ( <name> - )
+    \ Edit scene of given name.
     (friendly-scene) to this   just this load ;
 
-: ctrl+s  save ;
+command : ctrl+s ( - )
+    \ Hotkey: Save current scene.
+    save ;
 
 : order-swap  get-order >r swap r> set-order ;
 
-: as  as  ['] sketchpad/ >body @ +order  order-swap ;
+command : as ( obj - )
+    \ Scope into the given object.
+    as  ['] sketchpad/ >body @ +order  order-swap ;
 
 \ =============================================================================
 
@@ -131,6 +141,17 @@ variable 'oldshow
 
 \ =============================================================================
 
+private
+
+create bgc 0.5e sf, 0.5e sf, 0.5e sf, 1e sf,
+
+redef : cls ( - )
+    bgc 4f@ al_clear_to_color ;
+
+command : backdrop ( f-r f-g f-b f-a - )
+    \ Set tool backdrop color.
+    bgc 4f! ;
+
 public
 
 : sketchpad
@@ -141,6 +162,7 @@ public
     gamew 2 / gameh 2 / at 
     show> 
         hold @ _hold ! 
+        cls
         step sprites sketchpad-overlay
         input ;
 

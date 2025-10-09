@@ -1,0 +1,24 @@
+
+redef variable commands
+
+: atype  push-attribute type pop-attribute ;
+
+redef : help
+    commands
+    begin @ ?dup while
+        dup cell+ 
+            count 
+            2dup 2 /string 15 atype
+            50 out @ - spaces            
+            + count 6 /string type cr 
+    repeat ;
+
+redef : command 
+    save-input
+    commands link
+    0 parse $, 
+    refill 0= abort" COMMAND >> Unexpected end of file"
+    0 parse $, 
+    restore-input drop ;
+
+ 
