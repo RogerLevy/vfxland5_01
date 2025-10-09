@@ -29,9 +29,10 @@ copy %~dp0\..\bin\*.dll ..\rel\%1-debug
 @echo off
 
 SET saveString=%2 save-release ..\rel\%1\%1 save-debug ..\rel\%1-debug\%1-debug bye
+SET configString=debug off validations off safety off 
 
 if exist main.vfx (
-    engineer.exe validations off safety off ldp . %saveString%
+    engineer.exe %configString ldp . %saveString%
 ) else (
-    engineer.exe validations off safety off %saveString%
+    engineer.exe configString %saveString%
 )
