@@ -1,3 +1,20 @@
+if "%1"=="--help" (
+    echo Usage: turnkey.bat GAMENAME [FORTH-CODE]
+    echo.
+    echo Creates release builds of a VFXLand5 game
+    echo.
+    echo Arguments:
+    echo   GAMENAME    Name of the game (required)
+    echo   FORTH-CODE  Optional Forth code to execute before save-release
+    echo.
+    echo Examples:
+    echo   turnkey.bat mygame
+    echo   turnkey.bat mygame "custom-setup-word"
+    exit /b 0
+)
+
+set "PATH=%~dp0\..\bin;%PATH%"
+
 cd "%~dp0\..\.."
 
 mkdir ..\rel\%1
@@ -9,6 +26,12 @@ xcopy dat ..\rel\%1-debug\dat /i /s /q /y /e
 copy %~dp0\..\bin\*.dll ..\rel\%1
 copy %~dp0\..\bin\*.dll ..\rel\%1-debug
 
-call %~dp0\load-project-release.bat save-release ..\rel\%1\%1 save-debug ..\rel\%1-debug\%1-debug bye
-@REM cd ..\rel\%1
-@REM %1.exe
+@echo off
+
+SET saveString=%2 save-release ..\rel\%1\%1 save-debug ..\rel\%1-debug\%1-debug bye
+
+if exist main.vfx (
+    engineer.exe validations off safety off ldp . %saveString%
+) else (
+    engineer.exe validations off safety off %saveString%
+)
