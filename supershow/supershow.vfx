@@ -93,7 +93,7 @@ prune: cleanup-supershow ;
     hold off
     init-bitmaps
     init-tilesets
-    load-samples
+    init-samples
     init-crt
     debug @ if
         ['] supershow-process-dirchange is process-dirchange
