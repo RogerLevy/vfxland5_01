@@ -182,7 +182,7 @@ redef : cold ( - )
 || : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
-    wd '\' ending f" vfxland5_01\engineer\turnkey.bat %s" shellcmd ;
+    wd '\' ending f" %vfxland5%\engineer\turnkey.bat %s" shellcmd ;
 
 \ =============================================================================
 \ Development tool commands

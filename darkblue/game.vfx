@@ -31,7 +31,3 @@ continuation: scale>  ( xt ) >r +m 0e 0e 2p>f 0e transform r> execute -m ;
 : render  backdrop ( .75 .75 scale> ) starfield hud bubbles sprites beams animate ;
 : think  step ;
 : game  show> render think ;
-
-\ Assign BOOT hook
-: boot-darkblue  init-supershow shout" title" ;
-' boot-darkblue is boot

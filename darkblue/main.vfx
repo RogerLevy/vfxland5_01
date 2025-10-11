@@ -1,8 +1,39 @@
 \ ------------------------------------------------------------------------------
 \ Dark Blue
 \ ------------------------------------------------------------------------------
+ 
+\ Constants
+460 constant gamew
+345 constant gameh
+8192 constant #actors
+#actors constant #temps
 
-include %vfxland5%\spunk\loader.vfx
+gamew to appw
+gameh to apph
+gamew >. constant gamew.
+gameh >. constant gameh.
+gamew s>f fconstant f-gamew
+gameh s>f fconstant f-gameh
+
+\ Load engine
+include %vfxland5%\supershow\supershow.vfx
+include %vfxland5%\spunk\spunk.vfx
+
+\ load game-specific modules (dependencies)
+require common.vfx
+require event.vfx
+require darkblue-math.vfx
+require starfield.vfx
+require laser.vfx
+require path.vfx
+require enemies.vfx
+
+\ Load the automated script and asset loads (if i'm keeping any of it).
+\ This includes all scripts in modes\.
+load-project
+
+redef : main
+    title ;
 
 debug @ [if]
 
