@@ -104,7 +104,17 @@ prune: cleanup-supershow ;
 
 init-supershow
 
-' init-supershow is boot
+: boot-supershow ( - )
+    init-supershow 
+    c" main" find if execute else drop then ;
+
+' boot-supershow is boot
+
+: load-project ( - )
+    create-autoclasses
+    ['] load-default-dir script-classes each@
+    scene load-default-dir
+    s" modes" ['] included each-file ;
 
 \ Tools
 debug @ [if]

@@ -10,7 +10,7 @@
         repeat
         e al_close_directory drop    
     else
-        -1 abort" Couldn't open directory"
+        ." EACH-FILE >> Couldn't open directory." cr 
     then 
     e al_destroy_fs_entry ;
 
@@ -26,6 +26,6 @@
         repeat
         e al_close_directory drop    
     else
-        -1 abort" Couldn't open directory"
+        ." EACH-FILE-AND-DIR >> Couldn't open directory." cr 
     then 
     e al_destroy_fs_entry ;
