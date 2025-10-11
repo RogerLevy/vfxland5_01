@@ -1,8 +1,0 @@
-class: shot
-    actor derive
-    is-a projectile
-
-shot :: init
-    orb2.png bmp ! ;
-
-class;
