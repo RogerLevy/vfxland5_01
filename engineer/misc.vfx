@@ -430,5 +430,14 @@ redef : (interpret)	\ --
 \ Float-color utilities
 \ =============================================================================
 
+redef code sf-!	\ addr -- addr' ; F: -- f
+\ *G Places the 32 bit float at addr on the float stack, and
+\ ** increments addr by 4.
+\ ** NDP387.FTH only.
+  add   ebx, # -4		\ update address
+  fld   float 0 [ebx]           \ load from the address
+  fnext,
+end-code
+
 : 4f@  sf@+ sf@+ sf@+ sf@ ;
 : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
