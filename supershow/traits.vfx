@@ -13,3 +13,7 @@ trait;
 trait: usable
     :: use ( - ) ;
 trait;
+
+trait: drawable
+    :: draw ( - ) ;
+trait;

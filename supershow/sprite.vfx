@@ -1,5 +1,27 @@
 \ =============================================================================
-\ Sprite animation
+\ Actor sprite support
+\ =============================================================================
+
+class: actor
+    prop bmp <int <save 
+class;
+
+actor :: draw ( - )
+    bmp @ -exit  x 2@ 2.> at bmp @ cput ;
+
+: ?pillory ( - )
+    me benched? if
+        12 color s" !" print
+    then ;
+
+: backsprites ( - )
+    batch> actives> prio @ ?exit me draw ?pillory ;
+
+: sprites ( - )
+    batch> actives> prio @ -exit me draw ?pillory ;
+
+\ =============================================================================
+\ Frame animation
 \ =============================================================================
 
 class: actor

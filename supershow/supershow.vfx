@@ -25,31 +25,35 @@ include %idir%\checks.vfx
 \ Dependencies
 \ =============================================================================
 
-include %idir%\bitmap.vfx    \ Bitmaps
 include %idir%\shader.vfx    \ Shaders 
 include %idir%\crt.vfx       \ CRT shader
 include %idir%\waveplay.vfx  \ Audio engine
 include %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
+include %idir%\traits.vfx    \ Object traits
 
 \ =============================================================================
 \ Stage
 \ =============================================================================
 
-include %idir%\traits.vfx    \ Object traits
 include %idir%\stage.vfx     \ Actor/sprite system
+
+\ =============================================================================
+\ Asset types
+\ =============================================================================
+
+include %idir%\bitmap.vfx    \ Bitmaps
+include %idir%\tilemap2.vfx  \ Tilemap rendering & Tileset class
 include %idir%\scene.vfx     \ Scene management
-include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 
 \ =============================================================================
 \ Tilemap
 \ =============================================================================
 
-\ include %idir%\tilemap.vfx  \ Tilemap rendering Tileset class
-include %idir%\tilemap2.vfx
 include %idir%\udlr.vfx     \ Movement utilities
 include %idir%\tmcol.vfx    \ Tilemap collision detection
 include %idir%\tread.vfx    \ Tilemap data reading
 include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
+include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 
 \ =============================================================================
 \ Initialization

@@ -48,11 +48,22 @@ class;
 \     0 id @ bitmap[] !
 \     0 albmp ! ;
 
-: put ( n - ) \ draw a sprite; takes a bitfield $F000IIII
-    dup >albmp swap 24 rshift draw-bitmap ;
-
 : bmpwh ( n - w h )
     >albmp ?dup if dup albmpw swap albmph else 0 0 then ;
+
+: bmpw ( n - w )
+    bmpwh drop ;
+
+: bmph ( n - h )
+    bmpwh nip ;
+
+: put ( n - ) 
+    \ draw a sprite; takes a bitfield $F000IIII
+    dup >albmp swap 24 rshift draw-bitmap ;
+
+: cput ( n - ) 
+    \ draw sprite with center as the origin
+    dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
 
 : init-bitmaps ( - )
     bitmap load-default-dir ;

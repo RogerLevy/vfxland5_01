@@ -10,17 +10,19 @@ variable gamelife
 0 0 2value gametime
 
 class: actor
-    \ is-a thinker
+    is-a drawable
     is-a unloadable
     /actor field-space
+
     prop en
     prop x <fixed <save
     prop y <fixed <save
     prop vx <fixed <save prop vy <fixed <save 
-    prop bmp <int <save 
+    
     \ hitbox 1
     prop x1 <int <save prop y1 <int <save 
     prop w1 <int <save prop h1 <int <save 
+    
     prop beha <xt
     prop phys <xt
     prop time <fixed                \ secs
@@ -32,7 +34,7 @@ class: actor
 
     template [[ -1 id ! ]]
 
-    static autoclass 
+    static autoclass                \ flag
 class;
 
 #actors actor object-array actors 
@@ -160,24 +162,6 @@ continuation: who> ( - actor|0 ) ( - f )
     to $ who> $ count tag$ count s= ;
 
 \ =============================================================================
-\ Actor drawing
-\ =============================================================================
-
-: ?pillory ( - )
-    me benched? if
-        12 color s" !" print
-    then ;
-
-: sprite ( - )
-    x 2@ 2.> at bmp @ cput ;
-
-: backsprites ( - )
-    batch> actives> prio @ ?exit sprite ?pillory ;
-
-: sprites ( - )
-    batch> actives> prio @ -exit sprite ?pillory ;
-
-\ =============================================================================
 \ Actor management
 \ =============================================================================
 
@@ -197,9 +181,7 @@ actor template [[
     0 #actors 1 - clamp next# ! ;
 
 actor :: unload ( - )
-    \ ." Actor unloaded " me .summary cr
-    \ .rs
-    en off  ; \ 0 bmp !  0 beha !  0 phys ! ;
+    en off  ; 
 
 : clear-stage ( - )
     0 next# !  actives>  me unload ;
@@ -398,42 +380,3 @@ actor :: on-error ( xt err# - )
     
 : find-class ( a len - class | actor )
     >pad find if execute else drop actor then ;
-
-|| : has-image? f" %s.png" >pad find nip ;
-
-: >default-dir ( fn len class - path len )
-    -> default-dir$ count f" %s\%s" ;
-
-: +script (  script-totem-class <basename> - actor-script )
-    \ Create an actor script containing some boilerplate.
-    {: class0 | n[ 256 ] fn len :}
-    bl parse f" %s.vfx" to len to fn
-    fn len class0 >default-dir 2dup
-    file-exists? abort" Script already exists"
-    class0 materialize [[
-        my-name -ext n[ place
-        srcpath$ count file-exists? not if
-            srcpath$ count write[
-                n[ count 
-                f" class: %s" line,
-                script-class @ body>name
-                f"     %s derive" line,
-                n[ count has-image? if
-                    n[ count 
-                    f"     template [[ %s.png bmp ! ]]" line,
-                then
-                s" class;" line,
-                nl,
-                n[ count 
-                f" %s :: init ( - )" line,
-                s"     act> ;" line,
-                nl,
-            write]
-            srcpath$ count included
-        then
-        n[ count f" locate %s" evaluate 
-        me 
-    ]] ;
-
-: +actor ( - <name> )
-    actor-script +script drop ;
