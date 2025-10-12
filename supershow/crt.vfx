@@ -43,8 +43,8 @@ continuation: crt>
     1280 960 al_create_bitmap to tv:bmp
     $1000 al_set_new_bitmap_flags ;
 
-: cleanup-crt ( - )
-    ." Destroying CRT objects..." cr 
-    buf:bmp -albmp
-    tv:bmp -albmp
-    crtea:s al_destroy_shader ;
+\ : cleanup-crt ( - )
+\     ." Destroying CRT objects..." cr 
+\     buf:bmp -albmp
+\     tv:bmp -albmp
+\     crtea:s al_destroy_shader ;

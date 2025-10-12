@@ -56,16 +56,20 @@ include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
 include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
 
 \ =============================================================================
-\ Initialization
+\ Cleanup (not needed)
 \ =============================================================================
 
-: cleanup-supershow ( - )
-    destroy-bitmaps
-    hush destroy-samples 
-    cleanup-crt ;
+\ : cleanup-supershow ( - )
+\     destroy-bitmaps
+\     hush destroy-samples 
+\     cleanup-crt ;
 
-prune: cleanup-supershow ;
-\ ['] cleanup-supershow AtExit    \ Not needed, OS should take care of this
+\ prune: cleanup-supershow ;
+\ ['] cleanup-supershow AtExit 
+
+\ =============================================================================
+\ Initialization
+\ =============================================================================
 
 : supershow-process-dirchange ( NOTIFY_INFO - )
     cell+ @ case
