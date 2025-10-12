@@ -9,9 +9,11 @@
 
 1024 constant #rooms
 tmw tmh * cells constant /screen
+
 || : ?flip  4 rnd 24 << or ;
 || : randoms,  for 256 rnd ?flip , loop ;
 create mram /screen cell/ #rooms * randoms,
+
 mram value playfield
 variable room#
 
