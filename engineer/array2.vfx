@@ -214,7 +214,7 @@ class: _object-array
     :: deref-index ( n - ? ) me [] ;
 class;
 
-: object-array ( c class <name> - )
+: object-array ( n class <name> - )
     {: count class0 :}
     create count class0 sizeof _object-array make [[
         count for
@@ -222,28 +222,3 @@ class;
         loop
     ]] ;
 
-\ ------------------------------------------------------------------------------
-\ Serialize arrays of objects (values or references)
-
-trait: _object
-    :: serializable? ( - flag ) -1 ;
-trait;
-
-: sermulti, ( iterable filter-xt - ) ( obj - flag ) 
-    {: arr filter-xt | &count :}
-    here to &count 0 ,
-    arr #items for
-        i arr deref-index 
-        \ dup serializable? if
-            dup filter-xt execute if
-                1 &count +!
-                serbin,
-            else drop then
-        \ else drop then
-    loop ;
-
-: desmulti+ ( a instance-xt - a' ) ( class - obj )
-    {: a instance-xt :}
-    a @+ for
-        instance-xt desbin+
-    loop ;

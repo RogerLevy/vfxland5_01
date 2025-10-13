@@ -9,7 +9,6 @@
 include %idir%\vfxcore2.vfx \ Codebase-wide language extensions
 include %idir%\error2.vfx   \ TODO: Make platform-agnostic
 include %idir%\variables.vfx
-\ TODO: make counter.vfx platform-agnostic so we can move these to vfxcore.vfx
 include %idir%/counter.vfx  \ Required by mersenne for seeding
 include %idir%/mersenne.vfx \ RNG
 include %idir%/changes.vfx  \ Filesystem change tracking
@@ -94,11 +93,12 @@ redef : empty ( - )
 : cartridge ( - )
     \ Load user program
     empty page hold off
-    s" main.vfx" fileExist? if s" main.vfx" included then ;
+    s" main.vfx" fileExist? if s" main.vfx" floaded then ;
 
-also substitutions definitions
-cstring vfxland5
-also forth definitions
+also substitutions 
+aka vfxland5 vfxland5
+previous
+
 : init-dev ( - )
     \ Development-only initialization
     empty 
@@ -107,7 +107,6 @@ also forth definitions
     s" %bin%\.." expand vfxland5 place
     wd mondir
 ;
-previous previous
 
 : frigid ( - )
     \ Initialize runtime environment

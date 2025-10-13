@@ -2,31 +2,37 @@ variable debug  debug on
 optimising off \ DO NOT REMOVE
 -idata \ DO NOT REMOVE
 
+also substitutions definitions
+create vfxland5 256 allot&erase
+s" %idir%\.." expand vfxland5 place
+only forth definitions
+
 \ =============================================================================
 \ VFXLand5 codebase-wide language extensions
 \ =============================================================================
 
-include %idir%/misc.vfx
-include %idir%/scope.vfx \ TODO: test this
-include %idir%/fixed.vfx
-include %idir%/format.vfx
+require %idir%/misc.vfx
+require %idir%/scope.vfx
+require %idir%/fixed.vfx
+require %idir%/format.vfx
 
-include %idir%/nib2.vfx
-include %idir%/nib2-tools.vfx
-include %idir%/nib2-compact.vfx
-include %idir%/nib2-serdes.vfx
+require %idir%/nib2.vfx
+require %idir%/nib2-tools.vfx
+require %idir%/nib2-compact.vfx
+\ require %vfxland5%/cjson/cjson.vfx
+\ require %idir%/json.vfx
 
-include %idir%/debug/oversight.vfx
-include %idir%/debug/core-checks.vfx
-include %idir%/checks.vfx
+require %idir%/debug/oversight.vfx
+require %idir%/debug/core-checks.vfx
+require %idir%/checks.vfx
 
-include %idir%/array2.vfx
-include %idir%/dictionary.vfx
-include %idir%/fstools.vfx
-include %idir%/../lib/wstring.vfx
-include %idir%/gamemath.vfx
+require %idir%/array2.vfx
+require %idir%/dictionary.vfx
+require %idir%/fstools.vfx
+require %idir%/../lib/wstring.vfx
+require %idir%/gamemath.vfx
 
-include %idir%/strout.vfx
+require %idir%/strout.vfx
 
 \ =============================================================================
 \ Allegro bindings and utilities
@@ -40,8 +46,8 @@ Target_386_Windows [if]
 [then]
 
 [defined] allegro? [if]
-    include %idir%/allegro-5.2.5.vfx
-    include %idir%/al-utils.vfx
-    include %idir%/keys.vfx
-    include %idir%/each-file.vfx
+    require %idir%/allegro-5.2.5.vfx
+    require %idir%/al-utils.vfx
+    require %idir%/keys.vfx
+    require %idir%/each-file.vfx
 [then]

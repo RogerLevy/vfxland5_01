@@ -2,7 +2,7 @@
 
 : ?hone ( - <path> )
     honing @ if honing-wl +order then
-    bl parse ['] old-included catch
+    bl parse ['] floaded catch
     honing @ if honing-wl -order then 
     throw ;
 

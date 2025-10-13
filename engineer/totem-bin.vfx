@@ -1,0 +1,83 @@
+\ =============================================================================
+\ Totem serialization utilities (Binary format - deprecated)
+\ =============================================================================
+
+: check-format ( n ver - )
+    over $ff and <> if
+        cla @ >name count f" %s : Unsupported format version %n" -1 -rot .abort
+    else drop then ;
+
+: check-encoding ( n ver - )
+    over <> if
+        24 rshift
+        cla @ >name count f" %s : Unsupported global encoding version %n" -1 -rot .abort
+    else drop then ;
+
+|| : ?totem ( - )
+    me _totem is? not if 
+        s[ me .object s] f" Not a totem: %s" -1 -rot .abort
+    then ;
+
+: binfree ( a - ) cell- free ;
+
+: binfile@ ( fp len - a|0 ) 
+    ['] file@ catch ?dup if 
+        .throw 
+        2drop 0 exit
+    then
+    ( a len ) drop
+    @+ MAGIC_BIN ['] check-encoding catch ?dup if
+        .throw 
+        ( a n n ) drop binfree 0 exit 
+    then ;
+
+: bin[ ( - ) data[ MAGIC_BIN , ;
+: bin] ( - a len ) data] ;
+
+continuation: desbin> ( a - ) ( a - a' )
+    ?totem
+    ( xt )  {: xt | a :}
+    srcpath$ c@ 0= if
+        s" Totem has no source path, skipping..." type cr
+        exit
+    then
+    srcpath$ count binfile@ ?dup 0= if
+        ."  Skipping..." cr
+        exit
+    then
+    to a
+    a 
+    @+ format @ ['] check-format catch ?dup if
+        .throw ."  Skipping..." cr
+        a binfree throw exit
+    then
+    xt catch nip
+    a binfree throw
+    throw ;
+
+continuation: serbin> ( - ) ( - )
+    ( xt ) >r 
+    ?totem
+    bin[
+    format @ ,
+    r> catch 
+    bin] 
+    rot throw
+    srcpath$ count write ;
+
+: des-me+ ( - ) ['] into-me desbin+ ;
+: move+  ( src dest n - src' ) 
+    {: src dest n :}
+    src dest n move
+    src n + ;
+: ser-me, ( - ) me serbin, ;
+    
+\ =============================================================================
+\ Defaults
+
+redef _totem :: _intake ( - )
+    desbin> ['] into-me desbin+ ;
+
+redef _totem :: _keep ( - )
+    serbin> me serbin, ;
+
