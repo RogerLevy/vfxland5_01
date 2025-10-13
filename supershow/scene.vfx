@@ -21,7 +21,7 @@ actor :: serializable? ( - flag )
 
 scene :: _keep ( - )
     \ save actors on stage to disk
-    ser>
+    serbin>
         me serbin,
         actors ['] serializable? sermulti, ;
 
@@ -37,10 +37,10 @@ scene :: _keep ( - )
 
 scene :: load ( - )
     \ load actors from disk to stage
-    des> des-scene+  ['] actor-instance desmulti+  ;
+    desbin> des-scene+  ['] actor-instance desmulti+  ;
 
 scene :: _intake ( - )
-    des> des-scene+ ;
+    desbin> des-scene+ ;
 
 : +scene ( <name> - scene ) 
     scene +totem ;

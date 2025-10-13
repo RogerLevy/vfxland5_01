@@ -80,7 +80,7 @@ borrow scene/ actor-instance
 
 : load&stow ( scene - )
     \ load actors from disk to temps
-    as> des> ['] into-me desbin+  ['] temp-instance desmulti+ ;
+    as> desbin> ['] into-me desbin+  ['] temp-instance desmulti+ ;
 
 \ =============================================================================
 \ Room control

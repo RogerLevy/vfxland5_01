@@ -97,7 +97,7 @@ tileset :: unload ( - )
     ]] ;
 
 || : des-tileset ( - )
-    des>
+    desbin>
         ['] into-me desbin+
         metas-array @ @array+ ;
 
@@ -123,7 +123,7 @@ tileset :: _intake ( - )
     des-tileset   reconnect-bmp   me load ;
 
 tileset :: _keep ( - )
-    ser>
+    serbin>
         me serbin,
         metas-array @ array, ;
 

@@ -278,7 +278,7 @@ redef _totem :: reload ( - )
 : bin[ ( - ) data[ MAGIC_BIN , ;
 : bin] ( - a len ) data] ;
 
-continuation: des> ( a - ) ( a - a' )
+continuation: desbin> ( a - ) ( a - a' )
     ?totem
     ( xt )  {: xt | a :}
     srcpath$ c@ 0= if
@@ -299,7 +299,7 @@ continuation: des> ( a - ) ( a - a' )
     a binfree throw
     throw ;
 
-continuation: ser> ( - ) ( - )
+continuation: serbin> ( - ) ( - )
     ( xt ) >r 
     ?totem
     bin[
@@ -320,8 +320,8 @@ continuation: ser> ( - ) ( - )
 \ Defaults
 
 redef _totem :: _intake ( - )
-    des> ['] into-me desbin+ ;
+    desbin> ['] into-me desbin+ ;
 
 redef _totem :: _keep ( - )
-    ser> me serbin, ;
+    serbin> me serbin, ;
 

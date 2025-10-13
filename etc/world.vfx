@@ -20,7 +20,7 @@ class;
 : allot-tilemap  here data ! data-size allot&erase ;
 
 tilemap :: load ( - )
-    des>
+    desbin>
         des-me+
         data @ tm-size move+ ;
 
@@ -29,7 +29,7 @@ tilemap :: _intake ( - )
     me load ;
 
 tilemap :: _keep ( - )
-    ser>
+    serbin>
         ser-me,
         data @ tm-size move, ;
 
