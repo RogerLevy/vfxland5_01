@@ -16,7 +16,7 @@
     2e z" sharpness" float!
     640e 240e  1e 640e f/  1e 240e f/  z" sourceSize" vec4!
     1280e 960e  1e 1280e f/  1e 960e f/  z" targetSize" vec4!
-    0.5e z" scanstr" float!
+    0.66e z" scanstr" float!
     buf:bmp 0e 0e 0e 0e 2e 4e 0e 0 al_draw_scaled_rotated_bitmap
 ;
 
@@ -27,7 +27,6 @@ continuation: crt>
     0e 0e 0e 1e al_clear_to_color  0 0 at 
     identity
     0e 0e 2e 1e 0e transform
-    \ 0 0 640 240 al_set_clipping_rectangle
     r> execute
     ['] filter catch
     0 shade
