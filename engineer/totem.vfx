@@ -23,7 +23,7 @@ SYNC
 
 ))
 
-trait: _totem
+trait: %totem
 
     prop existed
     \ prop changed
@@ -46,7 +46,7 @@ trait: _totem
     
 trait;
 
-_totem :apply ( class - )
+%totem :apply ( class - )
     {: class0 :}
     class0 reopened? not if
         \ new totem classes get their own blank list
@@ -63,7 +63,7 @@ _totem :apply ( class - )
 : new? -> existed @ not ;
 : srcpath! ( path len totem - ) [[ >lowercase srcpath$ place ]] ;
 : find-totem ( a len - totem|0 )
-    -path >pad find if >body dup _totem is? and else drop 0 then ;
+    -path >pad find if >body dup %totem is? and else drop 0 then ;
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
 : ?toolong  udup > abort" Extension must be 3 chars or less." ;
 : format: ( <ver> - ) bl parse evaluate classifier -> format ! ;
@@ -122,7 +122,7 @@ _totem :apply ( class - )
 \ I/O
 \ =============================================================================
 
-redef _totem :: reload ( - )
+redef %totem :: reload ( - )
     counter last-kept @ - 2000 <= if 
         ." System-saved totem, skipping reload..." cr exit 
     then
@@ -200,7 +200,7 @@ redef _totem :: reload ( - )
 \     as> changed @ -exit me keep ;
 
 \ : save-totems ( - )
-\     _totem -> dependents list-count for
+\     %totem -> dependents list-count for
 \         @next 
 \         dup body>name f" Saving %s totems..." type cr
 \         -> instances list-count for
@@ -214,7 +214,7 @@ redef _totem :: reload ( - )
 \     \ TODO: update/create intelligently (in default dirs) and support 
 \     \ syncing all instances, even those not in default directories.
 
-\     _totem -> dependents list-count for
+\     %totem -> dependents list-count for
 \         @next load-default-dir
 \     loop drop ;
 
@@ -237,7 +237,7 @@ redef _totem :: reload ( - )
 \     then ;
 
 \ : empty-totems ( - )
-\     _totem -> dependents list-count for
+\     %totem -> dependents list-count for
 \         @next 
 \         dup body>name f" Unloading %s totems..." type cr
 \         empty-instances
@@ -258,7 +258,7 @@ redef _totem :: reload ( - )
     else drop then ;
 
 || : ?totem ( - )
-    me _totem is? not if 
+    me %totem is? not if 
         s[ me .object s] f" Not a totem: %s" -1 -rot .abort
     then ;
 
@@ -319,9 +319,9 @@ continuation: serbin> ( - ) ( - )
 \ =============================================================================
 \ Defaults
 
-redef _totem :: _intake ( - )
+redef %totem :: _intake ( - )
     desbin> ['] into-me desbin+ ;
 
-redef _totem :: _keep ( - )
+redef %totem :: _keep ( - )
     serbin> me serbin, ;
 

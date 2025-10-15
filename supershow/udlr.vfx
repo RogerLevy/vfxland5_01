@@ -7,7 +7,7 @@ public
 2 constant left
 3 constant down
 
-class: actor
+class: %actor
     prop fac <int <save
 class;
 

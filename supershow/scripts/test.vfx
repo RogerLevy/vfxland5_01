@@ -1,5 +1,5 @@
 class: TEST
-    ACTOR derive
+    %actor derive
 class;
 
 TEST :: init ( - )

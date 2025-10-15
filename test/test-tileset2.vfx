@@ -4,7 +4,7 @@ include ../supershow/tilemap2.vfx
 
 init-bitmaps
 
-\ s" dat/gfx/bg.ts" tileset manifest drop
+\ s" dat/gfx/bg.ts" %tileset manifest drop
 init-tilesets
 bg.ts o.
 

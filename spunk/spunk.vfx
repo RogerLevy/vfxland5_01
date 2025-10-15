@@ -30,7 +30,7 @@ variable room#
 \ Stashing actors between rooms
 \ =============================================================================
 
-class: actor
+class: %actor
     prop r#  \ the room each actor was in
              \ -1 = persist
              \ -2 = discard
@@ -40,29 +40,29 @@ class;
 || : belong? ( - flag )
     r# @ room# @ =   r# @ -1 = or ;
 
-: unstashed ( actor - actor' )
+: unstashed ( %actor - actor' )
     as>
         a# @ priority
         *actor 
         me over /actor move
         en off ;
 
-: unstash ( actor - )
+: unstash ( %actor - )
     unstashed drop ;
 
-: stashed ( actor - actor' )
+: stashed ( %actor - actor' )
     [[
         r# @ -1 <> if room# @ r# ! then
         me actor# a# !   *temp    me over /actor move   me unload 
     ]] ;
 
-: stash ( actor - )
+: stash ( %actor - )
     stashed drop ;
 
 : throwaway ( - )
     -2 r# ! ;
 
-timer :: init ( - )
+%timer :: init ( - )
     throwaway ;
 
 : persist ( - )
@@ -75,7 +75,7 @@ timer :: init ( - )
     temps>   belong? -exit   me unstash ;
 
 borrow scene/ actor-instance
-|| : temp-instance ( class - actor )
+|| : temp-instance ( class - %actor )
     actor-instance stashed ;
 
 : load&stow ( scene - )

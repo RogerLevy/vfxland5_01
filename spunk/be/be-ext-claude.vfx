@@ -33,7 +33,7 @@ variable tileset-mode    \ flag: are we editing a tileset?
 
 : +row
     tileset-mode @ if
-        add-tile-row  
+        add-tile-row
         info-update
         canvas-refresh
     else
@@ -100,15 +100,15 @@ variable tileset-mode    \ flag: are we editing a tileset?
 : on-bitmap-paint {: x y color -- :}
     \ Normal paint operation first
     \ ... existing paint code ...
-    
+
     \ Check if we modified a parent bitmap that has actors using it
     current-bitmap @ on-bitmap-modified ;
 
-\ Enhanced canvas refresh for tileset changes  
+\ Enhanced canvas refresh for tileset changes
 : canvas-refresh
     \ Redraw canvas
     \ ... existing canvas refresh code ...
-    
+
     \ Update tileset info if in tileset mode
     tileset-mode @ if show-tileset-info then ;
 
@@ -137,7 +137,7 @@ variable tileset-mode    \ flag: are we editing a tileset?
             me -> bmp @ bitmap-id = if
                 true to has-actors
             then ;
-        
+
         has-actors if
             ." Warning: Actors use this bitmap. Convert to tileset? (y/n)"
             key 'y' = if

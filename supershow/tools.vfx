@@ -85,7 +85,7 @@ engineer/
 : >default-dir ( fn len class - path len )
     -> default-dir$ count f" %s\%s" ;
 
-: +script (  script-totem-class <basename> - actor-script )
+: +script (  script-totem-class <basename> - %actor-script )
     \ Create an actor script containing some boilerplate.
     {: class0 | n[ 256 ] fn len :}
     bl parse f" %s.vfx" to len to fn
@@ -117,4 +117,4 @@ engineer/
     ]] ;
 
 : +actor ( - <name> )
-    actor-script +script drop ;
+    %actor-script +script drop ;

@@ -1,7 +1,7 @@
 empty
 
 class: abc 
-    is-a _totem 
+    is-a %totem 
     prop a <save 
     prop b <save 
     prop c <save 

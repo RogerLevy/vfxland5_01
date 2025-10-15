@@ -1,11 +1,11 @@
 empty
 
 : <totem ( ext len defpath len - )
-    _totem classifier -1 apply-trait 
+    %totem classifier -1 apply-trait 
     template [[ default-dir$ place extension$ place ]] ;
 
 
-class: tileset   s" ts" s" dat/gfx" <totem
+class: %tileset   s" ts" s" dat/gfx" <totem
 
     prop tw <save
     prop th <save
@@ -13,17 +13,17 @@ class: tileset   s" ts" s" dat/gfx" <totem
 class;
 
 : +tileset ( tw th <name> - )
-    tileset +totem [[ tw 2!   me ]] commit ;
+    %tileset +totem [[ tw 2!   me ]] commit ;
 
 class: world   s" "   s" dat/wld" <totem
 
-    prop ts <ref tileset
+    prop ts <ref %tileset
     32 nprop ts-name$ <save <cstring
     prop _room# <save <int 
 
     :: _intake
         srcpath$ count me des-file
-        ts-name$ count tileset manifest ts ! ;
+        ts-name$ count %tileset manifest ts ! ;
 
 class;
 

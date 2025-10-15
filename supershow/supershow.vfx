@@ -75,7 +75,7 @@ include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
     cell+ @ case
         FILE_ACTION_ADDED of
             ." FILE_ACTION_ADDED" cr
-            _totem -> dependents list-count for
+            %totem -> dependents list-count for
                 @next [[
                     changed-file me -> default-dir$ count strin? if
                         changed-file '.' ending me -> extension$ count s= if
@@ -121,7 +121,7 @@ init-supershow
 : load-project ( - )
     create-autoclasses
     ['] load-default-dir script-classes each@
-    scene load-default-dir
+    %scene load-default-dir
     s" modes.vfx" ?included ;
 
 \ Tools

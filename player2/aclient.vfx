@@ -19,7 +19,7 @@ struct /curl-msg
     int msg.result     \ return code for transfer 
 end-struct
 
-trait: _object
+trait: %object
     :: init ( - ) ;
     :: deinit ( - ) ;
     :: process ( - ) ;
@@ -30,7 +30,7 @@ class: aclient              \ asynchronous http client using libcurl
     prop #transfers
     prop #messages
     prop #requests
-    prop requests <ref _array
+    prop requests <ref %array
 class;
 
 class: request
@@ -45,7 +45,7 @@ class: request
 class;
 
 1 aclient :construct ( request-array - )
-    dup _array is? not abort" aclient:construct >> request-array must be an array"
+    dup %array is? not abort" aclient:construct >> request-array must be an array"
     requests ! ;
 
 aclient :: init ( - )

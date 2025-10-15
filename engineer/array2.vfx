@@ -2,7 +2,7 @@
 \ Arrays (NIBS)
 \ ------------------------------------------------------------------------------
 
-trait: _iterable
+trait: %iterable
     prop item-count <int <save
     :: vacate ( - ) 0 item-count ! ;
     :: index ( a - n ) stub ; 
@@ -23,7 +23,7 @@ trait;
         (enough) @ if unloop exit then
     loop ;
 
-_iterable :: each ( xt - ) ( ... a - ... )
+%iterable :: each ( xt - ) ( ... a - ... )
     (enough) @ >r
     (enough) off
     ['] (each) catch
@@ -37,7 +37,7 @@ _iterable :: each ( xt - ) ( ... a - ... )
         (enough) @ if unloop exit then
     loop ;
 
-_iterable :: each@ ( xt - ) ( ... ? - ... )
+%iterable :: each@ ( xt - ) ( ... ? - ... )
     (enough) @ >r
     (enough) off
     ['] (each@) catch
@@ -50,44 +50,44 @@ _iterable :: each@ ( xt - ) ( ... ? - ... )
     dup >r -> item-count @ 1 - p* r> [] ;
 
 \ Essential queries:
-_iterable :: empty? ( - bool )
+%iterable :: empty? ( - bool )
     item-count @ 0= ;
 
 : in-bounds? ( n iterable - b )
     [[ dup 0 item-count @ 1 - within? ]] ;
 
-_iterable :: ?bounds ( n - n )
+%iterable :: ?bounds ( n - n )
     me in-bounds? not abort" ?BOUNDS >> Index out of range!" ;
 
 \ Search operations:
-_iterable :: find-index ( xt - n | -1 ) ( a - b )
+%iterable :: find-index ( xt - n | -1 ) ( a - b )
     {: xt :}
     item-count @ for
         i me [] xt execute if i unloop exit then
     loop -1 ;
 
-_iterable :: index-of ( item - n | -1 ) ( a - b )
+%iterable :: index-of ( item - n | -1 ) ( a - b )
     {: item :}
     item-count @ for
         i me deref-index item = if i unloop exit then
     loop -1 ;
 
-_iterable :: contains? ( item - bool )
+%iterable :: contains? ( item - bool )
     me index-of 0 >= ;
       
 \ Access helpers:
 \ For object/reference types:
-_iterable :: head ( - a )
+%iterable :: head ( - a )
     0 me ?bounds me [] ;
 
-_iterable :: tail ( - a )
+%iterable :: tail ( - a )
     item-count @ 1 - me ?bounds me [] ;
 
 \ For value types:
-_iterable :: head@ ( - ? )
+%iterable :: head@ ( - ? )
     0 me ?bounds me deref-index ;
 
-_iterable :: tail@ ( - ? )
+%iterable :: tail@ ( - ? )
     item-count @ 1 - me ?bounds me deref-index ;
 
 \ Functional operations:
@@ -107,30 +107,30 @@ _iterable :: tail@ ( - ? )
 \         else drop then
 \     loop j ;
 
-trait: _lifo trait;
-_lifo :: push ( item - ) stub ; 
-_lifo :: pop ( - item ) stub ; 
-_lifo :: push-copy ( a - ) stub ; 
-_lifo :: pop-ref ( - a ) stub ; 
-_lifo :: peek ( - item ) stub ;
-_lifo :: peek-ref ( - a ) stub ;
+trait: %lifo trait;
+%lifo :: push ( item - ) stub ; 
+%lifo :: pop ( - item ) stub ; 
+%lifo :: push-copy ( a - ) stub ; 
+%lifo :: pop-ref ( - a ) stub ; 
+%lifo :: peek ( - item ) stub ;
+%lifo :: peek-ref ( - a ) stub ;
 
-trait: _fifo trait;
-_fifo :: enqueue ( item - ) stub ;
-_fifo :: dequeue ( - item ) stub ;
-_fifo :: enqueue-copy ( a - ) stub ;
-_fifo :: dequeue-ref ( - a ) stub ;
-_fifo :: peek ( - item ) stub ;
-_fifo :: peek-ref ( - item ) stub ;
+trait: %fifo trait;
+%fifo :: enqueue ( item - ) stub ;
+%fifo :: dequeue ( - item ) stub ;
+%fifo :: enqueue-copy ( a - ) stub ;
+%fifo :: dequeue-ref ( - a ) stub ;
+%fifo :: peek ( - item ) stub ;
+%fifo :: peek-ref ( - item ) stub ;
 
-class: _array
-    is-a _iterable
+class: %array
+    is-a %iterable
     prop max-items <int <save
     prop item-size <int <save
     prop data <addr
 class;
 
-2 _array :construct ( max-items item-size - )
+2 %array :construct ( max-items item-size - )
     dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
     max-items @ item-count !
@@ -139,60 +139,60 @@ class;
 : /item ( array - n )
     -> item-size @ ;
 
-_array :: index ( a - n )
+%array :: index ( a - n )
     data @ - item-size @ / me ?bounds ;
 
-_array :: [] ( n - a )
+%array :: [] ( n - a )
     me ?bounds item-size @ * data @ + ;
 
-_array :: deref-index ( n - ? )
+%array :: deref-index ( n - ? )
     me [] @ ;
 
-_array :: redim ( #items - )
+%array :: redim ( #items - )
     dup max-items @ = if drop exit then
     item-size @ max-items @ * >r   data @ >r
-    ( #items ) item-size @ _array:construct 
+    ( #items ) item-size @ array:construct 
     r> data @   item-size @ max-items @ *   r> min   move ;
 
 \ ------------------------------------------------------------------------------
 
-class: _stack
-    _array derive
-    is-a _lifo
+class: %stack
+    %array derive
+    is-a %lifo
 class;
 
-2 _stack :construct ( max-items item-size - )
+2 %stack :construct ( max-items item-size - )
     dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
     2dup item-size ! max-items !
     align here data ! * allot&erase ;
 
-_stack :: push ( item - )
+%stack :: push ( item - )
     item-count @ max-items @ = abort" Overflow."
     1 item-count +!  me tail ! ;
 
-_stack :: pop ( - item )
+%stack :: pop ( - item )
     item-count @ 0= abort" Underflow."
     me tail @  -1 item-count +! ;
 
-_stack :: push-copy ( a - )
+%stack :: push-copy ( a - )
     item-count @ max-items @ = abort" Overflow."
     1 item-count +!  ( a ) me tail item-size @ move ;
 
-_stack :: pop-ref ( - a )
+%stack :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
     me tail  -1 item-count +! ;
 
-_stack :: redim ( #items - )
+%stack :: redim ( #items - )
     dup max-items @ = if drop exit then
     item-size @ max-items @ * >r   data @ >r
-    ( #items ) item-size @ _stack:construct 
+    ( #items ) item-size @ stack:construct 
     r> data @   item-size @ max-items @ *   r> min   move 
     item-count @ max-items @ min item-count ! ;
 
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - array )
-    0 swap _array make [[
+    0 swap %array make [[
     here data !  me ]] ;  \ just to be sure
 
 : array] ( array - array )
@@ -204,19 +204,19 @@ _stack :: redim ( #items - )
     over [[ data @ item-size @ rot * + here - allot&erase ]] ;
 
 redef : array ( max width - <name> )
-    _array object ;
+    %array object ;
 
 redef : stack ( max width - <name> )
-    _stack object ;
+    %stack object ;
 
-class: _object-array
-    _array derive
+class: %object-array
+    %array derive
     :: deref-index ( n - ? ) me [] ;
 class;
 
 : object-array ( c class <name> - )
     {: count class0 :}
-    create count class0 sizeof _object-array make [[
+    create count class0 sizeof %object-array make [[
         count for
             class0 i me [] construct
         loop
@@ -225,7 +225,7 @@ class;
 \ ------------------------------------------------------------------------------
 \ Serialize arrays of objects (values or references)
 
-trait: _object
+trait: %object
     :: serializable? ( - flag ) -1 ;
 trait;
 

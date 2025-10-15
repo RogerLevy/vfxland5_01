@@ -2,11 +2,11 @@
 \ Actor sprite support
 \ =============================================================================
 
-class: actor
+class: %actor
     prop bmp <int <save 
 class;
 
-actor :: draw ( - )
+%actor :: draw ( - )
     bmp @ -exit  x 2@ 2.> at bmp @ cput ;
 
 : ?pillory ( - )
@@ -24,7 +24,7 @@ actor :: draw ( - )
 \ Frame animation
 \ =============================================================================
 
-class: actor
+class: %actor
     prop anm prop a.ts prop a.spd prop a.len
     prop a.ofs prop a.done prop a.flp
 class;

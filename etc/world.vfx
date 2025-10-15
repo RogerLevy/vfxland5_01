@@ -8,8 +8,8 @@ filesystem:
 1 constant TILEMAP_FORMAT_VERSION
 1 constant WORLD_FORMAT_VERSION
 
-class: tilemap
-    is-a _totem
+class: %tilemap
+    is-a %totem
     format: TILEMAP_FORMAT_VERSION
     prop w <save <int
     prop h <save <int
@@ -34,13 +34,13 @@ tilemap :: _keep ( - )
         data @ tm-size move, ;
 
 class: world
-    is-a _totem
+    is-a %totem
     format: WORLD_FORMAT_VERSION 
     extension: wld
     default-dir: dat/wld
 
-    prop mtm <ref tilemap \ main tilemap
-    prop mts <ref tileset \ main tileset
+    prop mtm <ref %tilemap \ main tilemap
+    prop mts <ref %tileset \ main tileset
     
     256 prop mts-path$ <save <cstring
     prop _room# <save <int 
@@ -51,6 +51,6 @@ class;
 : mtm-path  srcpath$ count -ext f" %s.map" ;
 
 world :: _intake ( - )
-    _totem:_intake
-    mts-path tileset manifest mts ! 
-    mtm-path tilemap manifest mtm ! ;
+    %totem:_intake
+    mts-path %tileset manifest mts ! 
+    mtm-path %tilemap manifest mtm ! ;

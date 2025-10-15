@@ -3,8 +3,8 @@ include %idir%/../supershow/supershow.vfx
 
 : save-scene  +scene commit ;
 
-50 50 at actor one [[ 1. 2. vx 2! ]]
-100 100 at actor one [[ 3. 4. vx 2! ]]
+50 50 at %actor one [[ 1. 2. vx 2! ]]
+100 100 at %actor one [[ 3. 4. vx 2! ]]
 .actors
 
 save-scene testscene.scn

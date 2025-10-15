@@ -26,7 +26,7 @@ dictionary npc-items
     state+!
     s[ ." NPC inventory: " npc-items .items s] 
     state+!
-    s\" Available system commands:  \\n |npc-give-player-item item| \\n |npc-give-player-gold amount| \\n |npc-steal-player-gold amount| \\n |npc-give-player-item parrot named \\\"Name\\\"| \\n |npc-attack-player| \\n |npc-flee| \\n |npc-refuse-gift itemname| \\n "
+    s\" Available system commands:  \\n |npc-give-player-item %item| \\n |npc-give-player-gold amount| \\n |npc-steal-player-gold amount| \\n |npc-give-player-item %parrot named \\\"Name\\\"| \\n |npc-attack-player| \\n |npc-flee| \\n |npc-refuse-gift %itemname| \\n "
     state+!
 ;
 
@@ -43,11 +43,11 @@ npc-items .items
 items.png 16 16 +tileset items.ts
 
 push-order also commands definitions
-    class: map    actor derive :: init items.ts 0 tile bmp ! ; class;
-    class: parrot actor derive :: init items.ts 1 tile bmp ! ; class;
-    class: lamp   actor derive :: init items.ts 2 tile bmp ! ; class;
-    class: gold   actor derive :: init items.ts 3 tile bmp ! ; class;
-    class: sword  actor derive :: init items.ts 4 tile bmp ! ; class;
+    class: %map    %actor derive :: init items.ts 0 tile bmp ! ; class;
+    class: %parrot %actor derive :: init items.ts 1 tile bmp ! ; class;
+    class: %lamp   %actor derive :: init items.ts 2 tile bmp ! ; class;
+    class: %gold   %actor derive :: init items.ts 3 tile bmp ! ; class;
+    class: %sword  %actor derive :: init items.ts 4 tile bmp ! ; class;
 pop-order
 
 public
@@ -58,7 +58,7 @@ gamew 2 / 100 +  gameh 2 / at   blackbeard one constant blackbeard0
 variable #tossed
 
 : *tosser  
-    actor one as> n2 ! #tossed @ 1. * n1 ! 1 #tossed +! 
+    %actor one as> n2 ! #tossed @ 1. * n1 ! 1 #tossed +! 
     act> n1 @ passed? -exit 
     me 0 0 from n2 @ one [[ -1.25 -4. vx 2! act-gravity ]] 
     me unload -1 #tossed +! ;

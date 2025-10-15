@@ -333,68 +333,68 @@ assign (DoAbortMessage) to-do DoAbortMessage
 \ borrow engineer/ winmode
 \ borrow engineer/ draw-tv
 
-\ Displaymode-like trait
-trait: displaymode-like
+\ %displaymode-like trait
+trait: %displaymode-like
     redef prop _ide
     redef prop _repl
     redef prop _hold
     static draw-xt
 trait;
 
-displaymode-like :: activate ( - ) stub ;
-displaymode-like :: draw ( - ) stub ;
+%displaymode-like :: activate ( - ) stub ;
+%displaymode-like :: draw ( - ) stub ;
 
 \ IDE mode
-class: ide-mode
-    is-a displaymode-like
+class: %ide-mode
+    is-a %displaymode-like
 class;
 
-ide-mode :: activate ( - )
+%ide-mode :: activate ( - )
     fullscreen winmode ;
 
-: ide-mode-draw ( - )
+: %ide-mode-draw ( - )
     at@ (pen) 2! 
     hold @ if repl on then
     ['] ide-layout catch drop 
     (pen) 2@ at ;
 
-' ide-mode-draw ide-mode -> draw-xt !
+' %ide-mode-draw %ide-mode -> draw-xt !
 
-0 ide-mode :construct ( - )
+0 %ide-mode :construct ( - )
     _ide on _repl on ;
 
 \ Full mode
-class: full-mode
-    is-a displaymode-like
+class: %full-mode
+    is-a %displaymode-like
 class;
 
-full-mode :: activate ( - )
+%full-mode :: activate ( - )
     fullscreen winmode ;
 
-: full-mode-draw ( - )
+: %full-mode-draw ( - )
     ['] draw-game draw-tv
     ( TODO: draw repl ) ;
 
-' full-mode-draw full-mode -> draw-xt !
+' %full-mode-draw %full-mode -> draw-xt !
 
 \ Window mode
-class: window-mode
-    is-a displaymode-like
+class: %window-mode
+    is-a %displaymode-like
 class;
 
-window-mode :: activate ( - )
+%window-mode :: activate ( - )
     windowed winmode ;
 
-: window-mode-draw ( - )
+: %window-mode-draw ( - )
     ?border draw-game
     ( draw repl here ) ;
 
-' window-mode-draw window-mode -> draw-xt !
+' %window-mode-draw %window-mode -> draw-xt !
 
 \ Create array of display modes
-ide-mode object ide-mode0
-full-mode object full-mode0
-window-mode object window-mode0
+%ide-mode object ide-mode0
+%full-mode object full-mode0
+%window-mode object window-mode0
 
 display-mode jumptable current-mode
     ' ide-mode0 , ' full-mode0 , ' window-mode0 ,

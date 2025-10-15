@@ -128,7 +128,7 @@ redef : [[ ( object - ) me osp @ !  4 osp c+!  to me ;
 redef : ]] ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
-continuation: as> ( actor - ) ( - ) swap [[ ( xt ) execute ]] ;
+continuation: as> ( %actor - ) ( - ) swap [[ ( xt ) execute ]] ;
 
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
@@ -178,13 +178,13 @@ to /static
 : (init-class) ( - )
     MAGIC_CLASSIFIER magic ! ;
     
-create _class _class (classifier) [[ (init-class) ]]
+create %class %class (classifier) [[ (init-class) ]]
 
 || : create-class ( <name> - class )
-    create _class (classifier) dup [[ (init-class) ]] ;
+    create %class (classifier) dup [[ (init-class) ]] ;
 
 redef : sizeof ( class|object - n )
-    dup >cla @ _class = if -> instance-size @
+    dup >cla @ %class = if -> instance-size @
     else >cla @ -> instance-size @ then ;
 
 \ ==============================================================================
@@ -194,19 +194,19 @@ redef : sizeof ( class|object - n )
 : (init-trait) ( - )
     MAGIC_CLASSIFIER magic ! ;
 
-create _object 0 (classifier) [[
+create %object 0 (classifier) [[
     (init-trait)
 ]]
 
 : (add-object-system-trait-bit) ( - )
-    _object -> classifier# @ id-table set-bit ;
+    %object -> classifier# @ id-table set-bit ;
 
-create-class _trait [[
+create-class %trait [[
     (add-object-system-trait-bit)
 ]]
 
-_object [[
-    _trait cla !
+%object [[
+    %trait cla !
     (add-object-system-trait-bit)
 ]]
 
@@ -252,7 +252,7 @@ redef : make ( ... class - object )
 \ Members
 \ ==============================================================================
 
-create _property  _class make [[
+create %property  %class make [[
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
@@ -283,13 +283,13 @@ constant /property-metadata
 : >serialize-flag ( property class - field-addr )
     >property-metadata -> serialize-flag ;
 
-create _static  _class make [[
-    _property -> instance-size @
+create %static  %class make [[
+    %property -> instance-size @
     dup instance-size ! next-ofs !
 ]]
 
-create _protocol  _class make [[
-    _static -> instance-size @
+create %protocol  %class make [[
+    %static -> instance-size @
     dup instance-size ! next-ofs !
 ]]
 
@@ -297,7 +297,7 @@ create _protocol  _class make [[
     -> field-space-size @ 0<> ;
     
 : field-space ( n - )
-    classifier >cla @ _trait = 
+    classifier >cla @ %trait = 
         abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
     classifier [[
         field-space-size !
@@ -337,7 +337,7 @@ create _protocol  _class make [[
  
 : create-property ( <name> - property ) 
     push-order only forth definitions 
-    create _property make [[
+    create %property make [[
         2 cells allocate-static-offset
         MAGIC_PROPERTY magic !
     me ]]     
@@ -345,7 +345,7 @@ create _protocol  _class make [[
     pop-order ;  
     
 : defining-a-trait? ( - b )
-    classifier >cla @ _trait = ;
+    classifier >cla @ %trait = ;
 
 : add-property ( property - )
     classifier -> property-list add-to ;
@@ -425,14 +425,14 @@ create _protocol  _class make [[
     classifier 0= 
         abort" NPROPERTY >> Cannot define a property outside of a classifier definition."
 
-    _property already? if
+    %property already? if
         ' >body to property0
         property0 is-property-mapped? if
             size property0 ?size-changed
         then
     else
         \ Property doesn't exist - check rules
-        classifier >cla @ _trait = if
+        classifier >cla @ %trait = if
             \ Trait rules
             classifier reopened? if
                 classifier -> dependents list-count 0<>
@@ -473,9 +473,9 @@ create _protocol  _class make [[
 
 : nstatic ( size <name> - ) ( - a )
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
-    _static already? if drop ' drop exit then
+    %static already? if drop ' drop exit then
     push-order only forth definitions
-    create _static make [[
+    create %static make [[
         ( size ) allocate-static-offset
         MAGIC_FIELD magic !
     ]]
@@ -498,7 +498,7 @@ create _protocol  _class make [[
 
 : apply-trait ( trait class b:id? - )
     {: trait0 class0 id? | could? protocol0 origin :}
-    class0 >cla @ _class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
+    class0 >cla @ %class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
     class0 reopened? if
@@ -532,7 +532,7 @@ create _protocol  _class make [[
             \ Check for protocol conflicts (trait trying to override another trait's implementation)
             protocol0 -> offset @ class0 + >origin @ to origin
             origin 0<> if
-                origin >cla @ _class <> if  \ Origin is a trait, not a class
+                origin >cla @ %class <> if  \ Origin is a trait, not a class
                     origin trait0 <> if     \ Different trait owns it
                         -1
                         trait0 body>name
@@ -562,7 +562,7 @@ create _protocol  _class make [[
     then ;
    
 : class: ( <name> - )
-    _class already? if
+    %class already? if
         preword find drop >body to classifier
         \ Execute on-reopen if set
         classifier -> on-reopen-xt @ ?dup if
@@ -571,21 +571,21 @@ create _protocol  _class make [[
         then
     then
 
-    _class already? if
+    %class already? if
         ' >body to classifier
         exit
     then
-    _class begin-classifier
+    %class begin-classifier
     classifier [[
         (init-class) 
         /object-base instance-size !
         /object-base next-ofs !
-        _object classifier -1 apply-trait 
+        %object classifier -1 apply-trait 
     ]] ;
 
 : >template ( class - a )
     {: class0 :}
-    class0 >cla @ _trait = abort" template >> Traits cannot have templates, only classes."
+    class0 >cla @ %trait = abort" template >> Traits cannot have templates, only classes."
     class0 -> class-template @ ?dup 0= if
         class0 make class0 -> class-template !
         class0 -> class-template @
@@ -601,7 +601,7 @@ create _protocol  _class make [[
 : is-a ( [class] <trait> - )
     \ Apply trait to class
     \ [class] only required if outside class definition
-    ' dup >body -> cla @ _trait <> if
+    ' dup >body -> cla @ %trait <> if
         >name count f" Identifier %s is not a trait." -1 -rot .abort
     then
     >body   classifier ?dup 0= if swap then -1 apply-trait ;
@@ -611,17 +611,17 @@ create _protocol  _class make [[
     \ Adds protocols and maps properties from the trait for transparent interoperability
     \ IS? will return 0
     \ [class] only required if outside class definition
-    ' dup >body -> cla @ _trait <> if
+    ' dup >body -> cla @ %trait <> if
         >name count f" Identifier %s is not a trait." -1 -rot .abort
     then
     >body   classifier ?dup 0= if swap then 0 apply-trait ;
     
 : trait: ( <name> - )
-    _trait already? if
+    %trait already? if
         ' >body to classifier
         exit
     then
-    _trait begin-classifier
+    %trait begin-classifier
     classifier [[
         (init-trait)
     ]] ;
@@ -656,9 +656,15 @@ defer protocol-validations ( obj protocol - obj protocol )
         ( xt ) oexec
     ]] ;
 
+: ?-% ( a len - a' len' )
+    over c@ '%' = if
+        1 /string  \ remove leading % if any
+    then ;
+
 || : :method ( classname-a classname-len protocolname-a protocolname-len - xt )
     push-order only forth definitions
-    2swap f" : %s:%s" >uppercase
+    2swap ?-% 
+    f" : %s:%s" >uppercase 
     evaluate
     pop-order 
     state on
@@ -692,10 +698,10 @@ redef : ; ( - )
 : define-protocol ( trait <name> - ) ( ... object - ... )
     {: trait0 | class0 protocol0 buf[ 256 ] :}
     bl preparse buf[ place
-    _protocol already? if
+    %protocol already? if
         ' >body
     else
-        create _protocol make 
+        create %protocol make 
         does-protocol
         [[
             2 cells allocate-static-offset
@@ -732,16 +738,16 @@ redef : ; ( - )
 : :: ( [classifier] <protocol> - )
     {: | protocol0 c :}
     classifier ?dup if to c else to c then
-    c >cla @ _trait = if 
+    c >cla @ %trait = if 
         c define-protocol 
         exit
     then
-    c >cla @ _class <> 
+    c >cla @ %class <> 
         abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
     bl word find not 
         abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0
-    protocol0 >cla @ _protocol <> 
+    protocol0 >cla @ %protocol <> 
         abort" :: >> Word is not a protocol!"
     protocol0 c supports-protocol? not 
         abort" :: >> Tried to implement a protocol not supported by the class."
@@ -752,7 +758,7 @@ redef : ; ( - )
 
 : :construct ( #params class - )
     classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
-    dup >cla @ _class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
+    dup >cla @ %class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
     [[
         constructor-#params !    
         my-name s" construct" :method constructor-xt !
@@ -761,7 +767,7 @@ redef : ; ( - )
 : derive ( class - )
     {: source-class :}
     
-    source-class >cla @ _class <> abort" DERIVE >> Can only derive from classes."
+    source-class >cla @ %class <> abort" DERIVE >> Can only derive from classes."
     classifier 0= abort" DERIVE >> Can only be called inside a class definition."
     
     \ Copy size fields
@@ -807,7 +813,7 @@ redef : ; ( - )
         i classifier -> id-table test-bit
         i classifier -> can-table test-bit or if
             i cells classifiers + @ [[ 
-                cla @ _trait = if
+                cla @ %trait = if
                     classifier me track-dependent
                 then
             ]]
@@ -821,17 +827,17 @@ redef : ; ( - )
 ;
 
 : :apply ( trait  - ) ( trait dest-class - )
-    dup >cla @ _trait <> 
+    dup >cla @ %trait <> 
         abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
     [[ my-name s" apply" :method on-apply-xt ! ]] ;
 
 : :derive ( class - ) ( source-class derived-class - )
-    dup >cla @ _class <> 
+    dup >cla @ %class <> 
         abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
     [[ my-name s" derive" :method on-derive-xt ! ]] ;
 
 : :reopen ( class - ) ( class - )
-    dup >cla @ _class <> 
+    dup >cla @ %class <> 
         abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
     [[ my-name s" reopen" :method on-reopen-xt ! ]] ;
 
@@ -847,14 +853,14 @@ aka instance make  \ Backward compatibility
 : valid-class? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup >cla @ _class = r> and >r
+        dup >cla @ %class = r> and >r
     then
     drop r> ;
 
 : valid-trait? ( ? - n:res )
     dup firstname here within  >r  \ in dictionary
     r@ 0< if
-        dup >cla @ _trait = r> and >r
+        dup >cla @ %trait = r> and >r
     then
     drop r> ;
 
@@ -880,7 +886,7 @@ aka instance make  \ Backward compatibility
     dup valid-classifier? not abort" IS? >> Invalid classifier."
     over valid-object? not if 2drop 0 exit then
     -> classifier# @ swap
-    dup >cla @ _class <> if >cla @ then -> id-table test-bit ;
+    dup >cla @ %class <> if >cla @ then -> id-table test-bit ;
 
 : can? ( object|class classifier|protocol-xt - bool )
     {: obj-or-class second-param | class-to-check :}
@@ -889,7 +895,7 @@ aka instance make  \ Backward compatibility
     abort" CAN? >> Invalid object or class."
     
     \ Get the actual class to check
-    obj-or-class >cla @ _class = if
+    obj-or-class >cla @ %class = if
         obj-or-class to class-to-check
     else
         obj-or-class >cla @ to class-to-check
@@ -900,7 +906,7 @@ aka instance make  \ Backward compatibility
     abort" CAN? >> Invalid second parameter (not a valid XT or classifier)."
     
     \ Check if second parameter is a protocol XT
-    second-param >body >cla @ _protocol = if
+    second-param >body >cla @ %protocol = if
         \ Protocol XT case: check if class supports this protocol
         second-param >body class-to-check supports-protocol?
     else
@@ -1019,11 +1025,11 @@ aka instance make  \ Backward compatibility
 
 0 to classifier
 
-_object :: .summary ( - )
+%object :: .summary ( - )
     \ Default : show class, name, and address
     me .object ;
 
-_object :: on-error ( xt err# - )
+%object :: on-error ( xt err# - )
     throw ;
 
 : debug-oexec ( ... xt - ... )
@@ -1042,11 +1048,11 @@ debug @ [if]
 \ Apply _OBJECT to other system classifiers
 \ ==============================================================================
 
-_class is-a _object
-_trait is-a _object
-_protocol is-a _object
-_property is-a _object
-_static is-a _object
+%class is-a %object
+%trait is-a %object
+%protocol is-a %object
+%property is-a %object
+%static is-a %object
 
 \ ==============================================================================
 \ Init/Reset

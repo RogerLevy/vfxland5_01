@@ -93,7 +93,7 @@ command : as ( obj - )
         then ;
 
 : copy-actor ( obj - obj` )
-    actor one copy
+    %actor one copy
     dup actors index over -> id ! ;
 
 : ?copy ( obj - obj` )

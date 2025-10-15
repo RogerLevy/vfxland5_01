@@ -1,32 +1,32 @@
 1 constant SCENE_FORMAT_VERSION
 
-class: scene  
-    is-a _totem
+class: %scene  
+    is-a %totem
     format: SCENE_FORMAT_VERSION
     extension: scn
     default-dir: dat/scn
 class;
 
 
-class: actor
-    prop owner <ref actor       \ actors with owners are discarded
+class: %actor
+    prop owner <ref %actor       \ actors with owners are discarded
                                 \ it is up to the owner actor to recreate
 class;
 
-: own ( actor - actor )
+: own ( %actor - %actor )
     me over -> owner ! ;
 
-actor :: serializable? ( - flag )
+%actor :: serializable? ( - flag )
     en @   owner @ 0= and ; 
 
-scene :: _keep ( - )
+%scene :: _keep ( - )
     \ save actors on stage to disk
     serbin>
         me serbin,
         actors ['] serializable? sermulti, ;
 
-|| : actor-instance ( class - actor )
-    dup actor is? not if
+|| : actor-instance ( class - %actor )
+    dup %actor is? not if
         body>name
         f" Class %s does not inherit from ACTOR." -1 -rot .abort 
     then 
@@ -35,12 +35,12 @@ scene :: _keep ( - )
 || : des-scene+ ( a - a' )
     ['] into-me desbin+ ;
 
-scene :: load ( - )
+%scene :: load ( - )
     \ load actors from disk to stage
     desbin> des-scene+  ['] actor-instance desmulti+  ;
 
-scene :: _intake ( - )
+%scene :: _intake ( - )
     desbin> des-scene+ ;
 
-: +scene ( <name> - scene ) 
-    scene +totem ;
+: +scene ( <name> - %scene ) 
+    %scene +totem ;

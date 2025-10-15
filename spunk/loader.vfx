@@ -12,7 +12,7 @@ s" modules.vfx" ?included
 
 create-autoclasses
 ['] load-default-dir script-classes each@
-scene load-default-dir
+%scene load-default-dir
 
 s" modes.vfx" ?included
 debug @ [if] s" testing.vfx" ?included [then]

@@ -13,8 +13,8 @@ variable next-bmp# 1 next-bmp# !
 
 || #bitmaps cell array bitmap-totems
 
-redef class: bitmap
-    is-a _totem
+redef class: %bitmap
+    is-a %totem
     prop id 
     prop albmp
     extension: png
@@ -43,7 +43,7 @@ class;
 : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
 : bitmap-file ( n - a n ) ?nullbmp ?subbmp bmptotem -> srcpath$ count ;
    
-\ bitmap :: unload ( - )
+\ %bitmap :: unload ( - )
 \     albmp @ -albmp
 \     0 id @ bitmap[] !
 \     0 albmp ! ;
@@ -66,7 +66,7 @@ class;
     dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
 
 : init-bitmaps ( - )
-    bitmap load-default-dir ;
+    %bitmap load-default-dir ;
 
 : destroy-bitmaps ( - )
     ." Destroying bitmaps" cr
@@ -75,4 +75,4 @@ class;
     loop  1 next-bmp# ! ;
 
 \ : unload-bitmaps ( - )
-\     bitmap unload-instances ;
+\     %bitmap unload-instances ;

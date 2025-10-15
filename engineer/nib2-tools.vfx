@@ -10,7 +10,7 @@
 || : find-parent ( thread# nfa - f )
     {: thread# nfa | body :}
     nfa name> >body to body
-    body -> cla @ _class = if
+    body -> cla @ %class = if
         body -> classifier# @ target-bit = if
             ."        - " nfa count type cr 
             0  \ found it, stop walking
@@ -40,7 +40,7 @@
 || : find-trait ( thread# nfa - f )
     {: thread# nfa | body :}
     nfa name> >body to body
-    body -> cla @ _trait = if
+    body -> cla @ %trait = if
         body -> classifier# @ target-bit = if
             ."        - " nfa count type
             target-bit target-class -> id-table test-bit 0= if
@@ -110,7 +110,7 @@
 || : ?.class ( thread# nfa - f )
     {: thread# nfa | body :}
     nfa name> >body to body
-    body -> cla @ _class = if
+    body -> cla @ %class = if
         ."         - " nfa count type cr
         1 +to found-items        
     then -1 ;
@@ -118,7 +118,7 @@
 || : ?.trait ( thread# nfa - f )
     {: thread# nfa | body :}
     nfa name> >body to body
-    body -> cla @ _trait = if
+    body -> cla @ %trait = if
         ."         - " nfa count type cr
         1 +to found-items        
     then -1 ;

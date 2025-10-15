@@ -1,19 +1,19 @@
-trait: _object
+trait: %object
     :: init ( - ) ;
     :: deinit ( - ) ;
     \ :: think ( - ) ;
 trait;
 
-trait: unloadable
+trait: %unloadable
     :: unload ( - ) ;
 trait;
 
 : ?unload  ?dup if unload then ;
 
-trait: usable
+trait: %usable
     :: use ( - ) ;
 trait;
 
-trait: drawable
+trait: %drawable
     :: draw ( - ) ;
 trait;

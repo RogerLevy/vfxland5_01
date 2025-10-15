@@ -26,7 +26,7 @@ require %idir%\..\dltree.vfx
         1 enext# +!
     loop  -1 abort" Out of elements" ;
 || : 1element  cla !  at@ 2>. x 2!  vis on  1. 1. sx 2!  en on ;
-: el ( class - actor )
+: el ( class - %actor )
     me >r alloc-element [[
         me r> dlpush
         1element me init

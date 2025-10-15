@@ -26,7 +26,7 @@
     
 : eval  bl parse evaluate ;
 : consume  bl parse 2drop ;
-: pre-xt  preword count 1 /string >pad find 0<> and ;
+: pre-xt  preword count ( 1 /string ) >pad find 0<> and ;
 : @size  preword size? if eval else cell then ;
 : comment?  preword 1 + c@ dup '\' = swap '(' = or ;
 : eol?  preword c@ 0= ;
@@ -45,23 +45,23 @@
 
 : is-class? ( ? - f )
     dup valid-object? not if drop 0 exit then
-    -> cla @ _class = ;
+    -> cla @ %class = ;
 
 : ?class ( - f ) 
-    preword 1 + c@ '@' <> if 0 exit then
+    preword 1 + c@ '%' <> if 0 exit then
     pre-xt dup 0= if consume -1 abort" Token not found." then
     >body dup is-class? not if
-        consume -1 abort" Token preceded by @ must be a class."
+        consume -1 abort" Token preceded by % must be a classifier."
     then
     derive -1 consume ;
 
 : "trait" ( $ - a len )
     {: $ :}
-    $ 2 + $ count nip 2 - ;
+    $ 2 + $ count nip 2 - f" %%%s" ;
 
 : is-trait? ( ? - f )
     dup valid-object? not if drop 0 exit then
-    -> cla @ _trait = ;
+    -> cla @ %trait = ;
     
 : ?"trait" ( - f )
     preword "word"? if
@@ -74,10 +74,10 @@
 
 : ?trait ( - f ) 
     ?"trait" ?dup ?exit
-    preword 1 + c@ '+' <> if 0 exit then
+    preword 1 + c@ '%' <> if 0 exit then
     pre-xt dup 0= if consume -1 abort" Token not found." then
     >body dup is-trait? not if
-        consume -1 abort" Token preceded by + must be a trait."
+        consume -1 abort" Token preceded by % must be a classifier."
     then
     classifier -1 apply-trait consume -1 ;
     
@@ -119,9 +119,9 @@
 \ Test:
 
 trait: thinker trait;
-trait: _lifo trait;
+trait: %lifo trait;
 512 constant /actor
 
 c: thingy ;
-c: actor  /actor  @thingy  +_lifo  "thinker"
+c: %actor  /actor  @thingy  +%lifo  "thinker"
     en buf 256 x y vx vy ;

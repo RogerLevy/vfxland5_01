@@ -15,7 +15,7 @@ create crlfbuf 13 c, 10 c,
 : +buf  buf wappend  ; \ crlfbuf 2 buf wappend ;
 
 \ ==============================================================================
-\ Player record 
+\ %player record 
 \ ==============================================================================
 
 class: player%
@@ -91,7 +91,7 @@ trait;
 
 class: leaderboard%
     is-a networking%
-    property players        \ array of player objects
+    property players        \ array of %player objects
     256 nproperty last-error     \ byte-counted string for error messages
         
     :derive ( source-class derived-class - )
@@ -137,7 +137,7 @@ class;
     ." ===================================================" cr
     ."    TOP 20 LEADERBOARD" cr  
     ." ===================================================" cr
-    ." Rank  Player                     Score" cr
+    ." Rank  %player                     Score" cr
     ." ---------------------------------------------------" cr
     
     players @ #items for
@@ -163,7 +163,7 @@ class;
         then
     loop
     -1
-    ]] ;  \ Player not found
+    ]] ;  \ %player not found
 
 
 \ ==============================================================================
@@ -184,7 +184,7 @@ board refresh-data [if]
     \\
 [then]
 
-cr ." Looking up player ranks:" cr
+cr ." Looking up %player ranks:" cr
 s" Champion" board get-player-rank dup -1 = [if]
     drop ." Champion: Not found"
 [else]
