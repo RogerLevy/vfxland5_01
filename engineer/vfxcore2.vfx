@@ -7,7 +7,7 @@ optimising off \ DO NOT REMOVE
 \ =============================================================================
 
 include %idir%/misc.vfx
-include %idir%/scope.vfx \ TODO: test this
+include %idir%/scope.vfx
 include %idir%/fixed.vfx
 include %idir%/format.vfx
 
@@ -25,7 +25,6 @@ include %idir%/dictionary.vfx
 include %idir%/fstools.vfx
 include %idir%/../lib/wstring.vfx
 include %idir%/gamemath.vfx
-
 include %idir%/strout.vfx
 
 \ =============================================================================

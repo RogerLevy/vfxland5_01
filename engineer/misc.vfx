@@ -378,10 +378,10 @@ errdef err_redefined "Word redefined"
 
 \ Redefine redefhook: protection from unintentional redefinitions (use REDEF)
 : vfxland-redefhook
-  6 push-attribute 
-  ." Word was redefined! (Precede with REDEF to override.)" 
-  pop-attribute
-  err_redefined throw ;
+    6 push-attribute 
+        LastNameFound .name ." Word was redefined. (Precede with REDEF to override.)" 
+    pop-attribute
+    err_redefined throw ;
 
 ' vfxland-redefhook is redefhook  
 
