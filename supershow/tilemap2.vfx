@@ -140,11 +140,19 @@ class;
 \ Tilemap - Low level
 \ =============================================================================
 
-|| : nr ( - ) 0 pen y@ gap + at ;
+|| 0 value lm
+: !lm ( - ) pen x@ to lm ;
+|| : nr ( - ) lm pen y@ gap + at ;
 || : tile+ ( bmpid - ) pile @ + put gap 0 +at ;
 
+: tiles ( a n - 'a ) 
+    !lm udup for @+ tile+ loop drop nr tmw cells + ; 
+
+: drawbg ( a cols rows - )
+    {: a cols rows :} +batch a rows for cols tiles loop drop -batch ; 
+
 : lay ( a - )
-    batch> tmh for tmw for @+ tile+ loop nr loop drop ;
+    tmh tmw drawbg ;
 
 : spot ( col row a - a )
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;

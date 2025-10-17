@@ -4,7 +4,9 @@
 
 : 4>.  2>. 2>r 2>. 2r> ;
 : 2?  2@ swap . . ;
-continuation: batch>  1 al_hold_bitmap_drawing ( xt ) catch 0 al_hold_bitmap_drawing throw ;
+: +batch  1 al_hold_bitmap_drawing ;
+: -batch  0 al_hold_bitmap_drawing ;
+continuation: batch>  +batch  ( xt ) catch  -batch  throw ;
 : h|  $1000000 or ;
 : v|  $2000000 or ;
 : hv|  h| v| ;
