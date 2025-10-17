@@ -35,14 +35,27 @@ wordlist constant honing-wl
 create zcommand 256 allot 
 
 \ =============================================================================
-\ Add protection from unintentional redefinitions (use REDEF) when honing
+\ Add protection from unintentional redefinitions (use REDEF) 
+\ Extended with early-out when honing or not including
 \ =============================================================================
 
-: vfxland-redefhook2
-    honing @ ?exit
-    6 push-attribute 
-    ." Word was redefined! (Precede with REDEF to override.)" 
-    pop-attribute
-    err_redefined throw ;
+: vfxland-redefhook2 ( - ) 
+    honing @ 'sourcefile @ 0= or if
+        6 push-attribute 
+            honing @ if
+                LastNameFound count type ."  was redefined. (Honing enabled, continuing...)" cr
+                exit
+            then
+            'sourcefile @ 0= if
+                LastNameFound count type ."  was redefined. (Not including a file, continuing...)" cr
+                exit
+            then
+        pop-attribute
+    else
+        4 push-attribute 
+            LastNameFound count type ."  was redefined. (Precede with REDEF to override.)" 
+        pop-attribute
+        err_redefined throw 
+    then ;
 
 ' vfxland-redefhook2 is redefhook  
