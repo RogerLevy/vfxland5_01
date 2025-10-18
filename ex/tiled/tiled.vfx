@@ -1,0 +1,32 @@
+class: %tilemap
+    is-a %drawable
+    prop data
+    prop w
+    prop h
+    prop ts <ref %tileset
+
+    : ?ts  ts @ ?dup -exit 0 tile pile ! ;
+    :: draw  ?ts data @ w 2@ drawbg ;
+class;
+
+require %vfxland5%/cjson/cjson.vfx
+require %vfxland5%/engineer/json.vfx
+also cjson/
+
+: load-tiled ( path len tilemap - )
+    [[ 
+        read-json {: cjson | layer tileset :}
+        z" width" cjson get-int w !
+        z" height" cjson get-int h !
+        0 z" tilesets" cjson get-array get-object to tileset
+        tileset if
+            z" source" tileset get-string -ext f" %s.ts" >pad find if
+                >body ts ! 
+            else drop then
+        then
+        0 z" layers" cjson get-array get-object to layer
+        here data !
+        z" data" layer count-array for
+            i over get-int 1 - ,
+        loop drop
+    ]] ;

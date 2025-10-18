@@ -79,20 +79,24 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
 : get-string-content ( cjson - a len )
     _cJSON_GetStringValue@4 zcount ;
 
-: get-field ( zkey cjson - cjson )
-    swap _cJSON_GetObjectItem@8 ;
+: get-item ( n|zkey cjson - cjson )
+    dup is-array? if 
+        swap _cJSON_GetArrayItem@8
+    else
+        swap _cJSON_GetObjectItem@8
+    then ;
 
 : get-array ( zkey cjson - cjson )
-    get-field ;
+    get-item ;
 
 : get-object ( zkey cjson - cjson )
-    get-field ;
+    get-item ;
 
 : get-string ( zkey cjson - a len ) 
-    get-field _cJSON_GetStringValue@4 zcount ;
+    get-item _cJSON_GetStringValue@4 zcount ;
 
 : get-float ( zkey cjson - f:n ) 
-    get-field _cJSON_GetNumberValue@4 ;
+    get-item _cJSON_GetNumberValue@4 ;
     
 : get-fixed ( zkey cjson - p ) 
     get-float f>p ;
@@ -102,13 +106,6 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
 
 : count-array ( zkey cjson - cjson length )
     get-array dup _cJSON_GetArraySize@4 ;
-
-: get-item ( n|zkey cjson - cjson )
-    dup is-array? if 
-        swap _cJSON_GetArrayItem@8
-    else
-        swap _cJSON_GetObjectItem@8
-    then ;
 
 public
 

@@ -83,7 +83,7 @@ borrow nib2/ prop+
         cla @ -> property-list list-count for
             @next to property0
             property0 cla @ >serialize-flag @  if
-                property0 >zname cjson get-field if
+                property0 >zname cjson get-item if
                     me property0 prop+ to val-addr
                     cjson property0 des-property-json
                 then
