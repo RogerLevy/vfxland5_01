@@ -222,26 +222,3 @@ class;
         loop
     ]] ;
 
-
-trait: %object
-    :: serializable? ( - flag ) -1 ;
-trait;
-
-: sermulti, ( iterable filter-xt - ) ( obj - flag ) 
-    {: arr filter-xt | &count :}
-    here to &count 0 ,
-    arr #items for
-        i arr deref-index 
-        \ dup serializable? if
-            dup filter-xt execute if
-                1 &count +!
-                serbin,
-            else drop then
-        \ else drop then
-    loop ;
-
-: desmulti+ ( a instance-xt - a' ) ( class - obj )
-    {: a instance-xt :}
-    a @+ for
-        instance-xt desbin+
-    loop ;

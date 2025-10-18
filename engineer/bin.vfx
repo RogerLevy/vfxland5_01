@@ -188,7 +188,7 @@ borrow nib2/ prop+
 \ ------------------------------------------------------------------------------
 \ Serialize arrays of objects (values or references)
 
-trait: _object
+trait: %object
     :: serializable? ( - flag ) -1 ;
 trait;
 

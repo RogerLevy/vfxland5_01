@@ -46,8 +46,8 @@ trait: %totem
     
 trait;
 
-%totem :apply ( class - )
-    {: class0 :}
+%totem :apply ( trait class - )
+    {: trait0 class0 :}
     class0 reopened? not if
         \ new totem classes get their own blank list
         0 class0 -> instances list-count! 

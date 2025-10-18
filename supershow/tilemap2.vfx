@@ -31,7 +31,7 @@ class;
 || : /metas ( - )
     0 cell %array make metas-array ! ;
 
-%tileset :construct ( - )
+0 %tileset :construct ( - )
     /metas ;
 
 : slice-tileset ( %tileset - )
