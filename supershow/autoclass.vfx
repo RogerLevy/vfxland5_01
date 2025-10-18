@@ -2,8 +2,6 @@
 \ Create classes from bitmaps automatically
 \ =============================================================================
 
-: .evaluate  2dup type cr evaluate ;
-
 : create-autoclass ( a n - )
     \ Takes a bitmap filename
     -path | n a |

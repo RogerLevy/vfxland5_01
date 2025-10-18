@@ -446,3 +446,6 @@ end-code
 : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
 
 
+variable verbose
+[defined] verbose-compilation verbose !
+: .evaluate  verbose @ if 2dup type cr then evaluate ;
