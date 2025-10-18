@@ -243,8 +243,6 @@ redef %totem :: reload ( - )
 \         empty-instances
 \     loop drop ;
 
-\ =============================================================================
-\ Serialization utilities
 
 : check-format ( n ver - )
     over $ff and <> if

@@ -2,6 +2,11 @@ variable debug  debug on
 optimising off \ DO NOT REMOVE
 -idata \ DO NOT REMOVE
 
+also substitutions definitions
+create vfxland5 256 allot&erase
+s" %idir%\.." expand vfxland5 place
+only forth definitions
+
 \ =============================================================================
 \ VFXLand5 codebase-wide language extensions
 \ =============================================================================
@@ -11,14 +16,14 @@ include %idir%/scope.vfx
 include %idir%/fixed.vfx
 include %idir%/format.vfx
 
-include %idir%/nib2.vfx
-include %idir%/nib2-tools.vfx
-include %idir%/nib2-compact.vfx
+require %idir%/nib2.vfx
+require %idir%/nib2-tools.vfx
+require %idir%/nib2-compact.vfx
 include %idir%/nib2-serdes.vfx
 
-include %idir%/debug/oversight.vfx
-include %idir%/debug/core-checks.vfx
-include %idir%/checks.vfx
+require %idir%/debug/oversight.vfx
+require %idir%/debug/core-checks.vfx
+require %idir%/checks.vfx
 
 include %idir%/array2.vfx
 include %idir%/dictionary.vfx
@@ -39,8 +44,8 @@ Target_386_Windows [if]
 [then]
 
 [defined] allegro? [if]
-    include %idir%/allegro-5.2.5.vfx
-    include %idir%/al-utils.vfx
-    include %idir%/keys.vfx
-    include %idir%/each-file.vfx
+    require %idir%/allegro-5.2.5.vfx
+    require %idir%/al-utils.vfx
+    require %idir%/keys.vfx
+    require %idir%/each-file.vfx
 [then]

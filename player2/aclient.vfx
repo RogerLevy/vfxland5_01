@@ -1,5 +1,5 @@
 include %idir%/libcurl.fth
-include %idir%/cjson.vfx
+include %vfxland5%/lib/cjson.vfx
 
 extern: void * "C" curl_easy_init();
 extern: void "C" curl_easy_setopt( void * curl, int opt, int val );

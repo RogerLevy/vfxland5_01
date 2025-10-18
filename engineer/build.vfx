@@ -1,3 +1,4 @@
+true constant native-debugger
 +xrefs 256 1024 * xref-kb
 include %idir%/file-fix.vfx
 include %idir%/engineer.vfx

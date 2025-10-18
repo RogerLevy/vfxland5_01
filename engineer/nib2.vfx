@@ -1004,7 +1004,8 @@ aka instance make  \ Backward compatibility
     endcase cr ;
 
 \ unsafe!  just an internal utility
-|| : prop+  -> offset @ over >cla @ + @ + ;
+|| : prop+ ( obj property - a )
+    -> offset @ over >cla @ + @ + ;
 
 : .props ( object - )
     [[

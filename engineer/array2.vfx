@@ -214,7 +214,7 @@ class: %object-array
     :: deref-index ( n - ? ) me [] ;
 class;
 
-: object-array ( c class <name> - )
+: object-array ( n class <name> - )
     {: count class0 :}
     create count class0 sizeof %object-array make [[
         count for
@@ -222,8 +222,6 @@ class;
         loop
     ]] ;
 
-\ ------------------------------------------------------------------------------
-\ Serialize arrays of objects (values or references)
 
 trait: %object
     :: serializable? ( - flag ) -1 ;

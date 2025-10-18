@@ -59,7 +59,7 @@ create temp-path-buf$ 256 allot
     depth to SbDepth
     context @ to sbContext
     current @ to sbCurrent
-    sp sp! ;
+    ; \ sp sp! ;
 
 : include       \ "<name>" --
     bl parse included ;
