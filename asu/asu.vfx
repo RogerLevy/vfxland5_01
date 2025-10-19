@@ -6,11 +6,13 @@
 \ Core System Components
 \ =============================================================================
 
+redef aka f! df!
+redef aka f@ df@
+redef aka f+! df+!
+redef aka f, df,
+
 include asutables.vfx
 
-aka f! df!
-aka f@ df@
-aka f+! df+!
 
 \ =============================================================================
 \ ASU Variables
@@ -20,14 +22,14 @@ aka f+! df+!
 0 value chn
 
 variable csound-status
-variable csound-time
+\ variable csound-time
 
-fvariable delaydecay 0.5e delaydecay f!
-fvariable delaytime 1000e delaytime f!
-fvariable lfreq 1e lfreq f!
-fvariable lres 0e lres f!
-fvariable globlp 1e globlp f!
-fvariable globhp 0e globhp f!
+2variable delaydecay 0.5e delaydecay f!
+2variable delaytime 1000e delaytime f!
+2variable lfreq 1e lfreq f!
+2variable lres 0e lres f!
+2variable globlp 1e globlp f!
+2variable globhp 0e globhp f!
 
 \ =============================================================================
 \ Csound Orchestra & Score
@@ -40,31 +42,28 @@ create sco s" asu.sco" file, 0 c,
 \ Message Callback System
 \ =============================================================================
 
-fromC 3 1 callback: msgcb
-
-: (msgcb-action) ( csound attr zstr -- res )
-    bye
-    nip nip cr zcount type 0 ;
-
-' (msgcb-action) to-callback msgcb
+\ 3 0 callproc: msgcb ( csound attr zstr -- )
+\    drop drop drop ;  
+   \ nip nip  zcount type cr  0 ;
 
 \ =============================================================================
 \ Audio System Initialization
 \ =============================================================================
 
-: do-init-audio
+: (init-audio)
    0 csoundCreate to csound
    csound 1 csoundCreateMessageBuffer
-   csound 1 csoundSetDebug
-   csound msgcb csoundSetMessageStringCallback
+   \ csound 1 csoundSetDebug
+   \ csound msgcb csoundSetMessageStringCallback
    csound z" -B256" csoundSetOption throw
    csound z" -odac2" csoundSetOption throw
    csound orc csoundCompileOrc throw
+   csound csoundStart throw 
    csound sco csoundReadScore throw
-   csound csoundStart throw ;
+;
 
 : init-audio
-   ['] do-init-audio catch abort" There was a problem in init-audio" ;
+   ['] (init-audio) catch abort" Error in init-audio" ;
 
 \ =============================================================================
 \ Channel Access Utilities
@@ -100,21 +99,21 @@ constant /rampctl
 
 : init-amp-ramp ( i -- )
    locals| i |
-   0e ampramps i [] -> stepval f!
-   chnamp i apu[] ampramps i [] -> addr ! ;
+   0e i ampramps [] -> stepval f!
+   chnamp i apu[] i ampramps [] -> addr ! ;
 
 : init-freq-ramp ( i -- )
    locals| i |
-   0e freqramps i [] -> stepval f!
-   chnfreq i apu[] freqramps i [] -> addr ! ;
+   0e i freqramps [] -> stepval f!
+   chnfreq i apu[] i freqramps [] -> addr ! ;
 
 : init-ramps
    10 0 do i init-amp-ramp loop
    10 0 do i init-freq-ramp loop ;
 
 : do-ramps
-   10 0 do ampramps i [] do-ramp loop
-   10 0 do freqramps i [] do-ramp loop ;
+   10 0 do i ampramps [] do-ramp loop
+   10 0 do i freqramps [] do-ramp loop ;
 
 \ =============================================================================
 \ Audio Processing Core
@@ -130,12 +129,12 @@ defer musictick  ' noop is musictick
    csound z" send2" chnsend2 csoundSetAudioChannel
    csound z" send3" chnsend3 csoundSetAudioChannel
    csound z" send4" chnsend4 csoundSetAudioChannel
-   csound z" delaydecay" delaydecay 2@ csoundSetControlChannel
-   csound z" delaytime" delaytime 2@ csoundSetControlChannel
-   csound z" ladderfreq" lfreq 2@ csoundSetControlChannel
-   csound z" ladderres" lres 2@ csoundSetControlChannel
-   csound z" globallp" globlp 2@ csoundSetControlChannel
-   csound z" globalhp" globhp 2@ csoundSetControlChannel ;
+   csound z" delaydecay" delaydecay sf@ csoundSetControlChannel
+   csound z" delaytime" delaytime sf@ csoundSetControlChannel
+   csound z" ladderfreq" lfreq sf@ csoundSetControlChannel
+   csound z" ladderres" lres sf@ csoundSetControlChannel
+   csound z" globallp" globlp sf@ csoundSetControlChannel
+   csound z" globalhp" globhp sf@ csoundSetControlChannel ;
 
 : soundframe
    csound csoundPerformKsmps csound-status ! ;
@@ -147,19 +146,15 @@ defer musictick  ' noop is musictick
 \ Threading System
 \ =============================================================================
 
-1 1 CallBack: mycb
-
-: (mycb-action) ( userdata -- result )
+fromC 1 1 CallProc: mycb ( userdata -- result )
    drop
    begin 
-     apuframe 
-     csound-status @ 
+      apuframe 
+      csound-status @ 
    until
    1 ;
 
-' (mycb-action) to-callback mycb
-
-: apugo   mycb 0 csoundCreateThread ;
+: apugo   mycb 0 csoundCreateThread drop ; \ TODO: probably want to save the thread to destroy it later
 
 \ =============================================================================
 \ Timing & Utility Functions
@@ -193,12 +188,12 @@ defer musictick  ' noop is musictick
 : glide  ( destnote  f:rate/sec -- )
     /sec fover etfreq chnfreq ?neg
     chn freqramps [] -> stepval f!
-    etfreq freqramps chn [] -> destval f! ;
+    etfreq chn freqramps [] -> destval f! ;
 
 : atten  ( f:destamp  f:rate/sec -- )
     /sec fover chnamp ?neg
     chn ampramps [] -> stepval f!
-    ampramps chn [] -> destval f! ;
+    chn ampramps [] -> destval f! ;
 
 : muteall  16 0 do 0e i to chn amp loop ;
 

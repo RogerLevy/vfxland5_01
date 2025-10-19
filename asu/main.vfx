@@ -1,0 +1,10 @@
+-warnings
+
+cd ../csound
+include csound6.vfx
+cd ../asu
+include asu.vfx
+
+init-asu
+
+0 ch 1 wave 69 pitch 1e amp
