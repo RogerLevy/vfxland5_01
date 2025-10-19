@@ -31,7 +31,8 @@
     then
 
     \ Project?
-    fn len home-path$ count f" %s/%s/main.vfx" file-exists? if
+    fn len home-path$ count f" %s/%s/main.vfx" file-exists? 
+    fn len f" %s/main.vfx" file-exists? or if
         fn len f" ldp %s" evaluate
         exit
     then
@@ -85,8 +86,12 @@ pop-order
         wd '\' ending name[ place 
         s" ." >abspath path[ place
     else
-        name[ count 
-        home-path$ count f" %s\%s" >lowercase path[ place 
+        name[ count f" %s\main.vfx" file-exists? if
+            name[ count path[ place
+        else
+            name[ count 
+            home-path$ count f" %s\%s" >lowercase path[ place
+        then 
     then
     path[ count f" %s\main.vfx" file-exists? not if
         name[ count f" '%s' doesn't exist or is not a project!" type cr
