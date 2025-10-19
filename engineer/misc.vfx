@@ -375,7 +375,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
         @ compile, ;
 
 : redef ( - )
-    postpone -warnings 0 parse evaluate postpone +warnings ;
+    warnings? >r postpone -warnings 0 parse evaluate r> to warnings? ;
 
 errdef err_redefined "Word redefined"
 
