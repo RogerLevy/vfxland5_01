@@ -14,7 +14,6 @@ variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
 defer repl  ' _repl is repl
 defer ide  ' _ide is ide
 redef defer hold  ' _hold is hold
-defer pump ' noop is pump
 cstring watch$
 variable watch-xt
 variable watch-context

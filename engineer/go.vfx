@@ -2,9 +2,6 @@
 \ Main Loop Support
 \ =============================================================================
 
-|| : spin ( - f: n )
-    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
-
 || : pre ( - )
     0 #tib ! postpone \\ 
     !delta !delta 
@@ -13,15 +10,13 @@
 continuation: show> ( - ) ( - )
     ( xt ) 'show ! cls ; 
 
-: refresh ( - )
-    ustime 
-    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
-    to ustime
-    display al_flip_display
-    !delta
-    poll ;
+: poll ( - )
+    poll-keyboard  
+    <alt> held? <altgr> held? or to alt? 
+    <lshift> held? <rshift> held? or to shift? 
+    <lctrl> held? <rctrl> held? or to ctrl? ;
 
-|| redef : spin ( - f: n )
+: spin ( - f: n )
     ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
 
 \ =============================================================================
@@ -51,10 +46,9 @@ continuation: show> ( - ) ( - )
     need-pump @ -exit
     begin ?event not until ;
 
-:noname ( - )
+: pump ( - )
     ['] (pump) catch hist[ .throw hist]
     need-pump on ;
-is pump
 
 redef : event? ( - f )
     repl @ if 0 exit then
@@ -64,6 +58,18 @@ redef : event? ( - f )
 \ Main Loop
 \ =============================================================================
 
+|| : ?idle ( - ) debug @ if EmptyIdle then ;
+
+: refresh ( - )
+    ?idle 
+    ustime 
+    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
+    to ustime
+    display al_flip_display
+    !delta
+    pump 
+    poll ;
+
 || : ?quit
     <esc> pressed? esc-quits @ and if
         going off 
@@ -72,7 +78,6 @@ redef : event? ( - f )
         quit
     then ;
 
-|| : ?idle ( - ) debug @ if EmptyIdle then ;
 || : ?reload-shift ( - ) shift? to reload-shift? ;
 || : ?w/f ( - )
     debug @ if ide-?w/f exit then
@@ -80,14 +85,17 @@ redef : event? ( - f )
         w/f -keys
     then ;    
 || : ?bye  <f4> pressed?  alt? and if bye then ;
-|| : controls ( - ) ?quit ?w/f ?bye ?idle ?reload-shift ;
+|| : controls ( - ) ?quit ?w/f ?bye ?reload-shift ;
 || : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
 
 : frame ( - )
-    controls pump screen refresh ;
+    controls screen refresh ;
+
+extern BOOL SetThreadPriority( hthread, priority );
 
 : go ( - )
     \ Main engine loop - enter IDE if debug mode, otherwise run normally
+    GetCurrentThread 2 SetThreadPriority drop
     going @ ?exit
     debug @ if >ide else >display then
     pre going on begin ['] frame catch ?dup until going off throw ;

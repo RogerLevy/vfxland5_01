@@ -7,12 +7,6 @@
 : pressed? ( n - flag )  kdelta 1 = ;
 : letgo? ( n - flag )  kdelta -1 = ;
 
-: poll ( - )
-    poll-keyboard  
-    <alt> held? <altgr> held? or to alt? 
-    <lshift> held? <rshift> held? or to shift? 
-    <lctrl> held? <rctrl> held? or to ctrl? ;
-
 \ =============================================================================
 \ Event handling
 \ =============================================================================
