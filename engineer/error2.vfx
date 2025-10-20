@@ -120,11 +120,27 @@ private
   
 \ : ?debugger ( err context - filter? )
 \     ide @ if ide-debugger else [ ' debugger >body @ compile, ] then ;
-    
+
+aligned-page estack
+variable errsp   estack errsp ! 
+: >e ( ? - ) errsp @ !  4 errsp c+! ;
+: e> ( - ? ) -4 errsp c+!  errsp @ @ ;
+
+: save-ds ( - n )
+    depth dup >r 0 ?do i pick >e loop 
+    r> >e
+    0 ; 
+
+: restore-ds ( n - )
+    drop 
+    ( throwcode ) >r s0 @ sp! e> 0 ?do e> loop r> ;
+
 \ Assign system hooks
 \ -------------------
 
-\ ' null-catch-save ' debug-catch-restore extends-catch
+debug @ [if]
+    ' save-ds ' restore-ds extends-catch
+[then]
 
 [defined] native-debugger not [if]
     ' console-debugger to-callback debugger
