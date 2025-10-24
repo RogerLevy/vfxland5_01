@@ -83,7 +83,7 @@ pop-order
     bl parse name[ place
     name[ c@ 0=
     name[ count s" ." s= or if 
-        wd '\' ending name[ place 
+        wd@ '\' ending name[ place 
         s" ." >abspath path[ place
     else
         name[ count f" %s\main.vfx" file-exists? if

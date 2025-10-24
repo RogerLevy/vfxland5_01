@@ -85,7 +85,7 @@ public
 
 || : @changed-fp ( NOTIFY_INFO - )
     2 cells + @+ changed-fp$ utf16>place
-    wd
+    wd@
     mondir$ count $cwd
     changed-fp$ count >abspath changed-fp$ place 
     $cwd 

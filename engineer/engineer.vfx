@@ -105,15 +105,21 @@ previous
     +xrefs
     256 1024 * xref-kb
     s" %bin%\.." expand vfxland5 place
-    wd mondir
+    wd@ mondir
 ;
+
+|| : @homepath ( - )
+    wd@ '\' ending s" bin" compare 0= if
+        s" .." $cwd
+    then
+    wd@ home-path$ place ;
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
     hold off
     debug @ if init-dev then
-    wd home-path$ place
+    @homepath
     init-mersenne
     init-allegro
     *display
@@ -181,7 +187,7 @@ redef : cold ( - )
 || : prj ( - a len ) prj-path$ count -path ;
 
 : turnkey ( - )
-    wd '\' ending f" %vfxland5%\engineer\turnkey.bat %s" shellcmd ;
+    wd@ '\' ending f" %vfxland5%\engineer\turnkey.bat %s" shellcmd ;
 
 \ =============================================================================
 \ Development tool commands

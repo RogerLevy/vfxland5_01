@@ -151,7 +151,7 @@ variable hsplit   0.5 hsplit !
     s[
         .hotkeys cr
         ." Me: " .me cr 
-        ." CWD: " wd '\' ending type space space
+        ." WD: " wd@ '\' ending type space space
         ." Current: " current @ .name space
         ." Pen: " (pen) 2@ swap . . space
         ." State: " .state space

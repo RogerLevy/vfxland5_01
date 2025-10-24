@@ -3,7 +3,7 @@
 \ =============================================================================
 
 || create buf 256 allot
-: wd ( - a len )
+: wd@ ( - a len )
     buf 256 buf GetCurrentDirectory ;
 
 : ?notfound ( fp len - )
