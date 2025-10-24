@@ -6,54 +6,52 @@
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
-\ Validations
-\ =============================================================================
-
-include %idir%\checks.vfx
-
-\ =============================================================================
 \ Constants and Variables
 \ =============================================================================
 
-20 ?constant gap  
-320 gap / ?constant tmw
-240 gap / ?constant tmh
 320 ?constant gamew
 240 ?constant gameh
+20 ?constant gap  
+gamew gap / ?constant tmw
+gameh gap / ?constant tmh
 
 \ =============================================================================
 \ Dependencies
 \ =============================================================================
 
-include %idir%\shader.vfx    \ Shaders 
-include %idir%\crt.vfx       \ CRT shader
-include %idir%\waveplay.vfx  \ Audio engine
-include %idir%\utilities.vfx \ Math helpers, audio, and misc utilities
-include %idir%\traits.vfx    \ Object traits
+include %idir%/checks.vfx           \ Validations
+include %idir%/tweak.vfx              \ Persistent variable control
+include %idir%/../lib/bin.vfx       \ Binary serialization format (deprecated)
+include %idir%/../lib/totem.vfx     \ Persistent data system
+include %idir%/shader.vfx           \ Shaders 
+include %idir%/crt.vfx              \ CRT shader
+include %idir%/waveplay.vfx         \ Audio engine
+include %idir%/utilities.vfx        \ Math helpers, audio, and misc utilities
+include %idir%/traits.vfx           \ Object traits
 
 \ =============================================================================
 \ Stage
 \ =============================================================================
 
-include %idir%\stage.vfx     \ Actor/sprite system
+include %idir%/stage.vfx            \ Actor/sprite system
 
 \ =============================================================================
 \ Asset types
 \ =============================================================================
 
-include %idir%\bitmap.vfx    \ Bitmaps
-include %idir%\tilemap2.vfx  \ Tilemap rendering & Tileset class
-include %idir%\scene.vfx     \ Scene management
+include %idir%/bitmap.vfx           \ Bitmaps
+include %idir%/tilemap2.vfx         \ Tilemap rendering & Tileset class
+include %idir%/scene.vfx            \ Scene management
 
 \ =============================================================================
 \ Tilemap
 \ =============================================================================
 
-include %idir%\udlr.vfx     \ Movement utilities
-include %idir%\tmcol.vfx    \ Tilemap collision detection
-include %idir%\tread.vfx    \ Tilemap data reading
-include %idir%\sprite.vfx   \ Sprite animation (depends on tilesets)
-include %idir%\autoclass.vfx \ Auto-generate classes from bitmaps
+include %idir%/udlr.vfx             \ Movement utilities
+include %idir%/tmcol.vfx            \ Tilemap collision detection
+include %idir%/tread.vfx            \ Tilemap data reading
+include %idir%/sprite.vfx           \ Sprite animation (depends on tilesets)
+include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
 
 \ =============================================================================
 \ Cleanup (not needed)

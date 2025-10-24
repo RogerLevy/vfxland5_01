@@ -31,7 +31,6 @@ include %idir%/fstools.vfx
 include %idir%/../lib/wstring.vfx
 include %idir%/gamemath.vfx
 include %idir%/strout.vfx
-include %idir%/bin.vfx
 
 \ =============================================================================
 \ Allegro bindings and utilities

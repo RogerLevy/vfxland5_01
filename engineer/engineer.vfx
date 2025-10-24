@@ -12,7 +12,6 @@ include %idir%/variables.vfx
 include %idir%/counter.vfx  \ Required by mersenne for seeding
 include %idir%/mersenne.vfx \ RNG
 include %idir%/changes.vfx  \ Filesystem change tracking
-include %idir%/totem.vfx    \ Persistence system
 
 \ =============================================================================
 \ Game services
@@ -20,7 +19,6 @@ include %idir%/totem.vfx    \ Persistence system
 
 fload %idir%/graphics.vfx   \ Graphics
 fload %idir%/input.vfx      \ Input
-fload %idir%/tweak.vfx      \ Persistent variable control
 fload %idir%/border.vfx     \ TV border / scaling
 fload %idir%/ide3.vfx       \ Interactive IDE
 fload %idir%/go.vfx         \ Main Loop
@@ -37,7 +35,6 @@ fload %idir%/go.vfx         \ Main Loop
         %iterable fresh,
         %lifo fresh,
         %fifo fresh,
-        %totem fresh,
 
         %class fresh,
         %trait fresh,
