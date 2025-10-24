@@ -65,8 +65,7 @@ create ds 16 cells allot
     end-case ;
 
 : rtrace ( a n - )
-    swap over cells + swap
-    for ."         " cell- dup @ .ip cr loop drop ;
+    for ."         " @+ .ip cr loop drop ;
 
 : dtrace ( a n - )
     ."         "
@@ -106,18 +105,18 @@ private
 : console-debugger ( err context - filter? )
     ( context ) context /context move
     cr \ ." Windows exception: "
-    ( err ) dup lookup-exception zcount type ."  ( #" h.8 ." )" cr
-    context -> ESP @ rs 16 cells move
-    context -> EBP @ ds 16 cells move
-    ."     In: " context -> EIP @ .ip cr
-    ."     Data stack: " cr
-    ds 8 dtrace cr
+    ( err ) dup lookup-exception zcount type ."  ( #" h.8 ." ) " 
+\    context -> ESP @ rs 16 cells move
+\    context -> EBP @ ds 16 cells move
+    ." in " context -> EIP @ .ip cr
     ."     Call stack: " cr 
-    rs 16 rtrace cr
+    context -> ESP @ 16 rtrace cr
+    ."     Data stack: " cr
+    context -> EBP @  8 dtrace cr
     \ DOESN'T WORK!  s0 @ returns some other address; must be in a different user context here
     \  s0 @  context -> EBP @   .s  -  cell/  
     -1 ;
-  
+
 \ : ?debugger ( err context - filter? )
 \     ide @ if ide-debugger else [ ' debugger >body @ compile, ] then ;
 
@@ -142,6 +141,11 @@ debug @ [if]
     ' save-ds ' restore-ds extends-catch
 [then]
 
-[defined] native-debugger not [if]
-    ' console-debugger to-callback debugger
-[then]
+: engineer-debugger ( - )
+    ['] console-debugger to-callback debugger ;
+
+: native-debugger ( - )
+    \ restore VFX's debugger
+    +crashscreen ;
+
+engineer-debugger
