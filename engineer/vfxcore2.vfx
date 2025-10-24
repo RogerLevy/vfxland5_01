@@ -25,6 +25,7 @@ require %idir%/debug/core-checks.vfx
 require %idir%/checks.vfx
 
 include %idir%/array2.vfx
+
 include %idir%/dictionary.vfx
 include %idir%/fstools.vfx
 include %idir%/../lib/wstring.vfx

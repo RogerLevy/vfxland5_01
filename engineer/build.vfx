@@ -3,7 +3,7 @@
 +xrefs 256 1024 * xref-kb
 include %idir%/file-fix.vfx
 include %idir%/engineer.vfx
-256 1024 * 1024 * set-size \ set dictionary size for exported executable
+\ 256 1024 * 1024 * set-size \ set dictionary size for exported executable
 cwd ..
 save-dev bin\engineer
 save-xref
