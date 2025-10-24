@@ -78,7 +78,7 @@ fast]
     en @ 0= if ." (FREE) " then ;
 
 %actor :: .summary ( %actor - )
-    11 push-attribute ." [ "
+    11 push-foreground ." [ "
     me actor# dup 0 >= if ." #" . else drop me .name then
     cla @ .name
     .status

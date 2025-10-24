@@ -81,7 +81,7 @@ public
         1 +to dest
     loop ;
 
-: .changed-file ." File changed: " changed-file type cr ;
+: .changed-file ." File changed: " changed-file 15 atype cr ;
 
 || : @changed-fp ( NOTIFY_INFO - )
     2 cells + @+ changed-fp$ utf16>place

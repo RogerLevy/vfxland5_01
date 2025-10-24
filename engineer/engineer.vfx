@@ -6,9 +6,9 @@
 \ Core System Components
 \ =============================================================================
 
-include %idir%\vfxcore2.vfx \ Codebase-wide language extensions
-include %idir%\error2.vfx   \ TODO: Make platform-agnostic
-include %idir%\variables.vfx
+include %idir%/vfxcore2.vfx \ Codebase-wide language extensions
+include %idir%/error2.vfx   \ TODO: Make platform-agnostic
+include %idir%/variables.vfx
 include %idir%/counter.vfx  \ Required by mersenne for seeding
 include %idir%/mersenne.vfx \ RNG
 include %idir%/changes.vfx  \ Filesystem change tracking
@@ -213,4 +213,3 @@ fload %idir%/tools.vfx
 borrow nib2/ gild-nib
 gild-nib
 marker gild
->vfx

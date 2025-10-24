@@ -15,9 +15,9 @@ defer draw-ide
 : draw-game ( - ) 
     at@ 2>r
     cls
-    ?kb-lock 
+    repl @ if save-kb erase-kb then 
     'show @ catch ?game-throw
-    ?kb-unlock 
+    repl @ if restore-kb then  
     2r> at ;
 
 private
@@ -227,7 +227,7 @@ variable hsplit   0.5 hsplit !
 : .source-line  ShowErrorLine ShowSourceOnError ;
 
 : (DoErrorMessage) ( err - )
-    4 push-attribute
+    15 4 push-attributes
     dup -13 = if
         drop
         lastword count type ." ? " 
@@ -486,7 +486,6 @@ is draw-ide
     init-history
     monh 7 lines - 24 / visible-lines !
     0 display-mode !
-    \ >ide
     welcome ;
 
 : ide-interpret ( a len - res )
@@ -501,7 +500,7 @@ is draw-ide
 
 borrow error2/ console-debugger
 : ide-debugger
-    running @ if hist[ 4 push-attribute then
+    running @ if hist[ 15 4 push-attributes then
     console-debugger
     running @ if pop-attribute hist] then
 ;

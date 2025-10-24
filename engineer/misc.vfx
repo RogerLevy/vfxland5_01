@@ -61,14 +61,14 @@ include %idir%/../textmode/textmode-tools.vfx
     \ Smart name print
     \ NOTE: Slow!
     dup body> inForth? if
-        14 push-attribute
+        14 push-foreground
         body> >name count ltype space
         pop-attribute
     else . then ;
 
 : .ip ( a - )
     dup body> inForth? if
-        9 push-attribute
+        11 push-foreground
         dup ip>nfa dup count ltype
         name> - ?dup if
             ." +" .
@@ -93,7 +93,7 @@ include %idir%/../textmode/textmode-tools.vfx
 
 : .data ( a - )
     dup body> inForth? if
-        9 push-attribute
+        12 push-foreground
         dup ip>nfa dup count ltype
         name> >body - ?dup if
             ." +" .

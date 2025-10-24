@@ -51,7 +51,7 @@ create zcommand 256 allot
             then
         pop-attribute
     else
-        4 push-attribute 
+        15 4 push-attributes 
             LastNameFound count type ."  was redefined. (Precede with REDEF to override.)" 
         pop-attribute
         err_redefined throw 

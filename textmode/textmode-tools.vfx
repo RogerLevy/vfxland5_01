@@ -17,8 +17,17 @@ attr-stack attr-sp !
     -4 attr-sp c+! 
     attr-sp @ @ attr ! ;
 
+: push-foreground ( n -- )
+    attr @ $ff00 and or push-attribute ;
+
+: push-background ( n -- )
+    8 lshift attr @ $ff and or push-attribute ;
+
+: push-attributes ( fg bg -- )
+    8 lshift or push-attribute ;
+
 \ Initialize everything to 7 (light grey)
 :noname 256 cell / for 7 push-attribute loop ; execute
 
 : atype ( a len attr-n - )
-    push-attribute type pop-attribute ;
+    push-foreground type pop-attribute ;

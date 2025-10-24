@@ -161,7 +161,7 @@ redef %totem :: reload ( - )
     \ Not recursive.
     \ If class's extension$ is empty, include directories in discovery
     
-    11 push-attribute
+    15 push-attribute
     dup body>name f" Loading %s totems..." type cr
     pop-attribute
     

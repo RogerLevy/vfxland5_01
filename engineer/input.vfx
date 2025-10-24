@@ -45,15 +45,12 @@ create the-event /ALLEGRO_EVENT allot&erase
         then
     else drop then ;
 
-
 \ =============================================================================
 \ Keyboard state control
 \ =============================================================================
 
-|| create kbs2 /ALLEGRO_KEYBOARD_STATE allot
+|| create kbs2  /ALLEGRO_KEYBOARD_STATE allot
 : save-kb  kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move ;
 : erase-kb  kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
 : restore-kb  kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
-: ?kb-lock repl @ if save-kb erase-kb then ; 
-: ?kb-unlock repl @ if restore-kb then ;
 : -keys  reset-keyboard ;
