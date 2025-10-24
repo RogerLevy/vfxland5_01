@@ -152,7 +152,7 @@ class;
     {: a cols rows :} +batch a rows for cols tiles loop drop -batch ; 
 
 : lay ( a - )
-    tmh tmw drawbg ;
+    tmw tmh drawbg ;
 
 : spot ( col row a - a )
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
