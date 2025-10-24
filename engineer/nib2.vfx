@@ -765,56 +765,61 @@ redef : ; ( - )
     ]] ;
 
 : derive ( class - )
-    {: source-class :}
-    
-    source-class >cla @ %class <> abort" DERIVE >> Can only derive from classes."
+    {: source-class | dest-class :}
+
     classifier 0= abort" DERIVE >> Can only be called inside a class definition."
-    
+    source-class >cla @ %class <> abort" DERIVE >> Can only derive from classes."
+    classifier >cla @ %class <> abort" DERIVE >> Current classifier not a class."
+    classifier to dest-class
+
     \ Copy size fields
     source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
-    classifier [[
+    dest-class [[
         field-space-size @ max field-space-size !
         next-ofs !
         instance-size @ max instance-size ! ]]
     
     \ Copy statics
     source-class /classifier-base +
-    classifier /classifier-base +   
+    dest-class /classifier-base +   
     /classifier /classifier-base - move
     
     \ Copy member lists
-    source-class -> protocol-list  classifier -> protocol-list copy-list
-    source-class -> property-list  classifier -> property-list copy-list
+    source-class -> protocol-list  dest-class -> protocol-list copy-list
+    source-class -> property-list  dest-class -> property-list copy-list
     
     \ Copy parent's bit table tables (trait relationships)
-    source-class -> id-table classifier -> id-table /bit-table move
-    source-class -> can-table classifier -> can-table /bit-table move
+    source-class -> id-table  dest-class -> id-table  /bit-table move
+    source-class -> can-table  dest-class -> can-table /bit-table move
     \ Restore the classifier bits
-    classifier -> classifier# @ classifier -> id-table set-bit
-    classifier -> classifier# @ classifier -> can-table set-bit
+    dest-class -> classifier# @  dest-class -> id-table set-bit
+    dest-class -> classifier# @  dest-class -> can-table set-bit
         
     \ Copy template if one exists, updating its class
     source-class -> class-template @ ?dup if
-        ( source-template ) template source-class -> instance-size @ move
-        classifier template >cla !
+        here dest-class -> class-template !
+        ( source-template ) 
+        source-class -> instance-size @ ` dest-class sizeof ` max
+        move,
+        dest-class dup -> class-template @ >cla !
     then
     
     \ Copy constructor
-    source-class -> constructor-xt @ classifier -> constructor-xt !
-    source-class -> constructor-#params @ classifier -> constructor-#params !
+    source-class -> constructor-xt @  dest-class -> constructor-xt !
+    source-class -> constructor-#params @  dest-class -> constructor-#params !
 
     \ Copy on-derive and on-reopen
-    source-class -> on-derive-xt @ classifier -> on-derive-xt !
-    source-class -> on-reopen-xt @ classifier -> on-reopen-xt !
+    source-class -> on-derive-xt @  dest-class -> on-derive-xt !
+    source-class -> on-reopen-xt @  dest-class -> on-reopen-xt !
 
     \ Track class in dependencies
     classifier source-class track-dependent
     next-classifier# @ for
-        i classifier -> id-table test-bit
-        i classifier -> can-table test-bit or if
+        i dest-class -> id-table test-bit
+        i dest-class -> can-table test-bit or if
             i cells classifiers + @ [[ 
                 cla @ %trait = if
-                    classifier me track-dependent
+                    dest-class me track-dependent
                 then
             ]]
         then
@@ -822,7 +827,7 @@ redef : ; ( - )
 
     \ Execute on-derive if set
     source-class -> on-derive-xt @ ?dup if
-        source-class classifier rot execute  \ ( source-class derived-class - )
+        source-class dest-class rot execute  \ ( source-class derived-class - )
     then
 ;
 
