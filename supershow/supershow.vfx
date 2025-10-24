@@ -120,7 +120,7 @@ init-supershow
     create-autoclasses
     ['] load-default-dir script-classes each@
     %scene load-default-dir
-    s" modes.vfx" ?included ;
+    s" modes" ['] included each-file ;
 
 \ Tools
 debug @ [if]
