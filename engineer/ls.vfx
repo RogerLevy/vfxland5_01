@@ -1,0 +1,53 @@
+private
+
+: >pos  out @ - spaces ;
+: vfx 13 ;
+\ : png 13 ;
+: file-color ( z$ - n )
+    push-order sandbox ['] ls/ >body @ +order
+    zcount '.' ending >pad find if execute else drop 15 then 
+    pop-order ;
+
+: (dirs)          \ ^WIN32_FIND_DATA --
+    >r
+    4 >pos
+    r@ WIN32_FIND_DATA.dwFileAttributes @
+    FILE_ATTRIBUTE_DIRECTORY and if
+        14 push-foreground
+        r@ WIN32_FIND_DATA.cFileName .z$ cr
+        pop-attribute
+    then
+    r> drop ;
+
+: (files)          \ ^WIN32_FIND_DATA --
+    >r
+    4 >pos
+    r@ WIN32_FIND_DATA.dwFileAttributes @
+    FILE_ATTRIBUTE_DIRECTORY and not if
+        r@ WIN32_FIND_DATA.cFileName file-color push-foreground
+        r@ WIN32_FIND_DATA.cFileName .z$
+        pop-attribute
+        40 >pos
+        r@ WIN32_FIND_DATA.nFileSizeLow ? cr
+    then
+    r> drop ;
+
+public
+
+redef : ls            \ -- ; "[spec]"
+\ *G Display file information based on the supplied specification.
+  {: | temp[ max_path 1+ ] -- :}
+  7 attribute
+  GetPathSpec dup 0= if
+    MAX_PATH temp[ GetCurrentDirectory 0=
+    if  zNull  else  temp[  then
+    zcount 15 atype cr
+    2drop  c" *.*"
+  else
+    temp[ expandmacro 2drop  temp[
+  then
+  dup ['] (dirs) ExecPerDirEnt
+  ['] (files) ExecPerDirEnt
+;
+
+redef : dir -1 abort" DIR undefined!" ;

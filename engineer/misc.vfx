@@ -449,3 +449,7 @@ end-code
 variable verbose
 [defined] verbose-compilation verbose !
 : .evaluate  verbose @ if 2dup type cr then evaluate ;
+
+
+: sandbox ( - ) 
+    only previous previous previous ;

@@ -193,7 +193,8 @@ redef : cold ( - )
 \ Development tool commands
 \ =============================================================================
 
-fload %idir%/tools.vfx      
+fload %idir%/tools.vfx
+include %idir%/ls.vfx
 
 \ =============================================================================
 \ Kickoff
