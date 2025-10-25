@@ -22,3 +22,5 @@ textmode/Release/textmode_renderer.ipdb
 textmode/Release/vc143.pdb
 
 dumps
+
+.claude/settings.local.json
