@@ -438,7 +438,7 @@ redef code sf-!	\ addr -- addr' ; F: -- f
 \ ** increments addr by 4.
 \ ** NDP387.FTH only.
   add   ebx, # -4		\ update address
-  fld   float 0 [ebx]           \ load from the address
+  fstp  float 0 [ebx]   \ store at addr
   fnext,
 end-code
 

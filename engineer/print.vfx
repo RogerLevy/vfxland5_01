@@ -16,9 +16,9 @@ include %idir%/vga13h.vfx
 : font@  vga-8x8 ;
 
 || create fg  1e sf, 1e sf, 1e sf, 1e sf, 
-|| : fcolor  fg 4f! ;
-|| : c  dup 24 >> s>f 255e f/ ;
-|| : (color)  c 8 << c 8 << c 8 << c drop fcolor ;
+: fcolor  fg 4f! ;
+|| : c>f  dup 24 >> s>f 255e f/ ;
+|| : (color)  c>f 8 << c>f 8 << c>f 8 << c>f drop fcolor ;
 
 \ Rendering
 : color ( n - )
