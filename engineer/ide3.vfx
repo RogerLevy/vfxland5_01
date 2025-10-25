@@ -96,9 +96,9 @@ variable hsplit   0.5 hsplit !
         1e 0.25e 0.25e 1e \ red
     else
         repl @ if 
-            1e 1e 1e 1e \ white
+            0.33e fdup fdup 1e \ dark-grey
         else
-            0e 1e 0.5e 1e \ green
+            1e 1e 1e 1e \ white
         then
     then
     r> al_draw_rectangle
@@ -182,19 +182,23 @@ variable hsplit   0.5 hsplit !
     0 6 lines from-bottom scaled-at
     s[ ?.s s] 12 print2 ;
 
-: .tib ( - ) 
+: .tib ( - )
     context @ .name
     ." >> "  tib #tib @ ?type ;
 
 : command-line ( - )
     1. 2. scaled>
     0 1 lines from-bottom scaled-at
+    repl @ if 15 else 8 then color 
     s[
         .tib
         active @ repl @ and if
             counter 20 / 8 and if ." _" then
         then
-    s] print ;
+    s] 
+    print 
+    15 color 
+;
     
 : ide-layout ( - )
     \ title-bar
