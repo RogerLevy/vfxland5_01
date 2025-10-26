@@ -7,7 +7,7 @@
 512 ?constant /actor
 
 variable gamelife
-0 0 2value gametime
+0d 2value gametime
 
 class: %actor
     is-a %drawable

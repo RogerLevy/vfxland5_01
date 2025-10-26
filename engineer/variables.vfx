@@ -26,7 +26,7 @@ wordlist constant honing-wl
 0 value ctrl?
 0 value shift?
 60e fvalue tps \ float, ticks per second
-0 0 2value ustime \ long, in microseconds
+0d 2value ustime \ long, in microseconds
 0 value mstime \ int, in milliseconds
 0 value usdelta
 0 value pdelta \ fixed, in seconds

@@ -1,3 +1,5 @@
+'d' dp-char !
+
 variable debug  debug on
 optimising off \ DO NOT REMOVE
 -idata \ DO NOT REMOVE

@@ -121,7 +121,7 @@ previous
     init-allegro
     *display
     init-vga-font
-    0 0 to ustime 
+    0d to ustime 
     init-history ;
 
 redef : cold ( - )
