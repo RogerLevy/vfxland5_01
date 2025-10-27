@@ -14,8 +14,7 @@ include %vfxland5%\supershow\supershow.vfx
 \ load game-specific modules (dependencies)
 \ include %idir%\...
 
-\ Load the automated script and asset loads (if i'm keeping any of it).
-\ This includes all scripts in modes\.
+\ Load autoclasses, scripts, scenes, and modes
 load-project
 
 greyzebes.png 16 16 +tileset greyzebes.ts

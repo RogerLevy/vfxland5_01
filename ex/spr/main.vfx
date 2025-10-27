@@ -1,32 +1,25 @@
 \ ------------------------------------------------------------------------------ 
-\ Tiled example - load a .tmj file
+\ sprite example
 \ ------------------------------------------------------------------------------ 
  
 \ Constants
 \ 320 constant gamew
 \ 240 constant gameh
-16 constant gap
 \ 1024 constant #actors
 
 \ Load engine
 include %vfxland5%\supershow\supershow.vfx
 
 \ load game-specific modules (dependencies)
-require %idir%\tiled.vfx
+\ include %idir%\...
 
 \ Load autoclasses, scripts, scenes, and modes
 load-project
 
-\ Ignore Tiled's tileset data and set up our own
-greyzebes.png 16 16 +tileset greyzebes.ts
-aka scifi.ts greyzebes.ts 
-
-%tilemap object mountainside.tm 
-s" assets/mountainside.tmj" mountainside.tm load-tiled
-
-redef : main    
-    show> 
-        0 0  at mountainside.tm draw ;
+redef : main
+    just
+    2 for 50 50 at %spewer one drop loop
+;
 
 \ Load tools and run tests
 debug @ [if]
