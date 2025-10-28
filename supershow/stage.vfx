@@ -217,12 +217,12 @@ variable next#
 \ Object collisions
 \ =============================================================================
 
-: hitbox@ ( - x1 y1 x2 y2 )
+: @hitbox ( - x1 y1 x2 y2 )
     x 2@ 2.> x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;
     
 : hit? ( obj obj - f )
     over free? over free? or if 2drop 0 exit then
-    >r [[ hitbox@ ]] r> [[ hitbox@ ]] overlap? ;
+    >r [[ @hitbox ]] r> [[ @hitbox ]] overlap? ;
 
 \ =============================================================================
 \ Scripting utilities
