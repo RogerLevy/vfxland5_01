@@ -73,7 +73,7 @@
 
 : .class ( class - )
     \ Print detailed information about a class
-    [[
+    {
     me valid-class? not if ." Not a valid class." exit then
     
     cr
@@ -89,11 +89,11 @@
     
     me .traits
     me .parents
-    ]] ;
+    } ;
 
 : .trait ( trait  - )
     \ Print detailed information about a class
-    [[
+    {
     me valid-trait? not if ." Not a valid trait." exit then
     
     cr
@@ -104,7 +104,7 @@
     ."     Dependents: " dependents .list
     
     me .parents
-    ]] ;
+    } ;
 
 
 || : ?.class ( thread# nfa - f )

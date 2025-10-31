@@ -37,7 +37,7 @@ create cb-p /screen allot
     i j ag spot @ ?dup if
         cr 
         i j pg spot @ ?dup if . ." priority " then
-        i . j . ." att " body>name type ."  *[[ ]]"
+        i . j . ." att " body>name type ."  *{ }"
     then ;
 
 : .ag ( - )
@@ -45,17 +45,17 @@ create cb-p /screen allot
 
 : priority  prio ! ;
 
-: *[[ ( class - )
+: *{ ( class - )
     at@ gap dup 2/ | row col class |  class col row ag spot !
     prio @ ?dup if col row pg spot !  0 prio ! then ;
     
-: ]] ; 
+: } ; 
 
 : middle  bmp @ bmpwh 2 2 2/ ;
 : sprite  middle 2negate +at  bmp @ put  middle +at ;
 
 : draw-class ( class - )
-    ?dup -exit  dummy [[ cla !  dummy init  sprite ]] ;
+    ?dup -exit  dummy { cla !  dummy init  sprite } ;
 
 : actorgrid ( - )
     tmh for tmw for

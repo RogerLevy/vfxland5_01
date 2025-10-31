@@ -118,22 +118,22 @@ include %idir%\toolbar.vfx
 include %idir%\palette.vfx
 
 \ Figure
-root [[
-    0 0 at object% el: be-ui [[
-        0 0 at toolbox% el: toolbox [[
-            0 16 at object% el [[
-                0 0 at info% el: info [[
-                ]]
-                0 16 at canvas% el: canvas [[
-                ]]
-                toolbar% el: toolbar [[
-                ]]
-                palette% el: palette [[
-                ]]
-            ]]
-        ]]
-    ]]
-]]
+root {
+    0 0 at object% el: be-ui {
+        0 0 at toolbox% el: toolbox {
+            0 16 at object% el {
+                0 0 at info% el: info {
+                }
+                0 16 at canvas% el: canvas {
+                }
+                toolbar% el: toolbar {
+                }
+                palette% el: palette {
+                }
+            }
+        }
+    }
+}
 
 \ Zooming
 : zoom!  1. 8. clamp dup canvas -> sx 2! ;

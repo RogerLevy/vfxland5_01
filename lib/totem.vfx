@@ -61,7 +61,7 @@ trait;
 \ =============================================================================
 
 : new? -> existed @ not ;
-: srcpath! ( path len totem - ) [[ >lowercase srcpath$ place ]] ;
+: srcpath! ( path len totem - ) { >lowercase srcpath$ place } ;
 : find-totem ( a len - totem|0 )
     -path >pad find if >body dup %totem is? and else drop 0 then ;
 : correct-ext? ( fn len class - flag ) -> extension$ count ext? ;
@@ -90,9 +90,9 @@ trait;
         $object
         dup class0 -> instances add-to
     then 
-    [[ 
+    { 
         path len >abspath me srcpath!
-    me ]] ;
+    me } ;
 
 || : @default-dir
     my-name
@@ -100,7 +100,7 @@ trait;
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize [[ @default-dir   ( changed on )   me ]] ;
+    bl parse   rot materialize { @default-dir   ( changed on )   me } ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).

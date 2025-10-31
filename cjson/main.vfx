@@ -69,7 +69,7 @@ class: actor
     prop x <fixed <save
     prop y <fixed <save
     prop hp <int <save
-    template [[ 5. x ! 10. y ! 15 hp ! ]]
+    template { 5. x ! 10. y ! 15 hp ! }
 class;
 
 actor object actor0
@@ -78,9 +78,9 @@ actor0 s" actor.json" save-object-json
 
 3 actor object-array scene0
 
-0 scene0 deref-index [[ 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! ]] 
-1 scene0 deref-index [[ 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! ]] 
-2 scene0 deref-index [[ 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! ]] 
+0 scene0 deref-index { 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! } 
+1 scene0 deref-index { 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! } 
+2 scene0 deref-index { 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! } 
 
 || 0 value arr 0 value path 0 value len 0 value cjson 0 value cjson-arr
 also cjson/ \ necessary because of how || works ... TODO: gonna revisit scope.vfx to fix stuff like this

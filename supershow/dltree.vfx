@@ -64,23 +64,23 @@
 
 : dleach  ( xt node -- )
     -> lowest @ ?dup if
-        [[
+        {
             begin  me while
                 next @ >r  dup >r execute r>  r> to me
             repeat
             drop
-        ]]
+        }
     else ( xt ) drop then ;
 
 : (dlorphan)  0 dup next ! dup prev ! parent ! ;
 
 : dlclear  ( node -- )
     -> lowest @ ?dup if
-        [[
+        {
             begin  me while
                 next @  (dlorphan)  to me
             repeat
-        ]]
+        }
         0 dup lowest ! highest !
     then ;
 
@@ -91,9 +91,9 @@
     dup #children >r -> lowest @ swap 0 r> umod for -> next @ loop ;
 
 : descendant? ( obj obj - f )
-    swap [[
+    swap {
         begin parent @ dup while
-            over = if   ]] drop -1   exit then
+            over = if   } drop -1   exit then
             parent @ to me
         repeat nip ( 0 )
-    ]] ;
+    } ;

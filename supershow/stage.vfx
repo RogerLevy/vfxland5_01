@@ -32,7 +32,7 @@ class: %actor
     prop id <int <save
     24 nprop tag$ <cstring <save
 
-    template [[ -1 id ! ]]
+    template { -1 id ! }
 
     static autoclass                \ flag
 class;
@@ -60,12 +60,12 @@ fast[
 
 continuation: actives> ( - ) ( - )
     ( xt ) {: xt :}
-    0 actor[] [[
+    0 actor[] {
         #actors for
             en @ if xt execute then
             /actor +to me
         loop
-    ]] ; 
+    } ; 
 
 fast]
 
@@ -150,7 +150,7 @@ fast]
 
 || : (find) ( 0 %actor - 0|actor )
     dup -> en @ 0= if drop exit then    
-    [[ xt execute if enough drop me then ]] ;
+    { xt execute if enough drop me then } ;
 
 continuation: who> ( - actor|0 ) ( - f )
     ( xt ) to xt
@@ -170,12 +170,12 @@ variable next#
 : floating ( - )
     physics> vx 2@ x 2+! ;
 
-%actor template [[
+%actor template {
     en on
     prio on
     -5 -5 x1 2!  10 10 w1 2!
     floating
-]]
+}
 
 : priority ( n - )
     0 #actors 1 - clamp next# ! ;
@@ -222,7 +222,7 @@ variable next#
     
 : hit? ( obj obj - f )
     over free? over free? or if 2drop 0 exit then
-    >r [[ @hitbox ]] r> [[ @hitbox ]] overlap? ;
+    >r { @hitbox } r> { @hitbox } overlap? ;
 
 \ =============================================================================
 \ Scripting utilities
@@ -230,12 +230,12 @@ variable next#
 
 : att ( col row - ) gap dup 2*  gap 2 / dup 2+  at ;
 
-: *[[ ( class - <code> ]] )
+: *{ ( class - <code> } )
     \ Parse-ahead instantiation for serialized objects/actors
-    \ Allows property settings between *[[ ]] that can be picked up by INIT
-    s" (one) [[ " evaluate
+    \ Allows property settings between *{ } that can be picked up by INIT
+    s" (one) { " evaluate
     ']' parse' evaluate  1 >in +!
-    s" me init ]]" evaluate ; immediate
+    s" me init }" evaluate ; immediate
 
 : passed? ( n - f ) time @ <= dup if 0 time ! then ;
 
@@ -283,7 +283,7 @@ c: %timer %actor xt1 dur ;
     xt1 ! 0 max dur ! act-timer ;
 
 continuation: timer> ( time. - ) ( - )
-    ( xt ) %timer one [[ (timer) ]] ;
+    ( xt ) %timer one { (timer) } ;
 
 \ =============================================================================
 \ Secondary actor storage
@@ -303,12 +303,12 @@ continuation: timer> ( time. - ) ( - )
 fast[
 continuation: temps> ( - ) ( - )
     ( xt )  {: xt :}
-    0 temp[] [[
+    0 temp[] {
         #temps for
             en @ if xt execute then
             /actor +to me
         loop
-    ]] ; 
+    } ; 
 fast] 
 
 : clear-temps ( - )
@@ -352,9 +352,9 @@ class: %actor-script
     is-a %totem
     static script-class \ <ref %class
     
-    template [[
+    template {
         %actor script-class !
-    ]]
+    }
 
     extension: vfx
     default-dir: scripts

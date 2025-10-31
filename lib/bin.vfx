@@ -46,7 +46,7 @@ borrow nib2/ prop+
 : serbin, ( obj - )
     \ serialize object into dictionary in binary format
     {: obj | property0 &count &psize tmpl-addr :}
-    obj [[ 
+    obj { 
         cla @ >name count $,
         version @ ,
         here to &count 0 , 
@@ -70,7 +70,7 @@ borrow nib2/ prop+
                 then
             then
         loop drop 
-    ]] ;
+    } ;
 
 || : skip-data ( a - a' )
     @+ + ;
@@ -128,12 +128,12 @@ borrow nib2/ prop+
     {: data xt | property0 :}
     data 
     @class+ ?dup if 
-        ( a class ) xt execute [[
+        ( a class ) xt execute {
             \ fetch properties into returned object
             @+ for
                 @property+ ?dup if cla @ des-property then
             loop
-        ]]
+        }
     then
     ( a' ) ;
 

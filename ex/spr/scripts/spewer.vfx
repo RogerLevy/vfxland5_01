@@ -9,5 +9,5 @@ class;
 : pos somewhere at ;
 
 %spewer :: init ( - )
-    act> pos %treat one [[ 4. -2. 2rnd -2. -2. 2+ vx 2! ]] ;
+    act> pos %treat one { 4. -2. 2rnd -2. -2. 2+ vx 2! } ;
 

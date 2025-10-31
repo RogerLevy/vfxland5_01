@@ -134,20 +134,20 @@ class;
 
 \ Utility words
 : make-scene ( filename-a filename-len name-a name-len - %scene )
-    %scene make [[
+    %scene make {
         scene-name place
         filename place
         0 actor-count !
         0 actors-data !
         0 actors-size !
         me refresh  \ Load from file if exists
-    me ]] ;
+    me } ;
 
 : save-current-scene ( filename-a filename-len name-a name-len - )
-    make-scene [[
+    make-scene {
         me capture-stage
         me save
-    ]] ;
+    } ;
 
 \ Example usage:
 \ s" test-scene.dat" s" Test Scene" make-scene object my-scene

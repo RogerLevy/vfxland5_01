@@ -14,7 +14,7 @@ require %vfxland5%/engineer/json.vfx
 also cjson/
 
 : load-tiled ( path len tilemap - )
-    [[ 
+    { 
         read-json {: cjson | layer tileset :}
         z" width" cjson get-int w !
         z" height" cjson get-int h !
@@ -29,4 +29,4 @@ also cjson/
         z" data" layer count-array for
             i over get-int 1 - ,
         loop drop
-    ]] ;
+    } ;

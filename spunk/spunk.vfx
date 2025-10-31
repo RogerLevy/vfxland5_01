@@ -51,10 +51,10 @@ class;
     unstashed drop ;
 
 : stashed ( %actor - actor' )
-    [[
+    {
         r# @ -1 <> if room# @ r# ! then
         me actor# a# !   *temp    me over /actor move   me unload 
-    ]] ;
+    } ;
 
 : stash ( %actor - )
     stashed drop ;

@@ -412,7 +412,7 @@ display-mode jumptable current-mode
     current-mode activate ;
 
 : draw-display-mode ( - )
-    current-mode [[ draw-xt ]] @ execute ;
+    current-mode { draw-xt } @ execute ;
 
 \ =============================================================================
 \ Public Words

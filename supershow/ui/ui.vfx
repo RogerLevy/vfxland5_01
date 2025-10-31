@@ -27,11 +27,11 @@ require %idir%\..\dltree.vfx
     loop  -1 abort" Out of elements" ;
 || : 1element  cla !  at@ 2>. x 2!  vis on  1. 1. sx 2!  en on ;
 : el ( class - %actor )
-    me >r alloc-element [[
+    me >r alloc-element {
         me r> dlpush
         1element me init
         me
-    ]] ;
+    } ;
 
 \ Definition
 : el: ( class - <name> a )
@@ -83,7 +83,7 @@ continuation: draw> ( - ) ( - )
 \   ['] (cycle-recursive) swap dleach ; is cycle-children
 
 \ Processing
-0 0 at alloc-element dup constant root [[ object% 1element ]]
+0 0 at alloc-element dup constant root { object% 1element }
 : ui ( - )
     \ 0 0 winw winh al_set_clipping_rectangle
     root act-children
@@ -94,7 +94,7 @@ continuation: draw> ( - ) ( - )
 
 \ Coordinates
 : p>local ( x. y. - x. y. )
-    parent @ ?dup if [[ recurse ]] then x 2@ 2- sx 2@ 2p/ ;
+    parent @ ?dup if { recurse } then x 2@ 2- sx 2@ 2p/ ;
 : >local ( x y - x y )
     2>. p>local 2.> ;
 
@@ -132,7 +132,7 @@ continuation: draw> ( - ) ( - )
 
 \ class test
 \ test :: init draw> s" Helo worl" print ;
-\ root [[
+\ root {
 \     0 0 at test el value e1
 \     50 50 at test el value e2
-\ ]]
+\ }

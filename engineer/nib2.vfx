@@ -124,11 +124,11 @@ variable osp   os osp ! \ object stack pointer
 \ Object scoping
 \ ==============================================================================
 
-redef : [[ ( object - ) me osp @ !  4 osp c+!  to me ;
-redef : ]] ( - ) -4 osp c+!  osp @ @ to me ;
+redef : { ( object - ) me osp @ !  4 osp c+!  to me ;
+redef : } ( - ) -4 osp c+!  osp @ @ to me ;
 : you ( - object ) osp @ cell- @ ;
 : that ( - object ) osp @ @ ;
-continuation: as> ( %actor - ) ( - ) swap [[ ( xt ) execute ]] ;
+continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
 
 : as ( object - )
     \ Bind the given object and switch to its vocabulary if it has one
@@ -170,18 +170,18 @@ to /static
 || : (classifier) ( class - class )
     here swap , /classifier cell- allot&erase
     dup to classifier
-    [[
+    {
         /classifier instance-size !
         allocate-classifier-id
-    me ]]  ;
+    me }  ;
     
 : (init-class) ( - )
     MAGIC_CLASSIFIER magic ! ;
     
-create %class %class (classifier) [[ (init-class) ]]
+create %class %class (classifier) { (init-class) }
 
 || : create-class ( <name> - class )
-    create %class (classifier) dup [[ (init-class) ]] ;
+    create %class (classifier) dup { (init-class) } ;
 
 redef : sizeof ( class|object - n )
     dup >cla @ %class = if -> instance-size @
@@ -194,21 +194,21 @@ redef : sizeof ( class|object - n )
 : (init-trait) ( - )
     MAGIC_CLASSIFIER magic ! ;
 
-create %object 0 (classifier) [[
+create %object 0 (classifier) {
     (init-trait)
-]]
+}
 
 : (add-object-system-trait-bit) ( - )
     %object -> classifier# @ id-table set-bit ;
 
-create-class %trait [[
+create-class %trait {
     (add-object-system-trait-bit)
-]]
+}
 
-%object [[
+%object {
     %trait cla !
     (add-object-system-trait-bit)
-]]
+}
 
 \ ==============================================================================
 \ Object instantiation
@@ -227,14 +227,14 @@ create-class %trait [[
 
 : scaffold ( class addr - )
     swap over >cla !   \ Store class pointer
-    [[ me !template ]] ;
+    { me !template } ;
 
 redef : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
-    [[
+    {
         me !template
         cla @ -> constructor-xt @ ?dup if execute then
-    ]] ;
+    } ;
     
 redef : make ( ... class - object )
     \ TODO: validate class
@@ -252,12 +252,12 @@ redef : make ( ... class - object )
 \ Members
 \ ==============================================================================
 
-create %property  %class make [[
+create %property  %class make {
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
     dup instance-size ! next-ofs !
-]]
+}
 
 \ Property metadata structure - class-specific
 0
@@ -283,15 +283,15 @@ constant /property-metadata
 : >serialize-flag ( property class - field-addr )
     >property-metadata -> serialize-flag ;
 
-create %static  %class make [[
+create %static  %class make {
     %property -> instance-size @
     dup instance-size ! next-ofs !
-]]
+}
 
-create %protocol  %class make [[
+create %protocol  %class make {
     %static -> instance-size @
     dup instance-size ! next-ofs !
-]]
+}
 
 || : has-field-space? ( class - b )
     -> field-space-size @ 0<> ;
@@ -299,10 +299,10 @@ create %protocol  %class make [[
 : field-space ( n - )
     classifier >cla @ %trait = 
         abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
-    classifier [[
+    classifier {
         field-space-size !
         field-space-size @ instance-size !
-    ]] ;
+    } ;
 
 : begin-classifier ( class - )
     push-order only forth definitions
@@ -337,10 +337,10 @@ create %protocol  %class make [[
  
 : create-property ( <name> - property ) 
     push-order only forth definitions 
-    create %property make [[
+    create %property make {
         2 cells allocate-static-offset
         MAGIC_PROPERTY magic !
-    me ]]     
+    me }     
     s" does-property" evaluate   \ late-bound for easy Oversight integration
     pop-order ;  
     
@@ -355,7 +355,7 @@ create %protocol  %class make [[
 
 : map-property ( size property - )
     \ map property for current class
-    [[
+    {
         classifier has-field-space? if
             classifier -> next-ofs @ cell +  \ TEMP: using cell instead of property-size @
             classifier -> field-space-size @ >
@@ -369,9 +369,9 @@ create %protocol  %class make [[
         ( size ) 
         dup me classifier >property-size !
         classifier -> next-ofs +!
-    ]]
+    }
     classifier has-field-space? not if            
-        classifier [[ next-ofs @ instance-size ! ]]
+        classifier { next-ofs @ instance-size ! }
     then ;
 
 : map-property-copy ( property classifier - )
@@ -475,10 +475,10 @@ create %protocol  %class make [[
     classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
     %static already? if drop ' drop exit then
     push-order only forth definitions
-    create %static make [[
+    create %static make {
         ( size ) allocate-static-offset
         MAGIC_FIELD magic !
-    ]]
+    }
     pop-order
     does> -> offset @ cla @ + ;
 
@@ -576,12 +576,12 @@ create %protocol  %class make [[
         exit
     then
     %class begin-classifier
-    classifier [[
+    classifier {
         (init-class) 
         /object-base instance-size !
         /object-base next-ofs !
         %object classifier -1 apply-trait 
-    ]] ;
+    } ;
 
 : >template ( class - a )
     {: class0 :}
@@ -622,9 +622,9 @@ create %protocol  %class make [[
         exit
     then
     %trait begin-classifier
-    classifier [[
+    classifier {
         (init-trait)
-    ]] ;
+    } ;
 
 : trait;
     end-classifier ;
@@ -643,7 +643,7 @@ debug @ [if]
 defer protocol-validations ( obj protocol - obj protocol )
 
 : does-protocol ( - ) ( ... obj - ... )
-    does> protocol-validations swap [[
+    does> protocol-validations swap {
         dup -> offset @ cla @ + @ ?dup if
             nip ( xt )
         else
@@ -654,7 +654,7 @@ defer protocol-validations ( obj protocol - obj protocol )
             f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
         then
         ( xt ) oexec
-    ]] ;
+    } ;
 
 : ?-% ( a len - a' len' )
     over c@ '%' = if
@@ -686,14 +686,14 @@ redef : ; ( - )
 
 : implement-protocol ( protocol classifier - )
     {: protocol0 c | name[ 256 ] :} 
-    protocol0 [[
+    protocol0 {
         my-name name[ place
         c body>name 
         name[ count
         :method ( xt ) c offset @ + protocol-link 2!
         s" ?compile-validate-dispatch" evaluate
         c c offset @ + >origin !  \ Store class as origin when class implements protocol
-    ]] ;
+    } ;
 
 : define-protocol ( trait <name> - ) ( ... object - ... )
     {: trait0 | class0 protocol0 buf[ 256 ] :}
@@ -703,17 +703,17 @@ redef : ; ( - )
     else
         create %protocol make 
         does-protocol
-        [[
+        {
             2 cells allocate-static-offset
-        me ]]
+        me }
     then
     to protocol0
     
-    protocol0 [[
+    protocol0 {
         me trait0 supports-protocol? not if
             me trait0 add-protocol
         then
-    ]]
+    }
     
     \ Compile the default behavior in the trait
     protocol0 trait0 implement-protocol
@@ -759,10 +759,10 @@ redef : ; ( - )
 : :construct ( #params class - )
     classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
     dup >cla @ %class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
-    [[
+    {
         constructor-#params !    
         my-name s" construct" :method constructor-xt !
-    ]] ;
+    } ;
 
 : derive ( class - )
     {: source-class | dest-class :}
@@ -773,11 +773,11 @@ redef : ; ( - )
     classifier to dest-class
 
     \ Copy size fields
-    source-class [[ instance-size @ next-ofs @ field-space-size @ ]]
-    dest-class [[
+    source-class { instance-size @ next-ofs @ field-space-size @ }
+    dest-class {
         field-space-size @ max field-space-size !
         next-ofs !
-        instance-size @ max instance-size ! ]]
+        instance-size @ max instance-size ! }
     
     \ Copy statics
     source-class /classifier-base +
@@ -817,11 +817,11 @@ redef : ; ( - )
     next-classifier# @ for
         i dest-class -> id-table test-bit
         i dest-class -> can-table test-bit or if
-            i cells classifiers + @ [[ 
+            i cells classifiers + @ { 
                 cla @ %trait = if
                     dest-class me track-dependent
                 then
-            ]]
+            }
         then
     loop
 
@@ -834,17 +834,17 @@ redef : ; ( - )
 : :apply ( trait  - ) ( trait dest-class - )
     dup >cla @ %trait <> 
         abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
-    [[ my-name s" apply" :method on-apply-xt ! ]] ;
+    { my-name s" apply" :method on-apply-xt ! } ;
 
 : :derive ( class - ) ( source-class derived-class - )
     dup >cla @ %class <> 
         abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
-    [[ my-name s" derive" :method on-derive-xt ! ]] ;
+    { my-name s" derive" :method on-derive-xt ! } ;
 
 : :reopen ( class - ) ( class - )
     dup >cla @ %class <> 
         abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
-    [[ my-name s" reopen" :method on-reopen-xt ! ]] ;
+    { my-name s" reopen" :method on-reopen-xt ! } ;
 
 \ ==============================================================================
 \ Misc
@@ -992,7 +992,7 @@ aka instance make  \ Backward compatibility
 
 : .object ( object - )
     dup valid-object? not if .data exit then
-    [[ cla @ .name me .data me . ]] ;
+    { cla @ .name me .data me . } ;
 
 : inspect-property ( property val-addr classifier - )
     {: property val-addr classifier :} 
@@ -1013,14 +1013,14 @@ aka instance make  \ Backward compatibility
     -> offset @ over >cla @ + @ + ;
 
 : .props ( object - )
-    [[
+    {
         cla @ -> property-list list-count for
             @next           \ get property
             me over prop+   \ get field address
             cla @ 
             ."     " inspect-property
         loop drop 
-    ]] ;
+    } ;
 
 : o. ( object - )
     dup .object cr .props ;

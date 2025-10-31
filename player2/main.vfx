@@ -60,7 +60,7 @@ variable #tossed
 : *tosser  
     %actor one as> n2 ! #tossed @ 1. * n1 ! 1 #tossed +! 
     act> n1 @ passed? -exit 
-    me 0 0 from n2 @ one [[ -1.25 -4. vx 2! act-gravity ]] 
+    me 0 0 from n2 @ one { -1.25 -4. vx 2! act-gravity } 
     me unload -1 #tossed +! ;
 
 : toss  blackbeard0 0 0 from  *tosser ;

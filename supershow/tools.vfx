@@ -91,7 +91,7 @@ engineer/
     bl parse f" %s.vfx" to len to fn
     fn len class0 >default-dir 2dup
     file-exists? abort" Script already exists"
-    class0 materialize [[
+    class0 materialize {
         my-name -ext n[ place
         srcpath$ count file-exists? not if
             srcpath$ count write[
@@ -101,7 +101,7 @@ engineer/
                 f"     %s derive" line,
                 n[ count has-image? if
                     n[ count 
-                    f"     template [[ %s.png bmp ! ]]" line,
+                    f"     template { %s.png bmp ! }" line,
                 then
                 s" class;" line,
                 nl,
@@ -114,7 +114,7 @@ engineer/
         then
         n[ count f" locate %s" evaluate 
         me 
-    ]] ;
+    } ;
 
 : +actor ( - <name> )
     %actor-script +script drop ;

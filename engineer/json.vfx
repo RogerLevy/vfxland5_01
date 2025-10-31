@@ -55,7 +55,7 @@ borrow nib2/ prop+
 
 : add-properties-to ( obj cjson - )
     {: obj cjson | property0 tmpl-addr :}
-    obj [[
+    obj {
         cla @ >zname z" class" cjson add-string
 
         cla @ -> property-list list-count for
@@ -69,7 +69,7 @@ borrow nib2/ prop+
                 cjson property0 ser-property-json 
             then
         loop drop 
-    ]] ;
+    } ;
 
 : save-object-json ( object path len - )
     serjson> add-properties-to ;
@@ -79,7 +79,7 @@ borrow nib2/ prop+
 
 : get-properties ( cjson obj - )
     {: cjson obj | property0 :}
-    obj [[
+    obj {
         cla @ -> property-list list-count for
             @next to property0
             property0 cla @ >serialize-flag @  if
@@ -89,7 +89,7 @@ borrow nib2/ prop+
                 then
             then
         loop drop 
-    ]] ;
+    } ;
 
 : read-json ( path len - cjson )
     file@ udup parse-json swap free drop ;

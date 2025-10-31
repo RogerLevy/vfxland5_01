@@ -54,7 +54,7 @@ trait;
     item-count @ 0= ;
 
 : in-bounds? ( n iterable - b )
-    [[ dup 0 item-count @ 1 - within? ]] ;
+    { dup 0 item-count @ 1 - within? } ;
 
 %iterable :: ?bounds ( n - n )
     me in-bounds? not abort" ?BOUNDS >> Index out of range!" ;
@@ -192,16 +192,16 @@ class;
 \ ------------------------------------------------------------------------------
 
 : array[ ( item-size - array )
-    0 swap %array make [[
-    here data !  me ]] ;  \ just to be sure
+    0 swap %array make {
+    here data !  me } ;  \ just to be sure
 
 : array] ( array - array )
-    [[ here data @ - item-size @ /
-    dup item-count ! max-items !   me ]] ;
+    { here data @ - item-size @ /
+    dup item-count ! max-items !   me } ;
 
 : pad-array  ( array count - array )
     \ Pad out an array being built, to given count
-    over [[ data @ item-size @ rot * + here - allot&erase ]] ;
+    over { data @ item-size @ rot * + here - allot&erase } ;
 
 redef : array ( max width - <name> )
     %array object ;
@@ -216,9 +216,9 @@ class;
 
 : object-array ( n class <name> - )
     {: count class0 :}
-    create count class0 sizeof %object-array make [[
+    create count class0 sizeof %object-array make {
         count for
             class0 i me [] construct
         loop
-    ]] ;
+    } ;
 

@@ -51,7 +51,7 @@ class;
 \ : reslice-tileset ( tw th %tileset - )
 \     \ slice up source bitmap, creating a new range of sub-bitmaps
 \     \ use this at dev-time to change the tile size or if the bitmap's size increased.
-\     dup unload   [[   tw 2!   me slice-tileset   me keep   ]] ;
+\     dup unload   {   tw 2!   me slice-tileset   me keep   } ;
 
 \ %tileset :: use ( - )
 \     baseid @ pile ! ;
@@ -87,14 +87,14 @@ class;
 : @array+ ( a array - a' )
     \ assumes cell array
     {: | n :}
-    [[
+    {
         @+ to n 
         n if
             n me redim
             dup data @ n cells move
             n cells +
         then 
-    ]] ;
+    } ;
 
 || : des-tileset ( - )
     desbin>
@@ -128,7 +128,7 @@ class;
         metas-array @ array, ;
 
 : +tileset ( bmp# tw th <name> - )
-    %tileset +totem [[ tw 2! bmp ! me ]] dup load keep ;
+    %tileset +totem { tw 2! bmp ! me } dup load keep ;
 
 : is-tile? ( n - f )
     >albmp dup -exit al_is_sub_bitmap ;

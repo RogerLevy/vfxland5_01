@@ -61,7 +61,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     \ userdata is the request
     {: ptr size nmemb req | cjson :}
     size nmemb * 0= if 0 exit then
-    req [[
+    req {
         op-handle @ >r   op @ op-handle !
         ptr size nmemb * response$ wplace
         ptr size nmemb * parse-json to cjson
@@ -73,7 +73,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         cjson delete-cjson
         r> op-handle !        
         ptr size nmemb * 
-    ]] ;
+    } ;
 
 : *request ( aclient - request )
     as>
@@ -82,7 +82,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
             dup -> en @ 0= if
                 1 #requests +!
                 request over construct
-                [[ en on   me ]] unloop exit
+                { en on   me } unloop exit
             else drop then
         loop 
         -1 abort" Out of request objects" ;
@@ -92,7 +92,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     url len zurl[ zplace
     url len type cr
 
-    aclient *request [[
+    aclient *request {
         curl_easy_init to easy
         easy 0= abort" curl_easy_init failed"
         easy easy-handle !
@@ -103,14 +103,14 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         easy CURLOPT_WRITEFUNCTION standard-cb curl_easy_setopt  \ standard callback
         easy CURLOPT_WRITEDATA me curl_easy_setopt  \ set userdata = the request
         consoledev op ! 
-    me ]] ;
+    me } ;
 
 : sendoff ( request aclient - )
-    over [[ 
+    over { 
         streaming @ if
             easy-handle @ CURLOPT_TIMEOUT 0 curl_easy_setopt 
         then 
-    ]]
+    }
     -> multi-handle @   swap -> easy-handle @   curl_multi_add_handle 
     ?dup if
         f" curl_multi_add_handle failed with err # %n" -1 -rot .abort
@@ -123,7 +123,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
 
 public
 : remove-request ( request aclient - )
-    [[ -> en off   -1 #requests +! ]] ;
+    { -> en off   -1 #requests +! } ;
 private
 
 : handle-curl-msg ( curl-msg aclient - )
@@ -144,14 +144,14 @@ private
             msg msg.handle @ f" handle-curl-msg >> Handle %n not found" type cr
             exit
         then
-        req [[
+        req {
             sp@ >r 
             on-completion-xt @ ?dup if 
                 execute 
             then
             r> sp!
             headers @ ?dup if curl_slist_free_all then
-        ]] 
+        } 
         req -> streaming @ not if 
             multi-handle @ handle curl_multi_remove_handle
             handle curl_easy_cleanup
@@ -190,9 +190,9 @@ aclient :: process ( - )
 continuation: get> ( ... url len aclient - ) ( ... - )
     ." GET: " cr
     ( xt ) {: url len aclient xt :}
-    url len aclient /request [[ /get  xt execute   me ]] aclient sendoff ;
+    url len aclient /request { /get  xt execute   me } aclient sendoff ;
 
 continuation: post> ( ... url len aclient - ) ( ... - )
     ." POST: " cr
     ( xt ) {: url len aclient xt :}
-    url len aclient /request [[ /post  xt execute   me ]] aclient sendoff ;
+    url len aclient /request { /post  xt execute   me } aclient sendoff ;

@@ -155,11 +155,11 @@ cstring wordname$
 : create-contract ( addr:word-name len:word-name -- contract )
     \ Create new contract object for named word
     2dup qualify-name >$ $create 
-    /contract struct [[
+    /contract struct {
         word-name$ place
         1 #contracts +!
         enabled on
-    me ]] ;
+    me } ;
 
 : lookup-contract-current ( addr:word-name len:word-name -- contract | 0 )
     \ Look up contract by word name, return 0 if not found
@@ -182,13 +182,13 @@ cstring wordname$
 : create-validation ( validator -- validation )
     \ Create validation instance from validator function and type
     {: vtor :}
-    /validation struct [[
+    /validation struct {
         vtor -> level @ level !
         0 xt !                          \ Will fetch dynamically from validator
         vtor validator !
         vtor body>name test-name$ place
         enabled on
-    me ]] ;
+    me } ;
 
 : set-pre-validation ( validation contract -- )
     \ Attach validation to contract (pre)
@@ -305,10 +305,10 @@ errdef err_oversight "ERR: Validation failed."
 
 : walk-contract ( xt contract - ) ( validation - )
     {: xt c :}
-    c [[
+    c {
         pre-val @ xt execute 
         post-val @ xt execute
-    ]] ;
+    } ;
 
 0 value each-contract-xt
 
@@ -368,14 +368,14 @@ public
     \ Create a new validator with specified type - now caches source
     {: vtype | src-addr src-len :}
     create
-    /validator struct [[
+    /validator struct {
         vtype level !
         0 xt !                          \ Not compiled yet
         cache-source
         source-len !            \ Store source length
         source-addr !          \ Store source address
         0 compiled? !                   \ Not compiled yet
-    ]] ;
+    } ;
 
 \ =============================================================================
 \ Contract Attachment - Stack-based Syntax
@@ -480,10 +480,10 @@ public
 
 : .validation ( validation -- )
     ?dup -exit
-    [[
+    {
         test-name$ count type space
         enabled @ if ." (ENABLED)" else ." (DISABLED)" then
-    ]] ;
+    } ;
     
 : >contract ( xt -- contract )
     dup >r xt>wid >r         \ Get its wordlist
@@ -499,10 +499,10 @@ public
     ' >contract ?dup 0= if
         ." No contract found for that word. " cr
     else
-        [[
+        {
             ." Pre: " pre-val @ .validation cr
             ." Post: " post-val @ .validation cr
-        ]]
+        }
     then ;  
 
 \ =============================================================================
@@ -612,13 +612,13 @@ public
 || variable validator-xt
 
 || : ?disable-validation ( validation - )
-    [[ 
+    { 
         xt @ validator-xt @ = if
             ." disabling for "
             the-contract @ body>name 9 - type 
             enabled off
         then
-    ]] ;
+    } ;
     
 : disable-contract-validator ( contract - )
     dup the-contract !
@@ -629,13 +629,13 @@ public
     ['] disable-contract-validator each-contract ; 
 
 || : ?enable-validation ( validation - f )
-    [[ 
+    { 
         xt @ validator-xt @ = if
             ." enabling for "
             the-contract @ body>name 9 - type 
             enabled on
         then
-    ]] -1 ;
+    } -1 ;
 
 : enable-contract-validator  ( contract - )
     dup the-contract !
