@@ -17,3 +17,5 @@ aka wslurp lslurp
 aka *wstring *lstring
 redef aka w$, l$,
 aka w$@+ l$@+ 
+
+aka 2i 2pfloor

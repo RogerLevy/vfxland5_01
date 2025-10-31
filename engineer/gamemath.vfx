@@ -7,6 +7,8 @@ aka d@ 2@
 aka d! 2!
 : x@ @ ;
 : y@ cell+ @ ;
+: x! ! ;
+: y! cell+ ! ;
 : 2@ dup @ swap 4 + @ ;
 : 2! dup >r 4 + ! r> ! ;
 : 2+! dup >r 4 + +! r> +! ;
@@ -24,7 +26,7 @@ redef : 2/  rot swap / >r / r> ;
 : 2f>p f>p f>p swap ;
 : 2p. swap p. p. ; 
 : 2p? 2@ 2p. ;
-: 2i pfloor swap pfloor swap ;
+: 2pfloor pfloor swap pfloor swap ;
 : 2p* ( x. y. x. y. - x. y. ) rot p* >r p* r> ;
 : 2p/ ( x. y. x. y. - x. y. ) rot swap p/ >r p/ r> ;
 
