@@ -118,20 +118,20 @@ defer voice? ( smp - f )
     clear-handles ;
 
 : load-samples ( - )
-    s" smp" >datadir dir-exists? -exit
+    s" smp" find-dat-path dir-exists? -exit
     clear-handles
     current @ also forth definitions
-    s" smp" >datadir ['] (load-sample) each-file
+    s" smp" find-dat-path ['] (load-sample) each-file
     previous current ! ;
 
 : init-samples ( - )
     load-samples ;
 
 : reload-samples ( - )
-    s" smp" >datadir dir-exists? -exit
+    s" smp" find-dat-path dir-exists? -exit
     clear-handles
     current @ also forth definitions
-    s" smp" >datadir ['] (reload-sample) each-file
+    s" smp" find-dat-path ['] (reload-sample) each-file
     previous current ! ;
 
 \ =============================================================================
@@ -144,7 +144,7 @@ defer voice? ( smp - f )
     \ strm ?dup if  al_destroy_audio_stream  0 to strm  then
     locals| lm |
     strm ?dup if  0 al_set_audio_stream_playing drop  then
-    s" bgm\" >datadir f" %s%s"
+    s" bgm\" find-dat-path f" %s%s"
     >zpad 3 2048 al_load_audio_stream 
         dup 0= if ." Unable to stream audio file." then
         ?dup -exit

@@ -5,7 +5,7 @@
 redef : ticks  ( n - ms )
     s>f 1000e tps f/ f* f>s ;
 
-: !delta  ( - )
+: update-delta  ( - )
     ustime  ucounter 2dup to ustime  2swap 2-
         d>s to usdelta
     usdelta s>f 1000000e f/ to sdelta
@@ -42,7 +42,7 @@ GetForegroundWindow value vfx-hwnd
 : winmode ( - )
     2 zoom ! 
     appw apph fullscreen? resize-display
-    !delta !delta ;
+    update-delta update-delta ;
 
 : w/f ( - )
     \ Display mode switching for release builds

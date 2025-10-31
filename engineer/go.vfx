@@ -4,7 +4,7 @@
 
 || : pre ( - )
     0 #tib ! postpone \\ 
-    !delta !delta 
+    update-delta update-delta 
     need-pump on ;
     
 continuation: show> ( - ) ( - )
@@ -66,7 +66,7 @@ redef : event? ( - f )
     0e begin spin f+ fdup 1e tps f/ f>= until fdrop
     to ustime
     display al_flip_display
-    !delta
+    update-delta
     pump 
     poll ;
 

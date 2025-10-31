@@ -20,8 +20,8 @@
 
 : create-autoclasses
     ." Creating autoclasses..." cr
-    s" gfx" >datadir dir-exists? -exit
+    s" gfx" find-dat-path dir-exists? -exit
     push-order
-        s" gfx" >datadir
+        s" gfx" find-dat-path
         ['] create-autoclass each-file
     pop-order ;

@@ -15,5 +15,5 @@ create mickeyx 0 , 0 , here cell- constant mickeyy
     rb to <rb
     poll-mouse
     mousex 2@ 
-    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2>. +m inverse 2p*m -m 2.> mousex 2!
+    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2>p +m inverse 2p*m -m 2>i mousex 2!
     mousex 2@ 2swap 2- mickeyx 2! ;

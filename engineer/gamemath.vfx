@@ -18,13 +18,13 @@ redef : 2/  rot swap / >r / r> ;
 : 2mod rot swap mod >r mod r> ;
 : 2negate swap negate swap negate ;
 : 2s>f swap s>f s>f ;
-: 2.> .> swap .> swap ;  
-: 2>. >. swap >. swap ;
+: 2>i >i swap >i swap ;  
+: 2>p >p swap >p swap ;
 : 2p>f swap p>f p>f ;
 : 2f>p f>p f>p swap ;
 : 2p. swap p. p. ; 
 : 2p? 2@ 2p. ;
-: 2i 1i swap 1i swap ;
+: 2i pfloor swap pfloor swap ;
 : 2p* ( x. y. x. y. - x. y. ) rot p* >r p* r> ;
 : 2p/ ( x. y. x. y. - x. y. ) rot swap p/ >r p/ r> ;
 

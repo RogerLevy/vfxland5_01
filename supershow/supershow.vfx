@@ -74,7 +74,7 @@ include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
         FILE_ACTION_ADDED of
             ." FILE_ACTION_ADDED" cr
             %totem -> dependents list-count for
-                @next {
+                list-next {
                     changed-file me -> default-dir$ count strin? if
                         changed-file '.' ending me -> extension$ count s= if
                             ." New file discovered!" cr

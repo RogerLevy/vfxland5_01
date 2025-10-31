@@ -92,7 +92,7 @@ continuation: tsr>  ( xt ) >r +m transform 0 0 at r> execute -m ;
 
 : edit ( - <tileset> )
     >in @ ' execute 0 tile t0 ! >in !
-    bl parse -ext s" gfx\" >datadir f" %s%s.dat" load ;
+    bl parse -ext s" gfx\" find-dat-path f" %s%s.dat" load ;
 
 public
 

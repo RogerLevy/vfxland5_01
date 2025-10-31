@@ -70,7 +70,7 @@ variable hsplit   0.5 hsplit !
 : lines ( n - h )
     24 * ;
 
-: zoomed-game z >. dup scaled> draw-game ;
+: zoomed-game z >p dup scaled> draw-game ;
 
 : margin-x  split-x 2 / appw 2 / z * - ;
 : margin-y  z 1 = if 200 else 50 then ;
@@ -262,7 +262,7 @@ assign (DoAbortMessage) to-do DoAbortMessage
 : obey ( - )
     osp @ >r uiosp @ osp !
     .tib cr 
-    tib #tib @ >interpret
+    tib #tib @ interpret-string
     out @ if cr then
     ?dup if .throw cr rs state off then 
     0 #tib ! 
@@ -493,7 +493,7 @@ is draw-ide
     welcome ;
 
 : ide-interpret ( a len - res )
-    hist[ >interpret out @ if cr then hist] ;
+    hist[ interpret-string out @ if cr then hist] ;
 
 : ide-quit
     ." IDE-QUIT" cr

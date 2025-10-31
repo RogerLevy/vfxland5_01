@@ -7,7 +7,7 @@ cstring command$
 : interpret-action ( - )
     exit
     hist[
-    \ command$ count >interpret
+    \ command$ count interpret-string
     \ >str if cr then
     \ ?dup if ( s[ ) .throw ( s] add-history ) rs state off then
     hist] ;

@@ -197,10 +197,6 @@ aka parse' parse
     base !
     space ;
 
-variable saved-dp
-: d[ ( a - ) dp @ saved-dp ! dp ! ;
-: d] ( - ) saved-dp @ dp ! ;
-
 : (.rs) ( a -- )
     {: rp :}
     3 push-attribute
@@ -278,7 +274,7 @@ aka se" s\"        \ " \ syntax highlight guard
         .-
     then then then ;
 
-: >interpret ( a len - res )
+: interpret-string ( a len - res )
     to-source
     -1 to source-id
     0 >in !
@@ -321,13 +317,13 @@ variable old-dp
   
 cstring lastword
 : find  dup count lastword place  find ;
-: !lastword  preword count lastword place ;
-: '  !lastword  ' ;
-: [']  !lastword  postpone ['] ; immediate    
-: locate  !lastword locate ;
-: see  !lastword see ;
-: show  !lastword show ;
-: aka  !lastword aka ;
+: save-next-word  preword count lastword place ;
+: '  save-next-word  ' ;
+: [']  save-next-word  postpone ['] ; immediate    
+: locate  save-next-word locate ;
+: see  save-next-word see ;
+: show  save-next-word show ;
+: aka  save-next-word aka ;
 
 aka save-exe save
 

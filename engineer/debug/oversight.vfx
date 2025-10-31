@@ -440,12 +440,12 @@ public
     then
     c ;
 
-: say-before ( -- ) ( <word-name> <message...> )
+: say-before ( -- ) ( <word-name> <message..>i )
     \ Set debug message to display before word execution
     bl parse ensure-contract >r 
     0 parse r> -> pre-str$ place ;
 
-: say-after ( -- ) ( <word-name> <message...> )
+: say-after ( -- ) ( <word-name> <message..>i )
     \ Set debug message to display after word execution
     bl parse ensure-contract 
     0 parse r> -> post-str$ place ;

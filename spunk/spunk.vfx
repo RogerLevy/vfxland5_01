@@ -21,7 +21,7 @@ variable room#
 \ Low-level stuff
 \ =============================================================================
 
-: roombase$  room# @ s" map\room" >datadir f" %s%03n" >pad count ;
+: roombase$  room# @ s" map\room" find-dat-path f" %s%03n" >pad count ;
 : room-datfile  roombase$ f" %s.dat" ;
 : room-scnfile  roombase$ f" %s.vfx" ;
 : screen  1023 and /screen * mram + ;

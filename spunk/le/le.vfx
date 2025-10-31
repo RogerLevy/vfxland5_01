@@ -138,7 +138,7 @@ create cb-p /screen allot
     room ;
     
 : @roombase
-    bl parse s" map\" >datadir f" %s%s" roombase$ place ;
+    bl parse s" map\" find-dat-path f" %s%s" roombase$ place ;
 
 : saveas ( - <path> )
     @roombase save ;
@@ -162,7 +162,7 @@ create cb-p /screen allot
 : logic
     begin event? while
         ALLEGRO_EVENT_MOUSE_AXES happened? if
-            the-mouse 2>. +m inverse 2p*m -m 2.> mousex 2!
+            the-mouse 2>p +m inverse 2p*m -m 2>i mousex 2!
             actormode @ not if
                 the-wheel ?dup if t+! then
             then

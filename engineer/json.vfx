@@ -59,7 +59,7 @@ borrow nib2/ prop+
         cla @ >zname z" class" cjson add-string
 
         cla @ -> property-list list-count for
-            @next to property0
+            list-next to property0
             property0 cla @ >serialize-flag @  if
 
                 \ get the property address in the instance and in the template
@@ -81,7 +81,7 @@ borrow nib2/ prop+
     {: cjson obj | property0 :}
     obj {
         cla @ -> property-list list-count for
-            @next to property0
+            list-next to property0
             property0 cla @ >serialize-flag @  if
                 property0 >zname cjson get-item if
                     me property0 prop+ to val-addr
@@ -92,5 +92,5 @@ borrow nib2/ prop+
     } ;
 
 : read-json ( path len - cjson )
-    file@ udup parse-json swap free drop ;
+    load-file udup parse-json swap free drop ;
 

@@ -3,7 +3,7 @@ require %vfxland5%/engineer/json.vfx
 
 also cjson/
 
-s" test.json" file@ parse-json value it
+s" test.json" load-file parse-json value it
 
 : user[] z" users" it get-array get-item ;
 0 user[] cjson. cr

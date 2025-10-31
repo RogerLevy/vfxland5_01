@@ -105,7 +105,7 @@ previous
     wd@ mondir
 ;
 
-|| : @homepath ( - )
+|| : find-home-path ( - )
     wd@ '\' ending s" bin" compare 0= if
         s" .." $cwd
     then
@@ -116,7 +116,7 @@ previous
     rs
     hold off
     debug @ if init-dev then
-    @homepath
+    find-home-path
     init-mersenne
     init-allegro
     *display

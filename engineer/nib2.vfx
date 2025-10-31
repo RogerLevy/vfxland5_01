@@ -71,7 +71,7 @@ redef : test-bit ( bit# adr - b )
     >r 8 /mod ( bit-ofs byte-ofs )
     r> + c@ 1 rot lshift and 0<> ;
 
-: @next ( node - next-node item )
+: list-next ( node - next-node item )
     dup @ swap cell+ @ ;
 
 \ Forward-Linked List
@@ -101,7 +101,7 @@ redef : test-bit ( bit# adr - b )
     {: src dest :}
     dest /list erase  \ re-initialize head
     src list-count for
-        @next dest add-to
+        list-next dest add-to
     loop drop ;
 
 : .list ( list - )
@@ -109,7 +109,7 @@ redef : test-bit ( bit# adr - b )
     0 to cnt 
     list-count for 
         cnt 0 = if cr 2 indent then
-        @next .name space
+        list-next .name space
         cnt 1 + 10 mod to cnt  
     loop drop cr ;
 
@@ -396,7 +396,7 @@ create %protocol  %class make {
 : has-unmapped-properties? ( trait - bool )
     {: trait0 :}
     trait0 -> property-list list-count for
-        @next ( property ) is-property-mapped? not if
+        list-next ( property ) is-property-mapped? not if
             -1 leave
         then
     loop drop
@@ -462,7 +462,7 @@ create %protocol  %class make {
     
     \ Propagate the property to dependents
     classifier -> dependents list-count for
-        @next classifier >r to classifier
+        list-next classifier >r to classifier
             size property0 ?map-property
         r> to classifier
     loop drop
@@ -492,7 +492,7 @@ create %protocol  %class make {
 : track-dependent ( src-classifier dest-classifier - )
     {: src dest :}
     dest -> dependents list-count for
-        @next src = if drop unloop exit then
+        list-next src = if drop unloop exit then
     loop drop 
     src dest -> dependents add-to ;
 
@@ -523,7 +523,7 @@ create %protocol  %class make {
     
     \ Merge protocols
     trait0 -> protocol-list list-count for
-        @next to protocol0
+        list-next to protocol0
         
         \ Avoid clobbering already supported protocols if "upgrading"
         \ a class from WORKS-WITH to IS-A.
@@ -548,7 +548,7 @@ create %protocol  %class make {
     
     \ Merge properties
     trait0 -> property-list list-count for
-        @next
+        list-next
         dup is-property-mapped? if drop else dup add-property 
             trait0 map-property-copy then
     loop drop
@@ -720,7 +720,7 @@ redef : ; ( - )
     
     \ Propagate the protocol to dependents
     trait0 -> dependents list-count for
-        @next to class0
+        list-next to class0
         \ Only propagate if class doesn't have implementation from different source
         protocol0 class0 supports-protocol? if
             protocol0 -> offset @ class0 + >origin @ trait0 = if
@@ -1015,7 +1015,7 @@ aka instance make  \ Backward compatibility
 : .props ( object - )
     {
         cla @ -> property-list list-count for
-            @next           \ get property
+            list-next           \ get property
             me over prop+   \ get field address
             cla @ 
             ."     " inspect-property

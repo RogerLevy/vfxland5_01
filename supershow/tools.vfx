@@ -41,7 +41,7 @@ cstring update-name$
         update-name$ count f" ?hone scripts\%s.vfx" >hone
     then
     class0 init-by-class
-    update-name$ count f" %s/" $private ;
+    update-name$ count f" %s/" sprivate ;
 
 : .actors ( - )
     actives> me .summary cr ;

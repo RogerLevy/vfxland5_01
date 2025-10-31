@@ -5,7 +5,7 @@ class;
 icons1.png 16 16 +tileset icons1.ts
 icons2.png 16 16 +tileset icons2.ts
 
-: in? ( - f ) x 2@ 2.> 0 gameh within? >r 0 gamew within? r> and ;
+: in? ( - f ) x 2@ 2>i 0 gameh within? >r 0 gamew within? r> and ;
 : ?out ( - ) in? not if me unload then ;
 : ?ts 2 rnd if icons1.ts else icons2.ts then ;
 : rndtile dup -> #tiles @ rnd tile ;

@@ -141,15 +141,15 @@ class;
 \ =============================================================================
 
 || 0 value lm
-: !lm ( - ) pen x@ to lm ;
+: >lmargin ( - ) pen x@ to lm ;
 || : nr ( - ) lm pen y@ gap + at ;
-|| : tile+ ( bmpid - ) pile @ + put gap 0 +at ;
+|| : put+ ( bmpid - ) pile @ + put gap 0 +at ;
 
 : tiles ( a n - 'a ) 
-    !lm udup for @+ tile+ loop drop nr tmw cells + ; 
+    >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
 
 : drawbg ( a cols rows - )
-    {: a cols rows :} +batch a rows for cols tiles loop drop -batch ; 
+    {: a cols rows :} begin-batch a rows for cols tiles loop drop end-batch ; 
 
 : lay ( a - )
     tmw tmh drawbg ;
@@ -158,7 +158,7 @@ class;
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
 
 : xy>cr ( x. y. - col row )
-    gap dup 2/ 2.> ;
+    gap dup 2/ 2>i ;
 
 \ =============================================================================
 \ Tile metadata
@@ -174,7 +174,7 @@ create metas #bitmaps cells allot&erase
 
 : load-metas ( a:fn len:fn %tileset - )
     >r
-        here >r >datadir file,
+        here >r find-dat-path file,
         r> here over -
     r> -> baseid @ cells metas + swap move ;
  

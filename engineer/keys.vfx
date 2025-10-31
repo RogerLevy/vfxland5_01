@@ -148,7 +148,7 @@ $08000 constant ALLEGRO_KEYMOD_ACCENT4
 <quote> constant <'>
 <backslash> constant <\>
 <comma> constant <,>
-<fullstop> constant <.>
+<fullstop> constant <>i
 <slash> constant </>
 <insert> constant <ins>
 <delete> constant <del>

@@ -24,12 +24,12 @@ variable public-xt  ' forth public-xt !
     the-wordlist ?dup if exit then
     scope the-wordlist ;
 
-: $private ( a n - )
+: sprivate ( a n - )
     only forth 
     ?wordlist +order definitions ;
 
 : private ( - )
-    wlname $private ;
+    wlname sprivate ;
 
 : ?+order ( wl - )
     dup ?order if drop else +order then ;

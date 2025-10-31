@@ -54,7 +54,7 @@ variable mbuttons
 : get-mouse
     poll-mouse
     mousex 2@ 
-    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2>. +m inverse 2p*m -m 2.> mousex 2!
+    ms0 ALLEGRO_MOUSE_STATE.x 2@ 2>p +m inverse 2p*m -m 2>i mousex 2!
     mousex 2@ 2swap 2- mickeyx 2! ;
 
 \ Low-level stuff
@@ -69,7 +69,7 @@ variable mbuttons
 \ Bitmap picking
 : sprbox
     bmp @ bmpwh | h w |
-    x 2@ 2.> w h 2 2 2/ 2- 2dup w h 2+ ;
+    x 2@ 2>i w h 2 2 2/ 2- 2dup w h 2+ ;
 : pick-sprite ( - n)
     mouse at
     0 
@@ -91,7 +91,7 @@ variable mbuttons
 : savebmp ( n file-a file-c -)
     ?dup 0= if 2drop exit then
     2>r >albmp ?parent 2r>
-    s" gfx" >datadir f" %s\%s" >pad count >lowercase
+    s" gfx" find-dat-path f" %s\%s" >pad count >lowercase
     cr 2dup f" Saving bitmap to %s " type
         >zpad swap al_save_bitmap 0= abort" Error saving bitmap!" ;
 : save  the-bmp @ file$ count savebmp ;
@@ -137,7 +137,7 @@ root {
 
 \ Zooming
 : zoom!  1. 8. clamp dup canvas -> sx 2! ;
-: +zoom  >. canvas -> sx @ + zoom! ;
+: +zoom  >p canvas -> sx @ + zoom! ;
 :noname  the-bmp @ bmpwh max get-zoom zoom! ;
 is auto-zoom  1 bmp!
 

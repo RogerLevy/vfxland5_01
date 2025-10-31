@@ -132,7 +132,7 @@ redef %totem :: reload ( - )
     {: class0 :}
     class0 body>name f" Reloading %s totems..." type cr
     class0 -> instances list-count for
-        @next reload
+        list-next reload
     loop drop ;
 
 || 0 value class0
@@ -201,10 +201,10 @@ redef %totem :: reload ( - )
 
 \ : save-totems ( - )
 \     %totem -> dependents list-count for
-\         @next 
+\         list-next 
 \         dup body>name f" Saving %s totems..." type cr
 \         -> instances list-count for
-\             @next commit
+\             list-next commit
 \         loop drop
 \     loop drop ;
 
@@ -215,7 +215,7 @@ redef %totem :: reload ( - )
 \     \ syncing all instances, even those not in default directories.
 
 \     %totem -> dependents list-count for
-\         @next load-default-dir
+\         list-next load-default-dir
 \     loop drop ;
 
 \ : change ( totem - totem )
@@ -225,7 +225,7 @@ redef %totem :: reload ( - )
     {: class0 :}
     class0 body>name f" Unloading %s totems..." type cr
     class0 -> instances list-count for
-        @next unload
+        list-next unload
     loop drop ;
 
 \ : empty-instances ( class - )
@@ -238,7 +238,7 @@ redef %totem :: reload ( - )
 
 \ : empty-totems ( - )
 \     %totem -> dependents list-count for
-\         @next 
+\         list-next 
 \         dup body>name f" Unloading %s totems..." type cr
 \         empty-instances
 \     loop drop ;
@@ -262,8 +262,8 @@ redef %totem :: reload ( - )
 
 : binfree ( a - ) cell- free ;
 
-: binfile@ ( fp len - a|0 ) 
-    ['] file@ catch ?dup if 
+: binload-file ( fp len - a|0 ) 
+    ['] load-file catch ?dup if 
         .throw 
         2drop 0 exit
     then
@@ -283,7 +283,7 @@ continuation: desbin> ( a - ) ( a - a' )
         s" Totem has no source path, skipping..." type cr
         exit
     then
-    srcpath$ count binfile@ ?dup 0= if
+    srcpath$ count binload-file ?dup 0= if
         ."  Skipping..." cr
         exit
     then

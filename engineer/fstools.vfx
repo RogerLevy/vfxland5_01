@@ -35,7 +35,7 @@
 : dir-exists? ( a n - f )
     >zpad GetFileAttributes -1 <> ;
 
-: >datadir ( a n - a n )
+: find-dat-path ( a n - a n )
     s" dat" dir-exists? if s" " else s" ..\" then f" %sdat\%s" ;
 
 extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
@@ -75,7 +75,7 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
     r@ read-file nip abort" File read error"
     r> close-file drop ;
 
-: file@ ( fn len - a len ) 
+: load-file ( fn len - a len ) 
     \ returns allocated memory that has to be freed
     {: fn len | mem size :}
     fn len fsize to size 

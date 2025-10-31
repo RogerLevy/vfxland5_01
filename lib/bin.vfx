@@ -51,7 +51,7 @@ borrow nib2/ prop+
         version @ ,
         here to &count 0 , 
         cla @ -> property-list list-count for
-            @next to property0
+            list-next to property0
             property0 cla @ serialize? if
                 \ get the property address in the instance and in the template
                 me property0 prop+ to val-addr

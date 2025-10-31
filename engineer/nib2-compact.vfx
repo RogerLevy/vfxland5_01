@@ -27,7 +27,7 @@
 : eval  bl parse evaluate ;
 : consume  bl parse 2drop ;
 : pre-xt  preword count ( 1 /string ) >pad find 0<> and ;
-: @size  preword size? if eval else cell then ;
+: parse-size  preword size? if eval else cell then ;
 : comment?  preword 1 + c@ dup '\' = swap '(' = or ;
 : eol?  preword c@ 0= ;
 : ?term preword 1 + c@ ';' = dup if consume then ;
@@ -40,7 +40,7 @@
             -1 -rot .abort
         then
     else drop then
-    @size
+    parse-size
     f" %n nproperty %s" evaluate ;
 
 : is-class? ( ? - f )
