@@ -9,3 +9,11 @@ aka 1i pfloor
 
 aka file@ load-file
 aka >datadir find-dat-path
+
+redef aka wcount lcount
+aka wplace lplace
+redef aka wappend lappend
+aka wslurp lslurp
+aka *wstring *lstring
+redef aka w$, l$,
+aka w$@+ l$@+ 

@@ -30,7 +30,7 @@ include %idir%/array2.vfx         \ NIBS arrays
 
 include %idir%/dictionary.vfx     \ Key/value structures
 include %idir%/fstools.vfx        \ Filesystem utilities
-include %idir%/../lib/wstring.vfx \ Cell-counted strings
+include %idir%/../lib/lstring.vfx \ Cell-counted strings
 include %idir%/gamemath.vfx       \ 2D vectors and game math
 include %idir%/strout.vfx         \ String output buffer management
 

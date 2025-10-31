@@ -53,9 +53,9 @@ create msg$$ 65536 allot&erase
 variable msg-waiting
 
 : listen-write ( cjson - )
-    z" message" get-string msg$$ wplace 
+    z" message" get-string msg$$ lplace 
     10 push-attribute
-    msg$$ wcount type cr 
+    msg$$ lcount type cr 
     pop-attribute
     msg-waiting on ;
 
@@ -77,24 +77,24 @@ variable msg-waiting
 
 create systemprompt$$ 5000 allot&erase
 s" Speak concisely.  Assume a constrained space for displaying messages.  The length of each of your messages must be no more than 300 characters. \n"
-systemprompt$$ wplace
+systemprompt$$ lplace
 s" IF AND ONLY IF it is appropriate to the situation AND does not violate the inventory rule, the NPC may issue one or more system commands, separated by spaces. Each command must be in the format `|command optional_param|`. \n"
-systemprompt$$ wappend
+systemprompt$$ lappend
 s" These commands represent actions that the NPC can take to have a direct effect on the game and should not be confused for imperatives directed at the player. \n"
-systemprompt$$ wappend
+systemprompt$$ lappend
 s" IMPORTANT: Commands that are not listed in the current game state are considered INVALID.  ONLY issue valid commands that are listed in the game state. \n"
-systemprompt$$ wappend
+systemprompt$$ lappend
 s" **CRITICAL**: Giving items that the NPC does not actually possess - even if the command is available - is IMPOSSIBLE and PROHIBITED. \n" 
-systemprompt$$ wappend
+systemprompt$$ lappend
 s" Again, items that are not in your inventory CANNOT be given to the player.  Doing so will result in a system error and must be avoided. \n"
-systemprompt$$ wappend
+systemprompt$$ lappend
 
 : npc-fields
     s[
         .\" {\"name\": \"Captain Blackbeard\","
         .\" \"short_name\": \"Captain\","
         .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
-        systemprompt$$ wcount fe" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure. \\n\\n %s \","  type
+        systemprompt$$ lcount fe" \"system_prompt\": \"You are Captain Blackbeard, speak like a pirate and help players find treasure. \\n\\n %s \","  type
         .\" \"tts\": {"
         .\" \"voice_ids\": [\"01955d76-ed5b-753f-9f74-c0674216f0f5\"],"
         .\" \"speed\": 1.0,"
@@ -107,7 +107,7 @@ create gamestate$$ 5000 allot&erase
     s[
         .\" {\"sender_name\": \"Roger\","
         2swap ( npc len msg len ) fe" \"sender_message\": \"%s\"," type
-        gamestate$$ wcount fe" \"game_state_info\": \"%s\"}" type
+        gamestate$$ lcount fe" \"game_state_info\": \"%s\"}" type
     s] 2swap npc-send ;
     
 variable ctr
@@ -123,7 +123,7 @@ variable ctr
 
 : ?parse
     msg-waiting @ -exit
-    on-response @ ?dup if msg$$ wcount rot execute then 
+    on-response @ ?dup if msg$$ lcount rot execute then 
     msg-waiting off ;
 
 : process-chat  
@@ -156,8 +156,8 @@ honing @ [if]
     : in-engineer
         show> process-chat ;
 
-    : state: 0 parse gamestate$$ wplace ;
-    : +state: s" \n" gamestate$$ wappend   0 parse gamestate$$ wappend ;
+    : state: 0 parse gamestate$$ lplace ;
+    : +state: s" \n" gamestate$$ lappend   0 parse gamestate$$ lappend ;
     : say: 0 parse npc$ count chat ;
 
     \ state: Player is at the bottom of a well and everybody thinks he is just the spirit of a deceased boy

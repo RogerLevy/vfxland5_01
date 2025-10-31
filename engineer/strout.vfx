@@ -14,13 +14,13 @@
 
 || : buf+ ( - )
     buffer-index @ 1 + #buffers umod buffer-index !
-    s" " str wplace ;
+    s" " str lplace ;
 
 || : buf- ( - )
     buffer-index @ 1 - #buffers umod buffer-index ! ;
 
 || variable cbuf
-|| : Emit-string  drop  cbuf c!  cbuf 1 str wappend ;
+|| : Emit-string  drop  cbuf c!  cbuf 1 str lappend ;
 || : Type-string  drop  bounds ?do  i c@ 0 emit-string  loop ;
 || : CR-string    drop  10 0 emit-string ;
 || create string-vectors
@@ -60,6 +60,6 @@
 : z[  buf+  op-handle @ strout-push  strdev op-handle ! ;
 : z]  0 emit  str  strout-pop op-handle !  ; \ buf- ;
 : s[  z[ ;
-: s]  z] wcount 1 - ;
+: s]  z] lcount 1 - ;
 
 \ fast]

@@ -118,7 +118,7 @@ variable last-line-start
     {: | char[ 1 ] :}
     char[ c!
     1 ensure-space
-    char[ 1 history-buffer @ wappend ;
+    char[ 1 history-buffer @ lappend ;
  
 : scroll-up ( - )
     scroll-pos @ 0> if -1 scroll-pos +! then ;

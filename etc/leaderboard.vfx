@@ -12,7 +12,7 @@ include lib/wstring.vfx
 
 create buf 65536 allot&erase
 create crlfbuf 13 c, 10 c,
-: +buf  buf wappend  ; \ crlfbuf 2 buf wappend ;
+: +buf  buf lappend  ; \ crlfbuf 2 buf lappend ;
 
 \ ==============================================================================
 \ Player record 
@@ -57,7 +57,7 @@ networking :: init-url ( server-url-addr server-url-len - )
     se" 17 players @ [] @ { s\" Titan\" handle place 700 score ! } " +buf
     se" 18 players @ [] @ { s\" Ghost\" handle place 650 score ! } " +buf
     se" 19 players @ [] @ { s\" Omega\" handle place 600 score ! } " +buf
-    buf wcount ;
+    buf lcount ;
 
 networking :: fetch-leaderboard ( - forth-code-addr forth-code-len )
     cr ." HTTP GET: " server-url count type ." /leaderboard" cr

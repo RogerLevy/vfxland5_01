@@ -2,26 +2,26 @@
 \ Cell-counted strings
 \ ------------------------------------------------------------------------------
 
-redef : wcount ( wstr - addr len )
+redef : lcount ( lstr - addr len )
     dup cell+ swap @ ;
 
-: wplace ( addr len wstr - )
+: lplace ( addr len lstr - )
     2dup ! cell+ swap move ;
 
-redef : wappend ( addr len wstr - )
+redef : lappend ( addr len lstr - )
     >r
     r@ cell+ r@ @ +  ( addr len dest )
     over >r swap move r>
     r@ @ + r> ! ;
 
-: wslurp ( fn-a fn-len - w$ )
+: lslurp ( fn-a fn-len - l$ )
     here -rot  2dup fsize , file, ;
 
-: *wstring ( a len - wstr )
-    here -rot  dup cell+ allot here wplace ;
+: *lstring ( a len - lstr )
+    here -rot  dup cell+ allot here lplace ;
 
-redef : w$,  ( a len - )
-    *wstring drop ;
+redef : l$,  ( a len - )
+    *lstring drop ;
 
-: w$@+ ( a - a' w$ len - )
-    wcount 2dup + -rot ;
+: l$@+ ( a - a' l$ len - )
+    lcount 2dup + -rot ;

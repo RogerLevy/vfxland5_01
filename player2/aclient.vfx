@@ -53,7 +53,7 @@ aclient :: init ( - )
     multi-handle @ 0= abort" curl_multi_init failed" ;
 
 create response$ 65536 allot
-: .response  response$ wcount dump   response$ wcount type ;
+: .response  response$ lcount dump   response$ lcount type ;
 
 private
 
@@ -63,7 +63,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
     size nmemb * 0= if 0 exit then
     req {
         op-handle @ >r   op @ op-handle !
-        ptr size nmemb * response$ wplace
+        ptr size nmemb * response$ lplace
         ptr size nmemb * parse-json to cjson
         write-xt @ if
             cjson write-xt @ catch .throw

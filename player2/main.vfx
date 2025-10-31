@@ -2,7 +2,7 @@ include %idir%/player2.vfx
 include %vfxland5%\spunk\loader.vfx
 
 : /state    gamestate$$ off ;
-: state+!   gamestate$$ wappend s" \n" gamestate$$ wappend ;
+: state+!   gamestate$$ lappend s" \n" gamestate$$ lappend ;
 
 dictionary player-items
 dictionary npc-items
@@ -92,7 +92,7 @@ get-order get-current also commands definitions
 set-current set-order 
 
 : dialog
-    0 0 at   msg$$ wcount 240 mltext ;
+    0 0 at   msg$$ lcount 240 mltext ;
 
 : game
     show> step process-chat dialog sprites ;
