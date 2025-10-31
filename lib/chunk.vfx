@@ -18,9 +18,9 @@
 : remaining ( - n )
     #1 file-size throw 1 0 d- #1 file-position throw d- ;
 
-: chunkfile[ ( fn len - )
+: chunkfile{ ( fn len - )
     r/w open-file throw to #1 ;
 
-: chunkfile] ( - )
+: chunkfile} ( - )
     #1 close-file throw ;
 

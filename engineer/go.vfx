@@ -47,7 +47,7 @@ continuation: show> ( - ) ( - )
     begin ?event not until ;
 
 : pump ( - )
-    ['] (pump) catch hist[ .throw hist]
+    ['] (pump) catch hist{ .throw hist}
     need-pump on ;
 
 redef : event? ( - f )

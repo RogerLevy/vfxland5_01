@@ -3,7 +3,7 @@ library: textmode_renderer.dll
 extern "C" void draw_textmode_buffers( void * font, void * chars,
     void * fg_colors, void * bg_colors, int cols, int rows, float x, float y, float line_spacing );  \ "
 
-fast[
+fast{
 
 8192 ?constant /char-buf
 create char-buf  /char-buf allot&erase
@@ -36,4 +36,4 @@ create bg-buf    /char-buf cells allot&erase
 : textmode-locate ( col row - )
     #cols * + 8191 and to pos ;
 
-fast]
+fast}

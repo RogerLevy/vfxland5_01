@@ -23,13 +23,13 @@ variable outline \ rgb color
 variable paintmode \ normal, replace, fillin
 
 \ Auto-Zoom levels
-create zooms 2 cells array[
+create zooms 2 cells array{
     0 , 8. , 
     16 , 4. ,
     32 , 3. ,
     80 , 2. ,
     160 , 1. ,
-array] drop
+array} drop
 
 0 value z
 : (check) >r dup r@ @ >= if r@ cell+ @ to z then r> drop -1 ;

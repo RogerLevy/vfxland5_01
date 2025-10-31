@@ -682,7 +682,7 @@ variable include-levels
     sp @ 1 - 15 and sp !
     stack sp @ cells + @ validations ! ;
 
-: fast[  save-validations validations off ;
-: fast]  restore-validations ;
+: fast{  save-validations validations off ;
+: fast}  restore-validations ;
 
 init-oversight

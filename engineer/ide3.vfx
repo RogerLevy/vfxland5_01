@@ -2,7 +2,7 @@
 \ IDE v3 - Next-Level Development Interface (now utilizing OOP for display modes) 
 \ -------------------------------------------------------------------------------
 
-fast[
+fast{
 
 public
 
@@ -137,7 +137,7 @@ variable hsplit   0.5 hsplit !
     watch$ count ?type cr
     push-order
     only forth watch-context @ +order
-    s[ watch-xt @ catch drop s] ?type
+    s{ watch-xt @ catch drop s} ?type
     pop-order
     ;
 
@@ -148,7 +148,7 @@ variable hsplit   0.5 hsplit !
 : info-box ( - )
     1. 2. scaled>
     split-x gamewin-h scaled-at
-    s[
+    s{
         .hotkeys cr
         ." Me: " .me cr 
         ." WD: " wd@ '\' ending type space space
@@ -160,7 +160,7 @@ variable hsplit   0.5 hsplit !
         ." Honing: " .honing
         ." Load action: " .ld-action cr
         ." Watch: " cr .watch cr
-    s] 12 print2 ;
+    s} 12 print2 ;
 
 : user-area ( - )
     1. 2. scaled>
@@ -180,7 +180,7 @@ variable hsplit   0.5 hsplit !
 : stack-display ( - )
     1. 2. scaled>
     0 6 lines from-bottom scaled-at
-    s[ ?.s s] 12 print2 ;
+    s{ ?.s s} 12 print2 ;
 
 : .tib ( - )
     context @ .name
@@ -190,12 +190,12 @@ variable hsplit   0.5 hsplit !
     1. 2. scaled>
     0 1 lines from-bottom scaled-at
     repl @ if 15 else 8 then color 
-    s[
+    s{
         .tib
         active @ repl @ and if
             counter 20 / 8 and if ." _" then
         then
-    s] 
+    s} 
     print 
     15 color 
 ;
@@ -469,7 +469,7 @@ is draw-ide
 : >ide ( - )
     \ Switch to IDE mode with proper visual formatting
     running on 
-    hist[ 7 attribute
+    hist{ 7 attribute
     enact-display-mode
     >display 
     rs ;
@@ -484,7 +484,7 @@ is draw-ide
     7 attribute ;
 
 : welcome
-    hist[  10 attribute  s" Welcome to VFX Land!" .rainbow cr   hist] ;
+    hist{  10 attribute  s" Welcome to VFX Land!" .rainbow cr   hist} ;
 
 : init-ide ( - )
     init-history
@@ -493,7 +493,7 @@ is draw-ide
     welcome ;
 
 : ide-interpret ( a len - res )
-    hist[ interpret-string out @ if cr then hist] ;
+    hist{ interpret-string out @ if cr then hist} ;
 
 : ide-quit
     ." IDE-QUIT" cr
@@ -504,9 +504,9 @@ is draw-ide
 
 borrow error2/ console-debugger
 : ide-debugger
-    running @ if hist[ 15 4 push-attributes then
+    running @ if hist{ 15 4 push-attributes then
     console-debugger
-    running @ if pop-attribute hist] then
+    running @ if pop-attribute hist} then
 ;
 
 [defined] native-debugger not [if]
@@ -518,4 +518,4 @@ borrow error2/ console-debugger
 ' noop is onSwitchIn
 init-history
 
-fast]
+fast}

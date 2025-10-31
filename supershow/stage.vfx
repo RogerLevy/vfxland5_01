@@ -56,7 +56,7 @@ continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
     dup valid-object? if drop -1 exit then
     -> en @ ;
 
-fast[
+fast{
 
 continuation: actives> ( - ) ( - )
     ( xt ) {: xt :}
@@ -67,7 +67,7 @@ continuation: actives> ( - ) ( - )
         loop
     } ; 
 
-fast]
+fast}
 
 \ =============================================================================
 \ Actor Inspection
@@ -102,12 +102,12 @@ fast]
         \ Compare SP to previous SP.
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if
-            s[ ." Positive stack imbalance in logic for actor " me .summary
-            s] log-warning .rs .s
+            s{ ." Positive stack imbalance in logic for actor " me .summary
+            s} log-warning .rs .s
         then
         dup sp@ cell+ cell+ < if
-            s[ ." Negative stack imbalance in logic for actor " me .summary
-            s] log-warning .rs .s
+            s{ ." Negative stack imbalance in logic for actor " me .summary
+            s} log-warning .rs .s
         then
     then
     sp! ;
@@ -300,7 +300,7 @@ continuation: timer> ( time. - ) ( - )
         tnext# @ 1 + #temps mod tnext# !
     loop  -1 abort" Out of temps" ;
 
-fast[
+fast{
 continuation: temps> ( - ) ( - )
     ( xt )  {: xt :}
     0 temp[] {
@@ -309,7 +309,7 @@ continuation: temps> ( - ) ( - )
             /actor +to me
         loop
     } ; 
-fast] 
+fast} 
 
 : clear-temps ( - )
     temps> me unload ;

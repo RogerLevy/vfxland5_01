@@ -23,7 +23,7 @@
 \ Common Validation Helpers
 \ ==============================================================================
 
-fast[
+fast{
 
 : valid-address?  1048576 0x80000000 within ;
 
@@ -447,4 +447,4 @@ wrap-word allot
 before allot&erase check-allot-size
 wrap-word allot&erase
 
-fast]
+fast}

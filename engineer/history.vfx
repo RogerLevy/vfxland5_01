@@ -4,7 +4,7 @@
 \ Mostly by Claude Sonnet 4
 \ ------------------------------------------------------------------------------
 
-fast[
+fast{
 
 \ History storage
 variable history-buffer    \ allocated memory for history string
@@ -246,11 +246,11 @@ create vectors
 
 create hist-dev   0 , vectors ,
 
-: hist[ ( - )
+: hist{ ( - )
     op-handle @ hist-push
     hist-dev op-handle ! ;
 
-: hist] ( - )
+: hist} ( - )
     hist-pop op-handle ! ;
 
-fast]
+fast}

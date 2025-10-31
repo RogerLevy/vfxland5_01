@@ -6,11 +6,11 @@ cstring command$
 
 : interpret-action ( - )
     exit
-    hist[
+    hist{
     \ command$ count interpret-string
     \ >str if cr then
-    \ ?dup if ( s[ ) .throw ( s] add-history ) rs state off then
-    hist] ;
+    \ ?dup if ( s{ ) .throw ( s} add-history ) rs state off then
+    hist} ;
 
 : async-interpret ( a len - )
     command$ place

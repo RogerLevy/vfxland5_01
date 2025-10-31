@@ -257,7 +257,7 @@ redef %totem :: reload ( - )
 
 || : ?totem ( - )
     me %totem is? not if 
-        s[ me .object s] f" Not a totem: %s" -1 -rot .abort
+        s{ me .object s} f" Not a totem: %s" -1 -rot .abort
     then ;
 
 : binfree ( a - ) cell- free ;
@@ -273,8 +273,8 @@ redef %totem :: reload ( - )
         ( a n n ) drop binfree 0 exit 
     then ;
 
-: bin[ ( - ) data[ MAGIC_BIN , ;
-: bin] ( - a len ) data] ;
+: bin{ ( - ) data{ MAGIC_BIN , ;
+: bin} ( - a len ) data} ;
 
 continuation: desbin> ( a - ) ( a - a' )
     ?totem
@@ -303,7 +303,7 @@ continuation: serbin> ( - ) ( - )
     bin[
     format @ ,
     r> catch 
-    bin] 
+    bin} 
     rot throw
     srcpath$ count write ;
 

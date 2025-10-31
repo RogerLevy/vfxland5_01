@@ -24,7 +24,7 @@ dictionary npc-items
     /state
     s" Player is on a beach." 
     state+!
-    s[ ." NPC inventory: " npc-items .items s] 
+    s{ ." NPC inventory: " npc-items .items s} 
     state+!
     s\" Available system commands:  \\n |npc-give-player-item %item| \\n |npc-give-player-gold amount| \\n |npc-steal-player-gold amount| \\n |npc-give-player-item %parrot named \\\"Name\\\"| \\n |npc-attack-player| \\n |npc-flee| \\n |npc-refuse-gift %itemname| \\n "
     state+!

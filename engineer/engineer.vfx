@@ -30,7 +30,7 @@ fload %idir%/go.vfx         \ Main Loop
 || : fresh,  dup , /classifier move, ;
 
 || create fresh-classifiers 
-    /classifier cell+ array[
+    /classifier cell+ array{
         %object fresh,    
         %iterable fresh,
         %lifo fresh,
@@ -42,9 +42,9 @@ fload %idir%/go.vfx         \ Main Loop
         %static fresh,
         %protocol fresh,
         %array fresh,
-        %stack fresh,
+        %stack fresh,   
         %object-array fresh,
-    array]
+    array}
 
 || : reset-classifier ( a - )
     @+ ( src dest ) /classifier move ;

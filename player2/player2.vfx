@@ -90,7 +90,7 @@ s" Again, items that are not in your inventory CANNOT be given to the player.  D
 systemprompt$$ lappend
 
 : npc-fields
-    s[
+    s{
         .\" {\"name\": \"Captain Blackbeard\","
         .\" \"short_name\": \"Captain\","
         .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
@@ -99,16 +99,16 @@ systemprompt$$ lappend
         .\" \"voice_ids\": [\"01955d76-ed5b-753f-9f74-c0674216f0f5\"],"
         .\" \"speed\": 1.0,"
         .\" \"audio_format\": \"mp3\"}}"
-    s] ;
+    s} ;
 
 create gamestate$$ 5000 allot&erase
 
 : chat ( msg len npc len - )
-    s[
+    s{
         .\" {\"sender_name\": \"Roger\","
         2swap ( npc len msg len ) fe" \"sender_message\": \"%s\"," type
         gamestate$$ lcount fe" \"game_state_info\": \"%s\"}" type
-    s] 2swap npc-send ;
+    s} 2swap npc-send ;
     
 variable ctr
 : ?health

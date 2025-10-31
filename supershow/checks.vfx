@@ -1,4 +1,4 @@
-fast[
+fast{
 
 crucial test: CHECK-BITMAPS-OVERFLOW ( ALLEGRO_BITMAP - ALLEGRO_BITMAP res )
     next-bmp# @ #bitmaps < ;
@@ -33,4 +33,4 @@ crucial test: check-cycle-animation ( anim spd -- anim spd n:result )
 
 before cycle check-cycle-animation
 
-fast]
+fast}

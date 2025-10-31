@@ -306,8 +306,8 @@ aka se" s\"        \ " \ syntax highlight guard
 : udup  over swap ;
 
 variable old-dp
-: data[ ( - )  here old-dp ! ;
-: data] ( - a len )  old-dp @ here over -  old-dp @ dp ! ;
+: data{ ( - )  here old-dp ! ;
+: data} ( - a len )  old-dp @ here over -  old-dp @ dp ! ;
     
 : $@+ ( a - a' str len ) count 2dup + -rot ;
 : $, ( a len - ) dup >r    here place    r> 1 + allot ;

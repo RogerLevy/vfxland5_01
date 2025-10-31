@@ -1,4 +1,4 @@
-\ fast[
+\ fast{
 
 || 4 constant #buffers
 || 32768 constant /buffer
@@ -57,9 +57,13 @@
 
 || create strdev   0 , string-vectors ,
 
-: z[  buf+  op-handle @ strout-push  strdev op-handle ! ;
-: z]  0 emit  str  strout-pop op-handle !  ; \ buf- ;
-: s[  z[ ;
-: s]  z] lcount 1 - ;
+: z{ ( - ) 
+    buf+  op-handle @ strout-push  strdev op-handle ! ;
+: z} ( - z$ ) 
+    0 emit  str  strout-pop op-handle !  ; \ buf- ;
+: s{ ( - )
+    z{ ;
+: s} ( - a len ) 
+    z} lcount 1 - ;
 
-\ fast]
+\ fast}

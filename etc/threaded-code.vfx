@@ -5,5 +5,5 @@
     loop ;
 
 : create-tc  create does> do-tc ;
-: tc:  create-tc cell array[ ;
-: tc;  array] drop ;
+: tc:  create-tc cell array{ ;
+: tc;  array} drop ;

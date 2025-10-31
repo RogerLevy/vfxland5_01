@@ -63,7 +63,7 @@ create cb-p /screen allot
     loop loop ;
 
 : save-ag ( - )
-    s[ .ag s] room-scnfile write ;
+    s{ .ag s} room-scnfile write ;
 
 : clear-ag ( - )
     ag /screen erase  pg /screen erase ;
@@ -79,17 +79,17 @@ create cb-p /screen allot
     -1 -1 +at  at@f  at@ gap dup 2+ 2s>f 0e 0e 0e 1e
     al_draw_filled_rectangle
     t @ t0 @ + put
-    life @ 2 mod if -8 -8 +at s[ t w? s] print then ;
+    life @ 2 mod if -8 -8 +at s{ t w? s} print then ;
 
 : acursor ( - )
     gap 2 / 1 - dup +at  
     life @ 2 mod if
-        s[ c @ .name s] print 
+        s{ c @ .name s} print 
     else
         c @ draw-class
     then ;
 
-: ?room#  debug @ -exit  0 0 at s[ room# ? s] print ;
+: ?room#  debug @ -exit  0 0 at s{ room# ? s} print ;
 
 : lay-with  pile @ >r pile ! lay r> pile ! ;
 

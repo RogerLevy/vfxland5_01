@@ -191,11 +191,11 @@ class;
 
 \ ------------------------------------------------------------------------------
 
-: array[ ( item-size - array )
+: array{ ( item-size - array )
     0 swap %array make {
     here data !  me } ;  \ just to be sure
 
-: array] ( array - array )
+: array} ( array - array )
     { here data @ - item-size @ /
     dup item-count ! max-items !   me } ;
 

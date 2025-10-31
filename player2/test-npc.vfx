@@ -91,7 +91,7 @@ fromC 4 1 callproc: p2key-cb ( ptr size nmemb userdata -- bytes-written )
     dup to headers
     curl CURLOPT_HTTPHEADER rot curl_easy_setopt
 
-    s[
+    s{
         .\" {\"name\": \"Captain Blackbeard\","
         .\" \"short_name\": \"Captain\","
         .\" \"character_description\": \"A weathered pirate captain with a love for treasure and adventure\","
@@ -130,7 +130,7 @@ cstring msg$
     dup to headers
     curl CURLOPT_HTTPHEADER rot curl_easy_setopt
     
-    s[
+    s{
         .\" {\"sender_name\": \"Roger\","
         .\" \"sender_message\": \"%s\","
         .\" \"game_state_info\": \"Player is on a tropical island with palm trees and a beach\"}" \ ,"

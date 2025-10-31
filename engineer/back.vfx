@@ -19,3 +19,16 @@ redef aka w$, l$,
 aka w$@+ l$@+ 
 
 aka 2i 2pfloor
+
+aka array[ array{
+aka array] array}
+aka fast[ fast{
+aka fast] fast}
+aka write[ write{
+aka write] write}
+aka s[ s{
+aka s] s}
+aka z[ z{
+aka z] z}
+aka data[ data{
+aka data] data}

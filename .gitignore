@@ -26,3 +26,5 @@ dumps
 .claude/settings.local.json
 
 .tiled-session
+
+diff.txt

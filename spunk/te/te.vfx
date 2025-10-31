@@ -47,7 +47,7 @@ continuation: tsr>  ( xt ) >r +m transform 0 0 at r> execute -m ;
 : cursor-xy  t @ 16 /mod gap 2 / * swap gap 2 / * swap ;
 : cursor  cursor-xy at gap 2 / dup box ;
 : bigtile  0e 128e 2e 2e 0e tsr> the-tile put ;
-: info  0e 128e 32e f+ .5e .5e 0e tsr> s[ t ? s] print ;
+: info  0e 128e 32e f+ .5e .5e 0e tsr> s{ t ? s} print ;
 : ?0/1  swap if 15 else 8 then color syms + c@ gemit ;
 : (bits)  the-metas @ 8 for dup $80 and i ?0/1 1 << loop drop ;
 : bits  32e 128e 1e 1e 0e tsr> (bits) 15 color ;

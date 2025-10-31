@@ -54,11 +54,11 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
     then ;
 
 || 0 value #1
-: write[ w/o create-file abort" File create error" to #1 ;
+: write{ w/o create-file abort" File create error" to #1 ;
 : data, #1 write-file abort" File write error" ;
 : line, #1 write-line abort" File write error" ;
 : nl,  s" " line, ;
-: write] #1 close-file drop ;
+: write} #1 close-file drop ;
 
 : write ( src len path len - )
 \    2dup file-exists? if 2dup delete-file throw then
