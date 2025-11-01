@@ -45,7 +45,7 @@ constant /magical-base
 ; immediate
 
 redef : -> ( object <name> - a )
-    preword find not abort" -> >> Field name not found"
+    preword find not abort" -> : Field name not found"
     >body cell+ @ MAGIC_PROPERTY = if
         ' >body s" (->property)" evaluate 
     else
@@ -298,7 +298,7 @@ create %protocol  %class make {
     
 : field-space ( n - )
     classifier >cla @ %trait = 
-        abort" FIELD-SPACE >> Cannot add a field-space to traits, only classes."
+        abort" FIELD-SPACE : Cannot add a field-space to traits, only classes."
     classifier {
         field-space-size !
         field-space-size @ instance-size !
@@ -319,7 +319,7 @@ create %protocol  %class make {
 
 : allocate-static-offset ( n - )
     dup /static + /classifier > 
-        abort" ALLOCATE-STATIC-OFFSET >> Cannot allocate static - out of classifier space!"
+        abort" ALLOCATE-STATIC-OFFSET : Cannot allocate static - out of classifier space!"
     /static offset !
     +to /static ;
 
@@ -359,7 +359,7 @@ create %protocol  %class make {
         classifier has-field-space? if
             classifier -> next-ofs @ cell +  \ TEMP: using cell instead of property-size @
             classifier -> field-space-size @ >
-                abort" MAP-PROPERTY >> Cannot map property - out of field space!"
+                abort" MAP-PROPERTY : Cannot map property - out of field space!"
         then
 
         classifier -> next-ofs @ offset @ classifier + !
@@ -408,13 +408,13 @@ create %protocol  %class make {
         size
         property0 classifier >property-size @
         property0 body>name
-        f" NPROPERTY >> %s changed from %n to %n bytes - reload/restart required."
+        f" NPROPERTY : %s changed from %n to %n bytes - reload/restart required."
         -1 -rot .abort
     then ;
 
 : ?map-property ( size property - )
     dup is-property-mapped? if
-        2drop \ -1 abort" PROPERTY >> Property already mapped!"
+        2drop \ -1 abort" PROPERTY : Property already mapped!"
     else
         dup add-property map-property
     then ;
@@ -423,7 +423,7 @@ create %protocol  %class make {
     {: size | property0 :}
 
     classifier 0= 
-        abort" NPROPERTY >> Cannot define a property outside of a classifier definition."
+        abort" NPROPERTY : Cannot define a property outside of a classifier definition."
 
     %property already? if
         ' >body to property0
@@ -436,7 +436,7 @@ create %protocol  %class make {
             \ Trait rules
             classifier reopened? if
                 classifier -> dependents list-count 0<>
-                abort" NPROPERTY >> Cannot add new properties to reopened traits with dependents."
+                abort" NPROPERTY : Cannot add new properties to reopened traits with dependents."
             then
             \ New trait or reopened trait with no dependents - okay
         else
@@ -446,7 +446,7 @@ create %protocol  %class make {
                 \ (Probably won't ever happen because CLASS: redefines
                 \ classes without field-spaces instead of re-opening them)
                 classifier has-field-space? not
-                abort" NPROPERTY >> Cannot add properties to an existing class without a field-space."
+                abort" NPROPERTY : Cannot add properties to an existing class without a field-space."
                 \ Reopened class with a field-space - okay
             then
             \ New class - okay
@@ -472,7 +472,7 @@ create %protocol  %class make {
     cell nproperty ;
 
 : nstatic ( size <name> - ) ( - a )
-    classifier 0= abort" STATIC >> Can't define a static outside of a classifier definition."
+    classifier 0= abort" STATIC : Can't define a static outside of a classifier definition."
     %static already? if drop ' drop exit then
     push-order only forth definitions
     create %static make {
@@ -498,7 +498,7 @@ create %protocol  %class make {
 
 : apply-trait ( trait class b:id? - )
     {: trait0 class0 id? | could? protocol0 origin :}
-    class0 >cla @ %class <> abort" APPLY-TRAIT >> Invalid destination - must be a class."
+    class0 >cla @ %class <> abort" APPLY-TRAIT : Invalid destination - must be a class."
     
     \ Check if trait has NEW properties that class can't handle
     class0 reopened? if
@@ -506,7 +506,7 @@ create %protocol  %class make {
             classifier >r class0 to classifier
             trait0 has-unmapped-properties? 
             r> to classifier
-            abort" APPLY-TRAIT >> Cannot add trait with new properties to reopened class without field-space."
+            abort" APPLY-TRAIT : Cannot add trait with new properties to reopened class without field-space."
         then
     then
     
@@ -538,7 +538,7 @@ create %protocol  %class make {
                         trait0 body>name
                         origin body>name  
                         protocol0 body>name
-                        f" APPLY-TRAIT >> Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
+                        f" APPLY-TRAIT : Protocol %s conflict: trait %s tried to override implementation from trait %s" .abort
                     then
                 then
             then
@@ -585,7 +585,7 @@ create %protocol  %class make {
 
 : >template ( class - a )
     {: class0 :}
-    class0 >cla @ %trait = abort" template >> Traits cannot have templates, only classes."
+    class0 >cla @ %trait = abort" template : Traits cannot have templates, only classes."
     class0 -> class-template @ ?dup 0= if
         class0 make class0 -> class-template !
         class0 -> class-template @
@@ -651,7 +651,7 @@ defer protocol-validations ( obj protocol - obj protocol )
             -1
             cla @ >name count
             r> body>name
-            f" DOES-PROTOCOL >> Protocol %s not supported by %s!" .abort
+            f" DOES-PROTOCOL : Protocol %s not supported by %s!" .abort
         then
         ( xt ) oexec
     } ;
@@ -743,22 +743,22 @@ redef : ; ( - )
         exit
     then
     c >cla @ %class <> 
-        abort" :: >> Invalid protocol implementation destination. (Must be a class.)"
+        abort" :: : Invalid protocol implementation destination. (Must be a class.)"
     bl word find not 
-        abort" :: >> Protocol not found. Note: Protocols can only be created on traits."
+        abort" :: : Protocol not found. Note: Protocols can only be created on traits."
     >body to protocol0
     protocol0 >cla @ %protocol <> 
-        abort" :: >> Word is not a protocol!"
+        abort" :: : Word is not a protocol!"
     protocol0 c supports-protocol? not 
-        abort" :: >> Tried to implement a protocol not supported by the class."
+        abort" :: : Tried to implement a protocol not supported by the class."
     protocol0 c implement-protocol ;
 
 : stub ( - )
-    -1 r> >name count f" %s >> Not implemented" .abort ;
+    -1 r> >name count f" %s : Not implemented" .abort ;
 
 : :construct ( #params class - )
-    classifier abort" :CONSTRUCT >> Constructors can only be defined outside of a classifier definition."
-    dup >cla @ %class <> abort" :CONSTRUCT >> Passed object is not a class - constructors can only be defined for classes."
+    classifier abort" :CONSTRUCT : Constructors can only be defined outside of a classifier definition."
+    dup >cla @ %class <> abort" :CONSTRUCT : Passed object is not a class - constructors can only be defined for classes."
     {
         constructor-#params !    
         my-name s" construct" :method constructor-xt !
@@ -767,9 +767,9 @@ redef : ; ( - )
 : derive ( class - )
     {: source-class | dest-class :}
 
-    classifier 0= abort" DERIVE >> Can only be called inside a class definition."
-    source-class >cla @ %class <> abort" DERIVE >> Can only derive from classes."
-    classifier >cla @ %class <> abort" DERIVE >> Current classifier not a class."
+    classifier 0= abort" DERIVE : Can only be called inside a class definition."
+    source-class >cla @ %class <> abort" DERIVE : Can only derive from classes."
+    classifier >cla @ %class <> abort" DERIVE : Current classifier not a class."
     classifier to dest-class
 
     \ Copy size fields
@@ -833,17 +833,17 @@ redef : ; ( - )
 
 : :apply ( trait  - ) ( trait dest-class - )
     dup >cla @ %trait <> 
-        abort" :APPLY >> Can only define on-apply hooks for traits! (Did you pass a class?)"
+        abort" :APPLY : Can only define on-apply hooks for traits! (Did you pass a class?)"
     { my-name s" apply" :method on-apply-xt ! } ;
 
 : :derive ( class - ) ( source-class derived-class - )
     dup >cla @ %class <> 
-        abort" :DERIVE >> Can only define on-derive hooks for classes! (Did you pass a trait?)"
+        abort" :DERIVE : Can only define on-derive hooks for classes! (Did you pass a trait?)"
     { my-name s" derive" :method on-derive-xt ! } ;
 
 : :reopen ( class - ) ( class - )
     dup >cla @ %class <> 
-        abort" :REOPEN >> Can only define on-reopen hooks for classes! (Did you pass a trait?)"
+        abort" :REOPEN : Can only define on-reopen hooks for classes! (Did you pass a trait?)"
     { my-name s" reopen" :method on-reopen-xt ! } ;
 
 \ ==============================================================================
@@ -888,7 +888,7 @@ aka instance make  \ Backward compatibility
 
 : is? ( object|class classifier - bool )
     \ TODO: Optimize and put the runtime checks in optional validations.
-    dup valid-classifier? not abort" IS? >> Invalid classifier."
+    dup valid-classifier? not abort" IS? : Invalid classifier."
     over valid-object? not if 2drop 0 exit then
     -> classifier# @ swap
     dup >cla @ %class <> if >cla @ then -> id-table test-bit ;
@@ -897,7 +897,7 @@ aka instance make  \ Backward compatibility
     {: obj-or-class second-param | class-to-check :}
     \ TODO: Optimize and put the runtime checks in optional validations.
     obj-or-class valid-object? obj-or-class valid-class? or not 
-    abort" CAN? >> Invalid object or class."
+    abort" CAN? : Invalid object or class."
     
     \ Get the actual class to check
     obj-or-class >cla @ %class = if
@@ -908,7 +908,7 @@ aka instance make  \ Backward compatibility
     
     \ Check if second parameter is a valid XT first
     second-param firstname here within not 
-    abort" CAN? >> Invalid second parameter (not a valid XT or classifier)."
+    abort" CAN? : Invalid second parameter (not a valid XT or classifier)."
     
     \ Check if second parameter is a protocol XT
     second-param >body >cla @ %protocol = if
@@ -916,7 +916,7 @@ aka instance make  \ Backward compatibility
         second-param >body class-to-check supports-protocol?
     else
         \ Classifier case: check capability table
-        second-param valid-classifier? not abort" CAN? >> Invalid classifier."
+        second-param valid-classifier? not abort" CAN? : Invalid classifier."
         second-param -> classifier# @ class-to-check -> can-table test-bit
     then ;
 

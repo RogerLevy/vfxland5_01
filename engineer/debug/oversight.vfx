@@ -245,7 +245,7 @@ errdef err_oversight "ERR: Validation failed."
     res 0= if
         val -> validator @ >name count
         c -> word-name$ count 
-        f" %s >> VALIDATION FAILED: %s" log-error
+        f" %s : VALIDATION FAILED: %s" log-error
         caller-rp (.rs)
         .s
         err_oversight throw
@@ -253,7 +253,7 @@ errdef err_oversight "ERR: Validation failed."
     res 1 = if
         val -> validator @ >name count 
         c -> word-name$ count 
-        f" %s >> VALIDATION NOTE: %s" log-warning
+        f" %s : VALIDATION NOTE: %s" log-warning
         caller-rp (.rs)
         .s
     then ;
@@ -391,7 +391,7 @@ public
         name-a name-len create-contract to c
         c register-contract
 \    else
-\        -1 abort" >BEFORE >> Only one pre-validation per word currently supported!"
+\        -1 abort" >BEFORE : Only one pre-validation per word currently supported!"
     then
     validator create-validation to val
     val c set-pre-validation ;
@@ -404,7 +404,7 @@ public
         name-a name-len create-contract to c
         c register-contract
 \    else
-\        -1 abort" >AFTER >> Only one pre-validation per word currently supported!"
+\        -1 abort" >AFTER : Only one pre-validation per word currently supported!"
     then
     validator create-validation to val
     val c set-post-validation ;
@@ -649,7 +649,7 @@ public
 \ Include Extensions
 \ =============================================================================
 
-\ TODO: fix this, PROJECT >> SWITCH crashes and I think this is why
+\ TODO: fix this, PROJECT : SWITCH crashes and I think this is why
 
 variable include-levels
 

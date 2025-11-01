@@ -45,7 +45,7 @@ class: request
 class;
 
 1 aclient :construct ( request-array - )
-    dup %array is? not abort" aclient:construct >> request-array must be an array"
+    dup %array is? not abort" aclient:construct : request-array must be an array"
     requests ! ;
 
 aclient :: init ( - )
@@ -141,7 +141,7 @@ private
             else drop then
         loop
         req 0= if
-            msg msg.handle @ f" handle-curl-msg >> Handle %n not found" type cr
+            msg msg.handle @ f" handle-curl-msg : Handle %n not found" type cr
             exit
         then
         req {

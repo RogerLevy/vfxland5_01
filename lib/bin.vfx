@@ -85,13 +85,13 @@ borrow nib2>> prop+
     $@+ \ fetch class name
     >pad find 0= if
         drop
-        pad count f" desbin+ >> Encountered unknown class name %s" type cr
+        pad count f" desbin+ : Encountered unknown class name %s" type cr
         cell+ \ skip version
         skip-properties 0 exit
     then
     >body dup valid-class? not if
         drop
-        pad count f" desbin+ >> Not a class: %s" type cr
+        pad count f" desbin+ : Not a class: %s" type cr
         cell+ \ skip version
         skip-properties 0 exit
     then 
@@ -102,12 +102,12 @@ borrow nib2>> prop+
     $@+ \ fetch property name
     >pad find 0= if
         drop
-        pad count f" desbin+ >> Encountered unknown property name %s" type cr
+        pad count f" desbin+ : Encountered unknown property name %s" type cr
         skip-data 0 exit
     then
     >body dup -> cla @ %property <> if
         drop
-        pad count f" desbin+ >> Not a property: %s" type cr
+        pad count f" desbin+ : Not a property: %s" type cr
         skip-data 0 exit
     then ;
 

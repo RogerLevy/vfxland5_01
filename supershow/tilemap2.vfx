@@ -113,7 +113,7 @@ class;
     my-name -ext f" %s.png" 
     >pad find 0= if
         drop 
-        pad count f" RECONNECT-BMP >> Tileset source bitmap %s not found" type cr
+        pad count f" RECONNECT-BMP : Tileset source bitmap %s not found" type cr
         exit
     then
     execute bmp !    \ Bitmap words return their own bitmap ID's

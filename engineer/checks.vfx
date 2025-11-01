@@ -22,10 +22,10 @@ redef : (->property) ( property - ) ( obj - a )
 
 : validate-object
     dup valid-object? not 
-        abort" VALIDATE-OBJECT >> Invalid object." ;
+        abort" VALIDATE-OBJECT : Invalid object." ;
 
 redef : -> ( object <name> - a )
-    preword find not abort" -> >> Field name not found"
+    preword find not abort" -> : Field name not found"
     >body cell+ @ MAGIC_PROPERTY = if
         validations @ if   s" validate-object" evaluate   then
         ' >body s" (->property)" evaluate 
@@ -36,7 +36,7 @@ redef : -> ( object <name> - a )
 :noname  ( obj protocol - obj protocol )
     safety @ -exit
     over valid-object? not
-        abort" PROTOCOL-VALIDATIONS >> Invalid object." ;
+        abort" PROTOCOL-VALIDATIONS : Invalid object." ;
 is protocol-validations
 
 fast}

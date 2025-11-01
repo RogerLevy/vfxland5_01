@@ -187,7 +187,7 @@ variable next#
     0 next# !  actives>  me unload ;
 
 : just ( - )
-    ." JUST >> Clearing all actors!" cr
+    ." JUST : Clearing all actors!" cr
     clear-stage gamew 2 / gameh 2 / at  ;
 
 0 %actor :construct ( - )
@@ -374,7 +374,7 @@ class;
     {: xt err :}
     err -exit
     me bench
-    xt .name ." >> actor threw an error - disabling "
+    xt .name ." : actor threw an error - disabling "
     me ['] .summary catch drop cr
     .s
     err throw ;

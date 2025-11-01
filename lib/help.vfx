@@ -14,7 +14,7 @@ redef : command ( - )
     save-input
     commands link
     0 parse $, 
-    refill 0= abort" COMMAND >> Unexpected end of file"
+    refill 0= abort" COMMAND : Unexpected end of file"
     0 parse $, 
     restore-input drop ;
 

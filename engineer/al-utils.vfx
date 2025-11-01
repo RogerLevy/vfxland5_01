@@ -114,14 +114,14 @@ public
         2dup to apph to appw
         zoom @ * to winh zoom @ * to winw
         display winw winh al_resize_display 0= if
-            ." RESIZE-DISPLAY >> al_resize_display failed!" cr 
+            ." RESIZE-DISPLAY : al_resize_display failed!" cr 
         then 
     then 
     display
     ALLEGRO_FULLSCREEN_WINDOW
     fullscreen? 1 and
     al_set_display_flag 0= if
-        ." RESIZE-DISPLAY >> al_set_display_flag failed!" cr 
+        ." RESIZE-DISPLAY : al_set_display_flag failed!" cr 
     then ;
 
 : poll-keyboard  ( -- )

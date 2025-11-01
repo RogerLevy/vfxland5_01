@@ -57,7 +57,7 @@ trait;
     { dup 0 item-count @ 1 - within? } ;
 
 %iterable :: ?bounds ( n - n )
-    me in-bounds? not abort" ?BOUNDS >> Index out of range!" ;
+    me in-bounds? not abort" ?BOUNDS : Index out of range!" ;
 
 \ Search operations:
 %iterable :: find-index ( xt - n | -1 ) ( a - b )

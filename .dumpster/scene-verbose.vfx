@@ -35,8 +35,8 @@ class;
 
         \ Read format version
         cell allocate throw >r
-        r@ cell r'@ read-file throw cell <> abort" REFRESH >> Invalid scene file format"
-        r> @ SCENE-FORMAT-VERSION <> abort" REFRESH >> Unsupported scene format version"
+        r@ cell r'@ read-file throw cell <> abort" REFRESH : Invalid scene file format"
+        r> @ SCENE-FORMAT-VERSION <> abort" REFRESH : Unsupported scene format version"
         r> free throw
 
         \ Read scene metadata (name, count, etc.)
