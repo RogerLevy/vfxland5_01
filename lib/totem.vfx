@@ -273,8 +273,8 @@ redef %totem :: reload ( - )
         ( a n n ) drop binfree 0 exit 
     then ;
 
-: bin{ ( - ) data{ MAGIC_BIN , ;
-: bin} ( - a len ) data} ;
+: bin{ ( - ) temp{ MAGIC_BIN , ;
+: bin} ( - a len ) temp} ;
 
 continuation: desbin> ( a - ) ( a - a' )
     ?totem

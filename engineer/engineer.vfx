@@ -62,7 +62,7 @@ fload %idir%/go.vfx         \ Main Loop
 || : /console
     -1 line# !
     hWndMain to vfx-hwnd
-    vfx-hwnd z" Engineer Dev Console" SetWindowText drop 
+    vfx-hwnd z" VFX Console" SetWindowText drop 
     consoledev op-handle ! ;
 
 || : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
@@ -124,7 +124,7 @@ previous
     0d to ustime 
     init-history ;
 
-redef : cold ( - )
+redef : main ( - )
     \ Release cold start sequence - initialize all systems and begin execution
     frigid boot go ;
 
@@ -136,7 +136,7 @@ redef : cold ( - )
 \ =============================================================================
 
 : save-release ( - <path> )
-    ['] cold is EntryPoint
+    ['] main is EntryPoint
     fullscreen?
         debug @ hold @
             ide off

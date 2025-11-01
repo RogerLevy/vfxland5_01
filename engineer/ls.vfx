@@ -1,6 +1,6 @@
 private
 
-: >pos  out @ - spaces ;
+: column  out @ - spaces ;
 : vfx 13 ;
 \ : png 13 ;
 : file-color ( z$ - n )
@@ -10,7 +10,7 @@ private
 
 : (dirs)          \ ^WIN32_FIND_DATA --
     >r
-    4 >pos
+    4 column
     r@ WIN32_FIND_DATA.dwFileAttributes @
     FILE_ATTRIBUTE_DIRECTORY and if
         14 push-foreground
@@ -21,13 +21,13 @@ private
 
 : (files)          \ ^WIN32_FIND_DATA --
     >r
-    4 >pos
+    4 column
     r@ WIN32_FIND_DATA.dwFileAttributes @
     FILE_ATTRIBUTE_DIRECTORY and not if
         r@ WIN32_FIND_DATA.cFileName file-color push-foreground
         r@ WIN32_FIND_DATA.cFileName .z$
         pop-attribute
-        40 >pos
+        40 column
         r@ WIN32_FIND_DATA.nFileSizeLow ? cr
     then
     r> drop ;
