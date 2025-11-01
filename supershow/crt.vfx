@@ -32,7 +32,7 @@ continuation: crt>
     0 shade
     display al_get_backbuffer al_set_target_bitmap
     throw
-    -m
+    m}
     tv:bmp 0e 0e 0e 0e 0.25e 0.25e 0e 0 al_draw_scaled_rotated_bitmap
 ;
 : init-crt ( - )
