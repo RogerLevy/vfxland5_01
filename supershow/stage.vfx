@@ -344,40 +344,6 @@ fast}
     \       This will prevent any dangling references to autoclasses.
     dup hide-if-autoclass
     (actor-definition) ;
-
-
-20 cell stack script-classes
-
-class: %actor-script
-    %asset derive
-    static script-class \ <ref %class
-    
-    template {
-        %actor script-class !
-    }
-
-    extension: vfx
-    default-dir: scripts
-
-    :: _intake ( - )
-        me >r   srcpath$ count required   r> to me ;
-class;
-
-%actor-script script-classes push
-
-%actor-script :derive ( parent derived - )
-    nip 
-    dup script-classes contains? if drop exit then
-    script-classes push ;
-
-%actor :: on-error ( xt err# - )
-    {: xt err :}
-    err -exit
-    me bench
-    xt .name ." : actor threw an error - disabling "
-    me ['] .summary catch drop cr
-    .s
-    err throw ;
     
 : find-class ( a len - class | %actor )
     ?-% f" %%%s"

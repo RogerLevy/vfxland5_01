@@ -3,6 +3,7 @@ public
 65536 ?constant #bitmaps
 
 || create bitmaps #bitmaps cells allot&erase
+|| #bitmaps cell array bitmap-objects
 
 variable next-bmp# 1 next-bmp# !
 
@@ -11,37 +12,20 @@ variable next-bmp# 1 next-bmp# !
 : alloc-bmp#  next-bmp# @   1 next-bmp# +! ;
 : add-bitmap ( bmp - n ) alloc-bmp# dup >r bitmap[] ! r> ;
 
-|| #bitmaps cell array bitmap-totems
-
-redef class: %bitmap
+class: %bitmap
     %asset derive
     prop id 
     prop albmp
-    extension: png
-    default-dir: dat/gfx
 
     : does-bitmap ( - ) 
         does> -> id @ ;
 
-    : add-bitmap-totem ( - )
-        alloc-bmp# id ! 
-        me id @ bitmap-totems [] ! ;
-
-    :: load ( - ) 
-        srcpath$ count 
-        >zpad al_load_bitmap albmp ! 
-        me new? if add-bitmap-totem then 
-        albmp @ id @ bitmap[] ! ;
-
-    :: _intake ( - ) 
-        me load   me new? if does-bitmap then ;    
-
 class;
 
-: bmptotem  bitmap-totems [] @ ;
+: bmpobj  bitmap-objects [] @ ;
 : ?nullbmp  dup 0= abort" BITMAP-FILE Bitmap is null!" ;
 : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
-: bitmap-file ( n - a n ) ?nullbmp ?subbmp bmptotem -> srcpath$ count ;
+: bitmap-file ( n - a n ) ?nullbmp ?subbmp bmpobj -> srcpath$ count ;
    
 \ %bitmap :: unload ( - )
 \     albmp @ -albmp
@@ -65,14 +49,11 @@ class;
     \ draw sprite with center as the origin
     dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
 
-: init-bitmaps ( - )
-    %bitmap load-default-dir ;
-
-: destroy-bitmaps ( - )
-    ." Destroying bitmaps" cr
-    65536 1 do
-        i bitmap[] dup @ ?dup if al_destroy_bitmap then off
-    loop  1 next-bmp# ! ;
+\ : destroy-bitmaps ( - )
+\     ." Destroying bitmaps" cr
+\     65536 1 do
+\         i bitmap[] dup @ ?dup if al_destroy_bitmap then off
+\     loop  1 next-bmp# ! ;
 
 \ : unload-bitmaps ( - )
 \     %bitmap unload-instances ;
