@@ -8,7 +8,7 @@
 
 include %idir%/vfxcore2.vfx \ Codebase-wide language extensions
 include %idir%/error2.vfx   \ TODO: Make platform-agnostic
-include %idir%/variables.vfx
+include %idir%/variables.vfx \ System variables
 include %idir%/counter.vfx  \ Required by mersenne for seeding
 include %idir%/mersenne.vfx \ RNG
 include %idir%/changes.vfx  \ Filesystem change tracking
@@ -17,8 +17,8 @@ include %idir%/changes.vfx  \ Filesystem change tracking
 \ Game services
 \ =============================================================================
 
-fload %idir%/graphics.vfx   \ Graphics
-fload %idir%/input.vfx      \ Input
+fload %idir%/graphics.vfx   \ Graphics functions
+fload %idir%/input.vfx      \ Input functions
 fload %idir%/border.vfx     \ TV border / scaling
 fload %idir%/ide3.vfx       \ Interactive IDE
 fload %idir%/go.vfx         \ Main Loop

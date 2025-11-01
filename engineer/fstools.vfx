@@ -2,6 +2,10 @@
 \ Filesystem
 \ =============================================================================
 
+: -file ( a len - a len' ) slashes '\' <scan ;
+
+aka file-exists? fileexists?
+
 || create buf 256 allot
 : wd@ ( - a len )
     buf 256 buf GetCurrentDirectory ;

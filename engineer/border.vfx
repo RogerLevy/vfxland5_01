@@ -2,6 +2,8 @@
 \ TV
 \ =============================================================================
 
+|| : z ( - n ) zoom @ ;
+
 : refit ( - )  \ find biggest integer scaling that fits display
     monw monh 2s>f f/
     appw apph 2s>f f/

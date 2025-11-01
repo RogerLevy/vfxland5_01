@@ -79,6 +79,3 @@ redef : cls ( - )
 include %idir%/matrix.vfx
 include %idir%/print.vfx
 include %idir%/../textmode/textmode.vfx
-
-: z ( - n )
-    zoom @ ;
