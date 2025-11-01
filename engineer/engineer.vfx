@@ -59,7 +59,7 @@ fload %idir%/go.vfx         \ Main Loop
 \ Entry Points  
 \ =============================================================================
 
-|| : /console
+|| : init-vfx-console
     -1 line# !
     hWndMain to vfx-hwnd
     vfx-hwnd z" VFX Console" SetWindowText drop 
@@ -129,7 +129,7 @@ redef : main ( - )
     frigid boot go ;
 
 : debug-cold ( - )
-    vfxforth-entrypoint /console ;
+    vfxforth-entrypoint init-vfx-console ;
 
 \ =============================================================================
 \ Turnkey creation
@@ -203,11 +203,10 @@ include %idir%/ls.vfx
 
 : engineer.cold ( - )
     \ Main Engineer entry point - initialize and run with command line args
-    /console
+    init-vfx-console
     (.cold)
     ."  ~~~ Engineer v1 ~~~ " cr
     frigid 
-    \ s" xref.xrf" file-exists? if load-xref then
     init-ide
     zcommand zcount strip-exe ide-interpret
     ?dup if .throw >vfx else go then ;
