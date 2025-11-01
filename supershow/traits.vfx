@@ -4,6 +4,10 @@ trait: %object
     \ :: think ( - ) ;
 trait;
 
+trait: %loadable
+    :: load ( - ) ;
+trait;
+
 trait: %unloadable
     :: unload ( - ) ;
 trait;

@@ -1,3 +1,5 @@
 class: %asset
-    is-a %totem
+    256 nprop srcpath$ <cstring         \ cstring: main file path
+    is-a %loadable
+    is-a %unloadable
 class;

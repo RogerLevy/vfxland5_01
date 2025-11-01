@@ -21,8 +21,8 @@ gameh gap / ?constant tmh
 
 include %idir%/checks.vfx           \ Validations
 include %idir%/tweak.vfx              \ Persistent variable control
-include %idir%/../lib/bin.vfx       \ Binary serialization format (deprecated)
-include %idir%/../lib/totem.vfx     \ Persistent data system
+\ include %idir%/../lib/bin.vfx       \ Binary serialization format (deprecated)
+\ include %idir%/../lib/totem.vfx     \ Persistent data system
 include %idir%/shader.vfx           \ Shaders 
 include %idir%/crt.vfx              \ CRT shader
 include %idir%/waveplay.vfx         \ Audio engine
@@ -56,9 +56,9 @@ include %idir%/sprite.vfx           \ Sprite animation (depends on tilesets)
 \ Convenience facilities
 \ =============================================================================
 
-include %idir%/persist.vfx
-include %idir%/scene.vfx            \ Scene management
-include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
+\ include %idir%/persist.vfx
+\ include %idir%/scene.vfx            \ Scene management
+\ include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
 
 \ =============================================================================
 \ Cleanup (not needed)
@@ -104,9 +104,9 @@ include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
 
 : init-supershow ( - )
     hold off
-    init-bitmaps
-    init-tilesets
-    init-samples
+    \ init-bitmaps
+    \ init-tilesets
+    \ init-samples
     init-crt
     debug @ if
 \        ['] supershow-process-dirchange is process-dirchange
@@ -123,17 +123,17 @@ init-supershow
 
 ' boot-supershow is boot
 
-: load-project ( - )
-    create-autoclasses
-    ['] load-default-dir script-classes each@
-    %scene load-default-dir
-    s" modes.vfx" ?included ;
+\ : load-project ( - )
+\     create-autoclasses
+\     ['] load-default-dir script-classes each@
+\     %scene load-default-dir
+\     s" modes.vfx" ?included ;
 
 \ Tools
 debug @ [if]
     include %idir%/tools.vfx                \ Development tools
-    include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
-    s" sketchpad" <f12> func
+    \ include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
+    \ s" sketchpad" <f12> func
 [then]
 
 \ Backward compatibility
