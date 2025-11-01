@@ -133,7 +133,7 @@ variable hsplit   0.5 hsplit !
 : .watch ( - )
     watch-xt @ -exit
     watch-context @ .name
-    ." >> "
+    \ ." >> "
     watch$ count ?type cr
     push-order
     only forth watch-context @ +order
@@ -184,7 +184,8 @@ variable hsplit   0.5 hsplit !
 
 : .tib ( - )
     context @ .name
-    ." >> "  tib #tib @ ?type ;
+    \ ." >> "  
+    tib #tib @ ?type ;
 
 : command-line ( - )
     1. 2. scaled>
