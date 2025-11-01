@@ -139,7 +139,7 @@ fast}
     ['] (step) catch
     ?dup if
         hold on
-        .throw-catch
+        .throw \ dup .throw .catch 
     then ;
 
 \ =============================================================================
