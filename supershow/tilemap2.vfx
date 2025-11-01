@@ -5,7 +5,7 @@
 variable pile
 
 class: %tileset
-    is-a %totem
+    %asset derive
     extension: ts
     default-dir: dat/gfx
     format: TILESET_FORMAT_VERSION 

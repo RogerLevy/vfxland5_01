@@ -1,7 +1,7 @@
 1 constant SCENE_FORMAT_VERSION
 
 class: %scene  
-    is-a %totem
+    %asset derive
     format: SCENE_FORMAT_VERSION
     extension: scn
     default-dir: dat/scn

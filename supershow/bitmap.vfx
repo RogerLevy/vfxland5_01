@@ -14,7 +14,7 @@ variable next-bmp# 1 next-bmp# !
 || #bitmaps cell array bitmap-totems
 
 redef class: %bitmap
-    is-a %totem
+    %asset derive
     prop id 
     prop albmp
     extension: png

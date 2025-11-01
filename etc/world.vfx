@@ -34,7 +34,7 @@ tilemap :: _keep ( - )
         data @ tm-size move, ;
 
 class: world
-    is-a %totem
+    %asset derive
     format: WORLD_FORMAT_VERSION 
     extension: wld
     default-dir: dat/wld

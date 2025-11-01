@@ -1,0 +1,3 @@
+class: %asset
+    is-a %totem
+class;

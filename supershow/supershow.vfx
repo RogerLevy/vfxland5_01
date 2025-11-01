@@ -28,6 +28,7 @@ include %idir%/crt.vfx              \ CRT shader
 include %idir%/waveplay.vfx         \ Audio engine
 include %idir%/utilities.vfx        \ Math helpers, audio, and misc utilities
 include %idir%/traits.vfx           \ Object traits
+include %idir%/asset.vfx            \ Base asset class
 
 \ =============================================================================
 \ Stage

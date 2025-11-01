@@ -349,7 +349,7 @@ fast}
 20 cell stack script-classes
 
 class: %actor-script
-    is-a %totem
+    %asset derive
     static script-class \ <ref %class
     
     template {
