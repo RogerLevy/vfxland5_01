@@ -300,7 +300,7 @@ continuation: desbin> ( a - ) ( a - a' )
 continuation: serbin> ( - ) ( - )
     ( xt ) >r 
     ?totem
-    bin[
+    bin{
     format @ ,
     r> catch 
     bin} 

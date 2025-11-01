@@ -218,7 +218,7 @@ variable next#
 \ =============================================================================
 
 : hitbox ( - x1 y1 x2 y2 )
-    x 2@ 2>i x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;`
+    x 2@ 2>i x1 2@ 2+  w1 2@ 2over 2+  1 1 2- ;
 
 : hit? ( obj obj - f )
     over free? over free? or if 2drop 0 exit then

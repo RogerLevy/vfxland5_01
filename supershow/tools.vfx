@@ -94,7 +94,7 @@ engineer/
     class0 materialize {
         my-name -ext n[ place
         srcpath$ count file-exists? not if
-            srcpath$ count write[
+            srcpath$ count write{
                 n[ count 
                 f" class: %s" line,
                 script-class @ body>name
@@ -109,7 +109,7 @@ engineer/
                 f" %s :: init ( - )" line,
                 s"     act> ;" line,
                 nl,
-            write]
+            write}
             srcpath$ count included
         then
         n[ count f" locate %s" evaluate 

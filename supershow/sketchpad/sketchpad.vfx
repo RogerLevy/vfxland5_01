@@ -67,7 +67,7 @@ command : ctrl+s ( - )
 
 command : as ( obj - )
     \ Scope into the given object.
-    as  ['] sketchpad: >body @ +order  order-swap ;
+    as  ['] sketchpad>> >body @ +order  order-swap ;
 
 \ =============================================================================
 
@@ -158,7 +158,7 @@ public
     ?toggle-mode
     hold on
     repl on
-    sketchpad: 
+    sketchpad>>
     gamew 2 / gameh 2 / at 
     show> 
         hold @ _hold ! 
