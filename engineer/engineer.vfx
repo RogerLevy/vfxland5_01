@@ -206,11 +206,12 @@ include %idir%/ls.vfx
     \ Main Engineer entry point - initialize and run with command line args
     init-vfx-console
     (.cold)
-    ."  ~~~ Engineer v1 ~~~ " cr
+    ."  ~~~ Engineer v2 (redux) ~~~ " cr
     frigid 
 \    init-ide
     zcommand zcount strip-exe interpret-string \ ide-interpret
-    ?dup if .throw >vfx else go then ;
+    ?dup if .throw else ( go ) then 
+    >vfx ;
 
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
