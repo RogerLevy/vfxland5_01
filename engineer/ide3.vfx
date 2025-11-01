@@ -252,14 +252,6 @@ assign (DoErrorMessage) to-do DoErrorMessage
 : (DoAbortMessage) $. .source-line ;
 assign (DoAbortMessage) to-do DoAbortMessage
 
-\ : .throw ( n - )
-\     case
-\         0 of  endof				                    \ not an error
-\         -1 of  endof				                \ quiet
-\         -2 of  'AbortText @ DoAbortMessage  endof	
-\         .error  
-\     end-case ;
-
 : obey ( - )
     osp @ >r uiosp @ osp !
     .tib cr 
@@ -325,20 +317,12 @@ assign (DoAbortMessage) to-do DoAbortMessage
         active on
         repl @ not if hold off then
         ide @ if hold on then
-        \ ide @ repl @ not and if hold off then
-        \ ide @ repl @ and if old-hold @ hold ! then
     then ;
 
 \ =============================================================================
 \ Display Modes
 \ =============================================================================
 
-\ borrow engineer>> fullscreen
-\ borrow engineer>> windowed
-\ borrow engineer>> winmode
-\ borrow engineer>> draw-tv
-
-\ %displaymode-like trait
 trait: %displaymode-like
     redef prop _ide
     redef prop _repl
