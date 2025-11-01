@@ -38,7 +38,7 @@ create syms
         
 : the-tile  t0 @ t @ + ;
 : the-metas  t @ cells metas + ;
-continuation: tsr>  ( xt ) >r +m transform 0 0 at r> execute -m ;
+continuation: tsr>  ( xt ) >r m{ transform 0 0 at r> execute m} ;
 : bh  bmpwh nip ;
 : row  0 swap gap * at ;
 : put+  dup put 1 +  gap 0 +at ;

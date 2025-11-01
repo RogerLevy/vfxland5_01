@@ -8,13 +8,13 @@
 || variable tx variable ty
 || : m mp @ 15 and 16 cells * mstk + ; 
 
-: +m ( - )
+: m{ ( - )
     m 1 mp +! m swap al_copy_transform ;
 
-: -m ( - )
+: m} ( - )
     -1 mp +!  m al_use_transform ;
 
-: transform ( f: x y sx sy a - )
+: transform ( f:x f:y f:sx f:sy a - )
     m2 al_build_transform  m2 m al_compose_transform  m m2 al_copy_transform
     m al_use_transform ;
 

@@ -34,7 +34,7 @@ create scalexy 0 , 0 ,
 create (pen) 0 , 0 , 
 
 continuation: scaled>  ( x. y. - <code> ; )
-    ( xt ) >r 2dup scalexy 2! +m 0e 0e 2p>f 0e transform r> ( xt ) execute -m ;
+    ( xt ) >r 2dup scalexy 2! m{ 0e 0e 2p>f 0e transform r> ( xt ) execute m} ;
 
 : scaled-at ( x y - )
     scalexy 2@ 2p/ at ;
@@ -79,7 +79,7 @@ variable hsplit   0.5 hsplit !
 : game-window ( - )
     monw gamewin-w - 0 gamewin-w gamewin-h al_set_clipping_rectangle
 
-    +m
+    m{
     identity
     monw gamewin-w - margin-x +
     margin-y
@@ -103,7 +103,7 @@ variable hsplit   0.5 hsplit !
     then
     r> al_draw_rectangle
     
-    -m
+    m}
     0 0 monw monh al_set_clipping_rectangle ;
 
 \ borrow engineer/ func[]
@@ -461,7 +461,7 @@ public
 
 :noname ( - )
     ?dirchange 
-    +m identity cls draw-display-mode -m ;
+    m{ identity cls draw-display-mode m} ;
 is draw-ide
 
 || variable running

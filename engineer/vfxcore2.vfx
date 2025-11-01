@@ -34,8 +34,6 @@ include %idir%/../lib/lstring.vfx \ Cell-counted strings
 include %idir%/gamemath.vfx       \ 2D vectors and game math
 include %idir%/strout.vfx         \ String output buffer management
 
-include %idir%/back.vfx           \ Backward compatibility shim
-
 \ =============================================================================
 \ Allegro bindings and utilities
 \ =============================================================================

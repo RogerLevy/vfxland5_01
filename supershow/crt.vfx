@@ -22,7 +22,7 @@
 
 continuation: crt>
     ( xt ) >r
-    +m
+    m{
     buf:bmp al_set_target_bitmap
     0e 0e 0e 1e al_clear_to_color  0 0 at 
     identity

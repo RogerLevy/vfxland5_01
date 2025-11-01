@@ -69,10 +69,10 @@ continuation: draw> ( - ) ( - )
 || : +t  x 2@ 2>i 2s>f `` sx 2@ 2p>f 0e ``` transform ;
 || : (draw) ( - )
     en @ -exit vis @ -exit
-    +m +t 0 0 at
+    m{ +t 0 0 at
         draw @ if draw @ ?oexec else sprite then
         [ last-colon-xt @ ] literal me dleach
-    -m  ;
+    m}  ;
 || : draw-children ( element - )
     ['] (draw) swap dleach ;
 
