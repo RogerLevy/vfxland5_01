@@ -41,7 +41,7 @@ trait;
 ||     ' bin-des-float ,
 ||     ' bin-des-cstring ,
 
-borrow nib2/ prop+
+borrow nib2>> prop+
 
 : serbin, ( obj - )
     \ serialize object into dictionary in binary format

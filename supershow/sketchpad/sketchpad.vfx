@@ -1,13 +1,13 @@
 \ ==============================================================================
 \ SKETCHPAD mode
 
-\ SKETCHPAD/ vocabulary
+\ SKETCHPAD: vocabulary
 \ THIS - value pointing to the current scene
 \ SAVEAS <name> - create a scene (along with the file) and assign it to THIS.
 \                 no extension.
 \ EDIT <name>   - create or load a scene - no extension.
 
-\ ( startup: create scenes from every file in dat/scn/ and scenes/ )
+\ ( startup: create scenes from every file in dat/scn/ and scenes: )
 
 \ ( make a bunch of actors )
 
@@ -67,7 +67,7 @@ command : ctrl+s ( - )
 
 command : as ( obj - )
     \ Scope into the given object.
-    as  ['] sketchpad/ >body @ +order  order-swap ;
+    as  ['] sketchpad: >body @ +order  order-swap ;
 
 \ =============================================================================
 
@@ -158,7 +158,7 @@ public
     ?toggle-mode
     hold on
     repl on
-    sketchpad/ 
+    sketchpad: 
     gamew 2 / gameh 2 / at 
     show> 
         hold @ _hold ! 

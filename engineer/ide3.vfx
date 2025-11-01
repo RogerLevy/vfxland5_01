@@ -106,7 +106,7 @@ variable hsplit   0.5 hsplit !
     m}
     0 0 monw monh al_set_clipping_rectangle ;
 
-\ borrow engineer/ func[]
+\ borrow engineer>> func[]
 : .hotkeys ( - )
     s" Alt+Enter=Display  Tab=REPL  Esc=Quit  Alt+F4=Bye  CTRL+\=Stack" type cr
     12 for
@@ -332,10 +332,10 @@ assign (DoAbortMessage) to-do DoAbortMessage
 \ Display Modes
 \ =============================================================================
 
-\ borrow engineer/ fullscreen
-\ borrow engineer/ windowed
-\ borrow engineer/ winmode
-\ borrow engineer/ draw-tv
+\ borrow engineer>> fullscreen
+\ borrow engineer>> windowed
+\ borrow engineer>> winmode
+\ borrow engineer>> draw-tv
 
 \ %displaymode-like trait
 trait: %displaymode-like
@@ -418,7 +418,7 @@ display-mode jumptable current-mode
 \ Public Words
 \ =============================================================================
 
-\ borrow engineer/ -keys
+\ borrow engineer>> -keys
 
 public
 
@@ -502,7 +502,7 @@ is draw-ide
     ((quit))
 ;
 
-borrow error2/ console-debugger
+borrow error2>> console-debugger
 : ide-debugger
     running @ if hist{ 15 4 push-attributes then
     console-debugger

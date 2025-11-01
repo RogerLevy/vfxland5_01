@@ -5,7 +5,7 @@
 include engineer/nib2.vfx
 \ include engineer/array.vfx  \ system component, no need to load
 
-\ This is commented out because Oversight doesn't currently work with Nib2:
+\ This is commented out because Oversight doesn't currently work with nib2>>
 \ validations on  
 
 include lib/wstring.vfx

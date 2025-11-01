@@ -96,4 +96,4 @@ continuation: tsr>  ( xt ) >r m{ transform 0 0 at r> execute m} ;
 
 public
 
-: te  te/ show> logic ui ;
+: te  te: show> logic ui ;

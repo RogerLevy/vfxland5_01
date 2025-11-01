@@ -83,7 +83,7 @@ actor0 s" actor.json" save-object-json
 2 scene0 deref-index { 1000. rnd 500. - x ! 1000. rnd 500. - y ! 100 rnd hp ! } 
 
 || 0 value arr 0 value path 0 value len 0 value cjson 0 value cjson-arr
-also cjson/ \ necessary because of how || works ... TODO: gonna revisit scope.vfx to fix stuff like this
+also cjson>> \ necessary because of how || works ... TODO: gonna revisit scope.vfx to fix stuff like this
 
 : write-object-array ( array path len - )
     to len to path to arr 

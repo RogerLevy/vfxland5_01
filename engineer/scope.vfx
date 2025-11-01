@@ -10,7 +10,7 @@ variable public-xt  ' forth public-xt !
 
 : wlname
     CurrSourceName -path -ext wl$ place
-    wl$ s" /" $+ count ;
+    wl$ s" >>" $+ count ;
 
 : the-wordlist  wl$ count search-context if >body @ else 0 then ;
 
@@ -22,7 +22,18 @@ variable public-xt  ' forth public-xt !
 : ?wordlist ( a n - wl )
     wl$ place
     the-wordlist ?dup if exit then
-    scope the-wordlist ;
+    scope 
+
+    \ backward compatibility: also create `SCOPE/`
+    s" synonym " >pad 
+    wl$ count 2 - $+
+    s" /" $+
+    s"  " $+
+    wl$ count $+
+    count 
+    evaluate
+
+    the-wordlist ;
 
 : sprivate ( a n - )
     only forth 

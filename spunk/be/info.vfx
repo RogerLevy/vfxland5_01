@@ -1,6 +1,6 @@
 element-class info%
-borrow be/ the-bmp
-borrow be/ file$
+borrow be>> the-bmp
+borrow be>> file$
 : first-tile ( a c - n)
     evaluate dup >albmp | p n |
     #bitmaps n - for

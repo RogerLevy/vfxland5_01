@@ -68,7 +68,7 @@ fload %idir%/go.vfx         \ Main Loop
 || : vfxforth-entrypoint ( hinst hpinst lpcommand nshow -- res )
     [ ' EntryPoint >body @ compile, ] ;
 
-borrow nib2/ init-nib
+borrow nib2>> init-nib
 
 || : empty-engineer ( - )
     reset-format-buffers
@@ -214,6 +214,6 @@ include %idir%/ls.vfx
 
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
-borrow nib2/ gild-nib
+borrow nib2>> gild-nib
 gild-nib
 marker gild
