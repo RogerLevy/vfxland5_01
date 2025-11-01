@@ -1,0 +1,111 @@
+I found 48+ graphics functions across the engineer directory (excluding Allegro bindings). Here's the breakdown:
+
+  Core Graphics (graphics.vfx)
+
+  Window Management:
+  - >DISPLAY - Set focus to Allegro display window
+  - >VFX - Set focus back to VFX IDE
+  - FULLSCREEN / WINDOWED - Toggle display modes
+  - *DISPLAY - Create/recreate display
+  - W/F - Toggle windowed/fullscreen
+  - UPDATE-DELTA - Update frame timing
+
+  Pen Position System:
+  - AT - Set pen position (x y)
+  - AT@ - Get pen position
+  - AT@F - Get pen position as floats
+  - +AT - Offset pen position
+  - Z - Get zoom level
+
+  Bitmap Operations:
+  - ALBMPW / ALBMPH - Get bitmap width/height
+  - DRAW-BITMAP - Draw bitmap at pen position
+  - *SUBBMP - Create sub-bitmap
+  - -ALBMP - Destroy bitmap
+
+  Screen:
+  - CLS - Clear screen to black
+
+  Transformations (matrix.vfx)
+
+  Matrix Stack:
+  - M{ / M} - Push/pop transformation matrix
+
+  Transforms:
+  - TRANSFORM - Apply 2D transformation (translate, scale, rotate)
+  - IDENTITY - Reset to identity transform
+  - 2P*M - Transform fixed-point coordinates through matrix
+  - INVERSE - Invert current transformation
+
+  Text Rendering (print.vfx)
+
+  Font & Color:
+  - FONT@ - Get current font bitmap
+  - FCOLOR - Set foreground color
+  - COLOR - Set color from VGA palette index
+
+  Text Output:
+  - MLTEXT - Multiline text with word wrapping
+  - PRINT - Print text at pen position
+  - PRINT2 - Print with custom line spacing
+  - GLYPH - Draw single character
+  - TEXTW - Get text width in pixels
+  - INIT-VGA-FONT - Load VGA 8x8 font
+
+  Display Frame (border.vfx)
+
+  Layout Calculation:
+  - REFIT - Calculate optimal integer scaling
+  - FS-W / FS-H - Full screen dimensions
+  - BORDER-XY - Calculate border offset
+  - TV-XY / TV-XY2 - Calculate TV area bounds
+
+  Rendering:
+  - CLIP-SCREEN - Set clipping rectangle
+  - BORDER - Render TV frame with border
+  - ?BORDER - Conditionally render border
+  - DRAW-TV - Execute drawing with TV frame applied
+
+  Allegro Utilities (al-utils.vfx)
+
+  Initialization:
+  - INIT-ALLEGRO - Initialize Allegro 5 subsystems
+  - CREATE-DISPLAY - Create display window
+  - RESIZE-DISPLAY - Resize and toggle fullscreen
+
+  Audio:
+  - -AUDIO / +AUDIO - Disable/enable audio mixer
+
+  Input:
+  - RESET-KEYBOARD / POLL-KEYBOARD - Keyboard state
+  - RESET-MOUSE / POLL-MOUSE - Mouse state
+
+  Dialogs:
+  - FILE-DIALOG - Show native file open dialog
+
+  Textmode Layer (textmode/textmode.vfx)
+
+  - TEXTMODE-DIM - Set text grid dimensions
+  - TEXTMODE-CLEAR - Clear text buffers
+  - TEXTMODE-WRITE - Write character with colors
+  - TEXTMODE-LOCATE - Set cursor position
+  - TEXTMODE-DRAW - Render text buffer to screen
+
+  VGA Palette (vga13h.vfx)
+
+  - VGA@ - Get 24-bit color from VGA palette index
+
+  IDE Graphics (ide3.vfx)
+
+  - SCALED-AT - Calculate scaled position
+  - ZOOMED-GAME - Draw game window with zoom
+  - GAME-WINDOW - Render game window frame
+  - Various IDE rendering modes
+
+  The main files are:
+  - engineer/graphics.vfx:1
+  - engineer/matrix.vfx:1
+  - engineer/print.vfx:1
+  - engineer/border.vfx:1
+  - engineer/al-utils.vfx:1
+  - engineer/textmode/textmode.vfx:1

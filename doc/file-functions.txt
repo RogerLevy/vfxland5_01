@@ -1,0 +1,70 @@
+ I found 57+ file-related functions across the engineer directory. Here's the organized breakdown:
+
+  Core File I/O (fstools.vfx)
+
+  Basic Operations:
+  - WD@ - Get current working directory
+  - FSIZE - Get file size in bytes
+  - BYTES-LEFT - Get bytes remaining in open file
+  - FILE, - Compile binary file into memory
+
+  High-Level I/O:
+  - WRITE{ ... WRITE} - Bracket notation for file writing
+  - DATA, - Write raw data
+  - LINE, - Write line with newline
+  - WRITE - Single-operation file write
+  - READ - Single-operation file read
+  - LOAD-FILE - Allocate and load entire file
+
+  Directory Operations:
+  - DIR-EXISTS? - Check if directory exists
+  - ENSURE-DIR - Create directory with error handling
+  - FIND-DAT-PATH - Locate dat/ asset directory
+
+  Directory Enumeration (each-file.vfx)
+
+  - EACH-FILE - Execute code for each file in directory
+  - EACH-FILE-AND-DIR - Execute for files and directories
+
+  Path Manipulation (file-fix.vfx)
+
+  - >ABSPATH - Convert to absolute canonical path
+  - NORMALIZE - Full path canonicalization
+  - SLASHES - Convert forward to backslashes
+  - -PATH - Strip to filename only
+  - ENDING - Extract string after character
+  - INCLUDED / INCLUDE - Include file with path fixing
+  - REQUIRED / REQUIRE - Conditional include
+  - .SOURCES - List all included source files
+
+  File Listing (ls.vfx)
+
+  - LS - List directory contents with colors
+  - FILE-COLOR - Get color code by file extension
+
+  Allegro 5 Bindings (allegro-5.2.5.vfx)
+
+  Filesystem Entry API:
+  - AL_CREATE_FS_ENTRY / AL_DESTROY_FS_ENTRY
+  - AL_OPEN_DIRECTORY / AL_READ_DIRECTORY / AL_CLOSE_DIRECTORY
+  - AL_GET_FS_ENTRY_NAME / AL_GET_FS_ENTRY_MODE / AL_GET_FS_ENTRY_MTIME
+
+  Asset Loading:
+  - AL_LOAD_BITMAP / AL_LOAD_FONT / AL_LOAD_SAMPLE / AL_LOAD_AUDIO_STREAM
+
+  Native File Dialog:
+  - AL_CREATE_NATIVE_FILE_DIALOG / AL_SHOW_NATIVE_FILE_DIALOG
+  - AL_GET_NATIVE_FILE_DIALOG_PATH / AL_GET_NATIVE_FILE_DIALOG_COUNT
+
+  VFX Forth Standard (vfxcore2.vfx)
+
+  - OPEN-FILE / CLOSE-FILE / READ-FILE / WRITE-FILE
+  - FILE-SIZE / FILE-POSITION / FILE-EXISTS?
+  - CREATE-FILE / DELETE-FILE
+
+  The main files are:
+  - engineer/fstools.vfx:1
+  - engineer/each-file.vfx:1
+  - engineer/file-fix.vfx:1
+  - engineer/ls.vfx:1
+  - engineer/allegro-5.2.5.vfx:1
