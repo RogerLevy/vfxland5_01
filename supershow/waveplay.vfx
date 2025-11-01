@@ -47,7 +47,7 @@ defer voice? ( smp - f )
 \ Playback
 \ =============================================================================
 
-|| : @ch ( smp - )
+|| : associate-channel ( smp - )
     ch 2@ rot sample[] cell+ 2! ;
 
 || : ?choke ( smp - smp )
@@ -57,7 +57,7 @@ defer voice? ( smp - f )
 
 : sound  ( smp - )
     dup voice? not if drop exit then
-    ?choke  dup sample[] @ play-sample  @ch ;
+    ?choke  dup sample[] @ play-sample  associate-channel ;
 
 :noname ( smp - f ) drop -1 ; is voice?
 

@@ -32,10 +32,10 @@ class;
 || variable aspd \ pointer to len in animation header
 || : >frames ( anim - a ) cell+ cell+ ;
 || : ?baseid  a.ts @ dup if 0 tile then ;
-|| : !bmp  a.ofs @ >i cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
+|| : update  a.ofs @ >i cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
 || : ?done  a.ofs @ a.spd @ + a.len @ >p >= -exit  a.done on ;
 : cycle ( anim spd. - ) \ to stop, say `anm off`
-    a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  !bmp ;
+    a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  update ;
 : animation ( ts - <name> )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
     create , here aspd ! 0 , ;
 : frame, ( n - )
@@ -47,6 +47,6 @@ class;
     hold @ ?exit actives>
         anm @ -exit
         a.spd @ a.ofs @ + a.len @ >p mod a.ofs !
-        !bmp ?done ;
+        update ?done ;
 
 

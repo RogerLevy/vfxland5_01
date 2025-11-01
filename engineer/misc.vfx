@@ -78,19 +78,6 @@ include %idir%/../textmode/textmode-tools.vfx
         pop-attribute
     else . then ;
 
-\ : .test  0 0 do i .ip cr 1000 +loop ; 
-
-\ : .ip ( a - )
-\     dup body> inForth? if
-\         ip>nfa dup count 2drop
-\     else drop then ;
-
-\ : .ip  dup inForth? if ip>nfa count type space cr else drop then ;
-
-\ : .test  0 0 do i dup .ip drop loop ; 
-
-\ 0 ' .test catch .s throw
-
 : .data ( a - )
     dup body> inForth? if
         12 push-foreground

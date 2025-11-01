@@ -137,11 +137,11 @@ create cb-p /screen allot
     #rooms for i room mark@ if save-room then loop
     room ;
     
-: @roombase
+: room-path
     bl parse s" map\" find-dat-path f" %s%s" roombase$ place ;
 
 : saveas ( - <path> )
-    @roombase save ;
+    room-path save ;
 
 : (load)
     room-datfile file-exists? not if clear-ag exit then

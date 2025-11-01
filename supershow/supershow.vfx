@@ -128,3 +128,6 @@ debug @ [if]
     include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
     s" sketchpad" <f12> func
 [then]
+
+\ Backward compatibility
+include %idir%/back.vfx

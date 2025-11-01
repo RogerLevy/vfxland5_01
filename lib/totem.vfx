@@ -94,13 +94,13 @@ trait;
         path len >abspath me srcpath!
     me } ;
 
-|| : @default-dir
+|| : default-dir
     my-name
     cla @ default-dir@ >abspath f" %s/%s" me srcpath! ;
 
 : +totem ( class <name> - totem ) ( - totem )
     \ usage: +totem <name> ...
-    bl parse   rot materialize { @default-dir   ( changed on )   me } ;
+    bl parse   rot materialize { default-dir   ( changed on )   me } ;
 
 : manifest ( path len class - totem )
     \ materialize (create/find) and if created, intake (load).

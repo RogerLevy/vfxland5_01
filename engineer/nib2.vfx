@@ -217,7 +217,7 @@ create-class %trait {
 : (sizeof) ( object - n )
     >cla @ -> instance-size @ ;
 
-: !template ( object - )
+: copy-template ( object - )
     dup >cla @ -> class-template @ ?dup if
         cell+ over dup cell+ swap (sizeof) cell- move
     else
@@ -227,12 +227,12 @@ create-class %trait {
 
 : scaffold ( class addr - )
     swap over >cla !   \ Store class pointer
-    { me !template } ;
+    copy-template ;
 
 redef : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
     {
-        me !template
+        me copy-template
         cla @ -> constructor-xt @ ?dup if execute then
     } ;
     

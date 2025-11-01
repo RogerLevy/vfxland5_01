@@ -83,7 +83,7 @@ public
 
 : .changed-file ." File changed: " changed-file 15 atype cr ;
 
-|| : @changed-fp ( NOTIFY_INFO - )
+|| : get-changed-path ( NOTIFY_INFO - )
     2 cells + @+ changed-fp$ utf16>place
     wd@
     mondir$ count $cwd
@@ -99,7 +99,7 @@ defer process-dirchange ( NOTIFY_INFO - )
     dir-handle overlapped bytes-returned 0 GetOverlappedResult if
         buffer 
         begin 
-            dup @changed-fp
+            dup get-changed-path
             dup process-dirchange
             dup @ 
         while
