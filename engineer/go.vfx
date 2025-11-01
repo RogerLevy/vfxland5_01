@@ -40,14 +40,17 @@ continuation: show> ( - ) ( - )
 
 || : ?event ( - flag )
     alqueue the-event al_get_next_event 0<> dup -exit
-    >r global-events ide-events r> ;
+    >r 
+    global-events 
+    \ ide-events 
+    r> ;
     
 || : (pump) ( - )
     need-pump @ -exit
     begin ?event not until ;
 
 : pump ( - )
-    ['] (pump) catch hist{ .throw hist}
+    ['] (pump) catch ( hist{ ) .throw ( hist} )
     need-pump on ;
 
 redef : event? ( - f )
@@ -80,13 +83,14 @@ redef : event? ( - f )
 
 || : ?reload-shift ( - ) shift? to reload-shift? ;
 || : ?w/f ( - )
-    debug @ if ide-?w/f exit then
+    \ debug @ if ide-?w/f exit then
     <enter> pressed?  alt? and if
         w/f -keys
     then ;    
 || : ?bye  <f4> pressed?  alt? and if bye then ;
 || : controls ( - ) ?quit ?w/f ?bye ?reload-shift ;
-|| : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
+\ || : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
+|| : screen ( - ) ['] draw-game draw-tv ;
 
 : frame ( - )
     controls screen refresh ;
@@ -97,6 +101,7 @@ extern BOOL SetThreadPriority( hthread, priority );
     \ Main engine loop - enter IDE if debug mode, otherwise run normally
     GetCurrentThread 2 SetThreadPriority drop
     going @ ?exit
-    debug @ if >ide else >display then
+    \ debug @ if >ide else >display then
+    >display
     pre going on begin ['] frame catch ?dup until going off throw ;
 

@@ -8,18 +8,6 @@ public
 
 defer draw-ide
 
-|| : ?game-throw ( n - ) 
-    dup -1 = if drop exit then
-    dup if going off >vfx then throw ;
-
-: draw-game ( - ) 
-    at@ 2>r
-    cls
-    repl @ if save-kb erase-kb then 
-    'show @ catch ?game-throw
-    repl @ if restore-kb then  
-    2r> at ;
-
 private
 
 aka dup-endcase end-case

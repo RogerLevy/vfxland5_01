@@ -8,4 +8,6 @@ include %idir%/back.vfx           \ Backward compatibility shim
 cwd ..
 save-dev bin\engineer
 save-xref
-frigid init-ide >vfx
+frigid 
+\ init-ide
+>vfx
