@@ -83,6 +83,7 @@ borrow nib2>> init-nib
 
 redef : empty ( - )
     debug @ -exit
+    rs
     empty-engineer
     only forth definitions
     s" anew gild" evaluate ;
