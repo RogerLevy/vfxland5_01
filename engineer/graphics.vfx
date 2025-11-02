@@ -78,4 +78,4 @@ redef : cls ( - )
 
 include %idir%/matrix.vfx
 include %idir%/print.vfx
-include %idir%/../textmode/textmode.vfx
+\ include %idir%/../textmode/textmode.vfx
