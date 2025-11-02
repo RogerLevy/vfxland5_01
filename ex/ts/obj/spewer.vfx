@@ -1,4 +1,4 @@
-require scripts\treat.vfx
+require %idir%\treat.vfx
 
 class: %spewer
     %actor derive
