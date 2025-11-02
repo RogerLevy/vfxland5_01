@@ -13,25 +13,6 @@ class: %bitmap
     %asset derive
     prop id 
     prop albmp
-
-    : does-bitmap ( - ) 
-        does> -> id @ ;
-
-    : _load-albmp ( - )
-        me data@ memfile@ dup
-            0 al_load_bitmap_f albmp !
-        -memfile ;
-
-    redef : bitmap ( <path> - )
-        bl parse 
-        %bitmap asset does-bitmap { 
-            _load-albmp 
-            me add-bitmap id !
-        } ;
-
-    :: on-startup ( - )
-        _load-albmp ;
-
 class;
 
 : id>albmp ( bmpid - albmp ) 

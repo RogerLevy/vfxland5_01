@@ -50,11 +50,13 @@ include %idir%/tilemap2.vfx         \ Tilemap rendering & Tileset class
 include %idir%/udlr.vfx             \ Movement utilities
 include %idir%/tmcol.vfx            \ Tilemap collision detection
 include %idir%/tread.vfx            \ Tilemap data reading
-include %idir%/sprite.vfx           \ Sprite animation (depends on tilesets)
+include %idir%/sprite.vfx           \ Sprite animation (requires %tileset)
 
 \ =============================================================================
 \ Convenience facilities
 \ =============================================================================
+
+include %idir%/autoload.vfx
 
 \ include %idir%/persist.vfx
 \ include %idir%/scene.vfx            \ Scene management
@@ -107,6 +109,7 @@ include %idir%/sprite.vfx           \ Sprite animation (depends on tilesets)
     \ init-bitmaps
     \ init-tilesets
     \ init-samples
+    init-autoloads
     init-crt
     debug @ if
 \        ['] supershow-process-dirchange is process-dirchange

@@ -1,0 +1,54 @@
+trait: %autoload
+    :: on-startup ( - ) ;
+trait;
+
+create autoloads /list allot&erase 
+
+: init-autoloads ( - )
+    autoloads list-count for
+        list-next on-startup
+    loop drop ;
+
+class: %asset
+    prop data 
+
+    : embed ( fp len - )
+        2dup lslurp data !  srcpath$ place ;
+
+    : asset ( fp len class - asset ) ( - asset )
+        >r 
+        2dup -path 
+        r> -rot $object { embed me } 
+        dup autoloads add-to ;
+
+    : data@ ( asset - a len )
+        -> data @ lcount ;
+class;
+
+: memfile@ ( a len - ALLEGRO_FILE_fp )
+    0 z" r" al_open_memfile ;
+
+: -memfile ( ALLEGRO_FILE_fp - )
+    al_fclose drop ;
+
+class: %bitmap
+    is-a %autoload
+
+    : does-bitmap ( - ) 
+        does> -> id @ ;
+
+    : _load-albmp ( - )
+        me data@ memfile@ dup
+            0 al_load_bitmap_f albmp !
+        -memfile ;
+
+    redef : bitmap ( <path> - )
+        bl parse 
+        %bitmap asset does-bitmap { 
+            _load-albmp 
+            me add-bitmap id !
+        } ;
+
+    :: on-startup ( - )
+        _load-albmp ;
+class;
