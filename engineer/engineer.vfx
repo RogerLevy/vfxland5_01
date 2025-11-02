@@ -18,6 +18,7 @@ include %idir%/changes.vfx  \ Filesystem change tracking
 \ =============================================================================
 
 fload %idir%/graphics.vfx   \ Graphics functions
+fload %idir%/../textmode/textmode.vfx  \ Textmode renderer
 fload %idir%/input.vfx      \ Input functions
 fload %idir%/border.vfx     \ TV border / scaling
 fload %idir%/ide3.vfx       \ Interactive IDE

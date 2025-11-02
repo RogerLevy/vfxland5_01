@@ -50,15 +50,38 @@ GetForegroundWindow value vfx-hwnd
     winmode ;
 
 \ =============================================================================
-\ Drawing primitives
+\ Color and position
 \ =============================================================================
 
+\ Color
+
+|| create fg  1e sf, 1e sf, 1e sf, 1e sf, 
 create pen 0 , 0 , \ int
+
+: fcolor ( f:r f:g f:b f:a - )
+    fg 4f! ;
+
+\ Palette
+
+include %idir%/vga13h.vfx
+
+|| : c>f  dup 24 >> s>f 255e f/ ;
+|| : (color)  c>f 8 << c>f 8 << c>f 8 << c>f drop fcolor ;
+
+: color ( n - )
+    \ Indexed color selection
+    255 and cells vga13h + @ 8 << $ff or (color) ;
+
+\ Position
 
 : at ( x y - ) pen 2! ;
 : at@ ( - x y ) pen 2@ ;
 : at@f ( - f:x f:y ) at@ 2s>f ;
 : +at ( x y - ) pen 2+! ;
+
+\ =============================================================================
+\ Drawing primitives
+\ =============================================================================
 
 : albmpw ( albmp - w ) dup if al_get_bitmap_width then ;
 : albmph ( albmp - h ) dup if al_get_bitmap_height then ;
@@ -76,6 +99,85 @@ create pen 0 , 0 , \ int
 redef : cls ( - )
     0e 0e 0e 1e al_clear_to_color ;
 
-include %idir%/matrix.vfx
-include %idir%/print.vfx
-include %idir%/../textmode/textmode.vfx
+\ =============================================================================
+\ Matrix stack
+\ =============================================================================
+
+|| create mstk 16 cells 16 * allot
+|| create m2 16 cells allot
+|| variable mp
+|| variable tx variable ty
+|| : m mp @ 15 and 16 cells * mstk + ; 
+
+: m{ ( - )
+    m 1 mp +! m swap al_copy_transform ;
+
+: m} ( - )
+    -1 mp +!  m al_use_transform ;
+
+: transform ( f:x f:y f:sx f:sy a - )
+    m2 al_build_transform  m2 m al_compose_transform  m m2 al_copy_transform
+    m al_use_transform ;
+
+: identity ( - )
+    m al_identity_transform  m al_use_transform ;
+
+: 2p*m ( x. y. - x. y. )
+    2p>f ty sf! tx sf!  m tx ty al_transform_coordinates
+    tx sf@ f>p ty sf@ f>p ;
+
+: inverse ( - )
+    m al_invert_transform ;
+
+\ =============================================================================
+\ Text
+\ =============================================================================
+
+\ Variables
+
+\ || variable rmargin
+variable line-spacing  8 line-spacing !
+|| 0 value vga-8x8 \ font
+
+\ Backend
+
+|| create bg.png here
+    s" %idir%\builtin\gfx\vga2_8x8_allegro5.png" file,
+|| here swap - constant /bg.png
+
+|| create range(s) 0 , 255 ,
+|| : font@  vga-8x8 ;
+
+\ Text rendering
+
+: mltext ( a len w - )
+    {: | zstr[ 4096 ] lh w z :}
+    over 0= if 3drop exit then 
+    >r zstr[ zplace  zstr[ r> s>f f>ds   
+    line-spacing @ s>f f>ds to lh to w to z 
+    font@  fg 4f@  at@f w lh 0 z al_draw_multiline_text ;
+
+: print ( a len - )
+    winw pen x@ - mltext ;
+
+: print2 ( a len line-spacing - )
+    line-spacing @ >r line-spacing !
+    print
+    r> line-spacing ! ;
+
+: textw ( a n - n )
+    {: | zstr[ 4096 ] :}
+    zstr[ zplace  zstr[  font@  swap  al_get_text_width ;  
+
+: glyph ( n - )
+    >r  font@ fg 4f@ at@f  r> al_draw_glyph ;
+
+\ Init
+
+: init-vga-font
+    bg.png /bg.png 0 z" r" al_open_memfile >r
+    r@ 0 al_load_bitmap_f
+    r> al_fclose drop
+        1 range(s) al_grab_font_from_bitmap
+        to vga-8x8 ;
+
