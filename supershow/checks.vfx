@@ -15,7 +15,7 @@ charmful test: CHARMFUL-BITMAP-INDEX ( n - n res )
 crucial test: CRUCIAL-BITMAP-INDEX ( n - n res )
     dup $ffff and 0 #bitmaps 1 - within ;
 
-before >albmp CHARMFUL-BITMAP-INDEX
+before id>albmp CHARMFUL-BITMAP-INDEX
 before put CHARMFUL-BITMAP-INDEX
 before bmpwh CHARMFUL-BITMAP-INDEX
 before bitmap-file CRUCIAL-BITMAP-INDEX

@@ -1,16 +1,13 @@
-public
-
 65536 ?constant #bitmaps
 
-|| create bitmaps #bitmaps cells allot&erase
-|| #bitmaps cell array bitmap-objects
+|| #bitmaps cell array bitmaps
 
-variable next-bmp# 1 next-bmp# !
+|| : bitmap[]  $FFFF and bitmaps [] ;
 
-|| : bitmap[]  $FFFF and cells bitmaps + ;
-: >albmp ( n - bmp ) bitmap[] @ ;
-: alloc-bmp#  next-bmp# @   1 next-bmp# +! ;
-: add-bitmap ( bmp - n ) alloc-bmp# dup >r bitmap[] ! r> ;
+variable next-bmp#  1 next-bmp# !
+
+: alloc-bmp# ( - bmpid ) next-bmp# @   1 next-bmp# +! ;
+: add-bitmap ( bitmap - bmpid ) alloc-bmp# dup >r bitmap[] ! r> ;
 
 class: %bitmap
     %asset derive
@@ -20,40 +17,48 @@ class: %bitmap
     : does-bitmap ( - ) 
         does> -> id @ ;
 
+    : _load-albmp ( - )
+        me data@ memfile@ dup
+            0 al_load_bitmap_f albmp !
+        -memfile ;
+
+    redef : bitmap ( <path> - )
+        bl parse 
+        %bitmap asset does-bitmap { 
+            _load-albmp 
+            me add-bitmap id !
+        } ;
+
+    :: on-startup ( - )
+        _load-albmp ;
+
 class;
 
-: bmpobj  bitmap-objects [] @ ;
-: ?nullbmp  dup 0= abort" BITMAP-FILE Bitmap is null!" ;
+: id>albmp ( bmpid - albmp ) 
+    bitmap[] @ -> albmp @ ;
+
+: id>bmp ( bmpid - bitmap ) 
+    bitmap[] @ ;
+
+: ?nullbmp  dup 0= abort" BITMAP-FILE : Bitmap is null!" ;
 : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
-: bitmap-file ( n - a n ) ?nullbmp ?subbmp bmpobj -> srcpath$ count ;
-   
-\ %bitmap :: unload ( - )
-\     albmp @ -albmp
-\     0 id @ bitmap[] !
-\     0 albmp ! ;
 
-: bmpwh ( n - w h )
-    >albmp ?dup if dup albmpw swap albmph else 0 0 then ;
+: bitmap-file ( bmpid - a n ) 
+    ?nullbmp ?subbmp id>bmp -> srcpath$ count ;
 
-: bmpw ( n - w )
+: bmpwh ( bmpid - w h )
+    id>albmp ?dup if dup albmpw swap albmph else 0 0 then ;
+
+: bmpw ( bmpid - w )
     bmpwh drop ;
 
-: bmph ( n - h )
+: bmph ( bmpid - h )
     bmpwh nip ;
 
-: put ( n - ) 
+: put ( bmpid - ) 
     \ draw a sprite; takes a bitfield $F000IIII
-    dup >albmp swap 24 rshift draw-bitmap ;
+    dup id>albmp swap 24 rshift draw-bitmap ;
 
-: cput ( n - ) 
+: cput ( bmpid - ) 
     \ draw sprite with center as the origin
     dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
-
-\ : destroy-bitmaps ( - )
-\     ." Destroying bitmaps" cr
-\     65536 1 do
-\         i bitmap[] dup @ ?dup if al_destroy_bitmap then off
-\     loop  1 next-bmp# ! ;
-
-\ : unload-bitmaps ( - )
-\     %bitmap unload-instances ;

@@ -90,7 +90,7 @@ variable mbuttons
     | b | b al_is_sub_bitmap -exit b al_get_parent_bitmap ;
 : savebmp ( n file-a file-c -)
     ?dup 0= if 2drop exit then
-    2>r >albmp ?parent 2r>
+    2>r id>albmp ?parent 2r>
     s" gfx" find-dat-path f" %s\%s" >pad count >lowercase
     cr 2dup f" Saving bitmap to %s " type
         >zpad swap al_save_bitmap 0= abort" Error saving bitmap!" ;
