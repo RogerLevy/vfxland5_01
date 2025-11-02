@@ -22,7 +22,8 @@ aka file-exists? fileexists?
     - ;
 
 : file, ( fn len - )
-    expand
+    >pad buf $expand
+    buf count
     2dup ?notfound
     r/o open-file abort" File open error"
     | #1 |
