@@ -22,50 +22,49 @@ class;
 0 %tileset :construct ( - )
     /metas ;
 
-: slice-tileset ( %tileset - )
+: _slice-tileset ( - )
     \ slice up the source %bitmap into tile sub-bitmaps.
     \ add them to the global %bitmap registry.
-    as>
-        bmp @ -exit
-        next-bmp# @ baseid !
-        bmp @ bmph th @ - 1 + for
-            bmp @ bmpw tw @ - 1 + for
-                i j at   bmp @ id>albmp tw 2@ *subbmp add-bitmap drop
-            tw @ +loop
-        th @ +loop
-        next-bmp# @ baseid @ - #tiles ! 
-        #tiles @ metas-array @ redim ;
+    bmp @ -exit
+    next-bmp# @ baseid !
+    bmp @ bmph th @ - 1 + for
+        bmp @ bmpw tw @ - 1 + for
+            i j at   bmp @ id>albmp tw 2@ *subbmp bitmap-from add-bitmap drop
+        tw @ +loop
+    th @ +loop
+    next-bmp# @ baseid @ - #tiles ! 
+    #tiles @ metas-array @ redim ;
 
 \ : reslice-tileset ( tw th %tileset - )
 \     \ slice up source bitmap, creating a new range of sub-bitmaps
 \     \ use this at dev-time to change the tile size or if the bitmap's size increased.
-\     dup unload   {   tw 2!   me slice-tileset   me keep   } ;
+\     dup unload   {   tw 2!   _slice-tileset   me keep   } ;
 
 \ %tileset :: use ( - )
 \     baseid @ pile ! ;
 
-: update-tileset ( %tileset - )
-    as>
-        bmp @ -exit
-        next-bmp# @ >r   baseid @ next-bmp# ! 
-        me slice-tileset
-        r> next-bmp# ! ;
+\ : update-tileset ( %tileset - )
+\     as>
+\         bmp @ -exit
+\         next-bmp# @ >r   baseid @ next-bmp# ! 
+\         _slice-tileset
+\         r> next-bmp# ! ;
 
-: array, ( array - )
-    \ assumes cell array
-    dup #items ,   ['] , swap each@ ;
+\ : array, ( array - )
+\     \ assumes cell array
+\     dup #items ,   ['] , swap each@ ;
 
-: @array+ ( a array - a' )
-    \ assumes cell array
-    {: | n :}
-    {
-        @+ to n 
-        n if
-            n me redim
-            dup data @ n cells move
-            n cells +
-        then 
-    } ;
+\ : @array+ ( a array - a' )
+\     \ assumes cell array
+\     {: | n :}
+\     {
+\         @+ to n 
+\         n if
+\             n me redim
+\             dup data @ n cells move
+\             n cells +
+\         then 
+\     } ;
 
 : tile ( %tileset n - n )
     swap -> baseid @ + ;
@@ -74,13 +73,15 @@ class;
     id>albmp dup -exit al_is_sub_bitmap ;
 
 \ =============================================================================
-\ Tilemap - Low level
+\ Tilemap rendering
 \ =============================================================================
 
 || 0 value lm
-: >lmargin ( - ) pen x@ to lm ;
 || : nr ( - ) lm pen y@ gap + at ;
 || : put+ ( bmpid - ) pile @ + put gap 0 +at ;
+
+: >lmargin ( - ) 
+    pen x@ to lm ;
 
 : tiles ( a n - 'a ) 
     >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
@@ -102,16 +103,15 @@ class;
 \ =============================================================================
 
 create metas #bitmaps cells allot&erase
-: meta ( n - n ) pile @ + cells metas + @ ;
+: meta ( tile# - n ) pile @ + cells metas + @ ;
 : collectible?  meta $20 and 0<> ;
 : destructible?  meta $80 and 0<> ;
 : solid?  meta $0F and $0F = ;
 : instakill?  meta $40 and 0<> ;
 : trap?  meta $10 and 0<> ;
 
-: load-metas ( a:fn len:fn %tileset - )
-    >r
-        here >r find-dat-path file,
-        r> here over -
-    r> -> baseid @ cells metas + swap move ;
+: load-metas ( fp len tileset - )
+    as>
+        find-dat-path lslurp lcount ( a len )
+        baseid @ cells metas + swap ( src dest len ) move ;
  

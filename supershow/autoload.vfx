@@ -42,7 +42,7 @@ class: %bitmap
             0 al_load_bitmap_f albmp !
         -memfile ;
 
-    redef : bitmap ( <path> - )
+    redef : bitmap ( <path> - ) ( - bmpid )
         bl parse 
         %bitmap asset does-bitmap { 
             _load-albmp 
@@ -51,4 +51,17 @@ class: %bitmap
 
     :: on-startup ( - )
         _load-albmp ;
+class;
+
+class: %tileset
+    is-a %autoload
+
+    : tileset-from ( bmpid tilew tileh <name> - ) ( - tileset )
+        %tileset bl parse $object {
+            tw 2! bmp !
+            _slice-tileset
+        } ;
+
+    :: on-startup ( - )
+        _slice-tileset ;
 class;

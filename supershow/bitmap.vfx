@@ -21,11 +21,14 @@ class;
 : id>bmp ( bmpid - bitmap ) 
     bitmap[] @ ;
 
-: ?nullbmp  dup 0= abort" BITMAP-FILE : Bitmap is null!" ;
-: ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
+\ : ?nullbmp  dup 0= abort" BITMAP-FILE : Bitmap is null!" ;
+\ : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
+
+: bitmap-from ( albmp - bitmap )
+    %bitmap instance { albmp ! me } ;
 
 : bitmap-file ( bmpid - a n ) 
-    ?nullbmp ?subbmp id>bmp -> srcpath$ count ;
+    id>bmp -> srcpath$ count ;
 
 : bmpwh ( bmpid - w h )
     id>albmp ?dup if dup albmpw swap albmph else 0 0 then ;
@@ -37,7 +40,7 @@ class;
     bmpwh nip ;
 
 : put ( bmpid - ) 
-    \ draw a sprite; takes a bitfield $F000IIII
+    \ draw a sprite; takes a bitfield $F000IIII 
     dup id>albmp swap 24 rshift draw-bitmap ;
 
 : cput ( bmpid - ) 
