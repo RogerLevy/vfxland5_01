@@ -1,6 +1,6 @@
 library: cjson.dll
 
-vocabulary cjson/
+vocabulary cjson>>
 
 private
 

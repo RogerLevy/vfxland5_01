@@ -5,13 +5,14 @@ class: %tilemap
     prop h
     prop ts <ref %tileset
 
-    : ?ts  ts @ ?dup -exit 0 tile pile ! ;
-    :: draw  ?ts data @ w 2@ drawbg ;
+    :: draw ( - ) 
+        ts @ ?dup -exit 0 tile pile ! 
+        data @ w 2@ drawbg ;
 class;
 
 require %vfxland5%/cjson/cjson.vfx
 require %vfxland5%/engineer/json.vfx
-also cjson/
+also cjson>>
 
 : load-tiled ( path len tilemap - )
     { 

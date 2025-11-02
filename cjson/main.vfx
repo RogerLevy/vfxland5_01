@@ -1,7 +1,7 @@
 require %idir%/cjson.vfx
 require %vfxland5%/engineer/json.vfx
 
-also cjson/
+also cjson>>
 
 s" test.json" load-file parse-json value it
 
