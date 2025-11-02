@@ -8,13 +8,10 @@
 \ 1024 constant #actors
 
 \ Load engine
-include %vfxland5%\supershow\supershow.vfx
+include %vfxland5%/supershow/supershow.vfx
 
 \ load game-specific modules (dependencies)
-\ include %idir%\...
-
-\ Load autoclasses, scripts, scenes, and modes
-load-project
+require %idir%/obj/spewer.vfx
 
 redef : main
     just

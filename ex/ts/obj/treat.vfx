@@ -2,8 +2,11 @@ class: %treat
     %actor derive
 class;
 
-icons1.png 16 16 +tileset icons1.ts
-icons2.png 16 16 +tileset icons2.ts
+bitmap %idir%/icons1.png
+bitmap %idir%/icons2.png
+
+icons1.png 16 16 tileset icons1.ts
+icons2.png 16 16 tileset icons2.ts
 
 : in? ( - f ) x 2@ 2>i 0 gameh within? >r 0 gamew within? r> and ;
 : ?out ( - ) in? not if me unload then ;
