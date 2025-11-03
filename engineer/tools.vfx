@@ -98,7 +98,7 @@ pop-order
         exit 
     then
     name[ count >uppercase f" Loading %s..." type cr
-    path[ count prj-path$ place
+    path[ count >abspath prj-path$ place
     prj-path$ count $cwd
     500 ms
     cartridge
