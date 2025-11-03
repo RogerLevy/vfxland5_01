@@ -241,7 +241,7 @@ redef : make ( ... class - object )
     here >r
     dup -> instance-size @ allot
     ( class ) r@ construct r> ;
-
+    
 : $object ( ... class name len - object ) ( - object ) 
     >$ $create make ;
 
@@ -883,7 +883,7 @@ aka instance make  \ Backward compatibility
     then
     drop r> ;
 
-: copy ( a1 a2 - a2 )
+: copy ( srcobj destobj - destobj )
     dup dup >r sizeof move r> ;
 
 : is? ( object|class classifier - bool )

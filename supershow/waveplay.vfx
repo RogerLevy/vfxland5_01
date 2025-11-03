@@ -68,15 +68,15 @@ defer voice? ( smp - f )
 || : lastnfa  last @ ctrl>nfa ;
 
 || : *sample* ( a n - ) \ filename 
-    lastnfa dup >r count -ext f" *%s*" >pad
-    $create r> name> >body @ ,
+    lastnfa dup >r count -ext f" *%s*"
+    screate r> name> >body @ ,
     does> @ sound ;
 
 || : does-sample  does> @ ;
 
 || : add-sample-asset ( a n - ) \ filename
     2dup load-sample +sample ( smp ) >r
-        -path >pad $create  r> , 
+        -path screate  r> , 
     does-sample
     *sample* ; 
 
