@@ -105,6 +105,7 @@ include %idir%/autoload.vfx
 \     endcase ;
 
 : init-supershow ( - )
+    ." Initializing Supershow..." cr
     hold off
     \ init-bitmaps
     \ init-tilesets

@@ -15,7 +15,7 @@ include %vfxland5%/supershow/supershow.vfx
 require %idir%/tiled.vfx
 require %idir%/obj/star/star.vfx
 
-bitmap %idir%/dat/gfx/greyzebes.png
+bitmap %idir%/assets/gfx/greyzebes.png
 
 \ Ignore Tiled's tileset data and set up our own
 greyzebes.png 16 16 tileset-from scifi.ts 

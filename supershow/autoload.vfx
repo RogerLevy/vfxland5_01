@@ -12,13 +12,11 @@ create autoloads /list allot&erase
 class: %asset
     prop data 
 
-    : embed ( fp len - )
+    : _embed ( fp len - )
         2dup lslurp data !  srcpath$ place ;
 
-    : asset ( fp len class - asset ) ( - asset )
-        >r 
-        2dup -path screate  
-        r> instance { embed me } 
+    : asset ( name len class - asset ) ( - asset )
+        >r screate r> instance 
         dup autoloads add-to ;
 
     : data@ ( asset - a len )
@@ -43,8 +41,9 @@ class: %bitmap
         -memfile ;
 
     redef : bitmap ( <path> - ) ( - bmpid )
-        bl parse 
-        %bitmap asset does-bitmap { 
+        bl parse 2dup 
+        -path %bitmap asset does-bitmap { 
+            ( fp len ) _embed
             _load-albmp 
             me add-bitmap id !
         } ;
@@ -57,7 +56,7 @@ class: %tileset
     is-a %autoload
 
     : tileset-from ( bmpid tilew tileh <name> - ) ( - tileset )
-        %tileset create instance {
+        bl parse %tileset asset {
             tw 2! bmp !
             _slice-tileset
         } ;
