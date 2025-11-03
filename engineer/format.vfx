@@ -20,6 +20,7 @@
 \ dn - double-cell signed number
 \ du - double-cell unsigned number
 \ s - string (c-addr u)
+\ z - zstring (z-addr)
 \ $ - counted string (addr)
 \ [ - evaluate up to ]
 \ 
@@ -59,6 +60,7 @@
         'u' of swap 0 <# #s #> add-field endof
         's' of -rot add-field endof
         '$' of swap count add-field endof
+        'z' of swap zcount add-field endof
         'd' of
             r> 1+ dup >r c@ case
                 'n' of -rot tuck dabs <# #s rot sign #> add-field endof
