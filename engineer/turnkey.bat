@@ -20,8 +20,6 @@ if "%1"=="--help" (
 @echo on
 set "PATH=%~dp0\..\bin;%PATH%"
 
-cd "%~dp0\..\.."
-
 mkdir ..\rel\%1
 mkdir ..\rel\%1-debug
 del ..\rel\%1\*.* /s /q
