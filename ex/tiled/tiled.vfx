@@ -11,9 +11,18 @@ class: %tilemap
         0 data @ [] w 2@ drawbg ;
 class;
 
-\ class: %scene
-\     prop tilemaps <ref %array
-\ class;
+class: %scene
+    is-a %loadable
+    prop tm-main <ref %tilemap
+    prop troupe <ref %array
+    
+    : copy-to-stage ( actor - )
+        stage-slot copy stage-init ;
+
+    :: load ( - )
+        \ Instantiate actors.    
+        ['] copy-to-stage troupe @ each ;
+class;
 
 require %vfxland5%/cjson/cjson.vfx
 require %vfxland5%/engineer/json.vfx
@@ -30,11 +39,11 @@ also cjson>>
     array} data !
 ;
 
-: load-tiled-tilemap-simple ( cjson tilemap - )
+: load-tiled-tilemap-simple ( cjson - tilemap )
     \ Load tilemap from Tiled cjson object.  Assumes it's in layer 0.
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
-    { 
-        {: cjson | tileset :}
+    {: cjson | tileset :}
+    %tilemap instance { 
         cjson z" tilesets" array@ 0 object@ to tileset
         tileset if
             tileset z" source" string@ -ext f" %s.ts" >pad find if
@@ -42,36 +51,42 @@ also cjson>>
             else drop then
         then
         cjson z" layers" array@ 0 object@ _load-tiled-tilemap-layer
-    } ;
+    me } ;
 
-: tiled-one ( cjson - actor | 0 )
-    {: object :}
-    object z" type" ['] string@ catch if 
+: tiled-actor ( cjson - actor | 0 )
+    {: obj :}
+    obj z" type" ['] string@ catch if 
         2drop 
         ." No 'type' property found in JSON object, skipping..." cr
         0 exit
     then 
     f" %%%s" >pad find if 
-        execute one {
-            object z" x" fixed@ 
-                object z" width" ?fixed@ 2 / + x !
-            object z" y" fixed@ 
-                object z" height" ?fixed@ 2 / - y !
+        execute make {
+            obj z" x" fixed@ 
+                obj z" width" ?fixed@ 2 / + x !
+            obj z" y" fixed@ 
+                obj z" height" ?fixed@ 2 / - y !
         me } exit
     else
         ( $ ) f" Class %$ not found, skipping..." type cr
         0 exit
     then ;
 
-: load-tiled-objects-simple ( cjson - )
+: load-tiled-actors-simple ( cjson - array )
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: cjson | tileset :}
-    cjson z" layers" array@ 1 object@ z" objects" array-count for
-        dup i object@ tiled-one ?dup if .summary cr then
-    loop drop ;
+    /actor array{
+        cjson z" layers" array@ 1 object@ z" objects" array-count for
+            dup i object@ tiled-actor ?dup if .summary cr then
+        loop drop 
+    array} ;
 
-: load-tmj-simple ( path len tilemap - )
+: scene-from-tmj ( path len <name> - ) ( - scene )
     \ Load .tmj file.  Assumes tilemap is in layer 0, tileset 0 is the 
     \ tileset to be used by the tilemap, and objects are in layer 1.
-    >r load-json dup r> load-tiled-tilemap-simple
-    load-tiled-objects-simple ;
+    create %scene instance {
+        load-json dup 
+        load-tiled-tilemap-simple tm-main !
+        load-tiled-actors-simple troupe !
+    } ;
+

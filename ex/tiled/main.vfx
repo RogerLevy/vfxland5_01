@@ -20,12 +20,14 @@ bitmap %idir%/dat/gfx/greyzebes.png
 \ Ignore Tiled's tileset data and set up our own
 greyzebes.png 16 16 tileset-from scifi.ts 
 
-%tilemap object mountainside.tm 
-s" assets/mountainside.tmj" mountainside.tm load-tmj-simple
+\ Create scene (tilemap + actor array) from .tmj file.
+\ The tileset scifi.ts is automatically found and assigned to the tilemap.
+s" %idir%/assets/mountainside.tmj" scene-from-tmj mountainside.scn
 
 redef : main
+    just mountainside.scn load   \ instantiate actors from the scene
     show> 
-        0 0 at  mountainside.tm draw  
+        0 0 at  mountainside.scn -> tm-main @ draw  
         sprites animate ;
 
 \ Load tools and run tests
