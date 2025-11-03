@@ -21,9 +21,12 @@ aka file-exists? fileexists?
     r> file-position abort" Get file position error" drop
     - ;
 
+|| : expanded ( a len - a' len' ) 
+    over buf 1 + = ?exit
+    >pad buf $expand  buf count ;
+
 : file, ( fn len - )
-    >pad buf $expand
-    buf count
+    expanded
     2dup ?notfound
     r/o open-file abort" File open error"
     | #1 |
@@ -67,12 +70,14 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
 : write ( src len path len - )
 \    2dup file-exists? if 2dup delete-file throw then
+    expanded
     2dup f" File write: %s" type cr
     w/o create-file abort" File create error" >r
     r@ write-file abort" File write error"
     r> close-file drop ;
 
 : read ( dest len path len - )
+    expanded
     2dup f" File read: %s" type cr
     2dup ?notfound
     r/o open-file abort" File open error" >r
@@ -82,7 +87,7 @@ extern int SHCreateDirectoryExA( void * hwnd, void * zpath, void * psa );
 
 : load-file ( fn len - a len ) 
     \ returns allocated memory that has to be freed
-    {: fn len | mem size :}
+    expanded {: fn len | mem size :}
     fn len fsize to size 
     size allocate throw to mem
     mem size fn len read 
