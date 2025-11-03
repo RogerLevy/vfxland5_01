@@ -193,20 +193,19 @@ variable next#
 0 %actor :construct ( - )
     at@ 2>p x 2! ;
 
-: (one) ( class - %actor )
-    {: c | saved-me :} 
-    me to saved-me
+: stage-init ( actor - )
+    { me actors - /actor / id !   me init } ;
+
+: stage-slot ( - actor )
     #actors for
         next# @ actor[] dup free? if
-            c over construct
-            next# @ over -> id !
             unloop exit
         then  drop
         next# @ 1 + #actors mod next# !
     loop  -1 abort" one : Out of actors." ;
 
-: one ( class - %actor )
-    (one) dup init ;
+: one ( class - actor )
+    stage-slot swap over construct dup stage-init ;
     
 : *actor ( - %actor )
     %actor one ;
