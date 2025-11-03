@@ -80,11 +80,13 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
     _cJSON_GetStringValue@4 zcount ;
 
 : get-item ( n|zkey cjson - cjson )
-    dup is-array? if 
-        swap _cJSON_GetArrayItem@8
+    {: key cjson :} 
+    cjson is-array? if 
+        cjson key _cJSON_GetArrayItem@8
     else
-        swap _cJSON_GetObjectItem@8
-    then ;
+        cjson key _cJSON_GetObjectItem@8
+    then 
+    ?dup 0= if key f" JSON key '%z' not found!" -1 -rot .abort then ;
 
 : get-array ( zkey cjson - cjson )
     get-item ;
@@ -121,3 +123,13 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
     r@ serialize-cjson udup path len write 
     free-cjson
     r> delete-cjson ;
+
+\ improved accessor syntax
+: int@ swap get-int ;
+: float@ swap get-float ;
+: fixed@ swap get-fixed ;
+: ?fixed@ ['] fixed@ catch if 2drop 0 then ;
+: string@ swap get-string ;
+: object@ swap get-object ;
+: array@ swap get-array ;
+: array-count swap count-array ;

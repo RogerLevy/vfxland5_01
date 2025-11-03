@@ -91,6 +91,6 @@ borrow nib2>> prop+
         loop drop 
     } ;
 
-: read-json ( path len - cjson )
+: load-json ( path len - cjson )
     load-file udup parse-json swap free drop ;
 
