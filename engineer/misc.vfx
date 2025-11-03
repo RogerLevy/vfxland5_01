@@ -27,6 +27,9 @@ aka cd cwd
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 
+: screate ( name len - ) ( - a )
+    {: | name$[ 256 ] :} name$[ place name$[ $create ;
+
 include %idir%/../textmode/textmode-tools.vfx
 
 : IP>NFA        \ addr -- nfa

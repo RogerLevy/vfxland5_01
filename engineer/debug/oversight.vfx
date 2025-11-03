@@ -154,7 +154,7 @@ cstring wordname$
 
 : create-contract ( addr:word-name len:word-name -- contract )
     \ Create new contract object for named word
-    2dup qualify-name >$ $create 
+    2dup qualify-name screate 
     /contract struct {
         word-name$ place
         1 #contracts +!

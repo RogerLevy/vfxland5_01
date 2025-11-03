@@ -17,8 +17,8 @@ class: %asset
 
     : asset ( fp len class - asset ) ( - asset )
         >r 
-        2dup -path 
-        r> -rot $object { embed me } 
+        2dup -path screate  
+        r> instance { embed me } 
         dup autoloads add-to ;
 
     : data@ ( asset - a len )
@@ -57,7 +57,7 @@ class: %tileset
     is-a %autoload
 
     : tileset-from ( bmpid tilew tileh <name> - ) ( - tileset )
-        %tileset bl parse $object {
+        %tileset create instance {
             tw 2! bmp !
             _slice-tileset
         } ;
