@@ -31,7 +31,7 @@ also cjson>>
 ;
 
 : load-tiled-tilemap-simple ( cjson tilemap - )
-    \ Load tilemap from .tmj file.  Assumes it's in layer 0.
+    \ Load tilemap from Tiled cjson object.  Assumes it's in layer 0.
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
     { 
         {: cjson | tileset :}
@@ -64,12 +64,14 @@ also cjson>>
     then ;
 
 : load-tiled-objects-simple ( cjson - )
-    \ Load objects from .tmj file.  Assumes they're in layer 1.
+    \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: cjson | tileset :}
     cjson z" layers" array@ 1 object@ z" objects" array-count for
         dup i object@ tiled-one ?dup if .summary cr then
     loop drop ;
 
 : load-tmj-simple ( path len tilemap - )
+    \ Load .tmj file.  Assumes tilemap is in layer 0, tileset 0 is the 
+    \ tileset to be used by the tilemap, and objects are in layer 1.
     >r load-json dup r> load-tiled-tilemap-simple
     load-tiled-objects-simple ;
