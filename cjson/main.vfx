@@ -103,7 +103,7 @@ scene0 s" scene.json" write-object-array
     
 : read-actors ( path len - )
     {: path path-len | cjson buf buf-len :}
-    path path-len read-json to cjson
+    path path-len load-json to cjson
     z" actors" cjson count-array for
         i over get-item to cjson
         \ cjson cjson. 
