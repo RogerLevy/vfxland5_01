@@ -1,0 +1,10 @@
+class: %star
+    %actor derive
+class;
+
+bitmap %idir%/star.png
+star.png 16 16 tileset-from star.ts
+star.ts animation star.anm  0 12 range,
+
+%star :: init ( - )
+    star.anm 0.5 cycle ;

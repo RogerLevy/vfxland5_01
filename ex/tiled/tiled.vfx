@@ -1,33 +1,75 @@
 class: %tilemap
     is-a %drawable
-    prop data
+    prop data <ref %array
     prop w
     prop h
     prop ts <ref %tileset
+    32 nprop name <cstring
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
-        data @ w 2@ drawbg ;
+        0 data @ [] w 2@ drawbg ;
 class;
+
+\ class: %scene
+\     prop tilemaps <ref %array
+\ class;
 
 require %vfxland5%/cjson/cjson.vfx
 require %vfxland5%/engineer/json.vfx
 also cjson>>
 
-: load-tiled ( path len tilemap - )
+: _load-tiled-tilemap-layer ( cjson - )
+    {: layer | tileset :}
+    layer z" width" int@ w !
+    layer z" height" int@ h !
+    cell array{ 
+        layer z" data" array-count for
+            dup i int@ 1 - ,
+        loop drop 
+    array} data !
+;
+
+: load-tiled-tilemap-simple ( cjson tilemap - )
+    \ Load tilemap from .tmj file.  Assumes it's in layer 0.
+    \ Also assumes the first tileset is the tileset to be used by the tilemap.
     { 
-        read-json {: cjson | layer tileset :}
-        z" width" cjson get-int w !
-        z" height" cjson get-int h !
-        0 z" tilesets" cjson get-array get-object to tileset
+        {: cjson | tileset :}
+        cjson z" tilesets" array@ 0 object@ to tileset
         tileset if
-            z" source" tileset get-string -ext f" %s.ts" >pad find if
+            tileset z" source" string@ -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        0 z" layers" cjson get-array get-object to layer
-        here data !
-        z" data" layer count-array for
-            i over get-int 1 - ,
-        loop drop
+        cjson z" layers" array@ 0 object@ _load-tiled-tilemap-layer
     } ;
+
+: tiled-one ( cjson - actor | 0 )
+    {: object :}
+    object z" type" ['] string@ catch if 
+        2drop 
+        ." No 'type' property found in JSON object, skipping..." cr
+        0 exit
+    then 
+    f" %%%s" >pad find if 
+        execute one {
+            object z" x" fixed@ 
+                object z" width" ?fixed@ 2 / + x !
+            object z" y" fixed@ 
+                object z" height" ?fixed@ 2 / - y !
+        me } exit
+    else
+        ( $ ) f" Class %$ not found, skipping..." type cr
+        0 exit
+    then ;
+
+: load-tiled-objects-simple ( cjson - )
+    \ Load objects from .tmj file.  Assumes they're in layer 1.
+    {: cjson | tileset :}
+    cjson z" layers" array@ 1 object@ z" objects" array-count for
+        dup i object@ tiled-one ?dup if .summary cr then
+    loop drop ;
+
+: load-tmj-simple ( path len tilemap - )
+    >r load-json dup r> load-tiled-tilemap-simple
+    load-tiled-objects-simple ;

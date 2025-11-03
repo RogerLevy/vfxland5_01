@@ -8,13 +8,22 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
         "mountainside.tmj": {
             "scale": 2,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 210.75,
-                "y": 154
+                "x": 254.5,
+                "y": 136.5
             }
+        },
+        "mountainside.tmj#objects": {
+            "dynamicWrapping": false
+        },
+        "mountainside.tmj#scifi": {
+            "dynamicWrapping": false
         },
         "mountainside.tmx": {
             "scale": 2,
@@ -24,13 +33,23 @@
                 "y": 154.5
             }
         },
+        "objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "scifi.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/roger/Desktop/dev/vfxland5_starling/vfxland5_01/ex/tm/dat/gfx",
+    "last.exportedFilePath": "C:/Users/roger/Desktop/dev/vfxland5_starling/vfxland5_01/ex/tiled/assets",
+    "last.externalTilesetPath": "C:/Users/roger/Desktop/dev/vfxland5_starling/vfxland5_01/ex/tiled/assets",
+    "last.imagePath": "C:/Users/roger/Desktop/dev/vfxland5_starling/vfxland5_01/ex/tiled/obj/star",
+    "last.objectTemplatePath": "C:/Users/roger/Desktop/dev/vfxland5_starling/vfxland5_01/ex/tiled/assets",
     "map.height": 15,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
@@ -41,12 +60,15 @@
     "project": "tm.tiled-project",
     "recentFiles": [
         "mountainside.tmj",
+        "objects.tsx",
         "assets/scifi.tsx",
         "assets/mountainside.tmx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,
         "width": 16
-    }
+    },
+    "tileset.type": 1
 }

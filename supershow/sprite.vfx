@@ -34,15 +34,20 @@ class;
 || : ?baseid  a.ts @ dup if 0 tile then ;
 || : update  a.ofs @ >i cells anm @ >frames + @ ?baseid + a.flp @ xor bmp ! ;
 || : ?done  a.ofs @ a.spd @ + a.len @ >p >= -exit  a.done on ;
+
 : cycle ( anim spd. - ) \ to stop, say `anm off`
     a.spd !  dup anm !  @+ a.ts ! @ a.len !  0 a.ofs !  a.done off  update ;
-: animation ( ts - <name> )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
+
+: animation ( ts <name> - )  \ 1st , len , ofs , ofs , ofs , ... ofs ,
     create , here aspd ! 0 , ;
+
 : frame, ( n - )
     , 1 aspd @ +! ;
+
 : range, ( n n - )
     2dup < if 1 + swap do i frame, loop
     else swap do i frame, -1 +loop then ;
+
 : animate ( - )
     hold @ ?exit actives>
         anm @ -exit

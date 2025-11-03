@@ -13,6 +13,7 @@ include %vfxland5%/supershow/supershow.vfx
 
 \ load game-specific modules (dependencies)
 require %idir%/tiled.vfx
+require %idir%/obj/star/star.vfx
 
 bitmap %idir%/dat/gfx/greyzebes.png
 
@@ -20,11 +21,12 @@ bitmap %idir%/dat/gfx/greyzebes.png
 greyzebes.png 16 16 tileset-from scifi.ts 
 
 %tilemap object mountainside.tm 
-s" assets/mountainside.tmj" mountainside.tm load-tiled
+s" assets/mountainside.tmj" mountainside.tm load-tmj-simple
 
 redef : main
     show> 
-        0 0 at  mountainside.tm draw ;
+        0 0 at  mountainside.tm draw  
+        sprites animate ;
 
 \ Load tools and run tests
 debug @ [if]
