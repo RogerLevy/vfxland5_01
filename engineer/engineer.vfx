@@ -207,7 +207,7 @@ include %idir%/ls.vfx
     \ Main Engineer entry point - initialize and run with command line args
     init-vfx-console
     (.cold)
-    ."  ~~~ Engineer v2 (redux) ~~~ " cr
+    ."  ~~~ Engineer v2 (regress) ~~~ " cr
     frigid 
 \    init-ide
     zcommand zcount strip-exe interpret-string \ ide-interpret
