@@ -42,15 +42,15 @@ also cjson>>
 : load-tiled-tilemap-simple ( cjson - tilemap )
     \ Load tilemap from Tiled cjson object.  Assumes it's in layer 0.
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
-    {: cjson | tileset :}
+    {: ctmj | tileset :}
     %tilemap instance { 
-        cjson z" tilesets" array@ 0 object@ to tileset
+        ctmj z" tilesets" array@ 0 object@ to tileset
         tileset if
             tileset z" source" string@ -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        cjson z" layers" array@ 0 object@ _load-tiled-tilemap-layer
+        ctmj z" layers" array@ 0 object@ _load-tiled-tilemap-layer
     me } ;
 
 : tiled-actor ( cjson - actor | 0 )
@@ -72,11 +72,11 @@ also cjson>>
         0 exit
     then ;
 
-: load-tiled-actors-simple ( cjson - array )
+: load-tiled-actors-simple ( ctmj - array )
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
-    {: cjson | tileset :}
+    {: ctmj | tileset :}
     /actor array{
-        cjson z" layers" array@ 1 object@ z" objects" array-count for
+        ctmj z" layers" array@ 1 object@ z" objects" array-count for
             dup i object@ tiled-actor ?dup if .summary cr then
         loop drop 
     array} ;

@@ -69,13 +69,13 @@ borrow nib2>> prop+
         loop drop 
     } ;
 
-: save-object-json ( object path len - )
+: save-as-json ( object path len - )
     serjson> add-properties-to ;
 
 : object>cjson ( object - cjson )
     new-object dup >r add-properties-to r> ;
 
-: get-properties ( cjson obj - )
+: read-props ( cjson obj - )
     {: cjson obj | property0 :}
     obj {
         cla @ -> property-list list-count for
