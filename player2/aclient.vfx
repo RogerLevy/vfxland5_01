@@ -70,7 +70,7 @@ fromC 4 1 callproc: standard-cb ( ptr size nmemb userdata -- bytes-written )
         else
             cjson cjson. cr  
         then
-        cjson delete-cjson
+        cjson cjson-delete
         r> op-handle !        
         ptr size nmemb * 
     } ;

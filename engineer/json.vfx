@@ -9,48 +9,46 @@
 
 private
 
-also cjson>>
+    also cjson>>
 
-0 value val-addr
+    0 value val-addr
 
-: ser-json-cell    ( zname cjson - ) val-addr @ -rot add-int ;
-: ser-json-int     ( zname cjson - ) val-addr @ -rot add-int ;
-: ser-json-fixed   ( zname cjson - ) val-addr @ -rot add-fixed ;
-: ser-json-float   ( zname cjson - ) val-addr sf@ add-float ;
-: ser-json-cstring ( zname cjson - ) val-addr count >zpad -rot add-string ;
+    : ser-json-cell    ( zname cjson - ) val-addr @ -rot add-int ;
+    : ser-json-int     ( zname cjson - ) val-addr @ -rot add-int ;
+    : ser-json-fixed   ( zname cjson - ) val-addr @ -rot add-fixed ;
+    : ser-json-float   ( zname cjson - ) val-addr sf@ add-float ;
+    : ser-json-cstring ( zname cjson - ) val-addr count >zpad -rot add-string ;
 
-create ser-json-table
-    ' ser-json-cell ,
-    ' ser-json-int ,
-    ' ser-json-fixed ,
-    ' ser-json-float ,
-    ' ser-json-cstring ,
+    create ser-json-table
+        ' ser-json-cell ,
+        ' ser-json-int ,
+        ' ser-json-fixed ,
+        ' ser-json-float ,
+        ' ser-json-cstring ,
 
-: ser-property-json  ( cjson property - )
-    dup >zname -rot
-    cla @ >property-type @ cells ser-json-table + @ execute ;
+    : ser-property-json  ( cjson property - )
+        dup >zname -rot
+        cla @ >property-type @ cells ser-json-table + @ execute ;
 
-: des-json-cell    ( zname cjson - ) get-int val-addr ! ;
-: des-json-int     ( zname cjson - ) get-int val-addr ! ;
-: des-json-fixed   ( zname cjson - ) get-fixed val-addr ! ;
-: des-json-float   ( zname cjson - ) get-float val-addr sf! ;
-: des-json-cstring ( zname cjson - ) get-string val-addr place ;
+    : des-json-cell    ( zname cjson - ) get-int val-addr ! ;
+    : des-json-int     ( zname cjson - ) get-int val-addr ! ;
+    : des-json-fixed   ( zname cjson - ) get-fixed val-addr ! ;
+    : des-json-float   ( zname cjson - ) get-float val-addr sf! ;
+    : des-json-cstring ( zname cjson - ) get-string val-addr place ;
 
-create des-json-table
-    ' des-json-cell ,
-    ' des-json-int ,
-    ' des-json-fixed ,
-    ' des-json-float ,
-    ' des-json-cstring ,
+    create des-json-table
+        ' des-json-cell ,
+        ' des-json-int ,
+        ' des-json-fixed ,
+        ' des-json-float ,
+        ' des-json-cstring ,
 
-: des-property-json  ( cjson property - )
-    dup >zname -rot
-    cla @ >property-type @ cells des-json-table + @ execute ;
+    : des-property-json  ( cjson property - )
+        dup >zname -rot
+        cla @ >property-type @ cells des-json-table + @ execute ;
 
 public
-
 also cjson>>
-
 borrow nib2>> prop+
 
 : add-properties-to ( obj cjson - )
@@ -75,7 +73,7 @@ borrow nib2>> prop+
     serjson> add-properties-to ;
 
 : object>cjson ( object - cjson )
-    create-cjson dup >r add-properties-to r> ;
+    new-object dup >r add-properties-to r> ;
 
 : get-properties ( cjson obj - )
     {: cjson obj | property0 :}

@@ -16,7 +16,7 @@ s" test.json" load-file parse-json value it
     cr ." Testing cJSON setters..." cr
     
     \ Create object and add fields
-    create-cjson to obj1
+    new-object to obj1
     z" Alice" z" name" obj1 add-string
     z" Warrior" z" class" obj1 add-string
     100 z" health" obj1 add-int
@@ -27,7 +27,7 @@ s" test.json" load-file parse-json value it
     ." Created object: " obj1 cjson. cr
     
     \ Create second object
-    create-cjson to obj2
+    new-object to obj2
     obj1 z" nested" obj2 add-object
     z" Bob" z" name" obj2 add-string
     75 z" mana" obj2 add-int
@@ -89,7 +89,7 @@ also cjson>> \ necessary because of how || works ... TODO: gonna revisit scope.v
     to len to path to arr 
     path len serjson> 
         to cjson
-        create-array to cjson-arr
+        new-array to cjson-arr
         arr #items for
             i arr deref-index object>cjson 0 cjson-arr add-object
         loop 
