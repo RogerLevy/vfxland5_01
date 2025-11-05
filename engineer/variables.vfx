@@ -8,8 +8,8 @@ cstring home-path$
 cstring prj-path$
 create funcs 256 12 * allot&erase
 0 value reload-shift?
-variable _repl  _repl on   \ enable commandline
-variable _ide   _ide on    \ enable IDE mode (enables commandline automatically)
+variable _repl  \ _repl on   \ enable commandline
+variable _ide   \ _ide on    \ enable IDE mode (enables commandline automatically)
 variable _hold             \ HOLD ON / HOLD OFF to stop/resume logic updates
 defer repl  ' _repl is repl
 defer ide  ' _ide is ide

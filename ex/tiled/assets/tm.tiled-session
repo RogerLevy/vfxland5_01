@@ -3,8 +3,9 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "mountainside.tmj",
+    "activeFile": "scifi.tsx",
     "expandedProjectPaths": [
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -13,14 +14,15 @@
         },
         "mountainside.tmj": {
             "scale": 2,
-            "selectedLayer": 1,
+            "selectedLayer": -1,
             "viewCenter": {
                 "x": 254.5,
-                "y": 136.5
+                "y": 126
             }
         },
         "mountainside.tmj#objects": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1
         },
         "mountainside.tmj#scifi": {
             "dynamicWrapping": false
@@ -55,11 +57,13 @@
     "map.tileWidth": 16,
     "map.width": 20,
     "openFiles": [
-        "mountainside.tmj"
+        "mountainside.tmj",
+        "scifi.tsx"
     ],
     "project": "tm.tiled-project",
     "recentFiles": [
         "mountainside.tmj",
+        "scifi.tsx",
         "objects.tsx",
         "assets/scifi.tsx",
         "assets/mountainside.tmx"

@@ -1,0 +1,21 @@
+class: %brainboy
+    %actor derive
+class;
+
+bitmap %idir%/brainboy.png
+brainboy.png 16 16 tileset-from brainboy.ts
+
+: hit-map
+    \ move and collide with map
+    -7 -7 14 14 playfield tmcol> 7 cut-corners ;
+
+%brainboy :: init ( - )
+    brainboy.ts 0 tile bmp !
+    act>
+        0 0 vx 2!
+        <left> held? if -1. vx ! then
+        <right> held? if 1. vx ! then
+        <up> held? if -1. vy ! then
+        <down> held? if 1. vy ! then 
+    physics> 
+        hit-map ;

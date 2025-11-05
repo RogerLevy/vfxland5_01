@@ -136,9 +136,6 @@ class;
     max-items @ item-count !
     align here data ! * allot&erase ;
 
-: /item ( array - n )
-    -> item-size @ ;
-
 %array :: index ( a - n )
     data @ - item-size @ / me ?bounds ;
 
@@ -222,3 +219,7 @@ class;
         loop
     } ;
 
+: move-range ( array1 array2 ofs1 ofs2 #items - )
+    {: arr1 arr2 ofs1 ofs2 n :}
+    arr1 -> item-size @ arr2 -> item-size @ <> abort" MOVE-RANGE : Array item sizes mismatch!" 
+    ofs1 arr1 []` ofs2 arr2 []` arr1 -> item-size @ n * move ;

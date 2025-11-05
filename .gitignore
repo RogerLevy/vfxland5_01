@@ -33,3 +33,9 @@ diff.txt
 
 rel
 *.tiled-session
+
+cjson/actor.json
+
+cjson/out.json
+
+cjson/scene.json

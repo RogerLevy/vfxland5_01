@@ -175,8 +175,8 @@ redef : main ( - )
 : save-dev ( - <path> )
     fullscreen?
         ide @ repl @ hold @
-            ide on
-            repl on
+            \ ide on
+            \ repl on
             hold off
             windowed
             save-exe cr
