@@ -177,6 +177,10 @@ private
 public
 
 : cut-corners ( n - )
+    \ slide around corners and adjust nx and ny 
+    \ to be called inside of tmcol> body
+    \ TODO: this doesn't work properly when velocity is not cardinal
+    \ (it adds on top of the perpendicular axis instead of clamping)
     s>f to fudge  fudge fnegate to -fudge
     lwall? rwall? or if  ?hcut+ ?hcut-  then
     floor? ceiling? or if  ?vcut+ ?vcut-  then ;
