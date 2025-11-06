@@ -13,6 +13,7 @@ only forth definitions
 \ VFXLand5 codebase-wide language extensions
 \ =============================================================================
 
+include %idir%/backtick.vfx       \ Ignore trailing backticks 
 include %idir%/misc.vfx           \ Miscellaneous utility words / core extensions
 include %idir%/scope.vfx          \ Per-file public/private words; search order stack
 include %idir%/fixed.vfx          \ 16.16 fixed-point math

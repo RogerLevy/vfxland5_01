@@ -796,7 +796,7 @@ redef : ; ( - )
     source-class -> class-template @ ?dup if
         here dest-class -> class-template !
         ( source-template ) 
-        source-class -> instance-size @ ` dest-class sizeof ` max
+        source-class -> instance-size @` dest-class sizeof` max
         move,
         dest-class dup -> class-template @ >cla !
     then

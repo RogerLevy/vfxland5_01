@@ -12,7 +12,7 @@ info :: init
     draw>
         4 4 +at
         the-bmp @ is-tile? if
-            file$ count `` 2dup first-tile the-bmp @ swap - `
+            file$ count`` 2dup first-tile the-bmp @ swap - `
                 f" %n , %s" print 
         else
             file$ count the-bmp @ f" %n , %s" print 

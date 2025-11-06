@@ -66,7 +66,7 @@ continuation: draw> ( - ) ( - )
 \ Rendering
 || : middle ( - x y )  bmp @ bmpwh 2 2 2/ ;
 || : sprite ( - )  at@ middle 2negate +at bmp @ put at ;
-|| : +t  x 2@ 2>i 2s>f `` sx 2@ 2p>f 0e ``` transform ;
+|| : +t  x 2@ 2>i 2s>f`` sx 2@ 2p>f 0e``` transform ;
 || : (draw) ( - )
     en @ -exit vis @ -exit
     m{ +t 0 0 at

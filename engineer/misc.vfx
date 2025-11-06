@@ -4,10 +4,6 @@
 
 : e -1 abort" e is not defined" ;
 
-: ` ; immediate
-: `` ; immediate
-: ``` ; immediate
-: ```` ; immediate
 synonym aka synonym
 aka not 0=
 : >zpad  ( a n - z$ ) pad zplace pad ;

@@ -127,11 +127,11 @@ variable load-room-chain
 \ Read/write the background
 \ =============================================================================
 
-: colrow  ( - c r ) x 2@ `` xy>cr ;
-: +tile@  ( c r - n ) colrow 2+ `` playfield ` spot c@ ;
-: +tile!  ( n c r - ) colrow 2+ `` playfield ` spot c! ;
-: ftile@  ( f: c r - n ) 2f>p xy>cr `` playfield ` spot c@ ;
-: ftile!  ( n f: c r - ) 2f>p xy>cr `` playfield ` spot c! ;
+: colrow  ( - c r ) x 2@`` xy>cr ;
+: +tile@  ( c r - n ) colrow 2+`` playfield` spot c@ ;
+: +tile!  ( n c r - ) colrow 2+`` playfield` spot c! ;
+: ftile@  ( f: c r - n ) 2f>p xy>cr`` playfield` spot c@ ;
+: ftile!  ( n f: c r - ) 2f>p xy>cr`` playfield` spot c! ;
 
 \ =============================================================================
 \ Rendering
