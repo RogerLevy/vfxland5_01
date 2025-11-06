@@ -110,7 +110,7 @@ include %idir%/../textmode/textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    pop-attribute cr ;
+    pop-attribute ;
 
 : f.s 
     fdepth | d |
@@ -123,7 +123,7 @@ include %idir%/../textmode/textmode-tools.vfx
         ." Empty! "
     then
     ." ] "
-    pop-attribute cr ;
+    pop-attribute ;
 
 : rs ( - ) reset-stacks ;
 
@@ -189,7 +189,7 @@ aka parse' parse
         i @ .name                    \ Print return address
     cell negate +loop
     ." ] "
-    pop-attribute cr ;
+    pop-attribute ;
 
 : .rs ( -- )
     rp@ (.rs) ;
@@ -432,3 +432,19 @@ variable verbose
 
 : sandbox ( - ) 
     only previous previous previous ;
+
+\ =============================================================================
+\ Custom prompt
+\ =============================================================================
+
+: .engineer-prompt    \ --
+  ."  ok " 
+  depth if .s then
+  fdepth if f.s then
+  depth -> SbDepth
+  base @ -> SbBase
+  context @ -> sbContext
+  current @ -> sbCurrent
+;
+
+['] .engineer-prompt is .prompt
