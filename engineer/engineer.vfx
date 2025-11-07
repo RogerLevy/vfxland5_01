@@ -52,7 +52,7 @@ fload %idir%/go.vfx         \ Main Loop
 || create fresh-all-classifiers classifiers #max-classifiers cells move,
 
 || : reset-system-classifiers ( - )
-    ['] reset-classifier fresh-classifiers each 
+    ['] reset-classifier fresh-classifiers eacha 
     fresh-all-classifiers classifiers #max-classifiers cells move ;
 
 \ =============================================================================
@@ -216,6 +216,9 @@ include %idir%/ls.vfx
 
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
+
 borrow nib2>> gild-nib
 gild-nib
+
+include %idir%/back.vfx           \ Backward compatibility shim
 marker gild

@@ -5,49 +5,48 @@
 trait: %iterable
     prop item-count <int <save
     :: vacate ( - ) 0 item-count ! ;
-    :: index ( a - n ) stub ; 
-    :: deref-index ( n - ? ) stub ;
-    redef :: [] ( n - a ) stub ; \ pronounced "box"
+    :: slot>index ( a - i ) stub ; 
+    :: index>slot ( i - a ) stub ; 
+    :: index>val ( i - ? ) stub ;
+    :: store-at ( val i - ) stub ;
     :: redim ( #items - ) stub ;
 trait;
 
+: i>a ( iterable i - a ) swap index>slot ; 
+: []@ ( iterable i - val ) swap index>val ;
+: []! ( n iterable i - ) swap store-at ;
 : #items ( iterable - n ) -> item-count @ ;
 
-|| variable (enough)
-: enough  (enough) on ;
+|| variable enough-flag
+: enough  enough-flag on ;
 
-|| : (each) ( xt - ) ( ... a - ... )
+|| : _eacha ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
-        i me [] xt execute
-        (enough) @ if unloop exit then
+        i me index>slot xt execute
+        enough-flag @ if unloop exit then
     loop ;
 
-%iterable :: each ( xt - ) ( ... a - ... )
-    (enough) @ >r
-    (enough) off
-    ['] (each) catch
-    r> (enough) !
+%iterable :: eacha ( xt - ) ( ... a - ... )
+    enough-flag @ >r
+    enough-flag off
+    ['] _eacha catch
+    r> enough-flag !
     throw ;
 
-|| : (each@) ( xt - ) ( ... a - ... )
+|| : _each ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
-        i me deref-index xt execute
-        (enough) @ if unloop exit then
+        i me index>val xt execute
+        enough-flag @ if unloop exit then
     loop ;
 
-%iterable :: each@ ( xt - ) ( ... ? - ... )
-    (enough) @ >r
-    (enough) off
-    ['] (each@) catch
-    r> (enough) !
+%iterable :: each ( xt - ) ( ... ? - ... )
+    enough-flag @ >r
+    enough-flag off
+    ['] _each catch
+    r> enough-flag !
     throw ;
-
-: n[] ( n. iterable - a )
-    \ Index into iterable based on a value in range 0 ~ 1.0
-    \ pronounced "n-box"
-    dup >r -> item-count @ 1 - p* r> [] ;
 
 \ Essential queries:
 %iterable :: empty? ( - bool )
@@ -63,32 +62,32 @@ trait;
 %iterable :: find-index ( xt - n | -1 ) ( a - b )
     {: xt :}
     item-count @ for
-        i me [] xt execute if i unloop exit then
+        i me index>slot xt execute if i unloop exit then
     loop -1 ;
 
-%iterable :: index-of ( item - n | -1 ) ( a - b )
+%iterable :: slot>index ( item - n | -1 ) ( a - b )
     {: item :}
     item-count @ for
-        i me deref-index item = if i unloop exit then
+        i me index>val item = if i unloop exit then
     loop -1 ;
 
 %iterable :: contains? ( item - bool )
-    me index-of 0 >= ;
+    me slot>index 0 >= ;
       
 \ Access helpers:
 \ For object/reference types:
-%iterable :: head ( - a )
-    0 me ?bounds me [] ;
+%iterable :: head-slot ( - a )
+    0 me ?bounds me index>slot ;
 
-%iterable :: tail ( - a )
-    item-count @ 1 - me ?bounds me [] ;
+%iterable :: tail-slot ( - a )
+    item-count @ 1 - me ?bounds me index>slot ;
 
 \ For value types:
 %iterable :: head@ ( - ? )
-    0 me ?bounds me deref-index ;
+    0 me ?bounds me index>val ;
 
 %iterable :: tail@ ( - ? )
-    item-count @ 1 - me ?bounds me deref-index ;
+    item-count @ 1 - me ?bounds me index>val ;
 
 \ Functional operations:
 \ iterable :: map ( xt dest - )
@@ -125,31 +124,38 @@ trait: %fifo trait;
 
 class: %array
     is-a %iterable
-    prop max-items <int <save
-    prop item-size <int <save
+    prop max-slots <int <save
+    prop slot-size <int <save
     prop data <addr
 class;
 
-2 %array :construct ( max-items item-size - )
-    dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
-    2dup item-size ! max-items !
-    max-items @ item-count !
+: s/slot ( array - n ) -> slot-size @ ;
+
+2 %array :construct ( max-slots slot-size - )
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array slot size" 
+    2dup slot-size ! max-slots !
+    max-slots @ item-count !
     align here data ! * allot&erase ;
 
-%array :: index ( a - n )
-    data @ - item-size @ / me ?bounds ;
+%array :: slot>index ( a - i )
+    data @ - slot-size @ / me ?bounds ;
 
-%array :: [] ( n - a )
-    me ?bounds item-size @ * data @ + ;
+%array :: index>slot ( i - a )
+    me ?bounds slot-size @ * data @ + ;
 
-%array :: deref-index ( n - ? )
-    me [] @ ;
+%array :: index>val ( i - ? )
+    me index>slot @ ;
 
-%array :: redim ( #items - )
-    dup max-items @ = if drop exit then
-    item-size @ max-items @ * >r   data @ >r
-    ( #items ) item-size @ array:construct 
-    r> data @   item-size @ max-items @ *   r> min   move ;
+%array :: store-at ( n i - )
+    \ TODO: add support for other types.  in the meantime,
+    \ use the old [] to store other number types. (defined in back.vfx)
+    me index>slot ! ;
+
+%array :: redim ( #slots - )
+    dup max-slots @ = if drop exit then
+    slot-size @ max-slots @ * >r   data @ >r
+    ( #slots ) slot-size @ array:construct 
+    r> data @   slot-size @ max-slots @ *   r> min   move ;
 
 \ ------------------------------------------------------------------------------
 
@@ -158,47 +164,49 @@ class: %stack
     is-a %lifo
 class;
 
-2 %stack :construct ( max-items item-size - )
-    dup  0  16 1024 * 1024 *  within? not abort" Invalid array item size" 
-    2dup item-size ! max-items !
+2 %stack :construct ( max-slots slot-size - )
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array slot size" 
+    2dup slot-size ! max-slots !
     align here data ! * allot&erase ;
 
-%stack :: push ( item - )
-    item-count @ max-items @ = abort" Overflow."
-    1 item-count +!  me tail ! ;
+%stack :: push ( slot - )
+    item-count @ max-slots @ = abort" Overflow."
+    1 item-count +!  me tail-slot ! ;
 
-%stack :: pop ( - item )
+%stack :: pop ( - slot )
     item-count @ 0= abort" Underflow."
-    me tail @  -1 item-count +! ;
+    me tail-slot @  -1 item-count +! ;
 
 %stack :: push-copy ( a - )
-    item-count @ max-items @ = abort" Overflow."
-    1 item-count +!  ( a ) me tail item-size @ move ;
+    item-count @ max-slots @ = abort" Overflow."
+    1 item-count +!  ( a ) me tail-slot slot-size @ move ;
 
 %stack :: pop-ref ( - a )
     item-count @ 0= abort" Underflow."
-    me tail  -1 item-count +! ;
+    me tail-slot  -1 item-count +! ;
 
-%stack :: redim ( #items - )
-    dup max-items @ = if drop exit then
-    item-size @ max-items @ * >r   data @ >r
-    ( #items ) item-size @ stack:construct 
-    r> data @   item-size @ max-items @ *   r> min   move 
-    item-count @ max-items @ min item-count ! ;
+%stack :: redim ( #slots - )
+    dup max-slots @ = if drop exit then
+    slot-size @ max-slots @ * >r   data @ >r
+    ( #slots ) slot-size @ stack:construct 
+    r> data @   slot-size @ max-slots @ *   r> min   move 
+    item-count @ max-slots @ min item-count ! ;
 
 \ ------------------------------------------------------------------------------
 
-: array{ ( item-size - array )
-    0 swap %array make {
-    here data !  me } ;  \ just to be sure
+|| : _array{ ( slot-size array-class - array )
+    0 -rot make { here data !  me } ;
+
+: array{ ( slot-size - array )
+    %array _array{ ; 
 
 : array} ( array - array )
-    { here data @ - item-size @ /
-    dup item-count ! max-items !   me } ;
+    { here data @ - slot-size @ /
+    dup item-count ! max-slots !   me } ;
 
 : pad-array  ( array count - array )
     \ Pad out an array being built, to given count
-    over { data @ item-size @ rot * + here - allot&erase } ;
+    over { data @ slot-size @ rot * + here - allot&erase } ;
 
 redef : array ( max width - <name> )
     %array object ;
@@ -208,18 +216,29 @@ redef : stack ( max width - <name> )
 
 class: %object-array
     %array derive
-    :: deref-index ( n - ? ) me [] ;
 class;
+
+%object-array :: index>val ( n - ? ) 
+    me index>slot ;
 
 : object-array ( n class <name> - )
     {: count class0 :}
     create count class0 sizeof %object-array make {
         count for
-            class0 i me [] construct
+            class0 i me index>slot construct
         loop
     } ;
 
-: move-range ( array1 array2 ofs1 ofs2 #items - )
+: move-range ( array1 array2 ofs1 ofs2 #slots - )
     {: arr1 arr2 ofs1 ofs2 n :}
-    arr1 -> item-size @ arr2 -> item-size @ <> abort" MOVE-RANGE : Array item sizes mismatch!" 
-    ofs1 arr1 []` ofs2 arr2 []` arr1 -> item-size @ n * move ;
+    arr1 -> slot-size @ arr2 -> slot-size @ <> abort" MOVE-RANGE : Array slot sizes mismatch!" 
+    ofs1 arr1 index>slot` ofs2 arr2 index>slot` arr1 -> slot-size @ n * move ;
+
+%object-array :: store-at ( obj i - )
+    index>slot me s/slot move ;
+
+%object-array :: each ( xt - )
+    me eacha ;
+
+: object-array{ ( class - object-array )
+    sizeof %object-array _array{ ;

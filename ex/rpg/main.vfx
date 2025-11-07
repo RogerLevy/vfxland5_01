@@ -31,7 +31,9 @@ s" %idir%/assets/map/darkworld.tsj" darkworld.ts read-tsj-properties
 owtest01.scn -> tm-main @ -> ta @ -> data @ to playfield
 
 redef : main
+    actors 0 []@ o.
     just owtest01.scn load   \ instantiate actors from the scene
+    actors 0 []@ o.
     show> 
         step 
         0 0 at  owtest01.scn -> tm-main @ draw  

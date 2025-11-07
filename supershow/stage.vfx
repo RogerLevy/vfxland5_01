@@ -103,11 +103,11 @@ fast}
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if
             s{ ." Positive stack imbalance in logic for actor " me .summary
-            s} log-warning .rs .s
+            s} log-warning .rs cr .s cr
         then
         dup sp@ cell+ cell+ < if
             s{ ." Negative stack imbalance in logic for actor " me .summary
-            s} log-warning .rs .s
+            s} log-warning .rs cr .s cr
         then
     then
     sp! ;
@@ -194,7 +194,7 @@ variable next#
     at@ 2>p x 2! ;
 
 : stage-init ( actor - )
-    { me actors - /actor / id !   me init } ;
+    { me actors slot>index id !   me init } ;
 
 : stage-slot ( - actor )
     #actors for

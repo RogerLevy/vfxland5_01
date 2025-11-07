@@ -129,7 +129,7 @@ init-supershow
 
 \ : load-project ( - )
 \     create-autoclasses
-\     ['] load-default-dir script-classes each@
+\     ['] load-default-dir script-classes each
 \     %scene load-default-dir
 \     s" modes.vfx" ?included ;
 

@@ -22,7 +22,7 @@ class;
     bitmap[] @ ;
 
 \ : ?nullbmp  dup 0= abort" BITMAP-FILE : Bitmap is null!" ;
-\ : ?subbmp  dup al_is_sub_bitmap if al_get_parent_bitmap then ;
+\ : ?subbmp  dup al_is_sub_bitmlap if al_get_parent_bitmap then ;
 
 : bitmap-from ( albmp - bitmap )
     %bitmap instance { albmp ! me } ;

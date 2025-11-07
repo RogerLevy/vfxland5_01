@@ -660,11 +660,13 @@ defer protocol-validations ( obj protocol - obj protocol )
 
 || : :method ( classname-a classname-len protocolname-a protocolname-len - xt )
     push-order only forth definitions
+    warnings? >r -warnings
     2swap ?-% 
     f" : %s:%s" >uppercase 
     evaluate
     pop-order 
     state on
+    r> to warnings?
     here ; 
 
 : ?compile-validate-dispatch ; immediate

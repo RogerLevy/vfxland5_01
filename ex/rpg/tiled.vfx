@@ -75,7 +75,7 @@ also cjson>>
 : load-tiled-actors-simple ( ctmj - array )
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: ctmj | tileset :}
-    /actor array{
+    %actor object-array{
         ctmj z" layers" array@ 1 object@ z" objects" array-count for
             dup i object@ tiled-actor ?dup if .summary cr then
         loop drop 

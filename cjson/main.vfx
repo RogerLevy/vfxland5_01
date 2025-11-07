@@ -110,4 +110,4 @@ scene0 s" scene.json" save-objects
 
 s" scene.json" read-actors
 
-['] o. teststack each@
+['] o. teststack each

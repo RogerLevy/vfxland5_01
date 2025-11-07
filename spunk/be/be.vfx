@@ -33,7 +33,7 @@ array} drop
 
 0 value z
 : (check) >r dup r@ @ >= if r@ cell+ @ to z then r> drop -1 ;
-: get-zoom ['] (check) zooms each drop z ;
+: get-zoom ['] (check) zooms eacha drop z ;
 defer auto-zoom
 
 \ Mouse

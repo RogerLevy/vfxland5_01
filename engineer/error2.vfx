@@ -87,7 +87,7 @@ public
     \ >r  \ save throw code
     \ .s
     \ r>  \ restore throw code
-    rp@ 1 cells + (.rs)
+    rp@ 1 cells + (.rs) 
     cr ;
 
 : .throw-catch ( throw-code - )

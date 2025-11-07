@@ -246,16 +246,16 @@ errdef err_oversight "ERR: Validation failed."
         val -> validator @ >name count
         c -> word-name$ count 
         f" %s : VALIDATION FAILED: %s" log-error
-        caller-rp (.rs)
-        .s
+        caller-rp (.rs) cr
+        .s cr
         err_oversight throw
     then
     res 1 = if
         val -> validator @ >name count 
         c -> word-name$ count 
         f" %s : VALIDATION NOTE: %s" log-warning
-        caller-rp (.rs)
-        .s
+        caller-rp (.rs) cr
+        .s cr
     then ;
     
 || : validated-word ( wrapper -- )
