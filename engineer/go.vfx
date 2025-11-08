@@ -16,8 +16,12 @@ continuation: show> ( - ) ( - )
     <lshift> held? <rshift> held? or to shift? 
     <lctrl> held? <rctrl> held? or to ctrl? ;
 
-: spin ( - f: n )
-    ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ ;
+|| : spin ( - )
+    ustime 
+    0e begin 
+        ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ 
+        f+ fdup 1e tps f/ f>= until fdrop
+    to ustime ;
 
 \ =============================================================================
 \ Global Events
@@ -61,17 +65,10 @@ redef : event? ( - f )
 \ Main Loop
 \ =============================================================================
 
-|| : ?idle ( - ) debug @ if EmptyIdle then ;
+|| : ?idle ( - ) debug @ if (EmptyIdle) then ;
 
 : refresh ( - )
-    ?idle 
-    ustime 
-    0e begin spin f+ fdup 1e tps f/ f>= until fdrop
-    to ustime
-    display al_flip_display
-    update-delta
-    pump 
-    poll ;
+    ?idle spin display al_flip_display ;
 
 || : ?quit
     <esc> pressed? esc-quits @ and if
@@ -88,12 +85,22 @@ redef : event? ( - f )
         w/f -keys
     then ;    
 || : ?bye  <f4> pressed?  alt? and if bye then ;
-|| : controls ( - ) ?quit ?w/f ?bye ?reload-shift ;
-\ || : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
-|| : screen ( - ) ['] draw-game draw-tv ;
 
-: frame ( - )
-    controls screen refresh ;
+|| : system-controls ( - ) 
+    ?quit ?w/f ?bye ;
+
+\ || : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
+
+: process-tick ( xt - )
+    {: xt :}
+    update-delta 
+    system-controls  \ process system controls after presenting last frame
+    poll ?reload-shift pump 
+    xt draw-tv ;
+
+: frame ( - ) 
+    ['] draw-game process-tick 
+    refresh ;
 
 extern BOOL SetThreadPriority( hthread, priority );
 

@@ -20,6 +20,7 @@ gameh gap / ?constant tmh
 \ =============================================================================
 
 include %idir%/checks.vfx           \ Validations
+include %idir%/mode.vfx             \ Game modes w/ separate logic and rendering
 include %idir%/tweak.vfx              \ Persistent variable control
 \ include %idir%/../lib/bin.vfx       \ Binary serialization format (deprecated)
 \ include %idir%/../lib/totem.vfx     \ Persistent data system

@@ -43,7 +43,7 @@ continuation: draw> ( - ) ( - )
 \ Announce
 || 0 value xt
 || : (announce)
-    xt execute [ last-colon-xt @ ] literal me dleach ;
+    xt ?execute [ last-colon-xt @ ] literal me dleach ;
 : announce ( xt el - )
     swap to xt ['] (announce) swap dleach ;
 : announce> ( el - <code> ; )

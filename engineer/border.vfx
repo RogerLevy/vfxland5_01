@@ -47,7 +47,7 @@
     then ; 
 
 : draw-tv ( xt - ) 
-    zoom @ >r ?border execute r> zoom ! ;
+    zoom @ >r ?border ?execute r> zoom ! ;
 
 || : ?game-throw ( n - ) 
     dup -1 = if drop exit then

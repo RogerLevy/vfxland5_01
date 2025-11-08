@@ -32,10 +32,12 @@ owtest01.scn -> tm-main @ -> ta @ -> data @ to playfield
 
 redef : main
     just owtest01.scn load   \ instantiate actors from the scene
-    show> 
+    work>
         step 
+    show> 
         0 0 at  owtest01.scn -> tm-main @ draw  
-        sprites animate ;
+        sprites animate 
+        16 ms ;
 
 \ Load tools and run tests
 debug @ [if]

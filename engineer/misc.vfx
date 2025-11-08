@@ -22,6 +22,7 @@ aka cd cwd
 : ltype  ( a n - ) for c@+ lc emit loop drop ;      
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
+: ?execute ( xt - ) ?dup -exit >r ;
 
 : screate ( name len - ) ( - a )
     {: | name$[ 256 ] :} name$[ place name$[ $create ;
@@ -169,7 +170,7 @@ aka parse' parse
 : >uppercase ( a c - a c ) 2dup upper ;
 
 : jumptable ( a - <name> ) ( ... - ... ) 
-    create , does> @+ @ cells + @ execute ;
+    create , does> @+ @ cells + @ ?execute ;
 
 : h. ( n - ) ." $" base @ swap hex u. base ! ;
 : #. ( n - ) base @ >r  decimal . r> base ! ;

@@ -119,7 +119,7 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
     \ {: path len xt | cjson :}
     to xt to len to path
     new-object to cjson
-    cjson xt execute 
+    cjson xt ?execute 
     cjson serialize-cjson 
         udup path len write 
         cjson-free
