@@ -43,3 +43,11 @@ redef : []    ( ." [] : WARNING: Deprecated." cr )          index>slot ;
 : each@       ( ." EACH@ : WARNING: Deprecated." cr )       each ;
 aka item-size slot-size
 aka max-items max-slots
+
+aka <int :int
+aka <fixed :fixed
+aka <float :float
+aka <cstring :cstring
+aka <xt :xt
+aka <addr :addr
+aka <ref :ref

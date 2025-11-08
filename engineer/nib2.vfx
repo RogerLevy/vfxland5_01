@@ -954,19 +954,19 @@ aka instance make  \ Backward compatibility
     ?no-property ?not-supported
     -1 current-property classifier >serialize-flag ! ;
 
-: <int ( - )
+: :int ( - )
     ?no-property
     TYPE_INT current-property classifier >property-type ! ;
 
-: <fixed ( - )
+: :fixed ( - )
     ?no-property
     TYPE_FIXED current-property classifier >property-type ! ;
 
-: <float ( - )
+: :float ( - )
     ?no-property
     TYPE_FLOAT current-property classifier >property-type ! ;
 
-: <cstring ( - )
+: :cstring ( - )
     ?no-property
     TYPE_CSTRING current-property classifier >property-type ! ;
 
@@ -974,15 +974,15 @@ aka instance make  \ Backward compatibility
 \     ?no-property ?not-saved-supported
 \     TYPE_ARRAY current-property classifier >property-type ! ;
 
-: <xt ( - )
+: :xt ( - )
     ?no-property ?not-saved-supported
     TYPE_XT current-property classifier >property-type ! ;
     
-: <addr ( - )
+: :addr ( - )
     ?no-property ?not-saved-supported
     TYPE_ADDR current-property classifier >property-type ! ;
 
-: <ref ( - class|trait )
+: :ref ( - class|trait )
     ?no-property ?not-saved-supported
     TYPE_OBJREF current-property classifier >property-type ! 
     ' >body dup valid-classifier? not
