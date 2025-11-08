@@ -8,7 +8,7 @@ class: %tilemap
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
-        0 ta @ [] w 2@ drawbg ;
+        ta @ 0 i>a w 2@ drawbg ;
 class;
 
 class: %scene
@@ -90,7 +90,7 @@ also cjson>>
         load-tiled-actors-simple troupe !
     } ;
 
-|| : set-meta ( bits index - ) metas-array @ [] dup @ rot or swap ! ;
+|| : set-meta ( bits index - ) metas-array @ swap i>a dup @ rot or swap ! ;
 
 || : named? ( cjson name len - f ) 2>r z" name" string@ 2r> s= ; 
 

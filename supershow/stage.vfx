@@ -45,7 +45,7 @@ class;
 \ =============================================================================
 
 : free? ( %actor - f ) -> en @ 0= ;
-: actor[] ( n - %actor ) actors [] ;
+: actor[] ( n - %actor ) actors swap []@ ;
 : actor# ( %actor - n ) -> id @ ;
 continuation: act> ( - ) ( - ) 0 time !  ( xt ) beha ! ; 
 continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
@@ -289,7 +289,7 @@ continuation: timer> ( time. - ) ( - )
 \ =============================================================================
 
 || variable tnext#
-: temp[] ( n - a ) temps [] ;
+: temp[] ( n - a ) temps swap []@ ;
 : *temp ( - a )
     #temps for
         tnext# @ temp[] dup free? if
