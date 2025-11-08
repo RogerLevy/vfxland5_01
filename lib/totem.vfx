@@ -27,7 +27,7 @@ trait: %totem
 
     prop existed
     \ prop changed
-    256 nprop srcpath$ <cstring         \ cstring: main file path
+    256 nprop srcpath$ :cstring         \ cstring: main file path
 
     4 nstatic extension$                \ cstring: main file extension
     /list nstatic instances             \ nib2 list, track instances

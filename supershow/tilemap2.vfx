@@ -14,10 +14,10 @@ class: %tileset
 
     prop baseid
     prop bmp
-    prop tw <save <int 
-    prop th <save <int 
-    prop #tiles <save <int 
-    prop metas-array <ref %array
+    prop tw <save :int 
+    prop th <save :int 
+    prop #tiles <save :int 
+    prop metas-array :ref %array
 
     prop bw \ parent %bitmap dims, used to determine if reallocating sub-bitmaps is needed
     prop bh 
@@ -102,7 +102,7 @@ class;
         metas-array @ @array+ ;
 
 class: %bitmap
-    prop ts <ref %tileset
+    prop ts :ref %tileset
 class;
 
 %bitmap :: reload ( - )

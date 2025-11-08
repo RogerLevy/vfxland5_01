@@ -9,7 +9,7 @@ class;
 
 
 class: %actor
-    prop owner <ref %actor       \ actors with owners are discarded
+    prop owner :ref %actor       \ actors with owners are discarded
                                 \ it is up to the owner actor to recreate
 class;
 

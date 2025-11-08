@@ -3,7 +3,7 @@
 \ ------------------------------------------------------------------------------
 
 trait: %iterable
-    prop item-count <int <save
+    prop item-count :int <save
     :: vacate ( - ) 0 item-count ! ;
     :: index ( a - n ) stub ; 
     :: deref-index ( n - ? ) stub ;
@@ -125,9 +125,9 @@ trait: %fifo trait;
 
 class: %array
     is-a %iterable
-    prop max-items <int <save
-    prop item-size <int <save
-    prop data <addr
+    prop max-items :int <save
+    prop item-size :int <save
+    prop data :addr
 class;
 
 2 %array :construct ( max-items item-size - )

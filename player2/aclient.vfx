@@ -30,13 +30,13 @@ class: aclient              \ asynchronous http client using libcurl
     prop #transfers
     prop #messages
     prop #requests
-    prop requests <ref %array
+    prop requests :ref %array
 class;
 
 class: request
     prop en
     prop easy-handle 
-    prop on-completion-xt <xt   \ scoped to completed request
+    prop on-completion-xt :xt   \ scoped to completed request
     prop streaming
     prop headers            \ slist, automatically freed on completion
     prop op                 \ output handle for callbacks, defaults to consoledev

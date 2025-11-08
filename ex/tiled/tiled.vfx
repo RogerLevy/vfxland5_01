@@ -3,7 +3,7 @@ class: %tilemap
     prop data
     prop w
     prop h
-    prop ts <ref %tileset
+    prop ts :ref %tileset
 
     : ?ts  ts @ ?dup -exit 0 tile pile ! ;
     :: draw  ?ts data @ w 2@ drawbg ;

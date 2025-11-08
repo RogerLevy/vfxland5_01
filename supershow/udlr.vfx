@@ -8,7 +8,7 @@ public
 3 constant down
 
 class: %actor
-    prop fac <int <save
+    prop fac :int <save
 class;
 
 : dirkeys? ( - f )
