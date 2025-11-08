@@ -103,11 +103,11 @@ fast}
         \ The data stack grows downward.
         dup sp@ cell+ cell+ > if
             s{ ." Positive stack imbalance in logic for actor " me .summary
-            s} log-warning .rs cr .s cr
+            s} log-warning .rs .s 
         then
         dup sp@ cell+ cell+ < if
             s{ ." Negative stack imbalance in logic for actor " me .summary
-            s} log-warning .rs cr .s cr
+            s} log-warning .rs .s
         then
     then
     sp! ;

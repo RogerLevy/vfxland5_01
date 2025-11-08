@@ -247,7 +247,7 @@ errdef err_oversight "ERR: Validation failed."
         c -> word-name$ count 
         f" %s : VALIDATION FAILED: %s" log-error
         caller-rp (.rs) cr
-        .s cr
+        .s
         err_oversight throw
     then
     res 1 = if

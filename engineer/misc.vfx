@@ -100,7 +100,7 @@ include %idir%/../textmode/textmode-tools.vfx
 : do-chain ( chain - )
     begin @ ?dup while dup cell+ @ execute repeat ;
 
-: .s
+: _.s
     depth 8 min | d |
     d 0< -4 ?throw
     3 push-attribute
@@ -113,7 +113,9 @@ include %idir%/../textmode/textmode-tools.vfx
     ." ] "
     pop-attribute ;
 
-: f.s 
+: .s  _.s cr ;
+
+: _f.s 
     fdepth | d |
     d 0< -400 ?throw
     3 push-attribute
@@ -125,6 +127,8 @@ include %idir%/../textmode/textmode-tools.vfx
     then
     ." ] "
     pop-attribute ;
+
+: f.s  _f.s cr ;
 
 : rs ( - ) reset-stacks ;
 
@@ -193,7 +197,7 @@ aka parse' parse
     pop-attribute ;
 
 : .rs ( -- )
-    rp@ (.rs) ;
+    rp@ (.rs) cr ;
 
 : clamp ( n lo hi - n' ) >r max r> min ;
 
@@ -440,8 +444,8 @@ variable verbose
 
 : .engineer-prompt    \ --
   ."  ok " 
-  depth if .s then
-  fdepth if f.s then
+  depth if _.s then
+  fdepth if _f.s then
   depth -> SbDepth
   base @ -> SbBase
   context @ -> sbContext
