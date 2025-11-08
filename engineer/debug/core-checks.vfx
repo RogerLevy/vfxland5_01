@@ -25,7 +25,7 @@
 
 fast{
 
-: valid-address?  1048576 0x80000000 within ;
+: valid-address?  0x80000000 u< ;
 
 crucial test: valid-address ( addr -- addr n:result )
     \ Validate address is non-null and in reasonable range
