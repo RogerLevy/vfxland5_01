@@ -37,3 +37,11 @@ aka -m m}
 
 : $object ( ... class name len - object ) ( - object ) 
     screate make ;
+
+aka <int :int
+aka <fixed :fixed
+aka <float :float
+aka <cstring :cstring
+aka <xt :xt
+aka <addr :addr
+aka <ref :ref
