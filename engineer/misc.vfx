@@ -447,5 +447,5 @@ variable verbose
   current @ -> sbCurrent
 ;
 
-['] .engineer-prompt is .prompt
+['] .engineer-prompt is .prompt 
 

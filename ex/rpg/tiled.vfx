@@ -1,10 +1,10 @@
 class: %tilemap
     is-a %drawable
-    prop ta <ref %array
+    prop ta :ref %array
     prop w
     prop h
-    prop ts <ref %tileset
-    32 nprop name <cstring
+    prop ts :ref %tileset
+    32 nprop name :cstring
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
@@ -13,8 +13,8 @@ class;
 
 class: %scene
     is-a %loadable
-    prop tm-main <ref %tilemap
-    prop troupe <ref %array
+    prop tm-main :ref %tilemap
+    prop troupe :ref %array
     
     : copy-to-stage ( actor - )
         stage-slot copy stage-init ;

@@ -9,10 +9,10 @@ class: %tileset
 
     prop baseid
     prop bmp
-    prop tw <save <int 
-    prop th <save <int 
-    prop #tiles <save <int 
-    prop metas-array <ref %array
+    prop tw <save :int 
+    prop th <save :int 
+    prop #tiles <save :int 
+    prop metas-array :ref %array
 
 class;
 

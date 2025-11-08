@@ -3,7 +3,7 @@
 \ =============================================================================
 
 class: %actor
-    prop bmp <int <save 
+    prop bmp :int <save 
 class;
 
 %actor :: draw ( - )

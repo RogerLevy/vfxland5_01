@@ -1,7 +1,7 @@
 trait: playable
-    prop playhead <fixed <save  \ seconds
+    prop playhead :fixed <save  \ seconds
     prop (playing)
-    prop spd <fixed <save
+    prop spd :fixed <save
     :: play ( - ) stub ;
     :: stop ( - ) stub ;
     :: pause ( - ) stub ;

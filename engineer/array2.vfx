@@ -3,7 +3,7 @@
 \ ------------------------------------------------------------------------------
 
 trait: %iterable
-    prop item-count <int <save
+    prop item-count :int <save
     :: vacate ( - ) 0 item-count ! ;
     :: slot>index ( a - i ) stub ; 
     :: index>slot ( i - a ) stub ; 
@@ -124,9 +124,9 @@ trait: %fifo trait;
 
 class: %array
     is-a %iterable
-    prop max-slots <int <save
-    prop slot-size <int <save
-    prop data <addr
+    prop max-slots :int <save
+    prop slot-size :int <save
+    prop data :addr
 class;
 
 : s/slot ( array - n ) -> slot-size @ ;

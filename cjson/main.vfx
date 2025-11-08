@@ -65,9 +65,9 @@ test-cjson-setters
 test-cjson-serialize
 
 class: actor
-    prop x <fixed <save
-    prop y <fixed <save
-    prop hp <int <save
+    prop x :fixed <save
+    prop y :fixed <save
+    prop hp :int <save
     template { 5. x ! 10. y ! 15 hp ! }
 class;
 

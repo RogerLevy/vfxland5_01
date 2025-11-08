@@ -11,9 +11,9 @@ filesystem:
 class: %tilemap
     is-a %totem
     format: TILEMAP_FORMAT_VERSION
-    prop w <save <int
-    prop h <save <int
-    prop data <addr
+    prop w <save :int
+    prop h <save :int
+    prop data :addr
 class;
 
 : tm-size  w @ h @ * cells ;
@@ -39,11 +39,11 @@ class: world
     extension: wld
     default-dir: dat/wld
 
-    prop mtm <ref %tilemap \ main tilemap
-    prop mts <ref %tileset \ main tileset
+    prop mtm :ref %tilemap \ main tilemap
+    prop mts :ref %tileset \ main tileset
     
-    256 prop mts-path$ <save <cstring
-    prop _room# <save <int 
+    256 prop mts-path$ <save :cstring
+    prop _room# <save :int 
 
 class;
 

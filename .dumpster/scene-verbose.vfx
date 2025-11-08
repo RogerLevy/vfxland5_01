@@ -10,8 +10,8 @@ class: %scene
     is-a file-asset
 
     \ scene properties
-    256 nprop scene-name <cstring <save
-    prop actor-count <int <save
+    256 nprop scene-name :cstring <save
+    prop actor-count :int <save
 
     \ Runtime actor storage
     variable actors-data     \ Pointer to serialized actor data

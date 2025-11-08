@@ -15,22 +15,22 @@ class: %actor
     /actor field-space
 
     prop en
-    prop x <fixed <save
-    prop y <fixed <save
-    prop vx <fixed <save prop vy <fixed <save 
+    prop x :fixed <save
+    prop y :fixed <save
+    prop vx :fixed <save prop vy :fixed <save 
     
     \ hitbox 1
-    prop x1 <int <save prop y1 <int <save 
-    prop w1 <int <save prop h1 <int <save 
+    prop x1 :int <save prop y1 :int <save 
+    prop w1 :int <save prop h1 :int <save 
     
-    prop beha <xt
-    prop phys <xt
-    prop time <fixed                \ secs
+    prop beha :xt
+    prop phys :xt
+    prop time :fixed                \ secs
     prop n1 prop n2 prop n3 prop n4 \ General purpose props (legacy)
-    prop prio <int <save            \ 0 = behind BG, <>0 = in front of BG
+    prop prio :int <save            \ 0 = behind BG, <>0 = in front of BG
     prop benched                    \ controls behavior and physics    
-    prop id <int <save
-    24 nprop tag$ <cstring <save
+    prop id :int <save
+    24 nprop tag$ :cstring <save
 
     template { -1 id ! }
 
