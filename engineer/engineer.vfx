@@ -210,8 +210,8 @@ include %idir%/ls.vfx
     ."  ~~~ Engineer v2 (regress) ~~~ " cr
     frigid 
 \    init-ide
-    zcommand zcount strip-exe interpret-string \ ide-interpret
-    ?dup if .throw else ( go ) then 
+    \ zcommand zcount strip-exe interpret-string \ ide-interpret
+    \ ?dup if .throw else ( go ) then 
     >vfx ;
 
 ' engineer-entrypoint is EntryPoint
