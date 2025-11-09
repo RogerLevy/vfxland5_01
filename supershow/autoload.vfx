@@ -64,3 +64,32 @@ class: %tileset
     :: on-startup ( - )
         _slice-tileset ;
 class;
+
+class: %sample
+    %asset derive
+    is-a %autoload
+    prop id :int
+    prop alsmp
+
+    : does-sample ( - ) 
+        does> -> id @ sound ;
+
+    : _load-alsmp ( - alsmp )
+        me data@ memfile@ dup
+            z" .ogg" al_load_sample_f alsmp !
+        -memfile ;
+
+    : sample ( <path> - ) ( - )
+        \ oggs only for now
+        bl parse 2dup 
+        -path -ext f" *%s*" %sample asset does-sample { 
+            ( fp len ) _embed
+            _load-alsmp
+            alsmp @ add-sample id !
+        } ;
+
+    :: on-startup ( - )
+        _load-alsmp 
+        alsmp @ id @ set-sample ;
+
+class;

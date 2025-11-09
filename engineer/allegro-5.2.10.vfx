@@ -589,7 +589,7 @@ extern "C" void * al_load_bitmap_flags( void * filename, int flags );
 \ extern "C" al_load_config_file_f( );
 extern "C" void * al_load_font( void * filepath, int size, int flags );
 extern "C" void * al_load_sample( void * filepath );
-\ extern "C" al_load_sample_f( );
+extern "C" al_load_sample_f(void * fp, void * ident);
 extern "C" void * al_load_ttf_font( void * zstr, int size, int flags );
 \ extern "C" al_load_ttf_font_f( );
 \ extern "C" al_load_ttf_font_stretch( );

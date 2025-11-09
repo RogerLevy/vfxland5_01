@@ -39,9 +39,12 @@ defer voice? ( smp - f )
 || : chokes-itself ( smp - )
    sample[] cell+ cell+ cell+ on ;
 
-|| : +sample ( allegro-sample - smp )
+: add-sample ( alsmp - smpid )
     next-smp# @ 1 next-smp# +!
     dup >r sample[] !  r@ chokes-itself  r> ;
+
+: set-sample ( alsmp smpid - )
+    sample[] ! ;
 
 \ =============================================================================
 \ Playback
@@ -75,7 +78,7 @@ defer voice? ( smp - f )
 || : does-sample  does> @ ;
 
 || : add-sample-asset ( a n - ) \ filename
-    2dup load-sample +sample ( smp ) >r
+    2dup load-sample add-sample ( smp ) >r
         -path screate  r> , 
     does-sample
     *sample* ; 
