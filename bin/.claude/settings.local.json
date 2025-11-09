@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell.exe -Command \"Add-Type -TypeDefinition ''using System; using System.Runtime.InteropServices; public class K32 { [DllImport(\"\"kernel32.dll\"\", SetLastError=true)] public static extern IntPtr LoadLibrary(string path); [DllImport(\"\"kernel32.dll\"\")] public static extern uint GetLastError(); }''; $h = [K32]::LoadLibrary(''C:\\Users\\roger\\Desktop\\dev\\vfxland5_starling\\vfxland5_01\\bin\\allegro_monolith-5.2.dll''); if ($h -eq 0) { $e = [K32]::GetLastError(); Write-Host \"\"Failed to load. Error code: $e\"\" } else { Write-Host \"\"Loaded successfully at: $h\"\" }\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

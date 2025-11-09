@@ -32,3 +32,12 @@ diff.txt
 /main.vfx
 
 rel
+bin/Release/
+
+bin/Debug/
+
+*.idb
+
+textmode/Debug/
+
+textmode/Release/

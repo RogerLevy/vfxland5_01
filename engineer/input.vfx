@@ -2,6 +2,8 @@
 \ Polled input
 \ =============================================================================
 
+redef : al_key_down \ fix bug in 5.2.10.1
+    al_key_down 0<> 1 and ;
 : held? ( n - flag )  kbs0 swap al_key_down 0<> ;
 : kdelta ( - n )  dup kbs0 swap al_key_down kbs1 rot al_key_down - ;
 : pressed? ( n - flag )  kdelta 1 = ;
@@ -51,6 +53,6 @@ create the-event /ALLEGRO_EVENT allot&erase
 
 || create kbs2  /ALLEGRO_KEYBOARD_STATE allot
 : save-kb  kbs0 kbs2 /ALLEGRO_KEYBOARD_STATE move ;
-: erase-kb  kbs0 /ALLEGRO_KEYBOARD_STATE erase ;
+: erase-kb  kbs0 al_clear_keyboard_state ;
 : restore-kb  kbs2 kbs0 /ALLEGRO_KEYBOARD_STATE move ;
 : -keys  reset-keyboard ;

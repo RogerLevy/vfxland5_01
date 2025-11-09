@@ -40,8 +40,13 @@ typedef struct ALLEGRO_LOCKED_REGION {
 // Initialize Allegro function pointers
 static int init_allegro_functions() {
     if ( allegro_dll != NULL ) return 1; // Already initialized
-    
-    allegro_dll = LoadLibraryA( "allegro_monolith-5.2.dll" );
+
+    #ifdef _DEBUG
+        allegro_dll = LoadLibraryA( "allegro_monolith-debug-5.2.dll" );
+    #else
+        allegro_dll = LoadLibraryA( "allegro_monolith-5.2.dll" );
+    #endif
+
     if ( !allegro_dll ) {
         return 0; // Failed to load DLL
     }

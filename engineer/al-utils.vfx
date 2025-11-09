@@ -48,9 +48,12 @@ create mi /ALLEGRO_MONITOR_INFO allot&erase
 public
 
 : reset-keyboard  ( -- )
-    kbs0 /ALLEGRO_KEYBOARD_STATE erase
-    kbs1 /ALLEGRO_KEYBOARD_STATE erase
-    al_uninstall_keyboard  al_install_keyboard drop
+    kbs0 @ if \ check for display pointer
+        kbs0 al_clear_keyboard_state 
+        kbs1 al_clear_keyboard_state
+    then
+    al_uninstall_keyboard  
+    al_install_keyboard drop
     queue al_get_keyboard_event_source al_register_event_source ;
 
 : init-allegro  ( -- )    
@@ -92,6 +95,8 @@ public
     
     display-flags
         fullscreen? if ALLEGRO_FULLSCREEN_WINDOW or then
+        
+        ALLEGRO_GENERATE_EXPOSE_EVENTS or
         al_set_new_display_flags
     
     winw winh al_create_display to display
