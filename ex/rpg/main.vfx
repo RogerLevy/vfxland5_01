@@ -36,8 +36,7 @@ redef : main
         step 
     show> 
         0 0 at  owtest01.scn -> tm-main @ draw  
-        sprites animate 
-        16 ms ;
+        sprites animate ;
 
 \ Load tools and run tests
 debug @ [if]
