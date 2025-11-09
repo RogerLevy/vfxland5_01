@@ -70,19 +70,21 @@ class: %sample
     is-a %autoload
     prop id :int
     prop alsmp
+    16 nprop ident :cstring
 
     : does-sample ( - ) 
         does> -> id @ sound ;
 
     : _load-alsmp ( - alsmp )
         me data@ memfile@ dup
-            z" .ogg" al_load_sample_f alsmp !
+            ident count >zpad al_load_sample_f alsmp !
         -memfile ;
 
     : sample ( <path> - ) ( - )
         \ oggs only for now
         bl parse 2dup 
-        -path -ext f" *%s*" %sample asset does-sample { 
+        -path -ext f" *%s*" %sample asset does-sample {
+            2dup '.' ending -1 /string ident place 
             ( fp len ) _embed
             _load-alsmp
             alsmp @ add-sample id !
