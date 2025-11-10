@@ -65,19 +65,19 @@ crucial test: reasonable-length ( n -- n n:result )
 
 : check-reasonable-size ( n -- n n:result )  
     \ Colon equivalent of reasonable-size validator
-    dup 0 268435456 within 0= if
+    dup 0 256 mb within 0= if
         0 s" Excessive buffer size (>256MB)" log-error exit
     then    \ Max 256MB (256 * 1024 * 1024)
-    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
-    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+    dup 32 mb u<= else-warn 
+    dup 0> if s" Large buffer size (>32MB)" log-warning then ;
 
 : check-reasonable-allocation ( n -- n n:result )
     \ Colon equivalent of reasonable-allocation validator  
-    dup 0 268435456 within 0= if
+    dup 0 256 mb within 0= if
         0 s" Excessive buffer size (>256MB)" log-error exit
-    then    \ Max 256MB (256 * 1024 * 1024)
-    dup 16777216 u<= else-warn \ Warn over 16MB (16 * 1024 * 1024)
-    dup 0> if s" Large buffer size (>16MB)" log-warning then ;
+    then    
+    dup 32 mb u<= else-warn 
+    dup 0> if s" Large buffer size (>32MB)" log-warning then ;
 
 : check-valid-char ( n -- n n:result )
     \ Colon equivalent of valid-char validator
@@ -268,7 +268,7 @@ crucial test: check-allot-size ( n -- n n:result )
     \ Validate allot size
     {: | size-result space-result :}
     check-reasonable-size to size-result
-    size-result 0 >= if s" Invalid allocation size" log-error then
+    \ size-result 0 >= if s" Large allocation size" log-warning then
     dup unused <= to space-result             \ Check available space
     space-result 0= if s" Insufficient memory space" log-error then
     size-result space-result and ;
