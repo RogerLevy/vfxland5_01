@@ -575,7 +575,7 @@ extern "C" bool al_is_sub_bitmap( void * bitmap );
 \ extern "C" al_itofix( );
 \ extern "C" al_join_paths( );
 \ extern "C" al_join_thread( );
-extern "C" int al_key_down( void * state, int keycode );
+extern "C" bool al_key_down( void * state, int keycode );
 \ extern "C" al_keycode_to_name( );
 extern "C" void * al_load_audio_stream( void * filepath, int bufs, int bufsize );
 \ extern "C" al_load_audio_stream_f( );
