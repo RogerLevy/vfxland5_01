@@ -74,7 +74,8 @@ class;
 : takeout ( - )
     temps>   belong? -exit   me unstash ;
 
-borrow scene: actor-instance
+borrow scene>> actor-instance
+
 || : temp-instance ( class - %actor )
     actor-instance stashed ;
 

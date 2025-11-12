@@ -213,6 +213,8 @@ include %idir%/ls.vfx
     zcommand zcount strip-exe ide-interpret
     ?dup if .throw >vfx else go then ;
 
+include %idir%/back.vfx           \ Backward compatibility shim
+
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
 borrow nib2>> gild-nib

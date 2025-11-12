@@ -5,6 +5,8 @@ redef aka ]] }
 
 aka >. >p
 aka .> >i 
+aka 2>. 2>p
+aka 2.> 2>i
 aka 1i pfloor
 
 aka file@ load-file

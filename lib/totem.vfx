@@ -87,7 +87,7 @@ trait;
     else 
         class0 path len -path 
         \ ." Materializing " 2dup type cr
-        $object
+        screate instance 
         dup class0 -> instances add-to
     then 
     { 

@@ -108,6 +108,10 @@ include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
     then 
     show> sprites step ;
 
+
+\ Backward compatibility
+include %idir%/back.vfx
+
 init-supershow
 
 : boot-supershow ( - )
@@ -128,6 +132,3 @@ debug @ [if]
     include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
     s" sketchpad" <f12> func
 [then]
-
-\ Backward compatibility
-include %idir%/back.vfx
