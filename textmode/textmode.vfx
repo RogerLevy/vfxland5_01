@@ -1,4 +1,9 @@
-library: textmode_renderer.dll
+\ debug @ [if]
+\ See vfxcore2.vfx for why it's debug-only
+    library: textmode_renderer_debug.dll
+\ [else]
+    \ library: textmode_renderer.dll
+\ [then]
 
 extern "C" void draw_textmode_buffers( void * font, void * chars,
     void * fg_colors, void * bg_colors, int cols, int rows, float x, float y, float line_spacing );  \ "
