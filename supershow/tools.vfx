@@ -40,7 +40,7 @@ cstring update-name$
     else
         update-name$ count f" ?hone scripts\%s.vfx" >hone
     then
-    class0 init-by-class
+    me { class0 init-by-class }
     update-name$ count f" %s/" sprivate ;
 
 : .actors ( - )
