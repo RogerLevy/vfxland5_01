@@ -1,0 +1,17 @@
+\ Recognizer to strip trailing backticks
+
+: rec-backtick  ( c-addr u -- i*x rectype )
+  \ Require non-empty string
+  dup 0= if  2drop r:fail exit  then
+  
+  \ Check if last character is a backtick
+  2dup + 1- c@ [char] ` <> if
+    2drop r:fail exit
+  then
+  
+  \ Strip the backtick and recursively recognize
+  1- forth-recognizer recognize
+;
+
+\ Install at bottom of recognizer stack (safest)
+' rec-backtick forth-recognizer +stack-bot
