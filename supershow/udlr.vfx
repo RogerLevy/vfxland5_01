@@ -7,6 +7,11 @@ public
 2 constant left
 3 constant down
 
+$08 constant BIT_FLR
+$04 constant BIT_CEL
+$02 constant BIT_WLT
+$01 constant BIT_WRT
+
 class: %actor
     prop fac :int <save
 class;
