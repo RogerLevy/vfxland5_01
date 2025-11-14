@@ -1,9 +1,0 @@
-: do-tc
-    {: arr :}
-    arr #items for
-        i arr [] @ catch drop
-    loop ;
-
-: create-tc  create does> do-tc ;
-: tc:  create-tc cell array{ ;
-: tc;  array} drop ;
