@@ -80,7 +80,10 @@ aka tile>bmpid tile
 
 || 0 value lm
 || : nr ( - ) lm pen y@ gap + at ;
-|| : put+ ( bmpid - ) pile @ + put gap 0 +at ;
+|| : put+ ( bmpid - ) 
+    dup $FFFFFFFF = if drop 
+    else pile @ + put then
+    gap 0 +at ;
 
 : >lmargin ( - ) 
     pen x@ to lm ;
