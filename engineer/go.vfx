@@ -71,7 +71,7 @@ redef : event? ( - f )
     poll ;
 
 || : ?quit
-    <esc> pressed? esc-quits @ and if
+    <esc> pressed? shift? not and esc-quits @ and if
         going off 
         fullscreen? if windowed winmode then
         >vfx
