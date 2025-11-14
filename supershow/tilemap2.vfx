@@ -143,7 +143,10 @@ class;
 || 0 value lm
 : >lmargin ( - ) pen x@ to lm ;
 || : nr ( - ) lm pen y@ gap + at ;
-|| : put+ ( bmpid - ) pile @ + put gap 0 +at ;
+|| : put+ ( bmpid - ) 
+    dup $FFFFFFFF = if drop 
+    else pile @ + put then
+    gap 0 +at ;
 
 : tiles ( a n - 'a ) 
     >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
