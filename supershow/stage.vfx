@@ -48,7 +48,7 @@ class;
 : actor[] ( n - %actor ) actors [] ;
 : actor# ( %actor - n ) -> id @ ;
 continuation: act> ( - ) ( - ) 0 time !  ( xt ) beha ! ; 
-continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
+\ continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
 continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 
 : exists? ( %actor - f )
@@ -276,7 +276,7 @@ c: %timer %actor xt1 dur ;
     actives> me %timer is? -exit me unload ;
 
 || : act-timer
-    act&> dur @ passed? -exit me unload xt1 @ >r ;
+    act> dur @ passed? -exit me unload xt1 @ >r ;
     
 || : (timer) ( time. xt -- )
     xt1 ! 0 max dur ! act-timer ;
