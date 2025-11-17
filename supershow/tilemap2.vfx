@@ -118,7 +118,7 @@ global-metas 0 i>a constant metas
 
 : load-metas ( fp len tileset - )
     \ load tile metas from a binary file directly into the global table
-    { global-metas baseid @ i>a` #tiles @ cells` 2swap find-dat-path read } ; 
+    { global-metas baseid @ i>a` #tiles @ cells` 2swap read } ; 
 
 : tileset>metas ( tileset - ) 
     \ copy tile metas that have been stored in a tileset into the global table
