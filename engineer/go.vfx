@@ -8,7 +8,7 @@
     need-pump on ;
     
 continuation: show> ( - ) ( - )
-    ( xt ) 'show ! cls ; 
+    ( xt ) 'show ! ; 
 
 : poll ( - )
     poll-keyboard  
