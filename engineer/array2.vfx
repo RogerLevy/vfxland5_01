@@ -44,9 +44,9 @@ trait;
     r> (enough) !
     throw ;
 
-: n[] ( n. iterable - a )
+: r[] ( n. iterable - a )
     \ Index into iterable based on a value in range 0 ~ 1.0
-    \ pronounced "n-box"
+    \ pronounced "r-box"
     dup >r -> item-count @ 1 - p* r> [] ;
 
 \ Essential queries:

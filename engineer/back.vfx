@@ -47,3 +47,5 @@ aka <cstring :cstring
 aka <xt :xt
 aka <addr :addr
 aka <ref :ref
+
+aka n[] r[]
