@@ -1,5 +1,5 @@
 : each-file ( path:a n xt - ) ( path n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
+    -rot expand >zpad al_create_fs_entry locals| e xt |
     e al_open_directory if
         begin  e al_read_directory ?dup while
             >r 
@@ -15,7 +15,7 @@
     e al_destroy_fs_entry ;
 
 : each-file-and-dir ( path:a n xt - ) ( path n - )
-    -rot >zpad al_create_fs_entry locals| e xt |
+    -rot expand >zpad al_create_fs_entry locals| e xt |
     e al_open_directory if
         begin  e al_read_directory ?dup while
             >r 
