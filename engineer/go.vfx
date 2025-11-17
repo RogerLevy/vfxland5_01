@@ -94,8 +94,8 @@ redef : event? ( - f )
 : process-tick ( xt - )
     {: xt :}
     update-delta 
-    system-controls  \ process system controls after presenting last frame
     poll ?reload-shift pump 
+    system-controls
     xt draw-tv ;
 
 : frame ( - ) 
