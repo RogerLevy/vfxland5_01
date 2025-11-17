@@ -74,13 +74,12 @@ class;
 : takeout ( - )
     temps>   belong? -exit   me unstash ;
 
-borrow scene: actor-instance
-|| : temp-instance ( class - %actor )
-    actor-instance stashed ;
+: temp-instance ( class - %actor )
+    instance stashed ;
 
-: load&stow ( scene - )
-    \ load actors from disk to temps
-    as> desbin> ['] into-me desbin+  ['] temp-instance desmulti+ ;
+\ : load&stow ( scene - )
+\     \ load actors from disk to temps
+\     as> desbin> ['] into-me desbin+  ['] temp-instance desmulti+ ;
 
 \ =============================================================================
 \ Room control
