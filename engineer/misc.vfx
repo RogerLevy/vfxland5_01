@@ -23,6 +23,8 @@ aka cd cwd
 : pagealign ( - )  here $ff and 256 swap - allot ;
 : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
 : ?execute ( xt - ) ?dup -exit >r ;
+: & ( <word> - a ) ' >body ;
+: [&] ( <word> - a ) & postpone literal ; immediate
 
 : screate ( name len - ) ( - a )
     {: | name$[ 256 ] :} name$[ place name$[ $create ;
