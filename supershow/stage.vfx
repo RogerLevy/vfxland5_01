@@ -204,8 +204,11 @@ variable next#
         next# @ 1 + #actors mod next# !
     loop  -1 abort" one : Out of actors." ;
 
+: stage-instance ( class - actor )
+    stage-slot swap over construct ;
+
 : one ( class - actor )
-    stage-slot swap over construct dup stage-init ;
+    stage-instance dup stage-init ;
     
 : *actor ( - %actor )
     %actor one ;
@@ -232,7 +235,7 @@ variable next#
 : *{ ( class - <code> } )
     \ Parse-ahead instantiation for serialized objects/actors
     \ Allows property settings between *{ } that can be picked up by INIT
-    s" (one) { " evaluate
+    s" stage-instance { " evaluate
     ']' parse' evaluate  1 >in +!
     s" me init }" evaluate ; immediate
 
