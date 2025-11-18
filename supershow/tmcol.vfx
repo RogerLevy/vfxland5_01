@@ -8,10 +8,6 @@
 \ ------------------------------------------------------------------------------
 public
 
-0 value lwall?
-0 value rwall?
-0 value floor?
-0 value ceiling?
 \ 0 value unhit?
 
 \ ------------------------------------------------------------------------------
@@ -115,7 +111,7 @@ defer hit ( f: x y - f: x y )
 : init
     px vx fs@ f+ to nx
     py vy fs@ f+ to ny
-    0 to lwall?  0 to rwall?  0 to floor?  0 to ceiling? ;
+    clear-collision-state ;
 
 : ftil  fdup fgap fmod f- ;
 

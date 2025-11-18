@@ -12,6 +12,13 @@ $04 constant BIT_CEL
 $02 constant BIT_WLT
 $01 constant BIT_WRT
 
+0 value lwall?
+0 value rwall?
+0 value floor?
+0 value ceiling?
+
+: clear-collision-state 0 to lwall?  0 to rwall?  0 to floor?  0 to ceiling? ;
+
 class: %actor
     prop fac :int <save
 class;
