@@ -67,7 +67,7 @@ redef : event? ( - f )
 
 || : ?idle ( - ) debug @ if (EmptyIdle) then ;
 
-: refresh ( - )
+: present ( - )
     ?idle spin display al_flip_display ;
 
 || : ?quit
@@ -91,16 +91,17 @@ redef : event? ( - f )
 
 \ || : screen ( - ) debug @ if draw-ide else ['] draw-game draw-tv then ;
 
-: process-tick ( xt - )
-    {: xt :}
-    update-delta 
+: process-input ( - )
     poll ?reload-shift pump 
-    system-controls
-    xt draw-tv ;
+    system-controls ;
+
+: process-tick ( xt - )
+    update-delta draw-tv ;
 
 : frame ( - ) 
+    process-input
     ['] draw-game process-tick 
-    refresh ;
+    present ;
 
 extern BOOL SetThreadPriority( hthread, priority );
 
