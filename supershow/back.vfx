@@ -5,3 +5,4 @@ aka tileset %tileset
 aka +tileset tileset-from
 aka actor %actor
 aka act&> act>
+aka floating -collisions
