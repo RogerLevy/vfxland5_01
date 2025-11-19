@@ -23,6 +23,9 @@ variable catchup
         1 catchup ! \ process the game logic an extra time after presenting
     then ;
 
+\ If called in the same function, call in this order: show> then work>
+\ Otherwise you'll get visual glitches.
+
 : work> ( <code;> - )
     r> gamemode @ -> beha ! show> supershow ;
 
