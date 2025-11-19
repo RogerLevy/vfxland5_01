@@ -51,4 +51,4 @@ continuation: batch>  begin-batch  ( xt ) catch  end-batch  throw ;
 \ Blank the screen
 \ =============================================================================
 
-redef : blank 'show @ ['] noop 'show ! 10 for frame loop 'show ! ;
+redef : blank  ." blank" cr 10 for cls present loop ;
