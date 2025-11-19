@@ -68,8 +68,11 @@ class;
 : persist ( - )
     -1 r# ! ;
 
-: stow ( - )
+: _stow ( - )
     actives>   r# @ -2 = if me unload else me stash then ;
+
+: stow ( - )
+    _stow sweep ;
 
 : takeout ( - )
     temps>   belong? -exit   me unstash ;
