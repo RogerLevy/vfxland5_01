@@ -49,6 +49,7 @@ class: %bitmap
         } ;
 
     :: on-startup ( - )
+        ." Loading bitmap " me .name cr
         _load-albmp ;
 class;
 
@@ -62,7 +63,8 @@ class: %tileset
         } ;
 
     :: on-startup ( - )
-        _slice-tileset ;
+        ." Slicing tileset " me .name cr 
+        me update-tileset ;
 class;
 
 class: %sample
@@ -91,6 +93,7 @@ class: %sample
         } ;
 
     :: on-startup ( - )
+        ." Loading sample " me .name cr
         _load-alsmp 
         alsmp @ id @ set-sample ;
 

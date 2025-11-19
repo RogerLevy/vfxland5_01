@@ -1,6 +1,6 @@
 65536 ?constant #bitmaps
 
-|| #bitmaps cell array bitmaps
+#bitmaps cell array bitmaps
 
 || : bitmap[]  $FFFF and bitmaps swap i>a ;
 
@@ -24,7 +24,7 @@ class;
 \ : ?nullbmp  dup 0= abort" BITMAP-FILE : Bitmap is null!" ;
 \ : ?subbmp  dup al_is_sub_bitmlap if al_get_parent_bitmap then ;
 
-: bitmap-from ( albmp - bitmap )
+: wrap-bitmap ( albmp - bitmap )
     %bitmap instance { albmp ! me } ;
 
 : bitmap-file ( bmpid - a n ) 

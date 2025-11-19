@@ -18,7 +18,7 @@ if "%1"=="--help" (
 )
 
 @echo on
-set "PATH=%~dp0\..\bin;%PATH%"
+set "PATH=%~dp0..\bin;%PATH%"
 
 mkdir ..\rel\%1
 mkdir ..\rel\%1-debug
