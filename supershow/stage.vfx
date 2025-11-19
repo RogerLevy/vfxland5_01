@@ -237,7 +237,7 @@ variable next#
     ']' parse' evaluate  1 >in +!
     s" me init }" evaluate ; immediate
 
-: passed? ( n - f ) time @ <= dup if 0 time ! then ;
+: passed? ( n. - flag ) time @ <= dup if 0 time ! then ;
 
 : from ( %actor x y - ) rot as> x 2@ 2>i 2+ at  ; \ me actor# priority ;
 

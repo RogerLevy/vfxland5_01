@@ -96,10 +96,11 @@ redef : event? ( - f )
     system-controls ;
 
 : process-tick ( xt - )
-    update-delta draw-tv ;
+    draw-tv ;
 
 : frame ( - ) 
     process-input
+    update-delta
     ['] draw-game process-tick 
     present ;
 

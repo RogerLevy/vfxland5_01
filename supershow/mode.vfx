@@ -8,13 +8,16 @@ variable gamemode  default-mode gamemode !
 variable catchup
 
 : process-work ( - )
-    gamemode @ -> beha @ process-tick ;
+    gamemode @ -> beha @ ?execute ;
 
 : process-show ( - )
     gamemode @ -> drw @ ?execute ;
 
 : supershow ( - )
-    catchup @ if catchup off  process-input  process-work then
+    catchup @ if 
+        catchup off  
+        process-input update-delta process-work 
+    then
     [: process-work process-show ;] time-xt n>f 
     1e tps f/ 1000000e f* f>= if \ frame took more than a system tick
         1 catchup ! \ process the game logic an extra time after presenting
