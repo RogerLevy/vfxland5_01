@@ -35,6 +35,8 @@ class: %actor
     template { -1 id ! }
 
     static autoclass                \ flag
+
+    prop unloaded
 class;
 
 #actors %actor object-array actors 
@@ -134,14 +136,6 @@ fast}
 || : (step) ( - )
     (behave) (move) (+time) ;
 
-: step ( - )
-    hold @ ?exit
-    ['] (step) catch
-    ?dup if
-        hold on
-        .throw \ dup .throw .catch 
-    then ;
-
 \ =============================================================================
 \ Find actors
 \ =============================================================================
@@ -181,7 +175,17 @@ variable next#
     0 #actors 1 - clamp next# ! ;
 
 %actor :: unload ( - )
-    en off  ; 
+    unloaded on ; 
+
+: sweep ( - )
+    actives> unloaded @ -exit en off ;
+
+: step ( - )
+    hold @ ?exit
+    ['] (step) catch
+    sweep
+    ?dup if hold on .throw then 
+;
 
 : clear-stage ( - )
     0 next# !  actives>  me unload ;
@@ -348,3 +352,5 @@ fast}
 : find-class ( a len - class | %actor )
     ?-% f" %%%s"
     >pad find if execute else drop %actor then ;
+
+
