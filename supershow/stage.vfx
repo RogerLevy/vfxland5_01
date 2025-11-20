@@ -187,8 +187,11 @@ variable next#
     ?dup if hold on .throw then 
 ;
 
-: clear-stage ( - )
+: _clear-stage ( - )
     0 next# !  actives>  me unload ;
+
+: clear-stage ( - )
+    _clear-stage sweep ;
 
 : just ( - )
     ." JUST : Clearing all actors!" cr
