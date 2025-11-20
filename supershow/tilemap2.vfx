@@ -109,7 +109,7 @@ aka tile>bmpid tile
 
 #bitmaps cell array global-metas
 global-metas 0 i>a constant metas
-: meta ( tile# - n ) pile @ + cells metas + @ ;
+: meta ( tile# - n ) 65535 and pile @ + cells metas + @ ;
 : collectible?  meta $20 and 0<> ;
 : destructible?  meta $80 and 0<> ;
 : solid?  meta $0F and $0F = ;
