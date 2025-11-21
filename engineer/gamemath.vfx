@@ -12,7 +12,7 @@ aka d! 2!
 : 2@ dup @ swap 4 + @ ;
 : 2! dup >r 4 + ! r> ! ;
 : 2+! dup >r 4 + +! r> +! ;
-: 2, swap , , ;
+\ : 2, swap , , ;
 \ redef : 2+  rot + >r + r> ;
 \ redef : 2-  rot swap - >r - r> ;
 redef : 2*  rot * >r * r> ;

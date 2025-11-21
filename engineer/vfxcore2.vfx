@@ -14,6 +14,7 @@ only forth definitions
 \ =============================================================================
 
 include %idir%/backtick.vfx       \ Ignore trailing backticks; like commas in C
+include %idir%/comma.vfx          \ Experimental comma version of same
 include %idir%/misc.vfx           \ Miscellaneous utility words / core extensions
 include %idir%/ec.vfx             \ Execution context support
 include %idir%/scope.vfx          \ Per-file public/private words; search order stack
