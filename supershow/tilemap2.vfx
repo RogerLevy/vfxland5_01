@@ -1,6 +1,6 @@
 1 constant TILESET_FORMAT_VERSION
 
-variable pile
+cell ecfield pile
 
 class: %tileset
     %asset derive

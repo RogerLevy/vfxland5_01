@@ -1,0 +1,46 @@
+\ Execution context
+\ Note: We can't use the USER variable system (long story)
+
+[defined] fast{ [if] fast{ [then]
+
+aligned-page ecs
+variable ecsp ecs ecsp !
+0 value s/ec
+0 value cp@
+
+: c{ ( ec - )
+    cp@ ecsp @ !  to cp@  4 ecsp c+! ;
+
+: c} ( - )
+    -4 ecsp c+!  ecsp @ @ to cp@ ;
+
+: ecfield ( n <name> - )
+    create s/ec , +to s/ec does> @ cp@ + ;
+
+: econtext ( <name> - )
+    create 256 allot&erase ;
+
+econtext default-ec  default-ec to cp@
+
+\ Temporary contexts
+aligned-page tcs  15 256 * allot&erase  
+variable tcsp  tcs tcsp !
+
+: t{ 
+    tcsp @ dup c{
+    tcs - 256 + 4095 and tcs + tcsp ! ;
+
+: t} 
+    c}
+    tcsp @ tcs - 256 - 4095 and tcs + tcsp ! ;
+
+\ Tests
+\ cell ecfield fnt  123 fnt !
+\ cell ecfield fore 456 fore !
+\ cell ecfield pile 789 pile !
+
+\ econtext test-ec
+\ : test  test-ec c{ -1 fore ! fore ? c} fore ? ; 
+\ : test2  t{ -1 fore ! fore ? t} fore ? ; 
+
+[defined] fast} [if] fast} [then]

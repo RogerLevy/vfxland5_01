@@ -55,25 +55,24 @@ GetForegroundWindow value vfx-hwnd
 
 \ Color
 
-|| create fg  1e sf, 1e sf, 1e sf, 1e sf, 
-create pen 0 , 0 , \ int
+4 cells ecfield fore
+2 cells ecfield pen
 
-: fcolor ( f:r f:g f:b f:a - )
-    fg 4f! ;
+: frgba ( f:r f:g f:b f:a - )
+    fore 4f! ;
+1e 1e 1e 1e frgba
+
+: rgba ( n - )  
+    c>f 8 << c>f 8 << c>f 8 << c>f drop frgba ;
 
 \ Palette
-
 include %idir%/vga13h.vfx
-
-|| : c>f  dup 24 >> s>f 255e f/ ;
-|| : (color)  c>f 8 << c>f 8 << c>f 8 << c>f drop fcolor ;
 
 : color ( n - )
     \ Indexed color selection
-    255 and cells vga13h + @ 8 << $ff or (color) ;
+    255 and cells vga13h + @ 8 << $ff or rgba ;
 
 \ Position
-
 : at ( x y - ) pen 2! ;
 : at@ ( - x y ) pen 2@ ;
 : at@f ( - f:x f:y ) at@ 2s>f ;
@@ -145,8 +144,9 @@ variable line-spacing  8 line-spacing !
     s" %idir%\builtin\gfx\vga2_8x8_allegro5.png" file,
 || here swap - constant /bg.png
 
+cell ecfield fnt
+
 || create range(s) 0 , 255 ,
-|| : font@  vga-8x8 ;
 
 \ Text rendering
 
@@ -155,7 +155,7 @@ variable line-spacing  8 line-spacing !
     over 0= if 3drop exit then 
     >r zstr[ zplace  zstr[ r> s>f f>ds   
     line-spacing @ s>f f>ds to lh to w to z 
-    font@  fg 4f@  at@f w lh 0 z al_draw_multiline_text ;
+    fnt @  fore 4f@  at@f w lh 0 z al_draw_multiline_text ;
 
 : print ( a len - )
     winw pen x@ - mltext ;
@@ -167,10 +167,10 @@ variable line-spacing  8 line-spacing !
 
 : textw ( a n - n )
     {: | zstr[ 4096 ] :}
-    zstr[ zplace  zstr[  font@  swap  al_get_text_width ;  
+    zstr[ zplace  zstr[  fnt @  swap  al_get_text_width ;  
 
 : glyph ( n - )
-    >r  font@ fg 4f@ at@f  r> al_draw_glyph ;
+    >r  fnt @ fore 4f@ at@f  r> al_draw_glyph ;
 
 \ Init
 
@@ -179,6 +179,7 @@ variable line-spacing  8 line-spacing !
     r@ 0 al_load_bitmap_f
     r> al_fclose drop
         1 range(s) al_grab_font_from_bitmap
-        to vga-8x8 ;
+        to vga-8x8 
+        vga-8x8 fnt ! ;
 
 \ include %idir%/../textmode/textmode.vfx

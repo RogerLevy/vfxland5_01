@@ -25,6 +25,9 @@ aka cd cwd
 : ?execute ( xt - ) ?dup -exit >r ;
 : & ( <word> - a ) ' >body ;
 : [&] ( <word> - a ) & postpone literal ; immediate
+aka << lshift
+aka >> rshift
+: c>f  dup 24 >> s>f 255e f/ ;
 
 : screate ( name len - ) ( - a )
     {: | name$[ 256 ] :} name$[ place name$[ $create ;
