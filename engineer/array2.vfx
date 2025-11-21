@@ -12,7 +12,7 @@ trait: %iterable
     :: redim ( #items - ) stub ;
 trait;
 
-: i>a ( iterable i - a ) swap index>slot ; 
+: slot ( iterable i - a ) swap index>slot ; 
 : []@ ( iterable i - val ) swap index>val ;
 : []! ( n iterable i - ) swap store-at ;
 : #items ( iterable - n ) -> item-count @ ;

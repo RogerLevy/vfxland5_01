@@ -351,7 +351,7 @@ variable sosp   search-order-stack sosp ! \ object stack pointer
         '"' parse >syspad >shout
     then ; immediate
 
-: cutoff ( a len char - a` len` ) >r 2dup r> scan nip - ;
+: cutoff ( a len char - a' len' ) >r 2dup r> scan nip - ;
 : move, ( a len - ) dup >r here swap move r> allot ;
 
 : continuation: ( <name> - ) ( ... xt - ... )

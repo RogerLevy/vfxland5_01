@@ -108,7 +108,7 @@ aka tile>bmpid tile
 \ =============================================================================
 
 #bitmaps cell array global-metas
-global-metas 0 i>a constant metas
+global-metas 0 slot constant metas
 : meta ( tile# - n ) 65535 and pile @ + cells metas + @ ;
 : collectible?  meta $20 and 0<> ;
 : destructible?  meta $80 and 0<> ;
@@ -118,10 +118,8 @@ global-metas 0 i>a constant metas
 
 : load-metas ( fp len tileset - )
     \ load tile metas from a binary file directly into the global table
-    { global-metas baseid @ i>a` #tiles @ cells` 2swap read } ; 
+    { global-metas baseid @ slot` #tiles @ cells` 2swap read } ; 
 
 : tileset>metas ( tileset - ) 
     \ copy tile metas that have been stored in a tileset into the global table
     { metas-array @` global-metas` 0` me 0 tile>bmpid` #tiles @ move-range } ;
-    \ { 0 metas-array @ [] ` me 0 tile>bmpid global-metas [] `
-    \ #tiles @ cells move } ;
