@@ -16,7 +16,7 @@
     2.6e z" sharpness" float!
     640e 240e  1e 640e f/  1e 240e f/  z" sourceSize" vec4!
     1280e 960e  1e 1280e f/  1e 960e f/  z" targetSize" vec4!
-    1e z" scanstr" float!
+    0.7e z" scanstr" float!
     buf:bmp 0e 0e 0e 0e 2e 4e 0e 0 al_draw_scaled_rotated_bitmap
 ;
 
