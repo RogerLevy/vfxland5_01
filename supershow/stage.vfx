@@ -163,8 +163,11 @@ continuation: who> ( - actor|0 ) ( - f )
 
 variable next#
 
+: simple-motion
+    vx 2@ x 2+! ;
+
 : -collisions ( - )
-    physics> vx 2@ x 2+! ;
+    physics> simple-motion ;
 
 %actor template {
     en on
@@ -186,7 +189,12 @@ variable next#
     hold @ ?exit
     ['] (step) catch
     sweep
-    ?dup if hold on .throw then 
+    ?dup if 
+        \ dup -2 = if ." Silent throw (not an error)" then
+        \ else hold on then 
+        hold on
+        .throw 
+    then 
 ;
 
 : _clear-stage ( - )
@@ -280,7 +288,11 @@ redef : halt  beha off  0 0 vx 2! ;
 \ Timer actors
 \ =============================================================================
 
-c: %timer %actor xt1 dur ;
+class: %timer 
+    %actor derive 
+    prop xt1 :addr
+    prop dur :fixed 
+class;
 
 : clear-timers ( -- )
     actives> me %timer is? -exit me unload ;

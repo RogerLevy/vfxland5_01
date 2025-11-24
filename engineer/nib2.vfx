@@ -1039,9 +1039,14 @@ aka instance make  \ Backward compatibility
 
 : debug-oexec ( ... xt - ... )
     dup >r
-    catch ?dup if
-        r> swap me -> cla @ -> on-error @ execute
-        exit
+    catch 
+    dup -2 = if \ not an error - intentional bail
+        drop 
+    else
+        ?dup if
+            r> swap ( xt err ) cla @ -> on-error @ execute
+            exit
+        then
     then
     r> drop ;
     
