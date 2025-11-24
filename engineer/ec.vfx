@@ -3,13 +3,35 @@
 
 [defined] fast{ [if] fast{ [then]
 
+[defined] pagealign not [if]
+\ : pagealign ( - )  here $ff and 256 swap - allot ;
+\ : aligned-page ( - <name> )  pagealign here $100 allot&erase constant ;
+[then]
+
 aligned-page ecs
 variable ecsp ecs ecsp !
 0 value s/ec
 0 value cp@
 
 : c{ ( ec - )
-    cp@ ecsp @ !  to cp@  4 ecsp c+! ;
+    cp@ ecsp @ !
+    dup
+    s/ec 4 / 0 do
+        dup i + @ $DEADBEEF = if
+            cp@ i + @ over i + !
+        then
+        dup i + 4 + @ $DEADBEEF = if
+            cp@ i + 4 + @ over i + 4 + !
+        then
+        dup i + 8 + @ $DEADBEEF = if
+            cp@ i + 8 + @ over i + 8 + !
+        then
+        dup i + 12 + @ $DEADBEEF = if
+            cp@ i + 12 + @ over i + 12 + !
+        then
+    16 +loop
+    drop
+    to cp@ 4 ecsp c+! ;
 
 : c} ( - )
     -4 ecsp c+!  ecsp @ @ to cp@ ;
@@ -17,13 +39,17 @@ variable ecsp ecs ecsp !
 : ecfield ( n <name> - )
     create s/ec , +to s/ec does> @ cp@ + ;
 
+: sentinels,  256 cell/ 0 do $DEADBEEF , loop ;
+
 : econtext ( <name> - )
-    create 256 allot&erase ;
+    create sentinels, ;
 
 econtext default-ec  default-ec to cp@
 
 \ Temporary contexts
-aligned-page tcs  15 256 * allot&erase  
+pagealign here constant tcs
+:noname  4096 256 / for sentinels, loop ; execute
+
 variable tcsp  tcs tcsp !
 
 : t{ 
@@ -34,13 +60,42 @@ variable tcsp  tcs tcsp !
     c}
     tcsp @ tcs - 256 - 4095 and tcs + tcsp ! ;
 
+((
 \ Tests
-\ cell ecfield fnt  123 fnt !
-\ cell ecfield fore 456 fore !
-\ cell ecfield pile 789 pile !
+cell ecfield fnt
+cell ecfield fore
+cell ecfield pile
 
-\ econtext test-ec
-\ : test  test-ec c{ -1 fore ! fore ? c} fore ? ; 
-\ : test2  t{ -1 fore ! fore ? t} fore ? ; 
+\ Set default values
+123 fnt !
+456 fore !
+789 pile !
+
+econtext test-ec
+test-ec c{  -1 fore !  c}   \ pre-set test-ec's FORE to -1, leave others $DEADBEEF
+
+: inner
+    ." Inner: fnt=" fnt @ . ." fore=" fore @ . ." pile=" pile @ . cr ;
+
+: middle
+    ." Middle before: fnt=" fnt @ . ." fore=" fore @ . ." pile=" pile @ . cr
+    999 pile !  \ change pile in current context
+    inner
+    ." Middle after: fnt=" fnt @ . ." fore=" fore @ . ." pile=" pile @ . cr ;
+
+: outer
+    ." Outer before: fnt=" fnt @ . ." fore=" fore @ . ." pile=" pile @ . cr
+    test-ec c{
+    middle
+    c}
+    ." Outer after: fnt=" fnt @ . ." fore=" fore @ . ." pile=" pile @ . cr ;
+
+\ Expected output:
+\ Outer before: 123 456 789
+\ Middle before: 123 -1 789  (FORE=-1 from test-ec, FNT/PILE inherited from default)
+\ Inner: 123 -1 999  (PILE=999 set by middle)
+\ Middle after: 123 -1 999
+\ Outer after: 123 456 789  (back to default context values) 
+))
 
 [defined] fast} [if] fast} [then]
