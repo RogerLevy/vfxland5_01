@@ -114,6 +114,10 @@ fast}
     then
     sp! ;
 
+: ?actorerr  
+    catch ?dup -exit 
+    dup err_bailed = if drop exit else me bench throw then ;
+
 || : (behave) ( - )
     actives> ?benched sp@ >r behave r> restore-sp ;
 
@@ -136,7 +140,9 @@ fast}
     +gametime actives> +time ;
 
 || : (step) ( - )
-    (behave) (move) (+time) ;
+    ['] (behave) ?actorerr 
+    ['] (move) ?actorerr 
+    (+time) ;
 
 \ =============================================================================
 \ Find actors
@@ -190,8 +196,6 @@ variable next#
     ['] (step) catch
     sweep
     ?dup if 
-        \ dup -2 = if ." Silent throw (not an error)" then
-        \ else hold on then 
         hold on
         .throw 
     then 

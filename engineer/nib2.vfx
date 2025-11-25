@@ -1037,22 +1037,48 @@ aka instance make  \ Backward compatibility
 %object :: on-error ( xt err# - )
     throw ;
 
+errdef err_bailed "Word bailed."
+: bail  err_bailed throw ;
+
 : debug-oexec ( ... xt - ... )
     dup >r
     catch 
-    dup -2 = if \ not an error - intentional bail
-        drop 
+    dup err_bailed = if \ not an error - intentional bail
+        r> drop
+        throw
     else
         ?dup if
-            r> swap ( xt err ) cla @ -> on-error @ execute
+            r> swap ( xt err ) cla @ -> on-error @ execute  \ THROW by default
             exit
         then
     then
     r> drop ;
     
 debug @ [if]
-    ' debug-oexec is oexec
+    ['] debug-oexec is oexec
 [then]
+
+\ TODO: don't need to save/restore DS in optimized builds
+aligned-page estack
+variable errsp   estack errsp ! 
+: >e ( ? - ) errsp @ !  4 errsp c+! ;
+: e> ( - ? ) -4 errsp c+!  errsp @ @ ;
+
+: save-ds ( - n )
+    depth dup >r 0 ?do i pick >e loop 
+    r> >e
+    0 ; 
+
+: restore-ds ( n - )
+    drop 
+    ( throwcode ) >r s0 @ sp! e> 0 ?do e> loop r> ;
+
+: save-osp  me >e  osp @ >e ;
+: restore-osp  e> osp !  e> to me ;
+: nibs-save  save-ds save-osp ;
+: nibs-restore  restore-osp restore-ds ;
+
+['] nibs-save ['] nibs-restore extends-catch
 
 \ ==============================================================================
 \ Apply _OBJECT to other system classifiers
@@ -1079,3 +1105,4 @@ debug @ [if]
 || : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
     /static fresh-/static ! ;
+
