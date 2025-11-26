@@ -1,5 +1,6 @@
 \ Execution context
 \ Note: We can't use the USER variable system (long story)
+\ TODO: Save/restore CP and ECSP in CATCH
 
 [defined] fast{ [if] fast{ [then]
 

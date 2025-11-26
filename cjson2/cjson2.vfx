@@ -1,0 +1,156 @@
+\ New version that uses the execution context for the current CJSON object.
+
+library: cjson.dll
+
+vocabulary cjson>>
+
+public
+
+ecfield json
+
+private
+
+0 constant cJSON_Invalid
+1 constant cJSON_False
+2 constant cJSON_True
+4 constant cJSON_NULL
+8 constant cJSON_Number
+16 constant cJSON_String
+32 constant cJSON_Array
+64 constant cJSON_Object
+
+extern: void * STDCALL _cJSON_Parse@4( char * json_string );
+extern: void * STDCALL _cJSON_ParseWithLength@8( char * json_string, int buffer_length );
+extern: void * STDCALL _cJSON_GetObjectItem@8( void * json_obj, char * key );
+extern: char * STDCALL _cJSON_GetStringValue@4( void * item );
+extern: void STDCALL _cJSON_Delete@4( void * json_obj );
+extern: void * STDCALL _cJSON_CreateObject@0();
+extern: void * STDCALL _cJSON_AddStringToObject@12( void * obj, char * key, char * value );
+extern: char * STDCALL _cJSON_Print@4( void * obj );
+extern: char * STDCALL _cJSON_PrintUnformatted@4( void * obj );
+extern: char * STDCALL _cJSON_Version@0();
+extern: void STDCALL _cJSON_free@4( void * ptr );
+extern: void * STDCALL _cJSON_GetArrayItem@8( void * array, int index );
+extern: int STDCALL _cJSON_GetArraySize@4( void * array );
+extern: void * STDCALL _cJSON_AddNumberToObject@16( void * obj, char * key, double num );
+extern: double STDCALL _cJSON_GetNumberValue@4( void * item );
+extern: bool STDCALL _cJSON_AddItemToObject@12( void * obj, char * zname, void * item );
+extern: void * STDCALL _cJSON_CreateArray@0();
+extern: bool STDCALL _cJSON_AddItemToArray@8( void * array, void * item );
+extern: void * STDCALL _cJSON_CreateNumber@8( double num );
+extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
+
+: .cjson-version ( - ) _cJSON_Version@0 zcount type cr ;
+
+: parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
+: delete-json ( cjson - ) _cJSON_Delete@4 ;
+: new-object ( - cjson ) _cJSON_CreateObject@0 ;
+: new-array ( - cjson ) _cJSON_CreateArray@0 ;
+: new-number ( f:n - item ) _cJSON_CreateNumber@8 ;
+: new-string ( zstr - item ) _cJSON_CreateString@4 ;
+: get-type ( cjson - type ) 3 cells + @ ;
+: is-array? ( cjson - flag ) get-type cJSON_Array = ;
+: serialize-json ( cjson - heap-zstr len ) _cJSON_Print@4 zcount ;
+: free-json ( heap-zstr - ) _cJSON_free@4 ;
+
+\ Generic add-item that works for both arrays and objects
+: add-item ( src zkey|0 - )
+    json @ is-array? if
+        nip \ drop key
+        json @ swap _cJSON_AddItemToArray@8 drop
+    else
+        json @ -rot swap _cJSON_AddItemToObject@12 drop
+    then ;
+
+: add-object ( src zkey|0 - ) 
+    add-item ;
+
+: add-array ( src zkey|0 - ) 
+    add-item ;
+
+: add-string ( zsrc zkey|0 - ) 
+    \ TODO: Support cJSON_AddStringToArray
+    json @ -rot swap _cJSON_AddStringToObject@12 drop ;
+
+: add-float ( f:n zkey|0 - ) 
+    \ TODO: Support cJSON_AddFloatToArray
+    json @ swap _cJSON_AddNumberToObject@16 drop ;
+
+: add-fixed ( p zkey|0 - )
+    swap p>f add-float ;
+
+: add-int ( n zkey - )
+    swap s>f add-float ;
+
+: get-string-content ( cjson - a len )
+    _cJSON_GetStringValue@4 zcount ;
+
+: get-item ( n|zkey - cjson )
+    {: key :} 
+    json @ is-array? if 
+        json @ key _cJSON_GetArrayItem@8
+    else
+        json @ key _cJSON_GetObjectItem@8
+    then 
+    ?dup 0= if key f" JSON key '%z' not found!" -1 -rot .abort then ;
+
+: get-array ( zkey - cjson )
+    get-item ;
+
+: get-object ( zkey - cjson )
+    get-item ;
+
+: get-string ( zkey - a len ) 
+    get-item _cJSON_GetStringValue@4 zcount ;
+
+: get-float ( zkey - f:n ) 
+    get-item _cJSON_GetNumberValue@4 ;
+    
+: get-fixed ( zkey - p ) 
+    get-float f>p ;
+
+: get-int ( zkey - n ) 
+    get-float f>s ;
+
+: count-array ( zkey - cjson length )
+    get-array dup _cJSON_GetArraySize@4 ;
+
+public
+
+: json. ( cjson - ) 
+    serialize-json udup type _cJSON_free@4 ;
+
+|| 0 value path 0 value len 0 value xt 0 value cjson
+continuation: serjson> ( path len [xt] - ) ( - ) 
+    \ {: path len xt | cjson :}
+    to xt to len to path
+    t{
+    new-object json !
+    xt ?execute 
+    json @ serialize-json 
+        udup path len write 
+        free-json
+    json @ delete-json 
+    t} ;
+
+
+\ improved accessor syntax
+: @int swap get-int ;
+: @float swap get-float ;
+: @fixed swap get-fixed ;
+: ?@fixed ['] @fixed catch if 2drop 0 then ;
+: @string swap get-string ;
+
+: j@ swap get-item ;
+: jcount swap count-array ;
+
+: jeach ( ... json zkey xt - ... ) ( ... json index - ... )
+    -rot jcount for 
+        2dup 2>r 2 rpick rot execute 2r>
+    loop 2drop ;
+
+aka @j @int
+aka f@j @float
+aka p@j @fixed
+aka ?p@j ?@fixed
+aka s@j @string

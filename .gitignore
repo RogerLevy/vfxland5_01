@@ -43,3 +43,8 @@ cjson/scene.json
 allegro.log
 
 tmp
+cjson2/actor.json
+
+cjson2/out.json
+
+cjson2/scene.json
