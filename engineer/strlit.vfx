@@ -1,0 +1,28 @@
+\ String Literal Recognizer 
+\ currently only supports z-terminated strings expressed as "asdf".
+\ later it'll recognize z"asdf" c"asdf" and s"asdf", and have a context variable
+\ for how to compile "asdf".
+
+: intzstr  here >r z$, r> ;
+
+: compzstr  postpone (z") z$, ;
+
+: cantpostzstr -1 abort" Can't postpone a string literal!" ;
+
+' intzstr ' compzstr ' cantpostzstr RecType: r:zstring
+
+: rec-string  ( c-addr u -- i*x rectype )
+  
+    over c@ '"' = if
+        2dup + 1 - c@ '"' = if
+            1 /string 1 - 
+            r:zstring
+            exit
+        then
+    then
+
+    2drop r:fail 
+;
+
+\ Install at bottom of recognizer stack (safest)
+' rec-string forth-recognizer +stack-bot
