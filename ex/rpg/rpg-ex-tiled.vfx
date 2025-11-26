@@ -1,6 +1,6 @@
 class: %tilemap
     is-a %drawable
-    prop data :ref %array
+    prop ta :ref %array
     prop w
     prop h
     prop ts :ref %tileset
@@ -8,7 +8,7 @@ class: %tilemap
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
-        data @ 0 slot w 2@ drawbg ;
+        ta @ 0 slot w 2@ drawbg ;
 class;
 
 class: %scene
@@ -36,21 +36,21 @@ also cjson>>
         layer "data" array-count for
             dup i @int 1 - ,
         loop drop 
-    array} data !
+    array} ta !
 ;
 
-: load-tiled-tilemap-simple ( cjson - tilemap )
+: load-tiled-tilemap-simple ( ctmj - tilemap )
     \ Load tilemap from Tiled cjson object.  Assumes it's in layer 0.
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
-    {: ctmj | tileset :}
+    {: json | tileset :}
     %tilemap instance { 
-        ctmj "tilesets" @array 0 @object to tileset
+        json "tilesets" @array 0 @object to tileset
         tileset if
             tileset "source" @string -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        ctmj "layers" @array 0 @object _load-tiled-tilemap-layer
+        json "layers" @array 0 @object _load-tiled-tilemap-layer
     me } ;
 
 : tiled-actor ( cjson - actor | 0 )
@@ -74,9 +74,9 @@ also cjson>>
 
 : load-tiled-actors-simple ( ctmj - array )
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
-    {: ctmj | tileset :}
-    /actor array{
-        ctmj "layers" @array 1 @object "objects" array-count for
+    {: json | tileset :}
+    %actor object-array{
+        json "layers" @array 1 @object "objects" array-count for
             dup i @object tiled-actor ?dup if .summary cr then
         loop drop 
     array} ;
@@ -89,3 +89,43 @@ also cjson>>
         load-tiled-tilemap-simple tm-main !
         load-tiled-actors-simple troupe !
     } ;
+
+|| : set-meta ( bits index - ) metas-array @ swap slot dup @ rot or swap ! ;
+
+|| : named? ( cjson name len - f ) 2>r "name" @string 2r> s= ; 
+
+also cjson>>
+
+0 value _i
+0 value _j
+
+: cjson-each ( ... cjson zkey xt - ... ) ( ... cjson - ... )
+    _i to _j
+    -rot array-count for 
+        i to _i
+        2dup 2>r 2 rpick @item swap execute 2r>
+    loop 2drop ;
+
+|| 0 value id 
+: read-tsj-properties ( path len tileset - )
+    {
+        #tiles @ cell %array instance metas-array !
+        load-json "tiles" 
+        [: 
+            dup "id" @int to id
+            "properties"
+            [: s" solid" named? if $0F id set-meta then ;] cjson-each
+        ;] cjson-each
+        me tileset>metas 
+    } ;
+ 
+    \ {
+    \     #tiles @ cell %array instance metas-array !
+    \     load-json "tiles" @array array-count for
+    \         dup i @object "properties" @array array-count for
+    \             dup i @object 
+    \             dup s" solid" named? if $0F j set-meta then
+    \             drop
+    \         loop drop
+    \     loop drop
+    \ } ;

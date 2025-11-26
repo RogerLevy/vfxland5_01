@@ -15,7 +15,7 @@
 include %vfxland5%/supershow/supershow.vfx
 
 \ load game-specific modules (dependencies)
-require %idir%/tiled.vfx
+require %idir%/rpg-ex-tiled.vfx
 require %idir%/obj/brainboy/brainboy.vfx
 
 \ Ignore Tiled's tileset data and set up our own

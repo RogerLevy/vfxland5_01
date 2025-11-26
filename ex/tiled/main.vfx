@@ -12,7 +12,7 @@
 include %vfxland5%/supershow/supershow.vfx
 
 \ load game-specific modules (dependencies)
-require %idir%/tiled.vfx
+require %idir%/tiled-ex-tiled.vfx
 require %idir%/obj/star/star.vfx
 
 bitmap %idir%/assets/gfx/greyzebes.png
