@@ -107,25 +107,17 @@ also cjson>>
     loop 2drop ;
 
 || 0 value id 
+
+|| : get-metadata
+    "properties" [: s" solid" named? if $0F id set-meta then ;] cjson-each ;
+
 : read-tsj-properties ( path len tileset - )
     {
-        #tiles @ cell %array instance metas-array !
+        #tiles @` cell` %array make metas-array !
         load-json "tiles" 
         [: 
             dup "id" @int to id
-            "properties"
-            [: s" solid" named? if $0F id set-meta then ;] cjson-each
+            get-metadata
         ;] cjson-each
-        me tileset>metas 
+        me load-metas-from 
     } ;
- 
-    \ {
-    \     #tiles @ cell %array instance metas-array !
-    \     load-json "tiles" @array array-count for
-    \         dup i @object "properties" @array array-count for
-    \             dup i @object 
-    \             dup s" solid" named? if $0F j set-meta then
-    \             drop
-    \         loop drop
-    \     loop drop
-    \ } ;

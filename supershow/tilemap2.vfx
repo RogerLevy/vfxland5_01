@@ -17,7 +17,7 @@ class: %tileset
 class;
 
 || : /metas ( - )
-    0 cell %array instance metas-array ! ;
+    0 cell %array make metas-array ! ;
 
 0 %tileset :construct ( - )
     /metas ;
@@ -116,10 +116,10 @@ global-metas 0 slot constant metas
 : instakill?  meta $40 and 0<> ;
 : trap?  meta $10 and 0<> ;
 
-: load-metas ( fp len tileset - )
+: load-metas-for ( fp len tileset - )
     \ load tile metas from a binary file directly into the global table
     { global-metas baseid @ slot` #tiles @ cells` 2swap read } ; 
 
-: tileset>metas ( tileset - ) 
+: load-metas-from ( tileset - ) 
     \ copy tile metas that have been stored in a tileset into the global table
     { metas-array @` global-metas` 0` me 0 tile>bmpid` #tiles @ move-range } ;
