@@ -30,11 +30,11 @@ also cjson>>
 
 : _load-tiled-tilemap-layer ( cjson - )
     {: layer | tileset :}
-    layer "width" int@ w !
-    layer "height" int@ h !
+    layer "width" @int w !
+    layer "height" @int h !
     cell array{ 
         layer "data" array-count for
-            dup i int@ 1 - ,
+            dup i @int 1 - ,
         loop drop 
     array} data !
 ;
@@ -44,28 +44,28 @@ also cjson>>
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
     {: ctmj | tileset :}
     %tilemap instance { 
-        ctmj "tilesets" array@ 0 object@ to tileset
+        ctmj "tilesets" @array 0 @object to tileset
         tileset if
-            tileset "source" string@ -ext f" %s.ts" >pad find if
+            tileset "source" @string -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        ctmj "layers" array@ 0 object@ _load-tiled-tilemap-layer
+        ctmj "layers" @array 0 @object _load-tiled-tilemap-layer
     me } ;
 
 : tiled-actor ( cjson - actor | 0 )
     {: obj :}
-    obj "type" ['] string@ catch if 
+    obj "type" ['] @string catch if 
         2drop 
         ." No 'type' property found in JSON object, skipping..." cr
         0 exit
     then 
     f" %%%s" >pad find if 
         execute make {
-            obj "x" fixed@ 
-                obj "width" ?fixed@ 2 / + x !
-            obj "y" fixed@ 
-                obj "height" ?fixed@ 2 / - y !
+            obj "x" @fixed 
+                obj "width" ?@fixed 2 / + x !
+            obj "y" @fixed 
+                obj "height" ?@fixed 2 / - y !
         me } exit
     else
         ( $ ) f" Class %$ not found, skipping..." type cr
@@ -76,8 +76,8 @@ also cjson>>
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: ctmj | tileset :}
     /actor array{
-        ctmj "layers" array@ 1 object@ "objects" array-count for
-            dup i object@ tiled-actor ?dup if .summary cr then
+        ctmj "layers" @array 1 @object "objects" array-count for
+            dup i @object tiled-actor ?dup if .summary cr then
         loop drop 
     array} ;
 

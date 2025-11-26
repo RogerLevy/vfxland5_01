@@ -30,11 +30,11 @@ also cjson>>
 
 : _load-tiled-tilemap-layer ( cjson - )
     {: layer | tileset :}
-    layer "width" int@ w !
-    layer "height" int@ h !
+    layer "width" @int w !
+    layer "height" @int h !
     cell array{ 
         layer "data" array-count for
-            dup i int@ 1 - ,
+            dup i @int 1 - ,
         loop drop 
     array} ta !
 ;
@@ -44,28 +44,28 @@ also cjson>>
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
     {: ctmj | tileset :}
     %tilemap instance { 
-        ctmj "tilesets" array@ 0 object@ to tileset
+        ctmj "tilesets" @array 0 @object to tileset
         tileset if
-            tileset "source" string@ -ext f" %s.ts" >pad find if
+            tileset "source" @string -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        ctmj "layers" array@ 0 object@ _load-tiled-tilemap-layer
+        ctmj "layers" @array 0 @object _load-tiled-tilemap-layer
     me } ;
 
 : tiled-actor ( cjson - actor | 0 )
     {: obj :}
-    obj "type" ['] string@ catch if 
+    obj "type" ['] @string catch if 
         2drop 
         ." No 'type' property found in JSON object, skipping..." cr
         0 exit
     then 
     f" %%%s" >pad find if 
         execute make {
-            obj "x" fixed@ 
-                obj "width" ?fixed@ 2 / + x !
-            obj "y" fixed@ 
-                obj "height" ?fixed@ 2 / - y !
+            obj "x" @fixed 
+                obj "width" ?@fixed 2 / + x !
+            obj "y" @fixed 
+                obj "height" ?@fixed 2 / - y !
         me } exit
     else
         ( $ ) f" Class %$ not found, skipping..." type cr
@@ -76,8 +76,8 @@ also cjson>>
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: ctmj | tileset :}
     %actor object-array{
-        ctmj "layers" array@ 1 object@ "objects" array-count for
-            dup i object@ tiled-actor ?dup if .summary cr then
+        ctmj "layers" @array 1 @object "objects" array-count for
+            dup i @object tiled-actor ?dup if .summary cr then
         loop drop 
     array} ;
 
@@ -92,7 +92,7 @@ also cjson>>
 
 || : set-meta ( bits index - ) metas-array @ swap slot dup @ rot or swap ! ;
 
-|| : named? ( cjson name len - f ) 2>r "name" string@ 2r> s= ; 
+|| : named? ( cjson name len - f ) 2>r "name" @string 2r> s= ; 
 
 also cjson>>
 
@@ -103,7 +103,7 @@ also cjson>>
     _i to _j
     -rot array-count for 
         i to _i
-        2dup 2>r 2 rpick item@ swap execute 2r>
+        2dup 2>r 2 rpick @item swap execute 2r>
     loop 2drop ;
 
 || 0 value id 
@@ -112,7 +112,7 @@ also cjson>>
         #tiles @ cell %array instance metas-array !
         load-json "tiles" 
         [: 
-            dup "id" int@ to id
+            dup "id" @int to id
             "properties"
             [: s" solid" named? if $0F id set-meta then ;] cjson-each
         ;] cjson-each
@@ -121,9 +121,9 @@ also cjson>>
  
     \ {
     \     #tiles @ cell %array instance metas-array !
-    \     load-json "tiles" array@ array-count for
-    \         dup i object@ "properties" array@ array-count for
-    \             dup i object@ 
+    \     load-json "tiles" @array array-count for
+    \         dup i @object "properties" @array array-count for
+    \             dup i @object 
     \             dup s" solid" named? if $0F j set-meta then
     \             drop
     \         loop drop

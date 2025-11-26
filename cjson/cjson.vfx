@@ -126,12 +126,12 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
     cjson cjson-delete ;
 
 \ improved accessor syntax
-: int@ swap get-int ;
-: float@ swap get-float ;
-: fixed@ swap get-fixed ;
-: ?fixed@ ['] fixed@ catch if 2drop 0 then ;
-: item@ swap get-item ;
-: string@ swap get-string ;
-: object@ swap get-object ;
-: array@ swap get-array ;
+: @int swap get-int ;
+: @float swap get-float ;
+: @fixed swap get-fixed ;
+: ?@fixed ['] @fixed catch if 2drop 0 then ;
+: @item swap get-item ;
+: @string swap get-string ;
+: @object swap get-object ;
+: @array swap get-array ;
 : array-count swap count-array ;
