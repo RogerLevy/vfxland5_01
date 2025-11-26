@@ -194,6 +194,11 @@ vec3 CrtsFilter(vec2 ipos, vec2 inputSizeDivOutputSize, vec2 halfInputSize,
 
         // Leave in {0 to inputSize}
         pos = pos * halfInputSize + halfInputSize;
+
+        // Return black for pixels outside valid texture bounds
+        if (pos.x < 0.0 || pos.x > INPUT_X || pos.y < 0.0 || pos.y > INPUT_Y) {
+            return vec3(0.0, 0.0, 0.0);
+        }
     #else
         pos = ipos * inputSizeDivOutputSize;
     #endif
