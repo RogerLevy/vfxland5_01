@@ -26,7 +26,7 @@
     
 : eval  bl parse evaluate ;
 : consume  bl parse 2drop ;
-: pre-xt  preword count ( 1 /string ) >pad find 0<> and ;
+: pre-xt  preword count ( 1 /string ) sfind 0<> and ;
 : parse-size  preword size? if eval else cell then ;
 : comment?  preword 1 + c@ dup '\' = swap '(' = or ;
 : eol?  preword c@ 0= ;
@@ -34,7 +34,7 @@
 
 : *property ( - )
     bl parse 2dup
-    >pad find if
+    sfind if
         >body valid-classifier? if
             >pad count fe" '%s' is a classifier name. Use @class, +trait, or \"trait\" syntax."
             -1 -rot .abort
@@ -65,7 +65,7 @@
     
 : ?"trait" ( - f )
     preword "word"? if
-        bl word "trait" >pad find
+        bl word "trait" sfind
         0= if consume -1 abort" Token not found." then
         >body dup is-trait? not abort" Token surrounded by quotes must be a trait." 
         ( trait ) classifier 0 apply-trait

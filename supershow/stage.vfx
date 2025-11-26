@@ -372,6 +372,6 @@ fast}
     
 : find-class ( a len - class | %actor )
     ?-% f" %%%s"
-    >pad find if execute else drop %actor then ;
+    sfind if execute else drop %actor then ;
 
 

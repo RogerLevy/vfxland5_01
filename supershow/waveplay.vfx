@@ -84,7 +84,7 @@ defer voice? ( smp - f )
     *sample* ; 
 
 || : ?sample ( a n - ) \ path
-    2dup -path >pad find if
+    2dup -path sfind if
         >r
         \ .loading
         load-sample r> >body @ sample[] !
@@ -99,7 +99,7 @@ defer voice? ( smp - f )
 
 || : (reload-sample) ( a n - ) \ path
     \ TODO: reload only updated samples
-    2dup >pad find if
+    2dup sfind if
         >body @ sample[] @ al_destroy_sample
     else
         drop

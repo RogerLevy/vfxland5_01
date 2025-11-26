@@ -134,7 +134,7 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
     \ Bind the given object and switch to its vocabulary if it has one
     to me
     cla @ body>name f" %s/"
-    >pad find if execute else drop then ;
+    sfind if execute else drop then ;
 
 \ ==============================================================================
 \ Classes

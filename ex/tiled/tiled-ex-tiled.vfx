@@ -46,7 +46,7 @@ also cjson>>
     %tilemap make { 
         json "tilesets" j@ 0 j@ to tileset
         tileset if
-            tileset "source" @string -ext f" %s.ts" >pad find if
+            tileset "source" @string -ext f" %s.ts" sfind if
                 >body ts ! 
             else drop then
         then
@@ -60,7 +60,7 @@ also cjson>>
         ." No 'type' property found in JSON object, skipping..." cr
         0 exit
     then 
-    f" %%%s" >pad find if 
+    f" %%%s" sfind if 
         execute make {
             obj "x" @fixed 
                 obj "width" ?@fixed 2 / + x !

@@ -22,8 +22,8 @@ cstring update-name$
     {: | class0 :}
     bl parse
     dup if
-        >pad find not if
-            drop pad count f" _%s" >pad find not
+        sfind not if
+            drop pad count f" _%s" sfind not
             abort" Class not found!"
         then
         execute to class0
@@ -59,7 +59,7 @@ cstring update-name$
         cla @ body>name to len to name
     then
 
-    name len f" %s/" >pad find if execute else drop then
+    name len f" %s/" sfind if execute else drop then
     name len f" locate %s" evaluate ;
 
 || : s= s= ;

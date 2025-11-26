@@ -5,7 +5,7 @@ private
 \ : png 13 ;
 : file-color ( z$ - n )
     push-order sandbox ['] ls>> >body @ +order
-    zcount '.' ending >pad find if execute else drop 15 then 
+    zcount '.' ending sfind if execute else drop 15 then 
     pop-order ;
 
 : (dirs)          \ ^WIN32_FIND_DATA --

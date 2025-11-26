@@ -97,7 +97,7 @@ include %idir%/autoload.vfx
 \         endof
 \         FILE_ACTION_MODIFIED of
 \             ." FILE_ACTION_MODIFIED" cr
-\             changed-file -path >pad find if
+\             changed-file -path sfind if
 \                 ." Reloading file!" cr
 \                 >body reload
 \             else

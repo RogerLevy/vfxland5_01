@@ -310,6 +310,7 @@ variable old-dp
   
 cstring lastword
 : find  dup count lastword place  find ;
+: sfind  >pad find ;
 : save-next-word  preword count lastword place ;
 : '  save-next-word  ' ;
 : [']  save-next-word  postpone ['] ; immediate    
