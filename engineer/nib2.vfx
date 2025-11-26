@@ -629,13 +629,7 @@ create %protocol  %class make {
 : add-protocol ( protocol trait - )
     -> protocol-list add-to ;
 
-\ : OEXEC
-\ Execute bound XT with error-handling.
-debug @ [if]
-    defer oexec ( ... xt - ... )
-[else]
-    aka oexec execute
-[then]
+aka oexec execute
 
 defer protocol-validations ( obj protocol - obj protocol )
 
@@ -919,9 +913,8 @@ aka instance make  \ Backward compatibility
         second-param -> classifier# @ class-to-check -> can-table test-bit
     then ;
 
-: ?oexec ( xt - ) ( - )
+: ?oexec ( xt - ) ( ... - ... )
     \ Execute bound XT with error-handling if it is non-zero.
-    \ The XT must take or return any parameters.
     ?dup -exit oexec ;
 
 \ Property type constants
@@ -1033,30 +1026,6 @@ aka instance make  \ Backward compatibility
 %object :: .summary ( - )
     \ Default : show class, name, and address
     me .object ;
-
-%object :: on-error ( xt err# - )
-    throw ;
-
-errdef err_bailed "Word bailed."
-: bail  err_bailed throw ;
-
-: debug-oexec ( ... xt - ... )
-    dup >r
-    catch 
-    dup err_bailed = if \ not an error - intentional bail
-        r> drop
-        throw
-    else
-        ?dup if
-            r> swap ( xt err ) cla @ -> on-error @ execute  \ THROW by default
-            exit
-        then
-    then
-    r> drop ;
-    
-debug @ [if]
-    ['] debug-oexec is oexec
-[then]
 
 \ TODO: don't need to save/restore DS in optimized builds
 aligned-page estack

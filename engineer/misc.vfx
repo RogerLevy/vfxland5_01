@@ -443,11 +443,15 @@ variable verbose
 : sandbox ( - ) 
     only previous previous previous ;
 
+errdef err_bailed "Word bailed."
+: bail ( - ) 
+    err_bailed throw ;
+
 \ =============================================================================
 \ Custom prompt
 \ =============================================================================
 
-: .engineer-prompt    \ --
+: .engineer-prompt ( - )
   ."  ok " 
   depth if _.s then
   fdepth if _f.s then
