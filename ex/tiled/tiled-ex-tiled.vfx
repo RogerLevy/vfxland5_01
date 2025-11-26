@@ -33,7 +33,7 @@ also cjson>>
     layer "width" @int w !
     layer "height" @int h !
     cell array{ 
-        layer "data" array-count for
+        layer "data" jcount for
             dup i @int 1 - ,
         loop drop 
     array} data !
@@ -44,13 +44,13 @@ also cjson>>
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
     {: json | tileset :}
     %tilemap make { 
-        json "tilesets" @array 0 @object to tileset
+        json "tilesets" j@ 0 j@ to tileset
         tileset if
             tileset "source" @string -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
-        json "layers" @array 0 @object _load-tiled-tilemap-layer
+        json "layers" j@ 0 j@ _load-tiled-tilemap-layer
     me } ;
 
 : tiled-actor ( cjson - actor | 0 )
@@ -76,8 +76,8 @@ also cjson>>
     \ Load objects from Tiled cjson object.  Assumes they're in layer 1.
     {: json | tileset :}
     /actor array{
-        json "layers" @array 1 @object "objects" array-count for
-            dup i @object tiled-actor ?dup if .summary cr then
+        json "layers" j@ 1 j@ "objects" jcount for
+            dup i j@ tiled-actor ?dup if .summary cr then
         loop drop 
     array} ;
 

@@ -103,8 +103,8 @@ scene0 s" scene.json" save-objects
 : read-actors ( path len - )
     {: path path-len | croot cobj buf buf-len :}
     path path-len load-json to croot
-    croot z" actors" array-count for
-        dup i @object to cobj
+    croot z" actors" jcount for
+        dup i j@ to cobj
         cobj z" class" @string evaluate one cobj swap read-props
     loop  drop ;
 

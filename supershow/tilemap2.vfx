@@ -54,7 +54,7 @@ class;
 \     \ assumes cell array
 \     dup #items ,   ['] , swap each ;
 
-\ : @array+ ( a array - a' )
+\ : j@+ ( a array - a' )
 \     \ assumes cell array
 \     {: | n :}
 \     {
