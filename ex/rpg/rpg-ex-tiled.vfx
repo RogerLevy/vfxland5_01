@@ -30,11 +30,11 @@ also cjson>>
 
 : _load-tiled-tilemap-layer ( layer-json - )
     {: layer | tileset :}
-    layer "width" @int w !
-    layer "height" @int h !
-    cell array{ 
+    layer "width" @j w !
+    layer "height" @j h !
+    cell array{
         layer "data" jcount for
-            dup i @int 1 - ,
+            dup i @j 1 - ,
         loop drop 
     array} ta !
 ;
@@ -46,7 +46,7 @@ also cjson>>
     %tilemap make { 
         tmj "tilesets" j@ 0 j@ to tileset
         tileset if
-            tileset "source" @string -ext f" %s.ts" >pad find if
+            tileset "source" s@j -ext f" %s.ts" >pad find if
                 >body ts ! 
             else drop then
         then
@@ -55,17 +55,17 @@ also cjson>>
 
 : tiled-actor ( obj-json - actor | 0 )
     {: obj :}
-    obj "type" ['] @string catch if 
+    obj "type" ['] s@j catch if 
         2drop 
         ." No 'type' property found in JSON object, skipping..." cr
         0 exit
     then 
     f" %%%s" >pad find if 
         execute make {
-            obj "x" @fixed 
-                obj "width" ?@fixed 2 / + x !
-            obj "y" @fixed 
-                obj "height" ?@fixed 2 / - y !
+            obj "x" p@j 
+                obj "width" p@j 2 / + x !
+            obj "y" p@j 
+                obj "height" p@j 2 / - y !
         me } exit
     else
         ( $ ) f" Class %$ not found, skipping..." type cr
@@ -91,7 +91,7 @@ also cjson>>
 
 || : set-meta ( bits index - ) metas-array @ swap nth dup @ rot or swap ! ;
 
-|| : named? ( json zname - flag ) >r "name" @string r> zcount s= ; 
+|| : named? ( json zname - flag ) >r "name" s@j r> zcount s= ; 
 
 || 0 value id 
 
@@ -103,7 +103,7 @@ also cjson>>
         #tiles @` cell` %array make metas-array !
         load-json "tiles" 
         [: 
-            j@ dup "id" @int to id
+            j@ dup "id" @j to id
             get-metadata
         ;] jeach
         me load-metas-from 

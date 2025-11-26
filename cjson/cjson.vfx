@@ -139,3 +139,9 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
     -rot jcount for 
         2dup 2>r 2 rpick rot execute 2r>
     loop 2drop ;
+
+aka @j @int
+aka f@j @float
+aka p@j @fixed
+aka ?p@j ?@fixed
+aka s@j @string
