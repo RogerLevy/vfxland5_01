@@ -134,3 +134,8 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
 
 : j@ swap get-item ;
 : jcount swap count-array ;
+
+: jeach ( ... json zkey xt - ... ) ( ... json index - ... )
+    -rot jcount for 
+        2dup 2>r 2 rpick rot execute 2r>
+    loop 2drop ;

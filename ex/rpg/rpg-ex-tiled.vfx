@@ -77,12 +77,10 @@ also cjson>>
     {: tmj | tileset :}
     %actor object-array{
         tmj "layers" j@ 1 j@ 
-            "objects" jcount for
-            dup i j@ tiled-actor ?dup if .summary cr then
-        loop drop 
+        "objects" [: j@ tiled-actor ?dup if .summary cr then ;] jeach 
     array} ;
 
-: scene-from-tmj ( path len <name> - ) ( - scene )
+: load-scene-from-tmj ( path len <name> - ) ( - scene )
     \ Load .tmj file.  Assumes tilemap is in layer 0, tileset 0 is the 
     \ tileset to be used by the tilemap, and objects are in layer 1.
     create %scene instance {
@@ -93,32 +91,20 @@ also cjson>>
 
 || : set-meta ( bits index - ) metas-array @ swap slot dup @ rot or swap ! ;
 
-|| : named? ( cjson name len - f ) 2>r "name" @string 2r> s= ; 
-
-also cjson>>
-
-0 value _i
-0 value _j
-
-: cjson-each ( ... cjson zkey xt - ... ) ( ... cjson - ... )
-    _i to _j
-    -rot jcount for 
-        i to _i
-        2dup 2>r 2 rpick j@ swap execute 2r>
-    loop 2drop ;
+|| : named? ( json zname - flag ) >r "name" @string r> zcount s= ; 
 
 || 0 value id 
 
-|| : get-metadata
-    "properties" [: s" solid" named? if $0F id set-meta then ;] cjson-each ;
+|| : get-metadata ( json - )
+    "properties" [: j@ "solid" named? if $0F id set-meta then ;] jeach ;
 
 : read-tsj-properties ( path len tileset - )
     {
         #tiles @` cell` %array make metas-array !
         load-json "tiles" 
         [: 
-            dup "id" @int to id
+            j@ dup "id" @int to id
             get-metadata
-        ;] cjson-each
+        ;] jeach
         me load-metas-from 
     } ;

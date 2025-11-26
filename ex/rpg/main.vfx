@@ -24,8 +24,8 @@ darkworld.png 16 16 tileset-from darkworld.ts
 
 \ Create scene (tilemap + actor array) from .tmj file.
 \ The tileset (scifi.ts) is referenced in the .tmj file, 
-\ and scene-from-tmj automatically assigns to the tilemap.
-s" %idir%/assets/map/owtest01.tmj" scene-from-tmj owtest01.scn
+\ and LOAD-SCENE-FROM-TMJ automatically assigns to the tilemap.
+s" %idir%/assets/map/owtest01.tmj" load-scene-from-tmj owtest01.scn
 s" %idir%/assets/map/darkworld.tsj" darkworld.ts read-tsj-properties
 
 owtest01.scn -> tm-main @ -> ta @ -> data @ to playfield
