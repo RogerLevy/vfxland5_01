@@ -8,7 +8,7 @@ class: %tilemap
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
-        ta @ 0 slot w 2@ drawbg ;
+        ta @ 0 nth w 2@ drawbg ;
 class;
 
 class: %scene
@@ -43,7 +43,7 @@ also cjson>>
     \ Load tilemap from Tiled cjson object.  Assumes it's in layer 0.
     \ Also assumes the first tileset is the tileset to be used by the tilemap.
     {: tmj | tileset :}
-    %tilemap instance { 
+    %tilemap make { 
         tmj "tilesets" j@ 0 j@ to tileset
         tileset if
             tileset "source" @string -ext f" %s.ts" >pad find if
@@ -83,13 +83,13 @@ also cjson>>
 : load-scene-from-tmj ( path len <name> - ) ( - scene )
     \ Load .tmj file.  Assumes tilemap is in layer 0, tileset 0 is the 
     \ tileset to be used by the tilemap, and objects are in layer 1.
-    create %scene instance {
+    create %scene make {
         load-json dup 
         load-tiled-tilemap-simple tm-main !
         load-tiled-actors-simple troupe !
     } ;
 
-|| : set-meta ( bits index - ) metas-array @ swap slot dup @ rot or swap ! ;
+|| : set-meta ( bits index - ) metas-array @ swap nth dup @ rot or swap ! ;
 
 || : named? ( json zname - flag ) >r "name" @string r> zcount s= ; 
 

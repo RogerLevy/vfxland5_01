@@ -12,7 +12,7 @@ trait: %iterable
     :: redim ( #items - ) stub ;
 trait;
 
-: slot ( iterable i - a ) swap index>slot ; 
+: nth ( iterable i - a ) swap index>slot ; 
 : []@ ( iterable i - val ) swap index>val ;
 : []! ( n iterable i - ) swap store-at ;
 : #items ( iterable - n ) -> item-count @ ;
@@ -132,7 +132,7 @@ class;
 : s/slot ( array - n ) -> slot-size @ ;
 
 2 %array :construct ( max-slots slot-size - )
-    dup  0  16 1024 * 1024 *  within? not abort" Invalid array slot size" 
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array nth size" 
     2dup slot-size ! max-slots !
     max-slots @ item-count !
     align here data ! * allot&erase ;
@@ -165,15 +165,15 @@ class: %stack
 class;
 
 2 %stack :construct ( max-slots slot-size - )
-    dup  0  16 1024 * 1024 *  within? not abort" Invalid array slot size" 
+    dup  0  16 1024 * 1024 *  within? not abort" Invalid array nth size" 
     2dup slot-size ! max-slots !
     align here data ! * allot&erase ;
 
-%stack :: push ( slot - )
+%stack :: push ( nth - )
     item-count @ max-slots @ = abort" Overflow."
     1 item-count +!  me tail-slot ! ;
 
-%stack :: pop ( - slot )
+%stack :: pop ( - nth )
     item-count @ 0= abort" Underflow."
     me tail-slot @  -1 item-count +! ;
 
@@ -231,7 +231,7 @@ class;
 
 : move-range ( array1 array2 ofs1 ofs2 #slots - )
     {: arr1 arr2 ofs1 ofs2 n :}
-    arr1 -> slot-size @ arr2 -> slot-size @ <> abort" MOVE-RANGE : Array slot sizes mismatch!" 
+    arr1 -> slot-size @ arr2 -> slot-size @ <> abort" MOVE-RANGE : Array nth sizes mismatch!" 
     ofs1 arr1 index>slot` ofs2 arr2 index>slot` arr1 -> slot-size @ n * move ;
 
 %object-array :: store-at ( obj i - )

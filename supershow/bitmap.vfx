@@ -2,7 +2,7 @@
 
 #bitmaps cell array bitmaps
 
-|| : bitmap[]  $FFFF and bitmaps swap slot ;
+|| : bitmap[]  $FFFF and bitmaps swap nth ;
 
 variable next-bmp#  1 next-bmp# !
 

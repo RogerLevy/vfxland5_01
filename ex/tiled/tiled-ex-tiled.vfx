@@ -8,7 +8,7 @@ class: %tilemap
 
     :: draw ( - ) 
         ts @ ?dup -exit 0 tile pile ! 
-        data @ 0 slot w 2@ drawbg ;
+        data @ 0 nth w 2@ drawbg ;
 class;
 
 class: %scene
