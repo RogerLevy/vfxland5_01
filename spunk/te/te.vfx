@@ -12,12 +12,12 @@ private
     at@f at@ 2+ 2s>f 1e 1e 1e 1e r>
     al_draw_rectangle ;
 
-: nr  0  pen y@ 8 +  at ;
+: nr  0  peny@ 8 +  at ;
 
 : gemit
     dup 10 = if  nr  1 +  exit then
     glyph 
-    8 0 +at  pen x@ 320 >= if  nr  then ;
+    8 0 +at  penx@ 320 >= if  nr  then ;
 
 \ ------------------------------------------------------------------------------
 

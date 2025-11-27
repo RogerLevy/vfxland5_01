@@ -1,6 +1,6 @@
 1 constant TILESET_FORMAT_VERSION
 
-cell ecfield pile
+ec-cell pile
 
 class: %tileset
     %asset derive
@@ -41,7 +41,7 @@ class;
 \     dup unload   {   tw 2!   _slice-tileset   me keep   } ;
 
 \ %tileset :: use ( - )
-\     baseid @ pile ! ;
+\     baseid @ pile! ;
 
 : update-tileset ( %tileset - )
     as>
@@ -79,14 +79,14 @@ aka tile>bmpid tile
 \ =============================================================================
 
 || 0 value lm
-|| : nr ( - ) lm pen y@ gap + at ;
+|| : nr ( - ) lm peny@ gap + at ;
 || : put+ ( bmpid - ) 
     dup $FFFFFFFF = if drop 
-    else pile @ + put then
+    else pile@ + put then
     gap 0 +at ;
 
 : >lmargin ( - ) 
-    pen x@ to lm ;
+    penx@ to lm ;
 
 : tiles ( a n - 'a ) 
     >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
@@ -109,7 +109,7 @@ aka tile>bmpid tile
 
 #bitmaps cell array global-metas
 global-metas 0 nth constant metas
-: meta ( tile# - n ) 65535 and pile @ + cells metas + @ ;
+: meta ( tile# - n ) 65535 and pile@ + cells metas + @ ;
 : collectible?  meta $20 and 0<> ;
 : destructible?  meta $80 and 0<> ;
 : solid?  meta $0F and $0F = ;

@@ -91,7 +91,7 @@ create cb-p /screen allot
 
 : ?room#  debug @ -exit  0 0 at s{ room# ? s} print ;
 
-: lay-with  pile @ >r pile ! lay r> pile ! ;
+: lay-with  pile@ >r pile! lay r> pile! ;
 
 : ui
     0 0 at  playfield t0 @ lay-with

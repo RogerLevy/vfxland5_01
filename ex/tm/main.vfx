@@ -27,7 +27,7 @@ create tm
     0 , 0 , 3 , 3 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 
 
 redef : main
-    greyzebes.ts 0 tile pile !
+    greyzebes.ts 0 tile pile!
     show> 
         20 120 at tm 7 5 drawbg 
         180 30 at tm 7 5 drawbg ;

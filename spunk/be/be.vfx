@@ -81,7 +81,7 @@ variable mbuttons
         then ;
 : pick-bg
     ?dup ?exit
-    mouse gap dup 2/ playfield spot @ dup -exit pile @ + ;
+    mouse gap dup 2/ playfield spot @ dup -exit pile@ + ;
 : pick ( -)
     pick-sprite pick-bg ?dup -exit bmp! ;
 

@@ -7,7 +7,7 @@ class: %tilemap
     32 nprop name :cstring
 
     :: draw ( - ) 
-        ts @ ?dup -exit 0 tile pile ! 
+        ts @ ?dup -exit 0 tile pile! 
         data @ 0 nth w 2@ drawbg ;
 class;
 
