@@ -845,7 +845,6 @@ redef : ; ( - )
 
 aka nprop nproperty
 aka prop property
-aka instance make  \ Backward compatibility
 
 \ Validation
 : valid-class? ( ? - n:res )

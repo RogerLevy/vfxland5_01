@@ -87,7 +87,7 @@ class;
     temps>   belong? -exit   me unstash ;
 
 : temp-instance ( class - %actor )
-    instance stashed ;
+    make stashed ;
 
 \ : load&stow ( scene - )
 \     \ load actors from disk to temps

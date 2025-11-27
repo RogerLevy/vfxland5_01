@@ -25,7 +25,7 @@ class;
 \ : ?subbmp  dup al_is_sub_bitmlap if al_get_parent_bitmap then ;
 
 : wrap-bitmap ( albmp - bitmap )
-    %bitmap instance { albmp ! me } ;
+    %bitmap make { albmp ! me } ;
 
 : bitmap-file ( bmpid - a n ) 
     id>bmp -> srcpath$ count ;

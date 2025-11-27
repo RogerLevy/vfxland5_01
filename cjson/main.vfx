@@ -98,7 +98,7 @@ scene0 s" scene.json" save-objects
 
 100 cell stack teststack
 
-: one  instance dup teststack push ;
+: one  make dup teststack push ;
     
 : read-actors ( path len - )
     {: path path-len | croot cobj buf buf-len :}
