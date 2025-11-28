@@ -28,6 +28,10 @@ xcopy dat ..\rel\%1\dat /i /s /q /y /e
 xcopy dat ..\rel\%1-debug\dat /i /s /q /y /e
 copy %~dp0\..\bin\*.dll ..\rel\%1
 copy %~dp0\..\bin\*.dll ..\rel\%1-debug
+(
+echo [trace]
+echo level=none
+) > ..\rel\%1\allegro5.cfg
 
 SET saveString=%2 save-release ..\rel\%1\%1 save-debug ..\rel\%1-debug\%1-debug bye
 SET configString=debug off validations off safety off 
