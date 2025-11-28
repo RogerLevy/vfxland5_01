@@ -9,13 +9,15 @@
 \ 1024 constant #actors
 
 \ Variables
-0 value playfield   \ address
+ec-cell playfield   \ tilemap data address
 
 \ Load engine
 include %vfxland5%/supershow/supershow.vfx
 
 \ load game-specific modules (dependencies)
 require %idir%/rpg-ex-tiled.vfx
+
+\ Load actor scripts
 require %idir%/obj/brainboy/brainboy.vfx
 
 \ Ignore Tiled's tileset data and set up our own
@@ -23,19 +25,19 @@ bitmap %idir%/assets/map/darkworld.png
 darkworld.png 16 16 tileset-from darkworld.ts 
 
 \ Create scene (tilemap + actor array) from .tmj file.
-\ The tileset (scifi.ts) is referenced in the .tmj file, 
-\ and LOAD-SCENE-FROM-TMJ automatically assigns to the tilemap.
+\ The tileset object is found from the .tmj file,
+\ and LOAD-SCENE-FROM-TMJ automatically assigns it to the tilemap.
 s" %idir%/assets/map/owtest01.tmj" load-scene-from-tmj owtest01.scn
 s" %idir%/assets/map/darkworld.tsj" darkworld.ts read-tsj-properties
 
-owtest01.scn -> tm-main @ -> ta @ -> data @ to playfield
+owtest01.scn >tm-main @ >ta @ >data @ playfield!
 
 redef : main
     just owtest01.scn load   \ instantiate actors from the scene
     work>
         step 
     show> 
-        0 0 at  owtest01.scn -> tm-main @ draw  
+        0 0 at  owtest01.scn >tm-main @ draw  
         sprites animate ;
 
 \ Load tools and run tests

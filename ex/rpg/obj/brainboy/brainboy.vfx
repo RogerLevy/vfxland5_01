@@ -7,7 +7,7 @@ brainboy.png 16 16 tileset-from brainboy.ts
 
 : hit-map
     \ move and collide with map
-    -7 -7 14 14 playfield tmcol> 7 cut-corners ;
+    -7 -7 14 14 playfield@ tmcol> 7 cut-corners ;
 
 %brainboy :: init ( - )
     brainboy.ts 0 tile bmp !
