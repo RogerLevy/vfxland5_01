@@ -1,6 +1,7 @@
 \ ------------------------------------------------------------------------------
 \ Engineer OOP extension - NIBS (NIBS Interactive Behavior System) a.k.a Nib 2.0
 \ ------------------------------------------------------------------------------
+optimising on
 
 1024 ?constant #max-classifiers
 8192 ?constant /classifier
@@ -18,6 +19,10 @@ magic-id MAGIC_FIELD FIEL
 magic-id MAGIC_PROPERTY PROP
 magic-id MAGIC_CLASSIFIER CLAS
 
+\ Object stack
+aligned-page os
+variable osp   os osp ! \ object stack pointer
+
 \ ==============================================================================
 \ Low-level stuff
 \ ==============================================================================
@@ -26,30 +31,33 @@ magic-id MAGIC_CLASSIFIER CLAS
     me body>name ;
 
 redef : field ( ofs size <name> - n ) ( a - a )
-    create 0 , MAGIC_FIELD , over , +
-    does> 2 cells + @ me + ;
+    create 0 , 0 , MAGIC_FIELD , over , +
+    does> 3 cells + @ me + ;
 
 0
     cell field cla
+    cell field ecp
 dup constant /object-base
     cell field magic
 constant /magical-base
 
-' cla >body 2 cells + @ constant cla-offset
+' cla >body 3 cells + @ constant cla-offset
+' ecp >body 3 cells + @ constant ecp-offset
 
-: >cla  s" cla-offset +" evaluate ;  immediate
+: >cla  s" cla-offset +" evaluate ; immediate
+: >ecp  s" ecp-offset +" evaluate ; immediate
 
 : (->property) ( obj property - a' )
-    2 cells + @ ?literal 
+    3 cells + @ ?literal 
     s" over >cla @ + @ +" evaluate 
 ; immediate
 
 redef : -> ( object <name> - a )
     preword find not abort" -> : Field name not found"
-    >body cell+ @ MAGIC_PROPERTY = if
+    >body cell+ cell+ @ MAGIC_PROPERTY = if
         ' >body s" (->property)" evaluate 
     else
-        ' >body 2 cells + @ ?literal s" +" evaluate
+        ' >body 3 cells + @ ?literal s" +" evaluate
     then ; immediate 
 
 : already? ( ? <name> - b <name> )
@@ -114,13 +122,6 @@ redef : test-bit ( bit# adr - b )
     loop drop cr ;
 
 \ ==============================================================================
-\ Object stack
-\ ==============================================================================
-
-aligned-page os
-variable osp   os osp ! \ object stack pointer
-
-\ ==============================================================================
 \ Object scoping
 \ ==============================================================================
 
@@ -135,6 +136,95 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
     to me
     cla @ body>name f" %s/"
     sfind if execute else drop then ;
+
+
+\ ==============================================================================
+\ Execution context
+\ ==============================================================================
+\ Each object has a pointer to an execution context (EC).
+\ Fields that are part of the EC "inherit" values up the object stack, when fetching.
+\ The "default" EC is called ROOTEC.
+\ We can create our own EC's to use in classes or individual objects, 
+\ or use T{ T} for special cases where we need a throwaway EC. 
+\ T{ T} save/restore the current object's EC in a dedicated stack (the old EC stack).
+
+0 value s/ec
+
+: ecp@ ( - ec ) me >ecp @ ;
+: ecp! ( ec - ) me >ecp ! ;
+
+redef : sentinels,  256 cell/ 0 do $DEADBEEF , loop ;
+
+redef : econtext ( <name> - )
+    create sentinels, ;
+
+econtext rootec
+
+variable _osp
+0 value ofs
+0 value ec
+: >ecfa ( ofs - val )
+    \ find EC field in object stack.  
+    \ search for a non-$DEADBEEF, starting at top object, returning the EC field if found.   
+    \ stop at object = 0.
+    \ if no used field found, return the top object's EC field. 
+    \ if 0 not found (after 16 iterations), return the top object's EC field.
+    to ofs
+    osp @ _osp !
+    ecp@ to ec
+    16 for
+        ec if 
+            ec ofs + dup @ $DEADBEEF <> if unloop exit else drop then
+        else
+            ecp@ ofs + unloop exit 
+        then
+        -4 _osp c+!
+        _osp @ @ ?dup if >ecp @ else 0 then to ec
+    loop 
+    ecp@ ofs + ;
+
+: does-ec-getter  does> @ >ecfa @ ;
+: does-ec-setter  does> @ ecp@ + ! ;
+
+: ec-cell ( <name> - ) ( - n ) ( n - )
+    \ Creates getter ( MYVAR@ ) and setter ( MYVAR! )
+    bl parse 2dup
+    f" %s@" screate s/ec , does-ec-getter 
+    f" %s!" screate s/ec , does-ec-setter 
+    cell +to s/ec ;
+
+: does-ec-fgetter  does> @ >ecfa sf@ ;
+: does-ec-fsetter  does> @ ecp@ + sf! ;
+
+: ec-float ( <name> - ) ( - n ) ( n - )
+    \ Creates getter ( MYVAR@ ) and setter ( MYVAR! )
+    bl parse 2dup
+    f" %s@" screate s/ec , does-ec-fgetter 
+    f" %s!" screate s/ec , does-ec-fsetter 
+    cell +to s/ec ;
+
+\ Temporary contexts
+\ aligned-page ecs
+\ variable ecsp ecs ecsp !
+
+\ :noname  4096 256 / for sentinels, loop ; 
+\     pagealign here swap execute constant tcs
+
+\ variable tcsp  tcs tcsp !
+
+\ : c{  ( ec - ) 
+\     4 ecsp c+!  ecp@ ecsp @ !   ecp! ;
+
+\ : c}  ( - )    
+\     ecsp @ @ ecp!  -4 ecsp c+! ;
+
+\ : t{ 
+\     tcsp @ dup c{
+\     tcs - 256 + 4095 and tcs + tcsp ! ;
+
+\ : t} 
+\     c}
+\     tcsp @ tcs - 256 - 4095 and tcs + tcsp ! ;
 
 \ ==============================================================================
 \ Classes
@@ -168,7 +258,7 @@ to /static
     1 next-classifier# +! ;
 
 || : (classifier) ( class - class )
-    here swap , /classifier cell- allot&erase
+    here swap , rootec , /classifier 2 cells - allot&erase
     dup to classifier
     {
         /classifier instance-size !
@@ -322,7 +412,7 @@ create %protocol  %class make {
 
 : ->property ( obj property - a' )
     over >r >r
-    dup >cla @ r@ 2 cells + @ + @ dup >r +    
+    dup >cla @ r@ 3 cells + @ + @ dup >r +    
     r> if 2r> 2drop exit then
     r> body>name 
     r> >cla @ body>name
@@ -585,6 +675,7 @@ create %protocol  %class make {
     class0 >cla @ %trait = abort" template : Traits cannot have templates, only classes."
     class0 -> class-template @ ?dup 0= if
         class0 make class0 -> class-template !
+        rootec class0 -> class-template @ -> ecp !
         class0 -> class-template @
     then ;
 
@@ -1074,3 +1165,62 @@ variable errsp   estack errsp !
     next-classifier# @ fresh-next-classifier# !
     /static fresh-/static ! ;
 
+optimising off
+
+\ Default global system object
+class: %global class;
+%global object global 1024 allot&erase \ give room to grow if needed
+global to me
+
+((
+\ EC Tests
+ec-cell fnt
+ec-cell fore
+ec-cell pile
+
+\ Set default values
+123 fnt!
+456 fore!
+789 pile!
+
+econtext test-ec
+%global object test-global
+
+test-global {  test-ec ecp!  -1 fore!  }   \ pre-set test-ec's FORE to -1, leave others $DEADBEEF
+
+: inner
+    ." Inner: fnt=" fnt@ . ." fore=" fore@ . ." pile=" pile@ . cr ;
+
+: middle
+    ." Middle before: fnt=" fnt@ . ." fore=" fore@ . ." pile=" pile@ . cr
+    999 pile!  \ change pile in current context
+    inner
+    ." Middle after: fnt=" fnt@ . ." fore=" fore@ . ." pile=" pile@ . cr ;
+
+: outer
+    ." Outer before: fnt=" fnt@ . ." fore=" fore@ . ." pile=" pile@ . cr
+    test-global {
+        middle
+    }
+    ." Outer after: fnt=" fnt@ . ." fore=" fore@ . ." pile=" pile@ . cr ;
+
+outer
+
+
+: profile  
+    100000 for
+    pile@ drop
+    test-global {
+        pile@ drop
+        999 pile!  
+        pile@ drop
+    }
+    loop ;
+
+\ Expected output:
+\ Outer before: 123 456 789
+\ Middle before: 123 -1 789  (FORE=-1 from test-ec, FNT/PILE inherited from default)
+\ Inner: 123 -1 999  (PILE=999 set by middle)
+\ Middle after: 123 -1 999
+\ Outer after: 123 456 789  (back to default context values) 
+))

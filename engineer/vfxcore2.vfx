@@ -21,8 +21,6 @@ include %idir%/scope.vfx          \ Per-file public/private words; search order 
 include %idir%/fixed.vfx          \ 16.16 fixed-point math
 include %idir%/format.vfx         \ Printf-style string formatting
 
-include %idir%/ec.vfx             \ Execution context support
-
 include %idir%/nib2.vfx           \ NIBS (Nib 2.0) OOP system core
 include %idir%/nib2-tools.vfx     \ NIBS introspection tools
 include %idir%/nib2-compact.vfx   \ Compact class syntax parser (c:)
