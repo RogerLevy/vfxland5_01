@@ -506,6 +506,10 @@ create %protocol  %class make {
         dup add-property map-property
     then ;
 
+: ?accessor ( name len - )
+    2dup f" >%s" sfind nip if 2drop exit then
+    2dup fe" s\" -> %s\" evaluator >%s" evaluate ;
+
 : nproperty ( size <name> - ) ( - a )
     {: size | property0 :}
 
@@ -539,6 +543,7 @@ create %protocol  %class make {
             \ New class - okay
         then
         create-property to property0
+        property0 body> >name count ?accessor
     then
 
     \ Set current property
