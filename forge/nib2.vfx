@@ -137,7 +137,6 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
     cla @ body>name f" %s/"
     sfind if execute else drop then ;
 
-
 \ ==============================================================================
 \ Execution context
 \ ==============================================================================
@@ -204,27 +203,28 @@ variable _osp
     cell +to s/ec ;
 
 \ Temporary contexts
-\ aligned-page ecs
-\ variable ecsp ecs ecsp !
+aligned-page ecs
+variable ecsp ecs ecsp !
 
-\ :noname  4096 256 / for sentinels, loop ; 
-\     pagealign here swap execute constant tcs
+:noname  4096 256 / for sentinels, loop ; 
+    pagealign here swap execute constant tcs
 
-\ variable tcsp  tcs tcsp !
+variable tcsp  tcs tcsp !
 
-\ : c{  ( ec - ) 
-\     4 ecsp c+!  ecp@ ecsp @ !   ecp! ;
+|| : c{  ( ec - ) 
+    4 ecsp c+!  ecp@ ecsp @ !   ecp! ;
 
-\ : c}  ( - )    
-\     ecsp @ @ ecp!  -4 ecsp c+! ;
+|| : c}  ( - )    
+    ecsp @ @ ecp!  -4 ecsp c+! ;
 
-\ : t{ 
-\     tcsp @ dup c{
-\     tcs - 256 + 4095 and tcs + tcsp ! ;
+: t{ ( - )
+    ecp@ 
+    tcsp @ dup c{  tcs - 256 + 4095 and tcs + tcsp ! 
+    ecp@ s/ec move ;
 
-\ : t} 
-\     c}
-\     tcsp @ tcs - 256 - 4095 and tcs + tcsp ! ;
+: t} ( - )
+    c}
+    tcsp @ tcs - 256 - 4095 and tcs + tcsp ! ;
 
 \ ==============================================================================
 \ Classes
