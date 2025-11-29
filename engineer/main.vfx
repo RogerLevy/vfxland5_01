@@ -1,0 +1,3 @@
+include %idir%/../forge/forge.vfx
+include %idir%/../forge/lib/allegro5/allegro5.vfx
+include %idir%/engineer.vfx

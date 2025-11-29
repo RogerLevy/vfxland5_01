@@ -3,14 +3,20 @@
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
+\ %vfxland5% string macro
+\ =============================================================================
+
+also substitutions definitions
+    create vfxland5 256 allot&erase
+    s" %idir%\.." expand vfxland5 place
+only forth definitions
+
+\ =============================================================================
 \ Core System Components
 \ =============================================================================
 
-include %idir%/vfxcore2.vfx \ Codebase-wide language extensions
-\ include %idir%/error2.vfx   \ TODO: Make platform-agnostic
+include %idir%/checks.vfx
 include %idir%/variables.vfx \ System variables
-include %idir%/counter.vfx  \ Required by mersenne for seeding
-include %idir%/mersenne.vfx \ RNG
 \ include %idir%/changes.vfx  \ Filesystem change tracking
 
 \ =============================================================================
@@ -94,7 +100,7 @@ redef : empty ( - )
     s" main.vfx" fileExist? if s" main.vfx" floaded then ;
 
 also substitutions 
-aka vfxland5 vfxland5
+    aka vfxland5 vfxland5
 previous
 
 : init-dev ( - )
@@ -193,11 +199,12 @@ redef : main ( - )
 \ =============================================================================
 
 fload %idir%/tools.vfx
-include %idir%/ls.vfx
+fload %idir%/ls.vfx
 
 \ =============================================================================
 \ Kickoff
 \ =============================================================================
+public
 
 : engineer-entrypoint ( hinst hpinst lpcommand nshow -- res )
     over zcount zcommand zplace

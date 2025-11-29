@@ -1,5 +1,6 @@
 require %idir%/cjson.vfx
-require %vfxland5%/engineer/json.vfx
+require %idir%/nibs-json.vfx
+
 also cjson>>
 
 s" test.json" load-file parse-json value it

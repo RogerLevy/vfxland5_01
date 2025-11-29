@@ -24,22 +24,24 @@ create temp-path-buf$ 256 allot
 : normalize ( c-addr u -- c-addr2 u2 )
     slashes >abspath ;           \ Convert to canonical absolute path
 
-: .s
-    depth 8 min locals| d |
-    d 0< -4 ?throw
-    d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
-    d if
-        d 0 ?do d 1 - i - pick . loop 
-    else
-        ." Empty! "
-    then
-    ." ] " cr ;
+\ : .s
+\     depth 8 min locals| d |
+\     d 0< -4 ?throw
+\     d if ."     DS( " d . ." ):[ " else ."     DS:[ " then
+\     d if
+\         d 0 ?do d 1 - i - pick . loop 
+\     else
+\         ." Empty! "
+\     then
+\     ." ] " cr ;
 
 : ending ( a n c - a n )
    >r begin  2dup r@ scan
       ?dup while  2swap 2drop  #1 /string
    repeat  r> 2drop ;
-: -path ( a n - a n ) slashes  '\' ending  0 max ;
+
+: -path ( a n - a n ) 
+    slashes  '\' ending  0 max ;
 
 \ Fixed file loading words
 : included      \ c-addr u --

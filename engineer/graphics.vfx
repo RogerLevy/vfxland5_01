@@ -149,7 +149,7 @@ variable line-spacing  8 line-spacing !
 \ Backend
 
 || create bg.png here
-    s" %idir%\builtin\gfx\vga2_8x8_allegro5.png" file,
+    s" %idir%\assets\gfx\vga2_8x8_allegro5.png" file,
 || here swap - constant /bg.png
 
 ec-cell fnt
