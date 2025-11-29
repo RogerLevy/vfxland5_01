@@ -13,6 +13,26 @@ redef : ticks  ( n - ms )
     sdelta f>p to pdelta ;
 
 \ =============================================================================
+\ Window position save/restore
+\ =============================================================================
+
+variable winx
+variable winy
+
+: save-window-pos  
+    display winx winy al_get_window_position
+    s" session.ini" [SaveConfig
+        .sintvar winx
+        .sintvar winy
+    SaveConfig] ;
+
+: restore-window-pos
+    s" session.ini" CfgIncluded 
+    display winx @ winy @ al_set_window_position ;
+
+['] save-window-pos AtExit
+
+\ =============================================================================
 \ Window management
 \ =============================================================================
 
@@ -36,12 +56,14 @@ GetForegroundWindow value vfx-hwnd
     ." WINDOWED" cr 0 to fullscreen? ;
 
 : *display ( - )
-    \ fullscreen? if fullscreen else windowed then
-    create-display  going off ;
+    create-display  restore-window-pos  going off ;
 
 : winmode ( - )
     2 zoom ! 
     appw apph fullscreen? resize-display
+    fullscreen? not if
+        display winx @ winy @ al_set_window_position 
+    then
     update-delta update-delta ;
 
 : w/f ( - )

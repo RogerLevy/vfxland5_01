@@ -513,7 +513,7 @@ extern "C" void * al_get_timer_event_source( void * timer );
 \ extern "C" al_get_voice_position( );
 extern "C" void * al_get_win_window_handle( void * display );
 extern "C" al_get_window_constraints( void * display, int * minw, int * minh, int * maxw, int * maxh );
-\ extern "C" al_get_window_position( );
+extern "C" void al_get_window_position( void * display, void * x, void * y );
 extern "C" void * al_grab_font_from_bitmap( void * bmp, int ranges_n, void * ranges );
 \ extern "C" al_grab_mouse( );
 \ extern "C" al_have_d3d_non_pow2_texture_support( );
