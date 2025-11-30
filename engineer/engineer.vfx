@@ -36,23 +36,22 @@ fload %idir%/go.vfx         \ Main Loop
 || : fresh,  dup , /classifier move, ;
 
 || create fresh-classifiers 
-    /classifier cell+ array{
-        %object fresh,    
-        %iterable fresh,
-        %lifo fresh,
-        %fifo fresh,
-
-        %class fresh,
-        %trait fresh,
-        %property fresh,
-        %static fresh,
-        %protocol fresh,
-        %array fresh,
-        %stack fresh,   
-        %object-array fresh,
-        %global fresh,
-
-    array}
+\ TODO: do this automatically
+/classifier cell+ array{
+    %object fresh,    
+    %iterable fresh,
+    %lifo fresh,
+    %fifo fresh,
+    %class fresh,
+    %trait fresh,
+    %property fresh,
+    %static fresh,
+    %protocol fresh,
+    %array fresh,
+    %stack fresh,   
+    %object-array fresh,
+    %global fresh,
+array}
 
 || : reset-classifier ( a - )
     @+ ( src dest ) /classifier move ;
@@ -94,7 +93,7 @@ redef : empty ( - )
     rs
     empty-engineer
     only forth definitions
-    s" anew gild" evaluate ;
+    s" anew gildpoint" evaluate ;
 
 : cartridge ( - )
     \ Load user program
@@ -203,6 +202,9 @@ redef : main ( - )
 fload %idir%/tools.vfx
 fload %idir%/ls.vfx
 
+public
+include %idir%/back.vfx           \ Backward compatibility shim
+
 \ =============================================================================
 \ Kickoff
 \ =============================================================================
@@ -229,5 +231,7 @@ public
 borrow nib2>> gild-nib
 gild-nib
 
-include %idir%/back.vfx           \ Backward compatibility shim
-marker gild
+\ TODO: gild the system classifiers
+|| : gild  gild-nib s" redef marker gildpoint" evaluate ;
+
+gild

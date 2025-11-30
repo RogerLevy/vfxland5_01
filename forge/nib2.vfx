@@ -1186,13 +1186,16 @@ class: %global class;  \ ECP = ROOTEC
 || : init-nib ( - )
     fresh-next-classifier# @ next-classifier# ! 
     fresh-/static @ to /static
-    global me!
-    fresh/ec to s/ec
-    0 to classifier ;
+    global me!  rootec ecp!
+    fresh/ec @ to s/ec
+    0 to classifier 
+;
 
 || : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
-    /static fresh-/static ! ;
+    /static fresh-/static ! 
+    s/ec fresh/ec !
+;
 
 optimising off
 global me!
