@@ -1,4 +1,10 @@
-\ parent lowest highest next prev
+trait: %node
+    prop parent   :addr 
+    prop lowest   :addr 
+    prop highest  :addr  
+    prop next     :addr
+    prop prev     :addr   
+trait;
 
 : dlremove  ( node -- )
     dup -> parent @ dup 0= if  2drop  exit  then

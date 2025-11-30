@@ -8,10 +8,14 @@ public
 #elements /actor array elements
 
 \ Object extension
-prop sx prop sy
-prop en prop vis prop draw
-prop parent prop lowest prop highest prop next prop prev
-require %idir%\..\dltree.vfx
+class: %element
+    %actor derive
+    is-a %node
+    prop sx :fixed
+    prop sy :fixed
+    prop en prop vis 
+    prop draw :xt
+class;
 
 \ Allocation
 : element ( n - a )  /actor * elements + ;
