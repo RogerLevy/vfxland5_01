@@ -1,8 +1,4 @@
-aka @hitbox hitbox
 \ aka >albmp id>albmp
 aka bmptotem id>bmp
 aka tileset %tileset
 aka +tileset tileset-from
-aka actor %actor
-aka act&> act>
-aka floating -collisions

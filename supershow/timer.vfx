@@ -1,0 +1,21 @@
+\ =============================================================================
+\ Timer actors
+\ =============================================================================
+
+class: %timer 
+    %actor derive 
+    prop xt1 :addr
+    prop dur :fixed 
+class;
+
+: clear-timers ( -- )
+    actives> me %timer is? -exit me unload ;
+
+|| : act-timer
+    act> dur @ passed? -exit me unload xt1 @ >r ;
+    
+|| : (timer) ( time. xt -- )
+    xt1 ! 0 max dur ! act-timer ;
+
+continuation: timer> ( time. - ) ( - )
+    ( xt ) %timer one { (timer) } ;

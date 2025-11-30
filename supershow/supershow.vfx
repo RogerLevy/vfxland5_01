@@ -15,6 +15,8 @@
 gamew gap / ?constant tmw
 gameh gap / ?constant tmh
 variable clock  clock on
+variable gamelife
+0d 2value gametime
 
 \ =============================================================================
 \ Dependencies
@@ -33,10 +35,12 @@ include %idir%/traits.vfx           \ Object traits
 include %idir%/asset.vfx            \ Base asset class
 
 \ =============================================================================
-\ Stage
+\ Actor system
 \ =============================================================================
 
+include %idir%/actor.vfx
 include %idir%/stage.vfx            \ Actor/sprite system
+include %idir%/timer.vfx
 
 \ =============================================================================
 \ Asset types

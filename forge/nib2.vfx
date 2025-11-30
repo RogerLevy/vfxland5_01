@@ -162,9 +162,10 @@ redef : econtext ( <name> - )
 
 econtext rootec
 
-variable _osp
-0 value ofs
-0 value ec
+
+|| variable _osp
+|| 0 value ofs
+|| 0 value ec
 : >ecfa ( ofs - val )
     \ find EC field in object stack.  
     \ search for a non-$DEADBEEF, starting at top object, returning the EC field if found.   
