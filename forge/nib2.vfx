@@ -1160,10 +1160,12 @@ variable errsp   estack errsp !
 
 || variable fresh-next-classifier#
 || variable fresh-/static
+|| variable fresh/ec
 
 || : init-nib ( - )
      fresh-next-classifier# @ next-classifier# ! 
      fresh-/static @ to /static
+     fresh/ec @ to s/ec
      0 to classifier ;
 
 || : gild-nib ( - )
