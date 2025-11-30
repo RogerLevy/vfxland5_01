@@ -170,14 +170,14 @@ fast}
 \ Script Classes
 \ =============================================================================
 
+: filebase@ ( - a len ) 
+    CurrSourceName -path -ext >lowercase ;
+
+: >classbase ( class - a len )
+    body>name >pad count >lowercase ?-% ;
+
 : (actor-definition) ( class - )
-    dup body>name >pad count >lowercase ?-%
-    CurrSourceName -path -ext >lowercase 
-    s= if
-        private
-    then
-    >template to me \ allows immediate assignment of template (TODO: revisit)
-;
+    >classbase filebase@ s= if private then ;
 
 %actor :derive ( source-class derived-class - )
     nip (actor-definition) ;
