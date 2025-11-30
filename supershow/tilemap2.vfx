@@ -29,7 +29,7 @@ class;
     next-bmp# @ baseid !
     bmp @ bmph th @ - 1 + for
         bmp @ bmpw tw @ - 1 + for
-            i j at   bmp @ id>albmp tw 2@ *subbmp wrap-bitmap dup . add-bitmap drop
+            i j at   bmp @ id>albmp tw 2@ *subbmp wrap-bitmap add-bitmap drop
         tw @ +loop
     th @ +loop
     next-bmp# @ baseid @ - #tiles ! 

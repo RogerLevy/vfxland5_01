@@ -137,6 +137,8 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
     cla @ body>name f" %s/"
     sfind if execute else drop then ;
 
+: me! ( object - ) to me ;
+
 \ ==============================================================================
 \ Execution context
 \ ==============================================================================
@@ -148,6 +150,7 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
 \ T{ T} save/restore the current object's EC in a dedicated stack (the old EC stack).
 
 0 value s/ec
+256 constant EC_MAX_SIZE
 
 : ecp@ ( - ec ) me >ecp @ ;
 : ecp! ( ec - ) me >ecp ! ;
@@ -437,8 +440,11 @@ create %protocol  %class make {
 : add-property ( property - )
     classifier -> property-list add-to ;
 
-: is-property-mapped? ( property - b )
-    -> offset @ classifier + @ 0<> ;
+: mapped? ( property class - flag )
+    swap -> offset @ + @ 0<> ;
+
+: is-property-mapped? ( property - flag )
+    classifier mapped? ;
 
 : map-property ( size property - )
     \ map property for current class
@@ -1155,6 +1161,20 @@ variable errsp   estack errsp !
 %static is-a %object
 
 \ ==============================================================================
+\ Global execution context
+\ ==============================================================================
+
+class: %global class;  \ ECP = ROOTEC
+%global object global 
+
+\ trait: %contextual
+\     EC_MAX_SIZE nproperty ec
+\ trait;
+
+\ %contextual :construct ( - )
+\     ec ecp! ;
+
+\ ==============================================================================
 \ Init/Reset
 \ ==============================================================================
 
@@ -1163,21 +1183,19 @@ variable errsp   estack errsp !
 || variable fresh/ec
 
 || : init-nib ( - )
-     fresh-next-classifier# @ next-classifier# ! 
-     fresh-/static @ to /static
-     fresh/ec @ to s/ec
-     0 to classifier ;
+    fresh-next-classifier# @ next-classifier# ! 
+    fresh-/static @ to /static
+    global me!
+    fresh/ec to s/ec
+    0 to classifier ;
 
 || : gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
     /static fresh-/static ! ;
 
 optimising off
+global me!
 
-\ Default global system object
-class: %global class;
-%global object global 1024 allot&erase \ give room to grow if needed
-global to me
 
 ((
 \ EC Tests

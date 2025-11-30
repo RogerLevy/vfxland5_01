@@ -50,6 +50,8 @@ fload %idir%/go.vfx         \ Main Loop
         %array fresh,
         %stack fresh,   
         %object-array fresh,
+        %global fresh,
+
     array}
 
 || : reset-classifier ( a - )
