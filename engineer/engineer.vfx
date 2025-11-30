@@ -23,8 +23,31 @@ include %idir%/variables.vfx \ System variables
 \ Game services
 \ =============================================================================
 
-fload %idir%/graphics.vfx   \ Graphics functions
-fload %idir%/input.vfx      \ Input functions
+fload %idir%/../forge/lib/allegro5/graphics.vfx   \ Graphics functions
+fload %idir%/../forge/lib/allegro5/input.vfx      \ Input functions
+
+\ Palette
+include %idir%/vga13h.vfx
+
+: color ( n - )
+    \ Indexed color selection
+    255 and cells vga13h + @ 8 << $ff or rgba ;
+
+\ VGA Font
+|| 0 value vga-8x8 \ font
+|| create vga.png here
+    s" %idir%\assets\gfx\vga2_8x8_allegro5.png" file,
+|| here swap - constant /vga.png
+|| create char-range 0 , 255 ,
+
+: init-vga-font
+    vga.png /vga.png 0 z" r" al_open_memfile >r
+    r@ 0 al_load_bitmap_f
+    r> al_fclose drop
+        1` char-range` al_grab_font_from_bitmap
+        to vga-8x8 
+        vga-8x8 fnt! ;
+
 fload %idir%/border.vfx     \ TV border / scaling
 \ fload %idir%/ide3.vfx       \ Interactive IDE
 fload %idir%/go.vfx         \ Main Loop
@@ -82,7 +105,7 @@ borrow nib2>> init-nib
     reset-strout-buffers
     init-nib
     reset-system-classifiers
-    clear-funcs
+    \ clear-funcs
     ['] noop 'show !
     ['] noop is boot
     ['] noop is onSwitchIn

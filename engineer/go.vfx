@@ -1,4 +1,18 @@
 \ =============================================================================
+\ Framerate independence
+\ =============================================================================
+
+redef : ticks  ( n - ms )
+    s>f 1000e tps f/ f* f>s ;
+
+: update-delta  ( - )
+    ustime  ucounter 2dup to ustime  2swap 2-
+        d>s to usdelta
+    usdelta s>f 1000000e f/ to sdelta
+    ustime 1000 m/ to mstime
+    sdelta f>p to pdelta ;
+
+\ =============================================================================
 \ Main Loop Support
 \ =============================================================================
 
@@ -22,6 +36,19 @@ continuation: show> ( - ) ( - )
         ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ 
         f+ fdup 1e tps f/ f>= until fdrop
     to ustime ;
+
+: winmode ( - )
+    2 zoom ! 
+    appw apph fullscreen? resize-display
+    fullscreen? not if
+        display winx @ winy @ al_set_window_position 
+    then
+    update-delta update-delta ;
+
+: w/f ( - )
+    \ Display mode switching for release builds
+    fullscreen? if windowed else fullscreen then
+    winmode ;
 
 \ =============================================================================
 \ Global Events

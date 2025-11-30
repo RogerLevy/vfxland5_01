@@ -23,31 +23,6 @@ create the-event /ALLEGRO_EVENT allot&erase
 : the-mbutton ( - n ) the-event MOUSE_EVENT.button @ ;
 
 \ =============================================================================
-\ Function Keys
-\ =============================================================================
-
-: func[] 256 * funcs + ;
-   
-: func ( a c n - )
-    <f1> - func[] place ;
-
-: clear-funcs ( - )
-    funcs 256 12 * erase
-    s" ?reload" <f5> func
-    s" hold toggle" <f9> func ;
-
-: ?func ( n - )
-    <f1> - dup 0 12 within? if
-        func[] count dup if
-            state off
-            evaluate
-        else
-            2drop
-            ." Unassigned function key." cr
-        then
-    else drop then ;
-
-\ =============================================================================
 \ Keyboard state control
 \ =============================================================================
 

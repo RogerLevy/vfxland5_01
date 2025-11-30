@@ -1,16 +1,3 @@
-\ =============================================================================
-\ Framerate independence
-\ =============================================================================
-
-redef : ticks  ( n - ms )
-    s>f 1000e tps f/ f* f>s ;
-
-: update-delta  ( - )
-    ustime  ucounter 2dup to ustime  2swap 2-
-        d>s to usdelta
-    usdelta s>f 1000000e f/ to sdelta
-    ustime 1000 m/ to mstime
-    sdelta f>p to pdelta ;
 
 \ =============================================================================
 \ Window position save/restore
@@ -56,20 +43,7 @@ GetForegroundWindow value vfx-hwnd
     ." WINDOWED" cr 0 to fullscreen? ;
 
 : *display ( - )
-    create-display  restore-window-pos  going off ;
-
-: winmode ( - )
-    2 zoom ! 
-    appw apph fullscreen? resize-display
-    fullscreen? not if
-        display winx @ winy @ al_set_window_position 
-    then
-    update-delta update-delta ;
-
-: w/f ( - )
-    \ Display mode switching for release builds
-    fullscreen? if windowed else fullscreen then
-    winmode ;
+    create-display  restore-window-pos ;
 
 \ =============================================================================
 \ Color and position
@@ -94,13 +68,6 @@ ec-cell peny
 
 : rgba ( n - )  
     c>f 8 << c>f 8 << c>f 8 << c>f drop frgba ;
-
-\ Palette
-include %idir%/vga13h.vfx
-
-: color ( n - )
-    \ Indexed color selection
-    255 and cells vga13h + @ 8 << $ff or rgba ;
 
 \ Position
 : at ( x y - ) peny! penx! ;
@@ -166,17 +133,7 @@ redef : cls ( - )
 
 \ || variable rmargin
 variable line-spacing  8 line-spacing !
-|| 0 value vga-8x8 \ font
-
-\ Backend
-
-|| create bg.png here
-    s" %idir%\assets\gfx\vga2_8x8_allegro5.png" file,
-|| here swap - constant /bg.png
-
 ec-cell fnt
-
-|| create range(s) 0 , 255 ,
 
 \ Text rendering
 
@@ -201,13 +158,3 @@ ec-cell fnt
 
 : glyph ( n - )
     >r  fnt@ frgba@ at@f  r> al_draw_glyph ;
-
-\ Init
-
-: init-vga-font
-    bg.png /bg.png 0 z" r" al_open_memfile >r
-    r@ 0 al_load_bitmap_f
-    r> al_fclose drop
-        1 range(s) al_grab_font_from_bitmap
-        to vga-8x8 
-        vga-8x8 fnt! ;
