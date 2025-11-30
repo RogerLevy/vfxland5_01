@@ -28,7 +28,12 @@ class: %actor
     prop unloaded
 
     EC_MAX_SIZE nprop ec
+    template { ec clear-ec }
 class;
+
+\ =============================================================================
+\ Actor management
+\ =============================================================================
 
 : free? ( actor - flag ) >en @ 0= ;
 
@@ -41,6 +46,9 @@ class;
     \ ." construct" cr
     at@ 2>p x 2!
     ec ecp! ;
+
+: init-actor ( actor - )
+    { me init } ;
 
 \ =============================================================================
 \ Actor logic
@@ -71,13 +79,11 @@ continuation: act> ( - ) ( - ) 0 time !  ( xt ) beha ! ;
 \ continuation: act&> ( - ) ( - ) 0 time !  ( xt ) dup execute  beha ! ; 
 continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 
-
 : simple-motion
     vx 2@ x 2+! ;
 
 : -collisions ( - )
     physics> simple-motion ;
-
 
 \ =============================================================================
 \ Template
@@ -146,7 +152,6 @@ redef : halt  beha off  0 0 vx 2! ;
         <right> held? if 2. x +! then
         <up> held? if -2. y +! then
         <down> held? if 2. y +! then ;
-
 
 \ =============================================================================
 \ Actor Inspection

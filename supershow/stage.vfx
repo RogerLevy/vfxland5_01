@@ -76,7 +76,7 @@ continuation: who> ( - actor|0 ) ( - f )
     to $ who> $ count tag$ count s= ;
 
 \ =============================================================================
-\ Actor management
+\ Stage processing
 \ =============================================================================
 
 : priority ( n - )
@@ -106,6 +106,10 @@ continuation: who> ( - actor|0 ) ( - f )
     then 
 ;
 
+\ =============================================================================
+\ Stage management
+\ =============================================================================
+
 : _clear-stage ( - )
     0 next# !  actives>  me unload ;
 
@@ -117,7 +121,7 @@ continuation: who> ( - actor|0 ) ( - f )
     clear-stage gamew 2 / gameh 2 / at  ;
 
 : stage-init ( actor - )
-    { ec ecp!  me actors slot>index id !   me init } ;
+    { me actors slot>index id !   me init-actor } ;
 
 : stage-slot ( - actor )
     #actors for

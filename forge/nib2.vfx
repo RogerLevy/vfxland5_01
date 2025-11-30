@@ -155,13 +155,15 @@ continuation: as> ( %actor - ) ( - ) swap { ( xt ) execute } ;
 : ecp@ ( - ec ) me >ecp @ ;
 : ecp! ( ec - ) me >ecp ! ;
 
-redef : sentinels,  256 cell/ 0 do $DEADBEEF , loop ;
+: sentinels,  256 cell/ 0 do $DEADBEEF , loop ;
 
-redef : econtext ( <name> - )
+: clear-ec ( ec - ) 
+    dp @ swap dp ! sentinels, dp ! ;
+
+: econtext ( <name> - )
     create sentinels, ;
 
 econtext rootec
-
 
 || variable _osp
 || 0 value ofs
