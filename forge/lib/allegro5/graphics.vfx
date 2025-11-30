@@ -7,6 +7,7 @@ variable winx
 variable winy
 
 : save-window-pos  
+    debug @ -exit
     display winx winy al_get_window_position
     s" session.ini" [SaveConfig
         .sintvar winx
