@@ -12,14 +12,14 @@ create autoloads /list allot&erase
 class: %asset
     prop data 
 
-    : _embed ( fp len - )
+    : embed ( fp len - )
         2dup lslurp data !  srcpath$ place ;
 
     : asset ( name len class - asset ) ( - asset )
         >r screate r> make 
         dup autoloads add-to ;
 
-    : data@ ( asset - a len )
+    : @data ( asset - a len )
         -> data @ lcount ;
 class;
 
@@ -36,14 +36,14 @@ class: %bitmap
         does> -> id @ ;
 
     : _load-albmp ( - )
-        me data@ memfile@ dup
+        me @data memfile@ dup
             0 al_load_bitmap_f albmp !
         -memfile ;
 
     redef : bitmap ( <path> - ) ( - bmpid )
         bl parse 2dup 
         -path %bitmap asset does-bitmap { 
-            ( fp len ) _embed
+            ( fp len ) embed
             _load-albmp 
             me add-bitmap id !
         } ;
@@ -78,7 +78,7 @@ class: %sample
         does> -> id @ sound ;
 
     : _load-alsmp ( - alsmp )
-        me data@ memfile@ dup
+        me @data memfile@ dup
             ident count >zpad al_load_sample_f alsmp !
         -memfile ;
 
@@ -87,7 +87,7 @@ class: %sample
         bl parse 2dup 
         -path -ext f" *%s*" %sample asset does-sample {
             2dup '.' ending -1 /string ident place 
-            ( fp len ) _embed
+            ( fp len ) embed
             _load-alsmp
             alsmp @ add-sample id !
         } ;

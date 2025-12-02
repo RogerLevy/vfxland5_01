@@ -1,6 +1,15 @@
 65536 ?constant #bitmaps
 
-#bitmaps cell array bitmaps
+class: %bitmap
+    %asset derive
+    prop id 
+    prop albmp
+class;
+
+|| %bitmap object dummy.bmp
+|| : dummies,  #bitmaps for dummy.bmp , loop ;
+
+create bitmaps cell array{ dummies, array} drop
 
 || : bitmap[]  $FFFF and bitmaps swap nth ;
 
@@ -8,12 +17,6 @@ variable next-bmp#  1 next-bmp# !
 
 : alloc-bmp# ( - bmpid ) next-bmp# @   1 next-bmp# +! ;
 : add-bitmap ( bitmap - bmpid ) alloc-bmp# dup >r bitmap[] ! r> ;
-
-class: %bitmap
-    %asset derive
-    prop id 
-    prop albmp
-class;
 
 : id>albmp ( bmpid - albmp ) 
     bitmap[] @ -> albmp @ ;
@@ -41,6 +44,7 @@ class;
 
 : put ( bmpid - ) 
     \ draw a sprite; takes a bitfield $F000IIII 
+    ?dup -exit
     dup id>albmp swap 24 rshift draw-bitmap ;
 
 : cput ( bmpid - ) 
