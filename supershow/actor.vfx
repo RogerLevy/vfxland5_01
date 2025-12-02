@@ -90,7 +90,6 @@ continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 \ =============================================================================
 
 %actor template {
-    en on
     prio on
     -5 -5 x1 2!  10 10 w1 2!
     -collisions

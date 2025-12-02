@@ -121,7 +121,7 @@ continuation: who> ( - actor|0 ) ( - f )
     clear-stage gamew 2 / gameh 2 / at  ;
 
 : stage-init ( actor - )
-    { me actors slot>index id !   me init-actor } ;
+    { me actors slot>index id !   en on   me init-actor } ;
 
 : stage-slot ( - actor )
     #actors for
