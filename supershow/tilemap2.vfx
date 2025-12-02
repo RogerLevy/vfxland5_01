@@ -79,16 +79,16 @@ aka tile>bmpid tile
 \ =============================================================================
 
 || 0 value lm
+
 || : nr ( - ) lm peny@ ygap + at ;
+
 || : put+ ( bmpid - ) 
     dup $FFFFFFFF = if drop 
     else pile@ + put then
     xgap 0 +at ;
 
-: >lmargin ( - ) 
-    penx@ to lm ;
-
 : tiles ( a n - 'a ) 
+    penx@ to lm 
     >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
 
 : drawbg ( a cols rows - )

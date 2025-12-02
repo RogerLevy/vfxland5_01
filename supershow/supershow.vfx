@@ -45,20 +45,20 @@ include %idir%/stage.vfx            \ Actor/sprite system
 include %idir%/timer.vfx
 
 \ =============================================================================
-\ Asset types
+\ Bitmaps and tilemaps
 \ =============================================================================
 
 include %idir%/bitmap.vfx           \ Bitmaps
 include %idir%/tilemap2.vfx         \ Tilemap rendering & Tileset class
+include %idir%/sprite.vfx           \ Sprite animation (requires %tileset)
 
 \ =============================================================================
-\ Tilemap
+\ Tilemap collision
 \ =============================================================================
 
 include %idir%/udlr.vfx             \ Movement utilities
 include %idir%/tmcol.vfx            \ Tilemap collision detection
 include %idir%/tread.vfx            \ Tilemap data reading
-include %idir%/sprite.vfx           \ Sprite animation (requires %tileset)
 
 \ =============================================================================
 \ Convenience facilities
