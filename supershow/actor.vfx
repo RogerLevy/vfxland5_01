@@ -111,7 +111,7 @@ continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 \ Scripting utilities
 \ =============================================================================
 
-: att ( col row - ) gap dup 2*  gap 2 / dup 2+  at ;
+: att ( col row - ) xgap ygap 2*  gap 2 / dup 2+  at ;
 
 : *{ ( class - <code> } )
     \ Parse-ahead instantiation for serialized objects/actors

@@ -12,8 +12,10 @@
 320 ?constant gamew
 240 ?constant gameh
 20 ?constant gap  
-gamew gap / ?constant tmw
-gameh gap / ?constant tmh
+[undefined] xgap [if] gap constant xgap [then]
+[undefined] ygap [if] gap constant ygap [then]
+gamew xgap / ?constant tmw
+gameh ygap / ?constant tmh
 variable clock  clock on
 variable gamelife
 0d 2value gametime

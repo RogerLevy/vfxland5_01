@@ -18,7 +18,8 @@ defer hit ( f: x y - f: x y )
 
 0 value map
 
-0e fvalue fgap
+0e fvalue fxgap
+0e fvalue fygap
 0e fvalue nx
 0e fvalue ny
 0e fvalue px
@@ -37,38 +38,38 @@ defer hit ( f: x y - f: x y )
 
 : pu ( f: x y - )
     true to floor?  true hit   false to floor?  
-    if  fnip fgap fmod fnegate +y
+    if  fnip fygap fmod fnegate +y
     else  f2drop  then ;
 : pd ( f: x y - )
     true to ceiling?  true hit  false to ceiling?  
-    if  fnip fgap fmod fnegate fgap f+ +y
+    if  fnip fygap fmod fnegate fygap f+ +y
     else  f2drop  then ;
 : pl ( f: x y - )
     true to rwall?  true hit  false to rwall?  
-    if  fdrop fgap fmod fnegate +x
+    if  fdrop fxgap fmod fnegate +x
     else  f2drop  then ;
 : pr ( f: x y - )
     true to lwall?  true hit  false to lwall?  
-    if  fdrop fgap fmod fnegate fgap f+ +x
+    if  fdrop fxgap fmod fnegate fxgap f+ +x
     else  f2drop  then ;
 
 ( check )
-: ve+  tx fgap f+  px mbw f+  fmin  to tx ;
-: he+  ty fgap f+  ny mbh f+  fmin  to ty ;
-: >tmc  fgap f/ floor f>s ;
-: >tmc2  roundup 1e f- fgap f/ floor f>s ;
+: ve+  tx fxgap f+  px mbw f+  fmin  to tx ;
+: he+  ty fygap f+  ny mbh f+  fmin  to ty ;
+: >tmc  f/ floor f>s ;
+: >tmc2  fswap roundup 1e f- fswap f/ floor f>s ;
 : pt  map spot @ meta ;
-: xypt  fswap f>s f>s gap dup 2/ pt ;
-: pt1  tx >tmc  ty >tmc pt ;
-: pt2  tx >tmc2 ty >tmc pt ;
-: pt3  tx >tmc  ty >tmc2 pt ;
-: pt4  tx >tmc2 ty >tmc2 pt ;
+: xypt  fswap f>s f>s xgap ygap 2/ pt ;
+: pt1  tx fxgap >tmc  ty fygap >tmc pt ;
+: pt2  tx fxgap >tmc2 ty fygap >tmc pt ;
+: pt3  tx fxgap >tmc  ty fygap >tmc2 pt ;
+: pt4  tx fxgap >tmc2 ty fygap >tmc2 pt ;
 : cu
     py >tmc ny >tmc  = ?exit
     px to tx  ny to ty
     pt1 BIT_CEL and if tx ty pd then ve+
     me free? ?exit
-    mbw fgap f/ roundup f>s for
+    mbw fxgap f/ roundup f>s for
         me free? if unloop exit then
         pt2 BIT_CEL and if tx 0.5e f- ty pd then ve+
     loop ;
@@ -77,7 +78,7 @@ defer hit ( f: x y - f: x y )
     px to tx  ny mbh f+ to ty
     pt3 BIT_FLR and if tx ty pu then ve+
     me free? ?exit
-    mbw fgap f/ roundup f>s for
+    mbw fxgap f/ roundup f>s for
         me free? if unloop exit then
         pt4 BIT_FLR and if tx 0.5e f- ty pu then ve+
     loop ;
@@ -86,7 +87,7 @@ defer hit ( f: x y - f: x y )
     nx to tx  ny to ty
     pt1 BIT_WRT and if tx ty pr then he+
     me free? ?exit
-    mbh fgap f/ roundup f>s for
+    mbh fygap f/ roundup f>s for
         me free? if unloop exit then
         pt3 BIT_WRT and if tx ty 0.5e f- pr then he+
     loop ;
@@ -95,7 +96,7 @@ defer hit ( f: x y - f: x y )
     nx mbw f+ to tx  ny to ty
     pt2 BIT_WLT and if tx ty pl then he+
     me free? ?exit
-    mbh fgap f/ roundup f>s for
+    mbh fygap f/ roundup f>s for
         me free? if unloop exit then
         pt4 BIT_WLT and if tx ty 0.5e f- pl then he+
     loop ;
@@ -113,7 +114,7 @@ defer hit ( f: x y - f: x y )
     py vy fs@ f+ to ny
     clear-collision-state ;
 
-: ftil  fdup fgap fmod f- ;
+: ftil  fover fswap fmod f- ;
 
 \ ------------------------------------------------------------------------------
 \ Collide with solid tiles
@@ -121,7 +122,8 @@ public
 
 continuation: tmcol>  ( x y w h a me=obj - ) ( f - f )
     ( xt ) >r
-    gap s>f to fgap
+    xgap s>f to fxgap
+    ygap s>f to fygap
     \ -1 to unhit?
     to map  s>f to mbh  s>f to mbw
     s>f y fs@ f+ to py  s>f x fs@ f+ to px
@@ -140,26 +142,26 @@ private
     nx rwall? if mbw f+ then ny mbh f+ xypt
         dup BIT_WLT and 0<> vx @ 0> and
         swap BIT_WRT and 0<> vx @ 0< and or ?exit
-    ny fudge f+ fgap fmod fudge f- fdup -fudge f>= 0e f< and -exit
-    ny 0.5e f+ ny fgap f+ ftil fmin to ny ;
+    ny fudge f+ fygap fmod fudge f- fdup -fudge f>= 0e f< and -exit
+    ny 0.5e f+ ny fygap f+ fygap ftil fmin to ny ;
 : ?hcut-
     nx rwall? if mbw f+ then ny xypt
         dup BIT_WLT and 0<> vx @ 0> and
         swap BIT_WRT and 0<> vx @ 0< and or ?exit    
-    ny mbh f+ fudge f+ fgap fmod fudge f- fdup fudge f<= 0e f> and -exit
-    ny mbh f+ 0.5e f- ny mbh f+ ftil fmax mbh f- to ny ;
+    ny mbh f+ fudge f+ fygap fmod fudge f- fdup fudge f<= 0e f> and -exit
+    ny mbh f+ 0.5e f- ny mbh f+ fygap ftil fmax mbh f- to ny ;
 : ?vcut+
     nx mbw f+ ny floor? if mbh f+ then xypt
         dup BIT_FLR and 0<> vy @ 0> and
         swap BIT_CEL and 0<> vy @ 0< and or ?exit
-    nx fudge f+ fgap fmod fudge f- fdup -fudge f>= 0e f< and -exit
-    nx 0.5e f+ nx fgap f+ ftil fmin to nx ;
+    nx fudge f+ fxgap fmod fudge f- fdup -fudge f>= 0e f< and -exit
+    nx 0.5e f+ nx fxgap f+ fxgap ftil fmin to nx ;
 : ?vcut-
     nx ny floor? if mbh f+ then xypt
         dup BIT_FLR and 0<> vy @ 0> and
         swap BIT_CEL and 0<> vy @ 0< and or ?exit
-    nx mbw f+ fudge f+ fgap fmod fudge f- fdup fudge f<= 0e f> and -exit
-    nx mbw f+ 0.5e f- nx mbw f+ ftil fmax mbw f- to nx ;
+    nx mbw f+ fudge f+ fxgap fmod fudge f- fdup fudge f<= 0e f> and -exit
+    nx mbw f+ 0.5e f- nx mbw f+ fxgap ftil fmax mbw f- to nx ;
 
 \ ------------------------------------------------------------------------------
 public

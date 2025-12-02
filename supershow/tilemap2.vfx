@@ -79,11 +79,11 @@ aka tile>bmpid tile
 \ =============================================================================
 
 || 0 value lm
-|| : nr ( - ) lm peny@ gap + at ;
+|| : nr ( - ) lm peny@ ygap + at ;
 || : put+ ( bmpid - ) 
     dup $FFFFFFFF = if drop 
     else pile@ + put then
-    gap 0 +at ;
+    xgap 0 +at ;
 
 : >lmargin ( - ) 
     penx@ to lm ;
@@ -101,7 +101,7 @@ aka tile>bmpid tile
     -rot 0 0 tmw 1 - tmh 1 - 2clamp tmw * + cells + ;
 
 : xy>cr ( x. y. - col row )
-    gap dup 2/ 2>i ;
+    xgap ygap 2/ 2>i ;
 
 \ =============================================================================
 \ Tile metadata
