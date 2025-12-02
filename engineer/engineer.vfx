@@ -17,7 +17,7 @@ only forth definitions
 
 include %idir%/checks.vfx
 include %idir%/variables.vfx \ System variables
-\ include %idir%/changes.vfx  \ Filesystem change tracking
+include %idir%/window.vfx
 
 \ =============================================================================
 \ Game services
@@ -25,29 +25,6 @@ include %idir%/variables.vfx \ System variables
 
 fload %idir%/../forge/lib/allegro5/graphics.vfx   \ Graphics functions
 fload %idir%/../forge/lib/allegro5/input.vfx      \ Input functions
-
-\ Palette
-include %idir%/vga13h.vfx
-
-: color ( n - )
-    \ Indexed color selection
-    255 and cells vga13h + @ 8 << $ff or rgba ;
-
-\ VGA Font
-|| 0 value vga-8x8 \ font
-|| create vga.png here
-    s" %idir%\assets\gfx\vga2_8x8_allegro5.png" file,
-|| here swap - constant /vga.png
-|| create char-range 0 , 255 ,
-
-: init-vga-font
-    vga.png /vga.png 0 z" r" al_open_memfile >r
-    r@ 0 al_load_bitmap_f
-    r> al_fclose drop
-        1` char-range` al_grab_font_from_bitmap
-        to vga-8x8 
-        vga-8x8 fnt! ;
-
 fload %idir%/border.vfx     \ TV border / scaling
 \ fload %idir%/ide3.vfx       \ Interactive IDE
 fload %idir%/go.vfx         \ Main Loop
@@ -151,7 +128,6 @@ previous
     init-mersenne
     init-allegro
     *display
-    init-vga-font
     0d to ustime 
 \    init-history 
 ;
@@ -226,7 +202,7 @@ fload %idir%/tools.vfx
 fload %idir%/ls.vfx
 
 public
-include %idir%/back.vfx           \ Backward compatibility shim
+include %vfxland5%/forge/lib/back.vfx           \ Backward compatibility shim
 
 \ =============================================================================
 \ Kickoff

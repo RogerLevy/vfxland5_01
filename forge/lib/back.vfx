@@ -1,4 +1,4 @@
-\ Engineer backward compatibility shim
+\ Forge backward compatibility shim
 
 redef aka [[ {
 redef aka ]] }
@@ -36,7 +36,7 @@ aka +m m{
 aka -m m}
 
 : $object ( ... class name len - object ) ( - object ) 
-    screate make ;
+    screate dmake ;
 
 redef : []    ( ." [] : WARNING: Deprecated." cr )          index>slot ;
 : deref-index ( ." DEREF-INDEX : WARNING: Deprecated." cr ) index>val ;
@@ -52,4 +52,4 @@ aka <xt :xt
 aka <addr :addr
 aka <ref :ref
 
-aka instance make
+aka instance dmake

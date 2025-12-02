@@ -53,10 +53,10 @@
     dup -1 = if drop exit then
     dup if going off >vfx then throw ;
 
-: draw-game ( - ) 
+: draw-game ( xt - ) 
     at@ 2>r
     cls
     repl @ if save-kb erase-kb then 
-    'show @ catch ?game-throw
+    catch ?game-throw
     repl @ if restore-kb then  
     2r> at ;

@@ -11,7 +11,7 @@ class;
 
 : ?pillory ( - )
     me benched? if
-        12 color s" !" print
+        $ff5555ff s" !" print
     then ;
 
 : backsprites ( - )

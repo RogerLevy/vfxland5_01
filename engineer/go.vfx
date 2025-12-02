@@ -12,6 +12,13 @@ redef : ticks  ( n - ms )
     ustime 1000 m/ to mstime
     sdelta f>p to pdelta ;
 
+|| : spin ( - )
+    ustime 
+    0e begin 
+        ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ 
+        f+ fdup 1e tps f/ f>= until fdrop
+    to ustime ;
+
 \ =============================================================================
 \ Main Loop Support
 \ =============================================================================
@@ -30,25 +37,18 @@ continuation: show> ( - ) ( - )
     <lshift> held? <rshift> held? or to shift? 
     <lctrl> held? <rctrl> held? or to ctrl? ;
 
-|| : spin ( - )
-    ustime 
-    0e begin 
-        ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ 
-        f+ fdup 1e tps f/ f>= until fdrop
-    to ustime ;
-
-: winmode ( - )
-    2 zoom ! 
-    appw apph fullscreen? resize-display
-    fullscreen? not if
-        display winx @ winy @ al_set_window_position 
-    then
-    update-delta update-delta ;
-
 : w/f ( - )
     \ Display mode switching for release builds
     fullscreen? if windowed else fullscreen then
-    winmode ;
+    winmode  
+    update-delta update-delta ;
+
+|| : ?idle ( - ) 
+    debug @ if (EmptyIdle) then ;
+
+: present ( - )
+    ?idle display al_flip_display spin ;
+
 
 \ =============================================================================
 \ Global Events
@@ -92,11 +92,6 @@ redef : event? ( - f )
 \ Main Loop
 \ =============================================================================
 
-|| : ?idle ( - ) debug @ if (EmptyIdle) then ;
-
-: present ( - )
-    ?idle display al_flip_display spin ;
-
 || : ?quit
     <esc> pressed? shift? not and esc-quits @ and if
         going off 
@@ -106,11 +101,13 @@ redef : event? ( - f )
     then ;
 
 || : ?reload-shift ( - ) shift? to reload-shift? ;
+
 || : ?w/f ( - )
     \ debug @ if ide-?w/f exit then
     <enter> pressed?  alt? and if
         w/f -keys
-    then ;    
+    then ;
+
 || : ?bye  <f4> pressed?  alt? and if bye then ;
 
 || : system-controls ( - ) 
@@ -122,13 +119,13 @@ redef : event? ( - f )
     poll ?reload-shift pump 
     system-controls ;
 
-: process-tick ( xt - )
-    draw-tv ;
+: process-tick ( - )
+    'show @ ['] draw-game draw-tv ;
 
 : frame ( - ) 
-    process-input
     update-delta
-    ['] draw-game process-tick 
+    process-input
+    process-tick 
     present ;
 
 extern BOOL SetThreadPriority( hthread, priority );
