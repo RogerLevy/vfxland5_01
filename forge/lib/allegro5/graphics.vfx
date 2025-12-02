@@ -112,7 +112,7 @@ redef : cls ( - )
 : m} ( - )
     -1 mp +!  m al_use_transform ;
 
-: transform ( f:x f:y f:sx f:sy a - )
+: transform ( f:x f:y f:sx f:sy f:a - )
     m2 al_build_transform  m2 m al_compose_transform  m m2 al_copy_transform
     m al_use_transform ;
 

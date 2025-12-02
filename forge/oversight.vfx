@@ -33,9 +33,6 @@ public
 
 private
 
-\ Get last CREATE'd word's body (System dependent)
-: lastbody ( - a ) last @ ctrl>nfa name> >body ;
-
 : struct ( n - a )
     here swap allot&erase ;
 

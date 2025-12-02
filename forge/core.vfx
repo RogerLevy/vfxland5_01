@@ -221,7 +221,7 @@ aka se" s\"        \ " \ syntax highlight guard
     rot if
         4 push-attribute
         ." ABORT: " type cr
-        rp@ cell+ (.rs)
+        rp@ cell+ (.rs) cr
         .s
         pop-attribute
         c" " 'AbortText !
@@ -325,6 +325,7 @@ cstring lastword
 aka save-exe save
 
 : s= compare 0= ;
+: z$= zcount rot zcount s= ;
 : ext? ( fn len ext len - flag ) 2swap '.' ending s= ;
 : ['] ( <name> - xt ) state @ if postpone ['] else ' then ; immediate
 : body>name ( a - a' ) body> >name count ;
@@ -435,14 +436,11 @@ redef code sf-!	\ addr -- addr' ; F: -- f
   fnext,
 end-code
 
-: 4f@  sf@+ sf@+ sf@+ sf@ ;
+: 4f@  sf@+ sf@+ sf@+ sf@ ; 
 : 4f!  4 cells + sf-! sf-! sf-! cell- sf! ;
 
-
-variable verbose
-[defined] verbose-compilation verbose !
-: .evaluate  verbose @ if 2dup type cr then evaluate ;
-
+: .evaluate ( a len - )
+    2dup type cr evaluate ;
 
 : sandbox ( - ) 
     only previous previous previous ;
