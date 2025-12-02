@@ -26,7 +26,6 @@ include %idir%/window.vfx
 fload %idir%/../forge/lib/allegro5/graphics.vfx   \ Graphics functions
 fload %idir%/../forge/lib/allegro5/input.vfx      \ Input functions
 fload %idir%/border.vfx     \ TV border / scaling
-\ fload %idir%/ide3.vfx       \ Interactive IDE
 fload %idir%/go.vfx         \ Main Loop
 
 \ =============================================================================
@@ -36,22 +35,22 @@ fload %idir%/go.vfx         \ Main Loop
 || : fresh,  dup , /classifier move, ;
 
 || create fresh-classifiers 
-\ TODO: do this automatically
-/classifier cell+ array{
-    %object fresh,    
-    %iterable fresh,
-    %lifo fresh,
-    %fifo fresh,
-    %class fresh,
-    %trait fresh,
-    %property fresh,
-    %static fresh,
-    %protocol fresh,
-    %array fresh,
-    %stack fresh,   
-    %object-array fresh,
-    %global fresh,
-array}
+    \ TODO: do this automatically
+    /classifier cell+ array{
+        %object fresh,    
+        %iterable fresh,
+        %lifo fresh,
+        %fifo fresh,
+        %class fresh,
+        %trait fresh,
+        %property fresh,
+        %static fresh,
+        %protocol fresh,
+        %array fresh,
+        %stack fresh,   
+        %object-array fresh,
+        %global fresh,
+    array}
 
 || : reset-classifier ( a - )
     @+ ( src dest ) /classifier move ;
@@ -82,7 +81,6 @@ borrow nib2>> init-nib
     reset-strout-buffers
     init-nib
     reset-system-classifiers
-    \ clear-funcs
     ['] noop 'show !
     ['] noop is boot
     ['] noop is onSwitchIn
@@ -104,32 +102,23 @@ also substitutions
     aka vfxland5 vfxland5
 previous
 
-: init-dev ( - )
-    \ Development-only initialization
-    empty 
-    +xrefs
-    256 1024 * xref-kb
-    s" %bin%\.." expand vfxland5 place
-\    wd@ mondir
-;
-
-|| : find-home-path ( - )
-    wd@ '\' ending s" bin" compare 0= if
-        s" .." $cwd
-    then
-    wd@ home-path$ place ;
+: ?..  wd@ '\' ending s" bin" s= if s" .." $cwd then ;
+: init-xrefs  +xrefs  256 1024 * xref-kb ;
+: init-vfxland5-path  s" %bin%\.." expand vfxland5 place ;
+: init-paths  init-vfxland5-path  ;
+: dev-init  empty init-xrefs init-paths ;
+: init-home-path  ?.. wd@ home-path$ place ;
 
 : frigid ( - )
     \ Initialize runtime environment
     rs
     hold off
-    debug @ if init-dev then
-    find-home-path
+    debug @ if dev-init then
+    init-home-path
     init-mersenne
     init-allegro
     *display
     0d to ustime 
-\    init-history 
 ;
 
 redef : main ( - )
@@ -188,11 +177,6 @@ redef : main ( - )
             save-exe cr
         hold ! repl ! ide !
     if fullscreen else windowed then ;
-
-|| : prj ( - a len ) prj-path$ count -path ;
-
-: turnkey ( - )
-    wd@ '\' ending f" %vfxland5%\engineer\turnkey.bat %s" shellcmd ;
 
 \ =============================================================================
 \ Development tool commands

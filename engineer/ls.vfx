@@ -1,8 +1,6 @@
 private
 
 : column  out @ - spaces ;
-: vfx 13 ;
-\ : png 13 ;
 : file-color ( z$ - n )
     push-order sandbox ['] ls>> >body @ +order
     zcount '.' ending sfind if execute else drop 15 then 
