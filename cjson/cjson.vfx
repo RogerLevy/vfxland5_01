@@ -179,13 +179,12 @@ borrow array2>> enough-flag
     r> enough-flag !
     throw ;
 
-    
-aka @j @int
-aka f@j @float
-aka p@j @fixed
-aka ?p@j ?@fixed
-aka s@j @string
-aka z@j @zstring
+aka j@n @int
+aka j@f @float
+aka j@p @fixed
+aka ?j@p ?@fixed
+aka j@s @string
+aka j@z @zstring
 
 : parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
 
