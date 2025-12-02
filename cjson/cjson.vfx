@@ -36,7 +36,6 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
 
 : .cjson-version ( - ) _cJSON_Version@0 zcount type cr ;
 
-: parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
 : cjson-delete ( cjson - ) _cJSON_Delete@4 ;
 : new-object ( - cjson ) _cJSON_CreateObject@0 ;
 : new-array ( - cjson ) _cJSON_CreateArray@0 ;
@@ -104,7 +103,8 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
     get-float f>p ;
 
 : get-int ( zkey cjson - n ) 
-    get-float f>s ;
+    get-item 5 cells + @ ;
+    \ get-float f>s ;
 
 : count-array ( zkey cjson - cjson length )
     get-array dup _cJSON_GetArraySize@4 ;
@@ -113,6 +113,8 @@ public
 
 : cjson. ( cjson - ) 
     serialize-cjson udup type _cJSON_free@4 ;
+
+aka j. cjson.
 
 || 0 value path 0 value len 0 value xt 0 value cjson
 continuation: serjson> ( path len [xt] - ) ( cjson - ) 
@@ -132,16 +134,59 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
 : ?@fixed ['] @fixed catch if 2drop 0 then ;
 : @string swap get-string ;
 
-: j@ swap get-item ;
-: jcount swap count-array ;
+: @zstring 
+    swap get-item _cJSON_GetStringValue@4 ;
 
-: jeach ( ... json zkey xt - ... ) ( ... json index - ... )
-    -rot jcount for 
-        2dup 2>r 2 rpick rot execute 2r>
+: j@ ( json key - json' ) 
+    swap get-item ;
+
+: jlen ( jarray - n )
+    _cJSON_GetArraySize@4 ;
+
+: jcount ( jarray - array-json n ) 
+    dup _cJSON_GetArraySize@4 ;
+
+borrow array2>> enough-flag
+|| : _jeach ( ... jsrc xt - ... ) ( ... jsrc key' - ... )
+    swap jcount for 
+        2dup 2>r 2 rpick rot execute 
+        enough-flag @ if 2r> 2drop unloop exit then
+        2r>
     loop 2drop ;
 
+: jeach ( ... jsrc xt - ... ) ( ... jsrc key' - ... )
+    enough-flag @ >r
+    enough-flag off
+    ['] _jeach catch
+    r> enough-flag !
+    throw ;
+
+|| : >child  2 cells + @ ;
+|| : >next  @ ;
+
+|| : _jeach-fast ( ... jsrc xt - ... ) ( ... jitem - ... )
+    swap jcount swap >child swap ( xt child count )
+    for 
+        2dup 2>r  swap execute 
+        enough-flag @ if 2r> 2drop unloop exit then
+        2r> >next
+    loop 2drop ;
+
+: jeach-fast ( ... jsrc xt - ... ) ( ... jitem - ... )
+    enough-flag @ >r
+    enough-flag off
+    ['] _jeach-fast catch
+    r> enough-flag !
+    throw ;
+
+    
 aka @j @int
 aka f@j @float
 aka p@j @fixed
 aka ?p@j ?@fixed
 aka s@j @string
+aka z@j @zstring
+
+: parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
+
+: j>int  5 cells + @ ;
