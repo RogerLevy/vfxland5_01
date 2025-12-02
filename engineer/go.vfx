@@ -68,7 +68,7 @@ redef : event? ( - f )
 || : ?idle ( - ) debug @ if (EmptyIdle) then ;
 
 : present ( - )
-    ?idle spin display al_flip_display ;
+    ?idle display al_flip_display spin ;
 
 || : ?quit
     <esc> pressed? shift? not and esc-quits @ and if
