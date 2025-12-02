@@ -321,9 +321,9 @@ create-class %trait {
     then
     drop ;
 
-: scaffold ( class addr - )
-    swap over >cla !   \ Store class pointer
-    copy-template ;
+\ : scaffold ( class addr - )
+\     swap over >cla !   \ Store class pointer
+\     copy-template ;
 
 redef : construct ( ... class addr - )
     swap over >cla !   \ Store class pointer
@@ -331,21 +331,33 @@ redef : construct ( ... class addr - )
         me copy-template
         cla @ -> constructor-xt @ ?dup if execute then
     } ;
-    
+
+ec-cell allocator  \ xt ( ... n - a ior )
+
+: dict-allocator ( n - a ior )
+    here swap allot 0 ;
+
+: in-dict ( - )
+    ['] dict-allocator allocator! ;
+
 redef : make ( ... class - object )
     \ TODO: validate class
-    here >r
-    dup -> instance-size @ allot
+    dup -> instance-size @ allocator@ execute throw >r
+    ( class ) r@ construct r> ;
+
+: dmake ( ... class - object )
+    \ TODO: validate class
+    dup -> instance-size @ here swap allot >r
     ( class ) r@ construct r> ;
 
 : object ( ... class <name> - ) ( - object )
-    bl parse screate make drop ;
+    bl parse screate dmake drop ;
 
 \ ==============================================================================
 \ Members
 \ ==============================================================================
 
-create %property  %class make {
+create %property  %class dmake {
     (add-object-system-trait-bit)
     /magical-base
         cell field offset
@@ -376,12 +388,12 @@ constant /property-metadata
 : >serialize-flag ( property class - field-addr )
     >property-metadata -> serialize-flag ;
 
-create %static  %class make {
+create %static  %class dmake {
     %property -> instance-size @
     dup instance-size ! next-ofs !
 }
 
-create %protocol  %class make {
+create %protocol  %class dmake {
     %static -> instance-size @
     dup instance-size ! next-ofs !
 }
@@ -399,7 +411,7 @@ create %protocol  %class make {
 
 : begin-classifier ( class - )
     push-order only forth definitions
-    create make to classifier
+    create dmake to classifier
     1 classifier -> #openings +!
     allocate-classifier-id
     pop-order ;
@@ -430,7 +442,7 @@ create %protocol  %class make {
  
 : create-property ( <name> - property ) 
     push-order only forth definitions 
-    create %property make {
+    create %property dmake {
         2 cells allocate-static-offset
         MAGIC_PROPERTY magic !
     me }     
@@ -576,7 +588,7 @@ create %protocol  %class make {
     classifier 0= abort" STATIC : Can't define a static outside of a classifier definition."
     %static already? if drop ' drop exit then
     push-order only forth definitions
-    create %static make {
+    create %static dmake {
         ( size ) allocate-static-offset
         MAGIC_FIELD magic !
     }
@@ -799,7 +811,7 @@ redef : ; ( - )
     %protocol already? if
         ' >body
     else
-        create %protocol make 
+        create %protocol dmake 
         does-protocol
         {
             2 cells allocate-static-offset
@@ -1169,13 +1181,7 @@ variable errsp   estack errsp !
 
 class: %global class;  \ ECP = ROOTEC
 %global object global 
-
-\ trait: %contextual
-\     EC_MAX_SIZE nproperty ec
-\ trait;
-
-\ %contextual :construct ( - )
-\     ec ecp! ;
+global as in-dict
 
 \ ==============================================================================
 \ Init/Reset
@@ -1188,7 +1194,7 @@ class: %global class;  \ ECP = ROOTEC
 || : init-nib ( - )
     fresh-next-classifier# @ next-classifier# ! 
     fresh-/static @ to /static
-    global me!  rootec ecp!
+    global me!  rootec ecp!  in-dict
     fresh/ec @ to s/ec
     0 to classifier 
 ;
