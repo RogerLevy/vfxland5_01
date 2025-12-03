@@ -3,7 +3,7 @@ require %idir%/utilities.vfx
 require %idir%/actor.vfx
 require %idir%/stage.vfx
 require %idir%/bitmap.vfx
-require %idir%/tilemap2.vfx
+require %idir%/tileset.vfx
 
 \ =============================================================================
 \ Actor sprite support

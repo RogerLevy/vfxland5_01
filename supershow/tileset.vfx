@@ -52,22 +52,6 @@ class;
         _slice-tileset
         r> next-bmp# ! ;
 
-\ : array, ( array - )
-\     \ assumes cell array
-\     dup #items ,   ['] , swap each ;
-
-\ : j@+ ( a array - a' )
-\     \ assumes cell array
-\     {: | n :}
-\     {
-\         @+ to n 
-\         n if
-\             n me redim
-\             dup data @ n cells move
-\             n cells +
-\         then 
-\     } ;
-
 : tile ( %tileset n - bmpid )
     swap -> baseid @ + ;
 

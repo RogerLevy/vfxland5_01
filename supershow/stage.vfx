@@ -7,8 +7,6 @@ REQUIRE %idir%/utilities.vfx
 REQUIRE %idir%/traits.vfx
 REQUIRE %idir%/actor.vfx
 
-REQUIRE %idir%/config.vfx
-
 1024 ?constant #actors
 1024 ?constant #temps
 

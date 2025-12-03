@@ -2,8 +2,6 @@ require %idir%/checks.vfx
 
 trait: %object
     :: init ( - ) ;
-    :: deinit ( - ) ;
-    \ :: think ( - ) ;
 trait;
 
 trait: %loadable
@@ -14,12 +12,17 @@ trait: %unloadable
     :: unload ( - ) ;
 trait;
 
-: ?unload  ?dup if unload then ;
-
 trait: %usable
     :: use ( - ) ;
 trait;
 
 trait: %drawable
     :: draw ( - ) ;
+trait;
+
+trait: %dimensional
+    prop w :int
+    prop h :int
+
+    :: dims ( - w h ) w 2@ ;
 trait;

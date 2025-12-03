@@ -5,7 +5,11 @@ require %idir%/asset.vfx
 require %idir%/bitmap.vfx
 require %idir%/tileset.vfx
 
-require %idir%/config.vfx
+20 ?constant gap  
+[undefined] xgap [if] gap constant xgap [then]
+[undefined] ygap [if] gap constant ygap [then]
+gamew xgap / ?constant tmw
+gameh ygap / ?constant tmh
 
 \ =============================================================================
 \ Tilemap rendering
