@@ -1,0 +1,105 @@
+require %idir%/checks.vfx
+require %idir%/asset.vfx
+require %idir%/bitmap.vfx
+
+ec-cell pile
+
+class: %tileset
+    %asset derive
+
+    is-a %usable
+
+    prop baseid
+    prop bmp
+    prop tw <save :int 
+    prop th <save :int 
+    prop #tiles <save :int 
+    prop metas-array :ref %array
+
+class;
+
+|| : /metas ( - )
+    0 cell %array make metas-array ! ;
+
+0 %tileset :construct ( - )
+    /metas ;
+
+: _slice-tileset ( - )
+    \ slice up the source %bitmap into tile sub-bitmaps.
+    \ add them to the global %bitmap registry.
+    bmp @ -exit
+    next-bmp# @ baseid !
+    bmp @ bmph th @ - 1 + for
+        bmp @ bmpw tw @ - 1 + for
+            i j at   bmp @ id>albmp tw 2@ *subbmp wrap-bitmap add-bitmap drop
+        tw @ +loop
+    th @ +loop
+    next-bmp# @ baseid @ - #tiles ! 
+    #tiles @ metas-array @ redim ;
+
+\ : reslice-tileset ( tw th %tileset - )
+\     \ slice up source bitmap, creating a new range of sub-bitmaps
+\     \ use this at dev-time to change the tile size or if the bitmap's size increased.
+\     dup unload   {   tw 2!   _slice-tileset   me keep   } ;
+
+\ %tileset :: use ( - )
+\     baseid @ pile! ;
+
+: update-tileset ( %tileset - )
+    as>
+        bmp @ -exit
+        next-bmp# @ >r   baseid @ next-bmp# ! 
+        _slice-tileset
+        r> next-bmp# ! ;
+
+\ : array, ( array - )
+\     \ assumes cell array
+\     dup #items ,   ['] , swap each ;
+
+\ : j@+ ( a array - a' )
+\     \ assumes cell array
+\     {: | n :}
+\     {
+\         @+ to n 
+\         n if
+\             n me redim
+\             dup data @ n cells move
+\             n cells +
+\         then 
+\     } ;
+
+: tile ( %tileset n - bmpid )
+    swap -> baseid @ + ;
+
+aka tile>bmpid tile
+
+: is-tile? ( n - f )
+    id>albmp dup -exit al_is_sub_bitmap ;
+
+
+\ =============================================================================
+\ Tile metadata
+\ =============================================================================
+
+#bitmaps cell array global-metas
+global-metas 0 nth constant metas
+: meta ( tile# - n ) 65535 and pile@ + cells metas + @ ;
+: collectible?  meta $20 and 0<> ;
+: destructible?  meta $80 and 0<> ;
+: solid?  meta $0F and $0F = ;
+: instakill?  meta $40 and 0<> ;
+: trap?  meta $10 and 0<> ;
+
+: load-metas-for ( fp len tileset - )
+    \ load tile metas from a binary file directly into the global table
+    { global-metas baseid @ nth` #tiles @ cells` 2swap read } ; 
+
+: load-metas-from ( tileset - ) 
+    \ copy tile metas that have been stored in a tileset into the global table
+    { metas-array @` global-metas` 0` me 0 tile>bmpid` #tiles @ move-range } ;
+
+\ =============================================================================
+\ Backward compatibility
+\ =============================================================================
+
+aka tileset %tileset
