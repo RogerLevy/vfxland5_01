@@ -1,8 +1,8 @@
 \ ------------------------------------------------------------------------------
 \ Supershow
 \
-\ minimal engine with actors, VGA colors, CRT effect,
-\ sample playback, and tilemaps.
+\ minimalist 2D game engine with actors, CRT effect, sample playback, 
+\ and tilemaps.
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
