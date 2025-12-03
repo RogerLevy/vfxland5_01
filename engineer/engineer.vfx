@@ -93,6 +93,11 @@ redef : empty ( - )
     only forth definitions
     s" anew gildpoint" evaluate ;
 
+\ Isolation tool - for verifying that modules in a project can be loaded
+\ individually.
+VARIABLE isolation
+REDEF : MODULE  isolation @ if EMPTY then REQUIRE ;
+
 : cartridge ( - )
     \ Load user program
     empty page hold off
