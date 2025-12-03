@@ -1,3 +1,9 @@
+require %idir%/checks.vfx
+require %idir%/utilities.vfx
+require %idir%/actor.vfx
+require %idir%/tilemap2.vfx
+require %idir%/udlr.vfx
+
 \ ------------------------------------------------------------------------------
 \ Room Collisions (rectangle <-> tilemap)
 \ dependencies:

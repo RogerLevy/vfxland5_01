@@ -1,3 +1,9 @@
+require %idir%/checks.vfx
+\ require %idir%/mode.vfx
+\ require %idir%/tweak.vfx
+\ require %idir%/shader.vfx
+\ require %idir%/crt.vfx
+
 \ ------------------------------------------------------------------------------
 \ Simple sample-based audio
 \ ------------------------------------------------------------------------------
@@ -199,3 +205,9 @@ defer voice? ( smp - f )
 
 : playhead ( - f:secs )
     strm al_get_audio_stream_position_secs ;
+
+: bgm ( - <name> <filename> ) ( - )
+    create bl parse $, does> count streamL ;
+
+: audioclip ( - <name> <filename> ) ( - )
+    create bl parse $, does> count stream ;

@@ -1,0 +1,88 @@
+REQUIRE %idir%/crt.vfx
+REQUIRE %idir%/autoload.vfx
+REQUIRE %idir%/sprites.vfx
+
+\ =============================================================================
+\ Cleanup (not needed)
+\ =============================================================================
+
+\ : cleanup-supershow ( - )
+\     destroy-bitmaps
+\     hush destroy-samples 
+\     cleanup-crt ;
+
+\ prune: cleanup-supershow ;
+\ ['] cleanup-supershow AtExit 
+
+\ =============================================================================
+\ Filesystem Change Monitor
+\ =============================================================================
+
+\ : supershow-process-dirchange ( NOTIFY_INFO - )
+\     cell+ @ case
+\         FILE_ACTION_ADDED of
+\             ." FILE_ACTION_ADDED" cr
+\             %totem -> dependents list-count for
+\                 list-next {
+\                     changed-file me -> default-dir$ count strin? if
+\                         changed-file '.' ending me -> extension$ count s= if
+\                             ." New file discovered!" cr
+\                             changed-file me manifest o.
+\                         then
+\                     then
+\                 }
+\             loop drop
+\         endof
+\         FILE_ACTION_MODIFIED of
+\             ." FILE_ACTION_MODIFIED" cr
+\             changed-file -path sfind if
+\                 ." Reloading file!" cr
+\                 >body reload
+\             else
+\                 drop
+\             then
+\         endof
+\     endcase ;
+
+\ =============================================================================
+\ Initialization
+\ =============================================================================
+
+: init-supershow ( - )
+    ." Initializing Supershow..." cr
+    hold off
+    \ init-bitmaps
+    \ init-tilesets
+    \ init-samples
+    init-autoloads
+    init-crt
+    debug @ if
+\        ['] supershow-process-dirchange is process-dirchange
+    else
+        display al_hide_mouse_cursor
+    then 
+    show> sprites step ;
+
+init-supershow
+
+: boot-supershow ( - )
+    init-supershow 
+    c" main" find if execute else drop then ;
+
+' boot-supershow is boot
+
+\ : load-project ( - )
+\     create-autoclasses
+\     ['] load-default-dir script-classes each
+\     %scene load-default-dir
+\     s" modes.vfx" ?included ;
+
+\ =============================================================================
+\ Tools
+\ =============================================================================
+
+debug @ [if]
+    include %idir%/tools.vfx                \ Development tools
+    \ include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
+    \ s" sketchpad" <f12> func
+[then]

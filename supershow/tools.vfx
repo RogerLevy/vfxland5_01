@@ -2,80 +2,13 @@
 \ Interactive tools
 \ =============================================================================
 
-also engineer/
-
-|| 0 value c
-
-|| : (resurrect) ( - )
-    benched off me init ;
-
-: init-by-class ( class - )
-    to c
-    actives> me c is? if (resurrect) then ;
-    
-cstring update-name$
-
-: update ( - [<class>] )
-    \ Live update actor class
-    \ Activates honing mode with custom command (see HONE-CLASS)
-    \ If not class is given, updates the current object's class
-    {: | class0 :}
-    bl parse
-    dup if
-        sfind not if
-            drop pad count f" _%s" sfind not
-            abort" Class not found!"
-        then
-        execute to class0
-        pad count update-name$ place
-    else
-        2drop
-        me valid-object? not abort" ME is not a valid object - nothing to update!"
-        cla @ to class0
-        class0 body>name update-name$ place
-    then
-    
-    update-name$ count f" %s.vfx" file-exists? if
-        update-name$ count f" ?hone %s.vfx" >hone
-    else
-        update-name$ count f" ?hone scripts\%s.vfx" >hone
-    then
-    me { class0 init-by-class }
-    update-name$ count f" %s/" sprivate ;
-
-: .actors ( - )
-    actives> me .summary cr ;
-
-: .temps ( - )
-    temps> me .summary cr ;
-
-: edit ( - <classname> )
-    {: | name len :}
-    \ Edit a word.
-    \ If no name given, edit the class inferred from the current object (ME).
-    \ Switch to matching vocabulary if it exists.
-    bl parse to len to name
-    len 0= if
-        cla @ body>name to len to name
-    then
-
-    name len f" %s/" sfind if execute else drop then
-    name len f" locate %s" evaluate ;
-
-|| : s= s= ;
-
-: [testing] ( - )
-    \ Conditionally compile test code - active only in honing mode
-    \ And only with actor classes
-    honing @ 0<>
-    currsourcename -path -ext f" update %s" 
-    ld-action$ count s= and if
-        private
-    else
-        postpone \\ 
-    then ;
-
-engineer/
-: fp ( - )
-    \ Game frame profile
-    ['] process-tick time? ;
+\ : [testing] ( - )
+\     \ Conditionally compile test code - active only in honing mode
+\     \ And only with actor classes
+\     honing @ 0<>
+\     currsourcename -path -ext f" update %s" 
+\     ld-action$ count s= and if
+\         private
+\     else
+\         postpone \\ 
+\     then ;

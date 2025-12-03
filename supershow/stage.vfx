@@ -2,6 +2,13 @@
 \ Stage - Actor System
 \ ------------------------------------------------------------------------------
 
+REQUIRE %idir%/checks.vfx
+REQUIRE %idir%/utilities.vfx
+REQUIRE %idir%/traits.vfx
+REQUIRE %idir%/actor.vfx
+
+REQUIRE %idir%/config.vfx
+
 1024 ?constant #actors
 1024 ?constant #temps
 
@@ -200,3 +207,47 @@ fast}
 : find-class ( a len - class | %actor )
     ?-% f" %%%s"
     sfind if execute else drop %actor then ;
+
+|| 0 value c
+: init-by-class ( class - )
+    to c
+    actives> me c is? if me resurrect then ;
+
+\ =============================================================================
+\ Tools
+\ =============================================================================
+
+: .actors ( - )
+    actives> me .summary cr ;
+
+: .temps ( - )
+    temps> me .summary cr ;
+
+|| cstring update-name$
+: update ( - [<class>] )
+    \ Live update actor class
+    \ Activates honing mode with custom command (see HONE-CLASS)
+    \ If not class is given, updates the current object's class
+    {: | class0 :}
+    bl parse
+    dup if
+        sfind not if
+            drop pad count f" _%s" sfind not
+            abort" Class not found!"
+        then
+        execute to class0
+        pad count update-name$ place
+    else
+        2drop
+        me valid-object? not abort" ME is not a valid object - nothing to update!"
+        cla @ to class0
+        class0 body>name update-name$ place
+    then
+    
+    update-name$ count f" %s.vfx" file-exists? if
+        update-name$ count f" ?hone %s.vfx" >hone
+    else
+        update-name$ count f" ?hone scripts\%s.vfx" >hone
+    then
+    me { class0 init-by-class }
+    update-name$ count f" %s/" sprivate ;

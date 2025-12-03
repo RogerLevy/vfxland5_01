@@ -122,6 +122,10 @@ redef : event? ( - f )
 : process-tick ( - )
     'show @ ['] draw-game draw-tv ;
 
+: fp ( - )
+    \ Frame profile
+    ['] process-tick time? ;
+
 : frame ( - ) 
     update-delta
     process-input

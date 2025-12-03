@@ -37,8 +37,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 4. **Game Projects** - Individual games that build on the stack:
    - Games are developed separately from the engine repository
-   - `darkblue/` - Shoot-em-up with advanced path system (temporarily included as testing grounds for engine refinements)
-   - When engine is stable or game is complete, game changes will be removed from repo history and moved to separate repository
 
 ### Object-Oriented System (NIBS, a.k.a. Nib 2.0)
 
@@ -214,7 +212,6 @@ When creating status.txt files, follow the format established in doc/engineer/st
 
 - Git repository initialized with main branch
 - Development workflow: work on development or feature branches, then collapse to independent commits in main for stable milestones/snapshots/sprints
-- Game projects (e.g., `darkblue/`) may be temporarily included for engine testing, but will be removed from repo history when engine is stable or game is complete
 - All VFX Forth source files (`.vfx`) are tracked
 - Binary assets in `dat/` directories are tracked
 - Build artifacts and temporary files excluded via `.gitignore`

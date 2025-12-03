@@ -152,3 +152,16 @@
         drop
     then 
     create class0 make ;
+
+: edit ( - <classname> )
+    {: | name len :}
+    \ Edit a word.
+    \ If no name given, edit the class inferred from the current object (ME).
+    \ Switch to matching vocabulary if it exists.
+    bl parse to len to name
+    len 0= if
+        cla @ body>name to len to name
+    then
+
+    name len f" %s/" sfind if execute else drop then
+    name len f" locate %s" evaluate ;

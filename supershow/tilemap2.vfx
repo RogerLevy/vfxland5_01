@@ -1,3 +1,11 @@
+require %idir%/checks.vfx
+require %idir%/utilities.vfx
+require %idir%/traits.vfx
+require %idir%/asset.vfx
+require %idir%/bitmap.vfx
+
+require %idir%/config.vfx
+
 1 constant TILESET_FORMAT_VERSION
 
 ec-cell pile
@@ -89,7 +97,7 @@ aka tile>bmpid tile
 
 : tiles ( a n - 'a ) 
     penx@ to lm 
-    >lmargin udup for @+ put+ loop drop nr tmw cells + ; 
+    udup for @+ put+ loop drop nr tmw cells + ; 
 
 : drawbg ( a cols rows - )
     {: a cols rows :} begin-batch a rows for cols tiles loop drop end-batch ; 
@@ -102,6 +110,9 @@ aka tile>bmpid tile
 
 : xy>cr ( x. y. - col row )
     xgap ygap 2/ 2>i ;
+
+: att ( col row - ) 
+    xgap ygap 2*  xgap 2 / ygap 2 / 2+  at ;
 
 \ =============================================================================
 \ Tile metadata
@@ -123,3 +134,9 @@ global-metas 0 nth constant metas
 : load-metas-from ( tileset - ) 
     \ copy tile metas that have been stored in a tileset into the global table
     { metas-array @` global-metas` 0` me 0 tile>bmpid` #tiles @ move-range } ;
+
+\ =============================================================================
+\ Backward compatibility
+\ =============================================================================
+
+aka tileset %tileset

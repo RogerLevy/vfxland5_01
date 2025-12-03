@@ -1,3 +1,8 @@
+require %idir%/checks.vfx
+require %idir%/utilities.vfx
+require %idir%/traits.vfx
+require %idir%/asset.vfx
+
 65536 ?constant #bitmaps
 
 class: %bitmap
@@ -50,3 +55,10 @@ variable next-bmp#  1 next-bmp# !
 : cput ( bmpid - ) 
     \ draw sprite with center as the origin
     dup dup bmpwh -2 -2 2/ +at put bmpwh 2 2 2/ +at ;
+
+\ =============================================================================
+\ Backward compatibility
+\ =============================================================================
+
+\ aka >albmp id>albmp
+aka bmptotem id>bmp

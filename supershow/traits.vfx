@@ -1,3 +1,5 @@
+require %idir%/checks.vfx
+
 trait: %object
     :: init ( - ) ;
     :: deinit ( - ) ;

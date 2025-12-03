@@ -1,3 +1,5 @@
+require %idir%/checks.vfx
+
 \ =============================================================================
 \ Utilities
 \ =============================================================================
@@ -11,6 +13,12 @@ continuation: batch>  begin-batch  ( xt ) catch  end-batch  throw ;
 : v|  $2000000 or ;
 : hv|  h| v| ;
 : named? ( xt $ - f ) >r >name count r> count >uppercase s= ; 
+
+: memfile@ ( a len - ALLEGRO_FILE_fp )
+    0 z" r" al_open_memfile ;
+
+: -memfile ( ALLEGRO_FILE_fp - )
+    al_fclose drop ;
 
 \ =============================================================================
 \ Trigonometry
@@ -30,22 +38,13 @@ continuation: batch>  begin-batch  ( xt ) catch  end-batch  throw ;
 
 || 0e fvalue t
 : alerp ( F: angle1 angle2 t -- result )
-  to t
-  FOVER F-                                \ diff = angle2 - angle1  
-  FDUP 180.0e F> IF 360.0e F- THEN        \ wrap to [-180,180]
-  FDUP -180.0e F< IF 360.0e F+ THEN 
-  t F* F+                                 \ angle1 + t*diff
-  FDUP 0.0e F< IF 360.0e F+ THEN          \ wrap to [0,360)
-  FDUP 360.0e F>= IF 360.0e F- THEN ;
-
-\ =============================================================================
-\ Streaming audio
-\ =============================================================================
-
-: bgm ( - <name> <filename> ) ( - )
-    create bl parse $, does> count streamL ;
-: audioclip ( - <name> <filename> ) ( - )
-    create bl parse $, does> count stream ;
+    to t
+    FOVER F-                                \ diff = angle2 - angle1  
+    FDUP 180.0e F> IF 360.0e F- THEN        \ wrap to [-180,180]
+    FDUP -180.0e F< IF 360.0e F+ THEN 
+    t F* F+                                 \ angle1 + t*diff
+    FDUP 0.0e F< IF 360.0e F+ THEN          \ wrap to [0,360)
+    FDUP 360.0e F>= IF 360.0e F- THEN ;
 
 \ =============================================================================
 \ Blank the screen

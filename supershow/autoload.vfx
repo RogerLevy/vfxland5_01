@@ -1,3 +1,11 @@
+require %idir%/checks.vfx
+require %idir%/utilities.vfx
+
+\ We don't load these here on purpose, so a program can mix-and-match
+\ require %idir%/asset.vfx
+\ require %idir%/bitmap.vfx
+\ require %idir%/tilemap2.vfx
+
 trait: %autoload
     :: on-startup ( - ) ;
 trait;
@@ -9,6 +17,7 @@ create autoloads /list allot&erase
         list-next on-startup
     loop drop ;
 
+[defined] %asset [if]
 class: %asset
     prop data 
 
@@ -22,13 +31,9 @@ class: %asset
     : @data ( asset - a len )
         -> data @ lcount ;
 class;
+[then]
 
-: memfile@ ( a len - ALLEGRO_FILE_fp )
-    0 z" r" al_open_memfile ;
-
-: -memfile ( ALLEGRO_FILE_fp - )
-    al_fclose drop ;
-
+[defined] %bitmap [if]
 class: %bitmap
     is-a %autoload
 
@@ -52,7 +57,9 @@ class: %bitmap
         ." Loading bitmap " me .name cr
         _load-albmp ;
 class;
+[then]
 
+[defined] %tileset [if]
 class: %tileset
     is-a %autoload
 
@@ -62,11 +69,15 @@ class: %tileset
             _slice-tileset
         } ;
 
+    aka +tileset tileset-from
+
     :: on-startup ( - )
         ." Slicing tileset " me .name cr 
         me update-tileset ;
 class;
+[then]
 
+[defined] %sample [if]
 class: %sample
     %asset derive
     is-a %autoload
@@ -98,3 +109,4 @@ class: %sample
         alsmp @ id @ set-sample ;
 
 class;
+[then]

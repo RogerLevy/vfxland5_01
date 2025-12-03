@@ -1,3 +1,12 @@
+REQUIRE %idir%/checks.vfx
+REQUIRE %idir%/mode.vfx
+REQUIRE %idir%/utilities.vfx
+REQUIRE %idir%/traits.vfx
+
+variable clock  clock on
+variable gamelife
+0d 2value gametime
+
 512 ?constant /actor
 
 class: %actor
@@ -56,9 +65,10 @@ class;
 
 \ Actor benching (disabling when there's an error)
 c: %actor benched ;  \ controls behavior and physics
-: benched?  -> benched @ ;
-: bench  -> benched on ;
+: benched? ( actor - ) -> benched @ ;
+: bench ( actor - ) -> benched on ;
 : ?benched  benched @ if r> drop then ;
+: resurrect ( actor - ) { benched off   me init } ;
 
 \ Step
 : +gametime ( - )
@@ -110,8 +120,6 @@ continuation: physics> ( - ) ( - ) ( xt ) phys ! ;
 \ =============================================================================
 \ Scripting utilities
 \ =============================================================================
-
-: att ( col row - ) xgap ygap 2*  gap 2 / dup 2+  at ;
 
 : *{ ( class - <code> } )
     \ Parse-ahead instantiation for serialized objects/actors
@@ -167,7 +175,6 @@ redef : halt  beha off  0 0 vx 2! ;
     .status
     ." at: " x 2@ 2>i swap . . 
     ." ] " pop-attribute ;
-
 
 \ =============================================================================
 \ Backward Compatibility

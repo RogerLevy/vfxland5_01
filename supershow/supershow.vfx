@@ -6,147 +6,51 @@
 \ ------------------------------------------------------------------------------
 
 \ =============================================================================
-\ Constants and Variables
-\ =============================================================================
-
-320 ?constant gamew
-240 ?constant gameh
-20 ?constant gap  
-[undefined] xgap [if] gap constant xgap [then]
-[undefined] ygap [if] gap constant ygap [then]
-gamew xgap / ?constant tmw
-gameh ygap / ?constant tmh
-variable clock  clock on
-variable gamelife
-0d 2value gametime
-
-\ =============================================================================
 \ Dependencies
 \ =============================================================================
 
-include %idir%/checks.vfx           \ Validations
-include %idir%/mode.vfx             \ Game modes w/ separate logic and rendering
-include %idir%/tweak.vfx              \ Persistent variable control
-\ include %idir%/../lib/bin.vfx       \ Binary serialization format (deprecated)
-\ include %idir%/../lib/totem.vfx     \ Persistent data system
-include %idir%/shader.vfx           \ Shaders 
-include %idir%/crt.vfx              \ CRT shader
-include %idir%/waveplay.vfx         \ Audio engine
-include %idir%/utilities.vfx        \ Math helpers, audio, and misc utilities
-include %idir%/traits.vfx           \ Object traits
-include %idir%/asset.vfx            \ Base asset class
+REQUIRE %idir%/checks.vfx           \ Validations
+REQUIRE %idir%/mode.vfx             \ Game modes w/ separate logic and rendering
+REQUIRE %idir%/tweak.vfx            \ Persistent variable control
+REQUIRE %idir%/waveplay.vfx         \ Audio engine
+REQUIRE %idir%/utilities.vfx        \ Math helpers, audio, and misc utilities
+REQUIRE %idir%/traits.vfx           \ Object traits
+REQUIRE %idir%/asset.vfx            \ Base asset class
+REQUIRE %idir%/shader.vfx           \ Shaders 
+REQUIRE %idir%/crt.vfx              \ CRT shader
 
 \ =============================================================================
 \ Actor system
 \ =============================================================================
 
-include %idir%/actor.vfx
-include %idir%/stage.vfx            \ Actor/sprite system
-include %idir%/timer.vfx
+REQUIRE %idir%/actor.vfx
+REQUIRE %idir%/stage.vfx            \ Actor/sprite system
+REQUIRE %idir%/timer.vfx
 
 \ =============================================================================
 \ Bitmaps and tilemaps
 \ =============================================================================
 
-include %idir%/bitmap.vfx           \ Bitmaps
-include %idir%/tilemap2.vfx         \ Tilemap rendering & Tileset class
-include %idir%/sprite.vfx           \ Sprite animation (requires %tileset)
+REQUIRE %idir%/bitmap.vfx           \ Bitmaps
+REQUIRE %idir%/tilemap2.vfx         \ Tilemap rendering & Tileset class
+REQUIRE %idir%/sprites.vfx           \ Sprite animation (requires %tileset)
 
 \ =============================================================================
 \ Tilemap collision
 \ =============================================================================
 
-include %idir%/udlr.vfx             \ Movement utilities
-include %idir%/tmcol.vfx            \ Tilemap collision detection
-include %idir%/tread.vfx            \ Tilemap data reading
+REQUIRE %idir%/udlr.vfx             \ Movement utilities
+REQUIRE %idir%/tmcol.vfx            \ Tilemap collision detection
+REQUIRE %idir%/tread.vfx            \ Tilemap data reading
 
 \ =============================================================================
 \ Convenience facilities
 \ =============================================================================
 
-include %idir%/autoload.vfx
+REQUIRE %idir%/autoload.vfx
 
 \ include %idir%/persist.vfx
 \ include %idir%/scene.vfx            \ Scene management
 \ include %idir%/autoclass.vfx        \ Auto-generate classes from bitmaps
 
-\ =============================================================================
-\ Cleanup (not needed)
-\ =============================================================================
-
-\ : cleanup-supershow ( - )
-\     destroy-bitmaps
-\     hush destroy-samples 
-\     cleanup-crt ;
-
-\ prune: cleanup-supershow ;
-\ ['] cleanup-supershow AtExit 
-
-\ =============================================================================
-\ Initialization
-\ =============================================================================
-
-\ : supershow-process-dirchange ( NOTIFY_INFO - )
-\     cell+ @ case
-\         FILE_ACTION_ADDED of
-\             ." FILE_ACTION_ADDED" cr
-\             %totem -> dependents list-count for
-\                 list-next {
-\                     changed-file me -> default-dir$ count strin? if
-\                         changed-file '.' ending me -> extension$ count s= if
-\                             ." New file discovered!" cr
-\                             changed-file me manifest o.
-\                         then
-\                     then
-\                 }
-\             loop drop
-\         endof
-\         FILE_ACTION_MODIFIED of
-\             ." FILE_ACTION_MODIFIED" cr
-\             changed-file -path sfind if
-\                 ." Reloading file!" cr
-\                 >body reload
-\             else
-\                 drop
-\             then
-\         endof
-\     endcase ;
-
-: init-supershow ( - )
-    ." Initializing Supershow..." cr
-    hold off
-    \ init-bitmaps
-    \ init-tilesets
-    \ init-samples
-    init-autoloads
-    init-crt
-    debug @ if
-\        ['] supershow-process-dirchange is process-dirchange
-    else
-        display al_hide_mouse_cursor
-    then 
-    show> sprites step ;
-
-init-supershow
-
-: boot-supershow ( - )
-    init-supershow 
-    c" main" find if execute else drop then ;
-
-' boot-supershow is boot
-
-\ : load-project ( - )
-\     create-autoclasses
-\     ['] load-default-dir script-classes each
-\     %scene load-default-dir
-\     s" modes.vfx" ?included ;
-
-\ Tools
-debug @ [if]
-    include %idir%/tools.vfx                \ Development tools
-    \ include %idir%/sketchpad/sketchpad.vfx  \ Stage editor
-    \ s" sketchpad" <f12> func
-[then]
-
-\ Backward compatibility
-include %idir%/back.vfx
+REQUIRE %idir%/runtime.vfx
