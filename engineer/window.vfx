@@ -15,7 +15,7 @@ variable winy
 
 : restore-window-pos
     s" session.ini" CfgIncluded 
-    display winx @ winy @ al_set_window_position ;
+    display winx @ winy @ 25 max al_set_window_position ;
 
 ['] save-window-pos AtExit
 
@@ -41,5 +41,5 @@ GetForegroundWindow value vfx-hwnd
     2 zoom ! 
     appw apph fullscreen? resize-display
     fullscreen? not if
-        display winx @ winy @ al_set_window_position 
+        display winx @ winy @ 25 max al_set_window_position 
     then ;
