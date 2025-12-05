@@ -23,7 +23,7 @@ class;
 
 ec-cell map
 
-global { %tilemap template map!  ecp@ 256 dump }
+global { %tilemap template map! }
 %tilemap template { 
     create default.ta cell array{ array} ta !
     create default.ts %tileset dmake ts !
@@ -83,10 +83,10 @@ global { %tilemap template map!  ecp@ 256 dump }
     begin-batch  a rows for cols tiles loop drop  end-batch ;
 
 %tilemap :: draw ( - )
-    t{ 
+    {{ 
         <at
         ts @ >baseid @ pile!
         ta @ 0 nth` me dims`` drawbg 
-    t} ;
+    }} ;
 
 fast}

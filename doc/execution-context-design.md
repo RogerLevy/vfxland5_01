@@ -40,7 +40,7 @@ The `>ecfa` function searches up the **object stack** for non-sentinel values:
 
 ## The Design Problem
 
-### Initial Approach: c{ and t{
+### Initial Approach: c{ and {{
 
 Originally provided two ways to switch contexts:
 
@@ -97,7 +97,7 @@ Make `ecp` a global value (like `me`) instead of reading from `me ecp @`:
 - Easy to get out of sync
 - Confusing semantics
 
-#### 2. Smart Copy for T{ (Complex)
+#### 2. Smart Copy for {{ (Complex)
 
 Have `t{` copy non-sentinel values to temp EC:
 - Copy all `$DEADBEEF` → keep searching
@@ -125,20 +125,20 @@ global {              \ Push global onto object stack
 **Trade-off**:
 - Must push objects to get EC inheritance
 - Can't switch EC of current object for inheritance
-- c{ and t{ become useless or misleading
+- c{ and {{ become useless or misleading
 
 ## Current Resolution
 
 ### Keep It Simple
 - ECP is object-field-only (no global pointer)
-- Comment out c{ and t{ to avoid confusion
+- Comment out c{ and {{ to avoid confusion
 - EC switching requires object scoping with `{` ... `}`
 - Each object carries its own EC, inheritance via stack
 
 ### Future Consideration
 If lightweight EC switching is needed without full object scoping, consider:
 - Making EC a separate stack-based concept (disconnected from objects)
-- Or: shallow copy semantics for t{ (snapshot, no inheritance)
+- Or: shallow copy semantics for {{ (snapshot, no inheritance)
 - Or: EC parent chain (each EC has parent pointer)
 
 ## Implementation Notes
