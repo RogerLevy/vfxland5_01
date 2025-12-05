@@ -87,16 +87,17 @@ borrow nib2>> init-nib
     honing off ;
 
 redef : empty ( - )
-    debug @ -exit
+    \ debug @ -exit
     rs
     empty-engineer
     only forth definitions
-    s" anew gildpoint" evaluate ;
+    empty ; 
+    \ s" anew gildpoint" evaluate ;
 
 \ Isolation tool - for verifying that modules in a project can be loaded
 \ individually.
-VARIABLE isolation
-REDEF : MODULE  isolation @ if EMPTY then REQUIRE ;
+VARIABLE ISOLATION
+REDEF : MODULE  isolation @ if empty then require ;
 
 : cartridge ( - )
     \ Load user program
@@ -221,6 +222,8 @@ borrow nib2>> gild-nib
 gild-nib
 
 \ TODO: gild the system classifiers
-|| : gild  gild-nib s" redef marker gildpoint" evaluate ;
+\ || : gild  gild-nib s" redef marker gildpoint" evaluate ;
 
-gild
+\ gild
+
+freeze 
