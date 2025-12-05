@@ -809,7 +809,7 @@ extern "C" void al_start_timer( void * timer );
 extern "C" void al_stop_sample( void * ALLEGRO_SAMPLE_ID );
 \ extern "C" al_stop_sample_instance( );
 \ extern "C" al_stop_samples( );
-\ extern "C" al_stop_timer( );
+extern "C" void al_stop_timer( void * ALLEGRO_TIMER );
 \ extern "C" al_store_state( );
 \ extern "C" al_toggle_menu_item_flags( );
 extern "C" void al_transform_coordinates( void * transform, float * x, float * y );

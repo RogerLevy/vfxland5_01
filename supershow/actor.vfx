@@ -1,5 +1,4 @@
 REQUIRE %idir%/checks.vfx
-REQUIRE %idir%/mode.vfx
 REQUIRE %idir%/utilities.vfx
 REQUIRE %idir%/traits.vfx
 

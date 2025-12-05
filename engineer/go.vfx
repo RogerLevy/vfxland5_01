@@ -13,20 +13,12 @@ redef : ticks  ( n - ms )
     sdelta f>p to pdelta ;
 
 || : spin ( - )
-    ustime 
-    0e begin 
-        ustime  ucounter 2dup to ustime  2swap 2- d>f 1000000e f/ 
-        f+ fdup 1e tps f/ f>= until fdrop
-    to ustime ;
+    {: | ev[ /ALLEGRO_EVENT ] :}
+    frame-queue ev[ al_wait_for_event ;
 
 \ =============================================================================
 \ Main Loop Support
 \ =============================================================================
-
-|| : pre ( - )
-    0 #tib ! postpone \\ 
-    update-delta update-delta 
-    need-pump on ;
     
 continuation: show> ( - ) ( - )
     ( xt ) 'show ! ; 
@@ -92,12 +84,10 @@ redef : event? ( - f )
 \ Main Loop
 \ =============================================================================
 
+\ errdef err_quit "User quit"
 || : ?quit
     <esc> pressed? shift? not and esc-quits @ and if
-        going off 
-        fullscreen? if windowed winmode then
-        >vfx
-        quit
+        -1  throw
     then ;
 
 || : ?reload-shift ( - ) shift? to reload-shift? ;
@@ -132,6 +122,19 @@ redef : event? ( - f )
     process-tick 
     present ;
 
+|| : pre ( - )
+    0 #tib ! postpone \\ 
+    update-delta update-delta 
+    need-pump on 
+    going on 
+    frame-timer al_start_timer ;
+
+|| : post ( - )
+    going off
+    fullscreen? if windowed winmode then
+    >vfx
+    frame-timer al_stop_timer ;
+
 extern BOOL SetThreadPriority( hthread, priority );
 
 : go ( - )
@@ -140,5 +143,5 @@ extern BOOL SetThreadPriority( hthread, priority );
     going @ ?exit
     \ debug @ if >ide else >display then
     >display
-    pre going on begin ['] frame catch ?dup until going off throw ;
+    pre begin ['] frame catch ?dup until post throw ;
 
