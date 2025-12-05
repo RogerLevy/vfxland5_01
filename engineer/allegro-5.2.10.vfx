@@ -676,7 +676,7 @@ extern "C" bool al_resize_display( void * display, int w, int h );
 \ extern "C" al_rest( );
 \ extern "C" al_restore_default_mixer( );
 \ extern "C" al_restore_state( );
-\ extern "C" al_resume_timer( );
+extern "C" void al_resume_timer( void * ALLEGRO_TIMER );
 \ extern "C" al_rewind_audio_stream( );
 extern "C" void al_rotate_transform( void * m, float theta );
 \ extern "C" al_rotate_transform_3d( );
@@ -782,7 +782,7 @@ extern "C" void al_set_new_display_option( int option, int value, int importance
 extern "C" void al_set_target_bitmap( void * bitmap );
 \ extern "C" al_set_thread_should_stop( );
 \ extern "C" al_set_timer_count( );
-\ extern "C" al_set_timer_speed( );
+extern "C" void al_set_timer_speed( void * ALLEGRO_TIMER, double speed );
 \ extern "C" al_set_video_playing( );
 \ extern "C" al_set_voice_playing( );
 \ extern "C" al_set_voice_position( );

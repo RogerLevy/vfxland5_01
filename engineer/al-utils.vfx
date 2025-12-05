@@ -64,6 +64,12 @@ public
     al_install_keyboard drop
     queue al_get_keyboard_event_source al_register_event_source ;
 
+: /frame-timer ( - )
+    1e tps f/ al_create_timer to frame-timer
+    al_create_event_queue to frame-queue
+    frame-queue` frame-timer al_get_timer_event_source` al_register_event_source
+;
+
 : init-allegro  ( -- )    
     ALLEGRO_VERSION 0 al_install_system check
     
@@ -89,9 +95,7 @@ public
 
     al_create_builtin_font to builtin-font
 
-    1e tps f/ al_create_timer to frame-timer
-    al_create_event_queue to frame-queue
-    frame-queue` frame-timer al_get_timer_event_source` al_register_event_source
+    /frame-timer
 ;
 
 : create-display
