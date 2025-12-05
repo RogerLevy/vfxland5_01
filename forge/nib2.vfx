@@ -702,6 +702,7 @@ create %protocol  %class dmake {
     class0 -> class-template @ ?dup 0= if
         class0 dmake class0 -> class-template !
         class0 -> class-template @ class0 sizeof cell /string erase
+        1024 allot&erase  \ TODO: implement automatic template resize in >TEMPLATE
         rootec class0 -> class-template @ -> ecp !
         class0 -> class-template @
     then ;
