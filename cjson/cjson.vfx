@@ -140,6 +140,9 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
 : j@ ( json key - json' ) 
     swap get-item ;
 
+: ?j@ ( json key - json'|0 ) 
+    ['] j@ catch if 2drop 0 then ;
+
 : jlen ( jarray - n )
     _cJSON_GetArraySize@4 ;
 
