@@ -1184,6 +1184,12 @@ variable errsp   estack errsp !
 
 class: %global class;  \ ECP = ROOTEC
 %global object global 
+global { global { global { global { global { global { global { global { 
+global { global { global { global { global { global { global { global { 
+global { global { global { global { global { global { global { global { 
+global { global { global { global { global { global { global { global { 
+global { global { global { global { global { global { global { global { 
+global { global { global { global { global { global { global { global { 
 global as in-dict
 
 \ ==============================================================================
