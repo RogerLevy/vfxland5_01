@@ -23,7 +23,7 @@ trait;
 || : _eacha ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
-        i me index>slot xt execute
+        i me index>slot xt you { execute }
         enough-flag @ if unloop exit then
     loop ;
 
@@ -37,7 +37,7 @@ trait;
 || : _each ( xt - ) ( ... a - ... )
     {: xt :}
     item-count @ for
-        i me index>val xt execute
+        i me index>val xt you { execute }
         enough-flag @ if unloop exit then
     loop ;
 
@@ -62,7 +62,7 @@ trait;
 %iterable :: find-index ( xt - n | -1 ) ( a - b )
     {: xt :}
     item-count @ for
-        i me index>slot xt execute if i unloop exit then
+        i me index>slot xt you { execute } if i unloop exit then
     loop -1 ;
 
 %iterable :: slot>index ( item - n | -1 ) ( a - b )
@@ -93,14 +93,14 @@ trait;
 \ iterable :: map ( xt dest - )
 \     {: xt dest :}
 \     item-count @ for
-\         i me [] xt execute
+\         i me [] xt you { execute }
 \         i dest [] !
 \     loop ;
 \ 
 \ iterable :: filter ( xt dest - count )
 \     {: xt dest | j :}
 \     item-count @ for
-\         i me [] dup xt execute if
+\         i me [] dup xt you { execute } if
 \             j dest [] !
 \             j 1+ to j
 \         else drop then
