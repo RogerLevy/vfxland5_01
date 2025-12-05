@@ -27,6 +27,8 @@ ec-cell peny
 : at@ ( - x y ) penx@ peny@ ;
 : at@f ( - f:x f:y ) at@ 2s>f ;
 : +at ( x y - ) at@ 2+ at ;
+: <at  $DEADBEEF dup at ;
+\ re-inherit pen position from parent EC
 
 \ =============================================================================
 \ Drawing primitives
