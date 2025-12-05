@@ -22,10 +22,10 @@ class;
     then ;
 
 : backsprites ( - )
-    batch> actives> prio @ ?exit me draw ?pillory ;
+    ec> batch> actives> prio @ ?exit me draw ?pillory ;
 
 : sprites ( - )
-    batch> actives> prio @ -exit me draw ?pillory ;
+    ec> batch> actives> prio @ -exit me draw ?pillory ;
 
 \ =============================================================================
 \ Frame animation
