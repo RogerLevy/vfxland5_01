@@ -1,11 +1,24 @@
 \ =============================================================================
-\ Main Loop Support
+\ Framerate independence
 \ =============================================================================
 
-|| : pre ( - )
-    0 #tib ! postpone \\ 
-    update-delta update-delta 
-    need-pump on ;
+redef : ticks  ( n - ms )
+    s>f 1000e tps f/ f* f>s ;
+
+: update-delta  ( - )
+    ustime  ucounter 2dup to ustime  2swap 2-
+        d>s to usdelta
+    usdelta s>f 1000000e f/ to sdelta
+    ustime 1000 m/ to mstime
+    sdelta f>p to pdelta ;
+
+|| : spin ( - )
+    {: | ev[ /ALLEGRO_EVENT ] :}
+    frame-queue ev[ al_wait_for_event ;
+
+\ =============================================================================
+\ Main Loop Support
+\ =============================================================================
     
 continuation: show> ( - ) ( - )
     ( xt ) 'show ! ; 
@@ -70,12 +83,10 @@ redef : event? ( - f )
 : present ( - )
     ?idle display al_flip_display spin ;
 
+\ errdef err_quit "User quit"
 || : ?quit
     <esc> pressed? shift? not and esc-quits @ and if
-        going off 
-        fullscreen? if windowed winmode then
-        >vfx
-        quit
+        -1  throw
     then ;
 
 || : ?reload-shift ( - ) shift? to reload-shift? ;
@@ -104,6 +115,19 @@ redef : event? ( - f )
     ['] draw-game process-tick 
     present ;
 
+|| : pre ( - )
+    0 #tib ! postpone \\ 
+    update-delta update-delta 
+    need-pump on 
+    going on 
+    frame-timer al_start_timer ;
+
+|| : post ( - )
+    going off
+    fullscreen? if windowed winmode then
+    >vfx
+    frame-timer al_stop_timer ;
+
 extern BOOL SetThreadPriority( hthread, priority );
 
 : go ( - )
@@ -112,5 +136,5 @@ extern BOOL SetThreadPriority( hthread, priority );
     going @ ?exit
     \ debug @ if >ide else >display then
     >display
-    pre going on begin ['] frame catch ?dup until going off throw ;
+    pre begin ['] frame catch ?dup until post throw ;
 

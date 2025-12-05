@@ -12,13 +12,20 @@ variable zoom  2 zoom !
 0 value monh
 0 value fullscreen?
 0 value display
+
 ALLEGRO_OPENGL ALLEGRO_PROGRAMMABLE_PIPELINE or
     value display-flags
+
 0 value builtin-font  \ builtin-font
+
 create kbs0 /ALLEGRO_KEYBOARD_STATE allot&erase
 create kbs1 /ALLEGRO_KEYBOARD_STATE allot&erase
 create ms0 /ALLEGRO_MOUSE_STATE allot&erase
 create ms1 /ALLEGRO_MOUSE_STATE allot&erase
+
+0 value frame-queue
+0 value frame-timer
+60e fvalue tps \ float, ticks (frames) per second
 
 \ ------------------------------------------------------------------------------
 
@@ -27,6 +34,7 @@ private
 0 value mixer
 0 value voice
 0 value queue
+
 create mi /ALLEGRO_MONITOR_INFO allot&erase
 
 : -audio  ( -- )
@@ -80,6 +88,10 @@ public
     +audio
 
     al_create_builtin_font to builtin-font
+
+    1e tps f/ al_create_timer to frame-timer
+    al_create_event_queue to frame-queue
+    frame-queue` frame-timer al_get_timer_event_source` al_register_event_source
 ;
 
 : create-display
