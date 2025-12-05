@@ -17,7 +17,21 @@ class: %tilemap
     is-a %dimensional
     prop ta :ref %array
     prop ts :ref %tileset
+    EC_MAX_SIZE nprop ec
+    template { ec clear-ec }
 class;
+
+ec-cell map
+
+global { %tilemap template map!  ecp@ 256 dump }
+%tilemap template { 
+    create default.ta cell array{ array} ta !
+    create default.ts %tileset dmake ts !
+}
+
+
+0 %tilemap :construct ( - )
+    ec ecp!   me map! ;
 
 \ debug @ [if]
 \     crucial test: check-map ( - n:res )
@@ -29,7 +43,6 @@ class;
 \     before tmh check-map
 \ [then]
 
-ec-cell map
 
 : xgap ( - n ) map@ >ts @ >tw @ ;
 : ygap ( - n ) map@ >ts @ >th @ ;
@@ -70,7 +83,8 @@ ec-cell map
     begin-batch  a rows for cols tiles loop drop  end-batch ;
 
 %tilemap :: draw ( - )
-    t{ me map!
+    t{ 
+        <at
         ts @ >baseid @ pile!
         ta @ 0 nth` me dims`` drawbg 
     t} ;
