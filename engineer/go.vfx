@@ -39,7 +39,7 @@ continuation: show> ( - ) ( - )
 
 : w/f ( - )
     \ Display mode switching for release builds
-    fullscreen? if windowed else fullscreen then
+    fullscreen? if windowed else save-window-pos fullscreen then
     winmode  
     update-delta update-delta ;
 
