@@ -97,55 +97,40 @@ private
 : get-string-content ( cjson - a len )
     _cJSON_GetStringValue@4 zcount ;
 
-: get-item ( cjson n|zkey - cjson )
-    {: cjson key :} 
-    cjson is-array? if 
-        cjson key _cJSON_GetArrayItem@8
+: ?get-item ( cjson n|zkey - cjson|0 )
+    over is-array? if 
+        _cJSON_GetArrayItem@8
     else
-        cjson key _cJSON_GetObjectItem@8
-    then 
-    ?dup 0= if key f" JSON key '%z' not found!" -1 -rot .abort then ;
+        _cJSON_GetObjectItem@8
+    then ;
 
-: get-array ( zkey cjson - cjson ) get-item ;
-: get-object ( zkey cjson - cjson ) get-item ;
-: get-string ( zkey cjson - a len ) get-item j@s ;
-: get-zstring ( zkey cjson - z$ ) get-item j@z ;
-: get-float ( zkey cjson - f:n ) get-item j@f ;
-: get-fixed ( zkey cjson - p ) get-item j@p ;
-: get-int ( zkey cjson - n ) get-item j@n ;
+: get-item ( cjson n|zkey - cjson )
+    {: cjson zkey :}
+    cjson zkey ?get-item
+    ?dup 0= if zkey f" JSON key '%z' not found!" -1 -rot .abort then ;
 
 public
 
 : .json ( cjson - ) 
-    serialize-cjson udup type _cJSON_free@4 ;
-
-|| 0 value path 0 value len 0 value xt 0 value cjson
-continuation: serjson> ( path len [xt] - ) ( cjson - ) 
-    \ {: path len xt | cjson :}
-    to xt to len to path
-    new-object to cjson
-    cjson xt ?execute 
-    cjson serialize-cjson 
-        udup path len write 
-        cjson-free
-    cjson destroy-json ;
+    serialize-cjson udup type cjson-free ;
 
 aka j>j get-item 
-: ?j>j ( json key - json'|0 ) ['] j>j catch if 2drop 0 then ;
+: ?j>j ( json key - json'|0 ) ?get-item ;
+
+: j>n ( zkey cjson - n )      get-item j@n ;
+: j>f ( zkey cjson - f:n )    get-item j@f ;
+: j>p ( zkey cjson - p )      get-item j@p ;
+: j>z ( zkey cjson - z$ )     get-item j@z ;
+: j>s ( zkey cjson - a len )  get-item j@s ;
+
+: ?j>n ( json key - n|0 )     ?get-item dup -exit j@n ;
+: ?j>f ( json key - f:n|f:0 ) ?get-item ?dup if j@f else 0e then ;
+: ?j>p ( json key - p|0 )     ?get-item dup -exit j@p ;
+: ?j>z ( json key - z$|0 )    ?get-item dup -exit j@z ;
+\ no ?J>S , too complicated
+
 : jlen ( jarray - n ) _cJSON_GetArraySize@4 ;
 : jcount ( jarray - array-json n ) dup _cJSON_GetArraySize@4 ;
-
-aka j>n get-int
-aka j>f get-float
-aka j>p get-fixed
-aka j>s get-string
-aka j>z get-zstring
-
-: ?j>n ( json key - n|0 ) ['] j>n catch if 2drop 0 then ;
-: ?j>f ( json key - f:n|f:0 ) ['] j>f catch if 2drop 0e then ;
-: ?j>p ( json key - p|0 ) ['] j>p catch if 2drop 0 then ;
-\ no ?J>S , too complicated
-: ?j>z ( json key - z$|0 ) ['] j>z catch if 2drop 0 then ;
 
 borrow array2>> enough-flag
 || : _jeach ( ... jsrc xt - ... ) ( ... jsrc key' - ... )
@@ -180,3 +165,13 @@ borrow array2>> enough-flag
     throw ;
 
 : parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;
+
+|| 0 value path 0 value len 0 value xt 0 value cjson
+continuation: serjson> ( path len [xt] - ) ( cjson - ) 
+    to xt to len to path
+    new-object to cjson
+    cjson xt ?execute 
+    cjson serialize-cjson 
+        udup path len write 
+        cjson-free
+    cjson destroy-json ;
