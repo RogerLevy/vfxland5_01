@@ -1203,7 +1203,7 @@ global as in-dict
 || variable fresh-/static
 || variable fresh/ec
 
-|| : init-nib ( - )
+: init-nib ( - )
     fresh-next-classifier# @ next-classifier# ! 
     fresh-/static @ to /static
     global me!  rootec ecp!  in-dict
@@ -1211,7 +1211,7 @@ global as in-dict
     0 to classifier 
 ;
 
-|| : gild-nib ( - )
+: gild-nib ( - )
     next-classifier# @ fresh-next-classifier# !
     /static fresh-/static ! 
     s/ec fresh/ec !

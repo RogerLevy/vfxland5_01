@@ -96,7 +96,7 @@ redef : empty ( - )
 
 \ Isolation tool - for verifying that modules in a project can be loaded
 \ individually.
-VARIABLE ISOLATION
+VARIABLE isolation
 REDEF : MODULE  isolation @ if empty then require ;
 
 : cartridge ( - )
@@ -210,6 +210,8 @@ public
     (.cold)
     ."  ~~~ Engineer v2 (regress) ~~~ " cr
     frigid 
+    freeze  \ TODO: Needed because otherwise we get dictionary corruption if we call EMPTY in engineer.exe
+            \       Gotta maybe report this as a bug.
 \    init-ide
     \ zcommand zcount strip-exe interpret-string \ ide-interpret
     \ ?dup if .throw else ( go ) then 
@@ -218,7 +220,6 @@ public
 ' engineer-entrypoint is EntryPoint
 ' engineer.cold is .cold
 
-borrow nib2>> gild-nib
 gild-nib
 
 \ TODO: gild the system classifiers
@@ -226,4 +227,5 @@ gild-nib
 
 \ gild
 
+only forth definitions
 freeze 
