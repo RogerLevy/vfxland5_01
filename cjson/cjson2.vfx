@@ -2,6 +2,28 @@ library: cjson.dll
 
 vocabulary cjson>>
 
+fast{ 
+private
+0
+    cell field next   \ &cjson
+    cell field prev   \ &cjson
+    cell field child  \ &cjson
+    cell field jsontype   \ int
+    cell field valuestring \ &zstring
+    cell field valueint \ int
+    2 cells field valuedouble \ double
+    cell field namestring \ &zstring
+constant s/cjson
+
+public
+: j@n  -> valueint @ ;
+: j@f  -> valuedouble df@ ;
+: j@p  -> valuedouble df@ f>p ;
+: j@z  -> valuestring @ ;
+: j@s  -> valuestring @ zcount ;
+fast}
+
+
 private
 
 0 constant cJSON_Invalid
@@ -34,19 +56,16 @@ extern: bool STDCALL _cJSON_AddItemToArray@8( void * array, void * item );
 extern: void * STDCALL _cJSON_CreateNumber@8( double num );
 extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
 
-: .cjson-version ( - ) _cJSON_Version@0 zcount type cr ;
-
-: cjson-delete ( cjson - ) _cJSON_Delete@4 ;
+public : destroy-json ( cjson - ) _cJSON_Delete@4 ; 
+private
 : new-object ( - cjson ) _cJSON_CreateObject@0 ;
 : new-array ( - cjson ) _cJSON_CreateArray@0 ;
 : new-number ( f:n - item ) _cJSON_CreateNumber@8 ;
 : new-string ( zstr - item ) _cJSON_CreateString@4 ;
-: get-type ( cjson - type ) 3 cells + @ ;
-: is-array? ( cjson - flag ) get-type cJSON_Array = ;
-
+: j>type ( cjson - n ) -> jsontype @ ;
+: is-array? ( cjson - flag ) j>type cJSON_Array = ;
 : serialize-cjson ( cjson - heap-zstr len ) _cJSON_Print@4 zcount ;
 : cjson-free ( heap-zstr - ) _cJSON_free@4 ;
-
 
 \ Generic add-item that works for both arrays and objects
 : add-item ( item zkey|0 cjson - )
@@ -78,8 +97,8 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
 : get-string-content ( cjson - a len )
     _cJSON_GetStringValue@4 zcount ;
 
-: get-item ( n|zkey cjson - cjson )
-    {: key cjson :} 
+: get-item ( cjson n|zkey - cjson )
+    {: cjson key :} 
     cjson is-array? if 
         cjson key _cJSON_GetArrayItem@8
     else
@@ -87,34 +106,18 @@ extern: void * STDCALL _cJSON_CreateString@4( char * zstr );
     then 
     ?dup 0= if key f" JSON key '%z' not found!" -1 -rot .abort then ;
 
-: get-array ( zkey cjson - cjson )
-    get-item ;
-
-: get-object ( zkey cjson - cjson )
-    get-item ;
-
-: get-string ( zkey cjson - a len ) 
-    get-item _cJSON_GetStringValue@4 zcount ;
-
-: get-float ( zkey cjson - f:n ) 
-    get-item _cJSON_GetNumberValue@4 ;
-    
-: get-fixed ( zkey cjson - p ) 
-    get-float f>p ;
-
-: get-int ( zkey cjson - n ) 
-    get-item 5 cells + @ ;
-    \ get-float f>s ;
-
-: count-array ( zkey cjson - cjson length )
-    get-array dup _cJSON_GetArraySize@4 ;
+: get-array ( zkey cjson - cjson ) get-item ;
+: get-object ( zkey cjson - cjson ) get-item ;
+: get-string ( zkey cjson - a len ) get-item j@s ;
+: get-zstring ( zkey cjson - z$ ) get-item j@z ;
+: get-float ( zkey cjson - f:n ) get-item j@f ;
+: get-fixed ( zkey cjson - p ) get-item j@p ;
+: get-int ( zkey cjson - n ) get-item j@n ;
 
 public
 
-: cjson. ( cjson - ) 
+: .json ( cjson - ) 
     serialize-cjson udup type _cJSON_free@4 ;
-
-aka j. cjson.
 
 || 0 value path 0 value len 0 value xt 0 value cjson
 continuation: serjson> ( path len [xt] - ) ( cjson - ) 
@@ -125,29 +128,24 @@ continuation: serjson> ( path len [xt] - ) ( cjson - )
     cjson serialize-cjson 
         udup path len write 
         cjson-free
-    cjson cjson-delete ;
+    cjson destroy-json ;
 
-\ improved accessor syntax
-: @int swap get-int ;
-: @float swap get-float ;
-: @fixed swap get-fixed ;
-: ?@fixed ['] @fixed catch if 2drop 0 then ;
-: @string swap get-string ;
+aka j>j get-item 
+: ?j>j ( json key - json'|0 ) ['] j>j catch if 2drop 0 then ;
+: jlen ( jarray - n ) _cJSON_GetArraySize@4 ;
+: jcount ( jarray - array-json n ) dup _cJSON_GetArraySize@4 ;
 
-: @zstring 
-    swap get-item _cJSON_GetStringValue@4 ;
+aka j>n get-int
+aka j>f get-float
+aka j>p get-fixed
+aka j>s get-string
+aka j>z get-zstring
 
-: j@ ( json key - json' ) 
-    swap get-item ;
-
-: ?j@ ( json key - json'|0 ) 
-    ['] j@ catch if 2drop 0 then ;
-
-: jlen ( jarray - n )
-    _cJSON_GetArraySize@4 ;
-
-: jcount ( jarray - array-json n ) 
-    dup _cJSON_GetArraySize@4 ;
+: ?j>n ( json key - n|0 ) ['] j>n catch if 2drop 0 then ;
+: ?j>f ( json key - f:n|f:0 ) ['] j>f catch if 2drop 0e then ;
+: ?j>p ( json key - p|0 ) ['] j>p catch if 2drop 0 then ;
+\ no ?J>S , too complicated
+: ?j>z ( json key - z$|0 ) ['] j>z catch if 2drop 0 then ;
 
 borrow array2>> enough-flag
 || : _jeach ( ... jsrc xt - ... ) ( ... jsrc key' - ... )
@@ -165,15 +163,12 @@ borrow array2>> enough-flag
     r> enough-flag !
     throw ;
 
-|| : >child  2 cells + @ ;
-|| : >next  @ ;
-
 || : _jeach-fast ( ... jsrc xt - ... ) ( ... jitem - ... )
-    swap jcount swap >child swap ( xt child count )
+    swap jcount swap -> child @ swap ( xt child count )
     for 
         2dup 2>r  swap execute 
         enough-flag @ if 2r> 2drop unloop exit then
-        2r> >next
+        2r> -> next @
     loop 2drop ;
 
 : jeach-fast ( ... jsrc xt - ... ) ( ... jitem - ... )
@@ -183,12 +178,5 @@ borrow array2>> enough-flag
     ['] _jeach-fast catch
     r> enough-flag !
     throw ;
-
-aka j@n @int
-aka j@f @float
-aka j@p @fixed
-aka ?j@p ?@fixed
-aka j@s @string
-aka j@z @zstring
 
 : parse-json ( a len - cjson ) _cJSON_ParseWithLength@8 ;

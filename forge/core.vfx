@@ -220,7 +220,8 @@ aka se" s\"        \ " \ syntax highlight guard
 : .abort ( err a:msg len:msg - )
     rot if
         4 push-attribute
-        ." ABORT: " type cr
+        \ ." ABORT: " 
+        type cr
         rp@ cell+ (.rs) cr
         .s
         pop-attribute
